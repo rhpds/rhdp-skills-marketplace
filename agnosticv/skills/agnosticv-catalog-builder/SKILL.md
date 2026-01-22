@@ -504,6 +504,84 @@ if [[ -d "$AGV_PATH/agd_v2/$short_name" ]]; then
 fi
 ```
 
+### Step 8a: Repository Setup
+
+```
+📦 Repository Configuration
+```
+
+**Ask about Showroom repository:**
+```
+Q: Do you have a Showroom repository created for this catalog? [Y/n]
+```
+
+**If NO:**
+```
+📚 Create Showroom Repository
+
+Use the Showroom Cookiecutter template to create your repository:
+
+Repository: https://github.com/rhpds/showroom-cookiecutter
+
+Instructions:
+1. Visit: https://github.com/rhpds/showroom-cookiecutter
+2. Follow the README to generate your showroom repository
+3. Recommended naming: {short-name}-showroom
+4. Create in: github.com/rhpds organization
+
+Example:
+  $ cookiecutter gh:rhpds/showroom-cookiecutter
+
+  repo_name [my-workshop]: {short-name}-showroom
+  author_name [Your Name]: <your-name>
+  description [Workshop description]: <catalog-description>
+
+Once created, come back and re-run this skill with the repository URL.
+
+⏸️  Pausing - Create your Showroom repository first.
+```
+
+**If YES:**
+```
+Q: Showroom repository URL:
+   Example: https://github.com/rhpds/ansible-aap-ai-showroom
+
+Showroom URL:
+```
+
+**Ask about custom Ansible collection:**
+```
+Q: Will this catalog use a custom Ansible collection? [Y/n]
+
+ℹ️  Custom collections are needed when:
+   - Creating new workloads specific to this catalog
+   - Sharing workload logic across multiple catalogs
+   - Building reusable automation components
+```
+
+**If YES:**
+```
+Collection naming: rhpds.{short-name}
+Repository: https://github.com/rhpds/rhpds.{short-name}
+
+Note:
+- Collection must be created in github.com/rhpds organization
+- Will be added to requirements_content in common.yaml
+- Use this for catalog-specific workloads
+
+Example structure:
+  rhpds.{short-name}/
+  ├── galaxy.yml
+  ├── roles/
+  │   └── ocp4_workload_{catalog_feature}/
+  └── README.md
+```
+
+**If NO:**
+```
+✓ Using standard collections only (agnosticd.core_workloads, agnosticd.showroom, etc.)
+```
+
 ### Step 9: Multi-User Configuration
 
 ```

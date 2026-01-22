@@ -53,41 +53,98 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 
 ## What It Validates
 
-### UUID Compliance
+The validator performs 17 comprehensive checks across your catalog:
+
+### Check 1: File Structure
+
+- **Required files**: common.yaml must exist
+- **Recommended files**: dev.yaml, description.adoc, info-message-template.adoc
+- **File paths**: Correct directory structure
+- **Naming**: Follows catalog naming convention
+
+### Check 2: UUID Compliance
 
 - **Format**: RFC 4122 compliant UUID
 - **Case**: Lowercase only (no uppercase)
 - **Uniqueness**: Not used by other catalogs
 - **Structure**: Proper hyphenation (8-4-4-4-12)
 
-### Category Validation
+### Check 3: Category Validation
 
 - **Valid values**: Must be exactly one of:
-  - `Workshops`
-  - `Demos`
-  - `Sandboxes`
+  - `Workshops` - Multi-user hands-on learning
+  - `Demos` - Single-user presenter-led (MUST NOT be multi-user)
+  - `Labs` - General learning environments
+  - `Sandboxes` - Self-service playgrounds
+  - `Brand_Events` - Events like Red Hat Summit, Red Hat One
 - **Case-sensitive**: Must match exactly (plural)
 - **Required**: Cannot be empty
+- **Demo rules**:
+  - Demos MUST be single-user (ERROR if multiuser: true)
+  - Demos MUST NOT have workshopLabUiRedirect enabled (ERROR)
 
-### Workload Validation
+### Check 4-9: Core Validation
 
-- **Collection format**: `namespace.collection.role_name`
-- **Existence**: Workload must exist in collections
-- **Dependencies**: Proper ordering if dependencies exist
-- **Naming**: Follows convention (e.g., `ocp4_workload_*`)
+- **Check 4: Workloads** - Collection format, existence, dependencies, naming
+- **Check 5: Authentication** - HTPasswd or LDAP configuration
+- **Check 6: Showroom** - Content repository and workload setup
+- **Check 7: Infrastructure** - CNV pools, AWS, or SNO configuration
+- **Check 8: YAML Syntax** - Valid YAML, required fields, data types
+- **Check 9: Best Practices** - Naming conventions, documentation
 
-### YAML Syntax
+### Check 10: Stage Files Validation
 
-- **Valid YAML**: No syntax errors
-- **Required fields**: All mandatory fields present
-- **Data types**: Correct types for each field
-- **Indentation**: Consistent spacing
+- **dev.yaml**: Must have `purpose: development`
+- **event.yaml**: Should have `purpose: events` (if exists)
+- **prod.yaml**: Should have `purpose: production` (if exists)
+- **scm_ref**: Validates deployment repository references
 
-### File Structure
+### Check 11: Multi-User Configuration (CRITICAL)
 
-- **Required files**: common.yaml, dev.yaml, description.adoc
-- **File paths**: Correct directory structure
-- **Naming**: Follows catalog naming convention
+- **num_users parameter**: Required for multi-user catalogs
+- **worker_instance_count**: Must scale with num_users
+- **workshopLabUiRedirect**:
+  - **WARNING** if not enabled for multi-user workshops
+  - Multi-user workshops SHOULD enable this for per-user lab UI routing
+- **Category compliance**: Workshops/Brand_Events must be multi-user
+
+### Check 12: Bastion Configuration
+
+- **Image version**: RHEL 9.4-10.0 recommended
+- **Resources**: Minimum 2 cores, 4Gi memory
+- **Configuration**: Proper bastion setup for CNV pools
+
+### Check 13: Collection Versions
+
+- **Git collections**: Must specify version (not allowed to omit)
+- **Galaxy collections**: Version validation
+- **Format**: Proper requirements_content structure
+
+### Check 14: Deployer Configuration
+
+- **scm_url**: Must point to agnosticd-v2 repository
+- **scm_ref**: Deployment reference (main, tag, branch)
+- **execution_environment**: Container image for deployment
+
+### Check 14a: Reporting Labels (CRITICAL - ERROR if missing)
+
+- **primaryBU**: **REQUIRED** for business unit tracking
+  - Examples: `Hybrid_Platforms`, `Application_Services`, `Ansible`, `RHEL`
+  - Used for tracking and reporting across RHDP
+  - **ERROR severity** if missing
+
+### Check 15: Component Propagation
+
+- **Multi-stage catalogs**: Validates data flow between stages
+- **propagate_provision_data**: Ensures proper variable passing
+- **Component structure**: Validates __meta__.components configuration
+
+### Check 16: AsciiDoc Templates
+
+- **description.adoc**: Required catalog description
+- **info-message-template.adoc**: Required user notification template
+- **Variable substitutions**: Validates {variable} syntax usage
+- **Content quality**: Checks for proper structure
 
 ---
 
