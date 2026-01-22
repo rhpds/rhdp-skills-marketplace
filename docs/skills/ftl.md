@@ -7,6 +7,10 @@ title: /ftl
 
 Finish The Labs - Automated grader and solver generation for workshop testing and validation.
 
+> **🚧 Coming Soon**
+> This skill is currently in development. The documentation below is a preview of planned functionality.
+> Interested in this skill? Share your feedback in Slack: #forum-rhdp
+
 ---
 
 ## Before You Start

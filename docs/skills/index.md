@@ -84,8 +84,10 @@ Create Ansible validation roles for post-deployment checks.
 
 ---
 
-### [/ftl](ftl.html)
+### [/ftl](ftl.html) *(Coming Soon)*
 Generate automated graders and solvers for workshop testing.
+
+**Status:** In development - Documentation preview available
 
 **Before you start:** Have workshop content with clear success criteria
 
@@ -95,16 +97,16 @@ Generate automated graders and solvers for workshop testing.
 
 ## Quick Reference
 
-| Skill | Namespace | Platform | Prerequisites |
-|-------|-----------|----------|---------------|
-| create-lab | Showroom | All | Showroom template repo |
-| create-demo | Showroom | All | Showroom template repo |
-| verify-content | Showroom | All | Workshop content |
-| blog-generate | Showroom | All | Complete workshop |
-| agnosticv-catalog-builder | AgnosticV | All | AgnosticV repo + access |
-| agnosticv-validator | AgnosticV | All | Catalog files |
-| deployment-health-checker | Health | All | Validation requirements |
-| ftl | Health | All | Workshop with success criteria |
+| Skill | Namespace | Platform | Prerequisites | Status |
+|-------|-----------|----------|---------------|--------|
+| create-lab | Showroom | All | Showroom template repo | ✅ Available |
+| create-demo | Showroom | All | Showroom template repo | ✅ Available |
+| verify-content | Showroom | All | Workshop content | ✅ Available |
+| blog-generate | Showroom | All | Complete workshop | ✅ Available |
+| agnosticv-catalog-builder | AgnosticV | All | AgnosticV repo + access | ✅ Available |
+| agnosticv-validator | AgnosticV | All | Catalog files | ✅ Available |
+| deployment-health-checker | Health | All | Validation requirements | ✅ Available |
+| ftl | Health | All | Workshop with success criteria | 🚧 Coming Soon |
 
 ---
 

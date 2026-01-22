@@ -49,13 +49,16 @@ The installer will guide you through platform and namespace selection.
 ### 🏥 Health (RHDP Team)
 
 - **[/deployment-health-checker](skills/deployment-health-checker.html)** - Create validation roles
-- **[/ftl](skills/ftl.html)** - Automated grader/solver generation
 
 [Learn more →](../health/README.html)
 
 ---
 
 ## Coming Soon
+
+### 🏥 Health (In Development)
+
+- **[/ftl](skills/ftl.html)** - Automated grader/solver generation for workshop testing
 
 ### 🤖 Automation (In Development)
 
@@ -104,7 +107,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.5.1
+- **Version:** v1.5.2
 
 ---
 
