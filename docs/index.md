@@ -7,7 +7,9 @@ title: Home
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-**Supports:** Claude Code | Cursor
+**Supports:** Claude Code | Cursor (experimental)
+
+> **Note for Cursor Users:** Agent Skills support in Cursor is experimental and may require the `.cursorrules` approach for stable/Enterprise versions. [Learn more →](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/cursor-rules/README.md)
 
 ---
 

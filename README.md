@@ -237,9 +237,22 @@ Skills are installed to:
 
 ### Cursor
 
-Skills are installed to:
-- Skills: `~/.cursor/skills/`
-- Docs: `~/.cursor/docs/`
+**⚠️ Experimental:** Cursor has partial Agent Skills support in version 2.3.5+ but it's "not ready for primetime" according to the Cursor team ([source](https://forum.cursor.com/t/support-for-claude-skills/148267)).
+
+**Two approaches available:**
+
+**Option 1: Agent Skills (Experimental - Nightly Channel)**
+- Requires: Cursor Nightly channel
+- Skills installed to: `~/.cursor/skills/` and `~/.claude/skills/`
+- Status: Works for some users, may not work for everyone
+- Use: For testing and early adopters
+
+**Option 2: Cursor Rules (Recommended - Stable Version)**
+- Works with: Cursor stable (Enterprise compatible)
+- Skills installed to: `~/.cursor/skills/`
+- Reuses skills via `.cursorrules` files in your project
+- Status: Reliable workaround for stable users
+- See: [cursor-rules/README.md](cursor-rules/README.md)
 
 The installer automatically detects your platform and sets the correct paths.
 

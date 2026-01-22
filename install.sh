@@ -321,9 +321,27 @@ show_success() {
 
   echo ""
   print_msg "$CYAN" "Next Steps:"
-  echo "  1. Restart your editor to load the new skills"
-  echo "  2. Try running a skill, e.g., /create-lab"
-  echo "  3. Check for updates periodically with update.sh"
+
+  if [[ "$PLATFORM" == "claude" ]]; then
+    echo "  1. Restart Claude Code to load the new skills"
+    echo "  2. Try running a skill, e.g., /create-lab"
+    echo "  3. Check for updates periodically with update.sh"
+  else
+    print_msg "$YELLOW" "  ⚠️  Cursor Users - Important!"
+    echo ""
+    echo "  Agent Skills support in Cursor is experimental (not ready for primetime)."
+    echo "  Skills may not work directly in Cursor stable/Enterprise."
+    echo ""
+    echo "  Recommended: Use .cursorrules approach instead"
+    echo "  1. Copy .cursorrules template to your project:"
+    echo "     cp ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.showroom .cursorrules"
+    echo "  2. See cursor-rules/README.md for full instructions"
+    echo "  3. Restart Cursor and ask naturally (e.g., 'create a workshop lab')"
+    echo ""
+    echo "  Alternative: Try Nightly channel (Settings > Beta > Update Channel)"
+    echo "  See: https://forum.cursor.com/t/support-for-claude-skills/148267"
+  fi
+
   echo ""
   print_msg "$CYAN" "Documentation:"
   echo "  https://github.com/rhpds/rhdp-skills-marketplace"
