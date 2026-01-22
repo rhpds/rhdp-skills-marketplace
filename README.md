@@ -2,7 +2,9 @@
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-Supports: **Claude Code** | **Cursor**
+Supports: **Claude Code (Recommended)** | **Cursor (Experimental)**
+
+> **⚠️ Note:** Agent Skills in Cursor are not fully supported yet. Claude Code is the recommended platform.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Version](https://img.shields.io/badge/version-v1.0.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
@@ -229,32 +231,33 @@ The updater will:
 
 ## Platform Support
 
-### Claude Code
+### Claude Code (Recommended)
 
 Skills are installed to:
 - Skills: `~/.claude/skills/`
 - Docs: `~/.claude/docs/`
 
-### Cursor
+**Native Agent Skills support** - skills work out of the box with `/skill-name` commands.
 
-**⚠️ Experimental:** Cursor has partial Agent Skills support in version 2.3.5+ but it's "not ready for primetime" according to the Cursor team ([source](https://forum.cursor.com/t/support-for-claude-skills/148267)).
+### Cursor (Experimental)
 
-**Two approaches available:**
+**⚠️ Experimental:** Agent Skills in Cursor are not fully supported yet. The Cursor team stated it's "not ready for primetime" ([source](https://forum.cursor.com/t/support-for-claude-skills/148267)).
 
-**Option 1: Agent Skills (Experimental - Nightly Channel)**
-- Requires: Cursor Nightly channel
-- Skills installed to: `~/.cursor/skills/` and `~/.claude/skills/`
-- Status: Works for some users, may not work for everyone
-- Use: For testing and early adopters
+**Current approach for Cursor:**
 
-**Option 2: Cursor Rules (Recommended - Stable Version)**
-- Works with: Cursor stable (Enterprise compatible)
-- Skills installed to: `~/.cursor/skills/`
-- Reuses skills via `.cursorrules` files in your project
-- Status: Reliable workaround for stable users
+Skills are installed to `~/.cursor/skills/` and `~/.cursor/docs/`, then reused via `.cursor/rules/` directory in your project:
+
+1. Install skills: `bash install.sh --platform cursor --namespace all`
+2. Copy rules to project: `cp -r cursor-rules/.cursor/rules .cursor/`
+3. Use trigger phrases like "create lab" or "validate agv"
+
+**Status:**
+- Works in Cursor stable/Enterprise
+- Uses `.cursor/rules/RULE.md` files to reference skills
+- Experimental workaround until Cursor fully supports Agent Skills
 - See: [cursor-rules/README.md](cursor-rules/README.md)
 
-The installer automatically detects your platform and sets the correct paths.
+**Recommendation:** Use Claude Code for best experience. Cursor support is experimental.
 
 ---
 

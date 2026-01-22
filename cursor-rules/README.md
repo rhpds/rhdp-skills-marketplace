@@ -1,26 +1,30 @@
 # Cursor Rules for RHDP Skills
 
-Reuse Claude Code skills in **Cursor IDE stable version** via `.cursorrules` files.
+**⚠️ Experimental Support**: Agent Skills in Cursor are not fully supported yet. For now, we're using the `.cursor/rules/` approach to reuse Claude Code skills. **Claude Code is the recommended platform.**
 
-This is the recommended approach for **Cursor Enterprise** users who cannot access the Nightly channel.
+Reuse Claude Code skills in **Cursor IDE stable version** via `.cursor/rules/` directory.
+
+This approach works for **Cursor Enterprise** users who cannot access the Nightly channel.
 
 ---
 
 ## How It Works
 
-Instead of Agent Skills (Nightly-only), we use Cursor's `.cursorrules` files to tell the AI to read and follow the skill instructions from `~/.cursor/skills/`.
+Instead of Agent Skills (Nightly-only), we use Cursor's `.cursor/rules/` directory with `RULE.md` files that reference skills from `~/.cursor/skills/`.
 
 **Flow:**
 1. Skills are installed to `~/.cursor/skills/` (same as Claude Code)
-2. `.cursorrules` file tells Cursor AI to read those skills
-3. When user asks to "create a lab", Cursor reads `~/.cursor/skills/create-lab/SKILL.md`
-4. Cursor follows the skill instructions step-by-step
+2. `.cursor/rules/` directory contains RULE.md files that tell Cursor AI when and how to use skills
+3. When user asks to "create a lab", Cursor reads `~/.cursor/rules/create-lab/RULE.md`
+4. The RULE.md file references `~/.cursor/skills/create-lab/SKILL.md`
+5. Cursor follows the skill instructions step-by-step
 
 **Advantages:**
 - ✅ Works in Cursor stable (Enterprise compatible)
 - ✅ Reuses exact same skills as Claude Code
 - ✅ No duplication - single source of truth
 - ✅ Easy to update (just git pull)
+- ✅ Supports trigger commands and global standards
 
 ---
 
@@ -33,34 +37,27 @@ cd ~/work/code/rhdp-skills-marketplace
 bash install.sh --platform cursor --namespace all
 ```
 
-This installs skills to:
-- `~/.cursor/skills/` - skill files
-- `~/.cursor/docs/` - common rules
+This installs:
+- `~/.cursor/skills/` - skill files (SKILL.md)
+- `~/.cursor/docs/` - common rules and documentation
 
-### Step 2: Copy .cursorrules to Your Project
+### Step 2: Copy .cursor/rules to Your Project
 
 Choose the namespace you need:
 
 **For content creators (Showroom):**
 ```bash
 cd ~/my-workshop-project
-cp ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.showroom .cursorrules
+cp -r ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursor/rules .cursor/
 ```
 
 **For RHDP catalog creators (AgnosticV):**
 ```bash
 cd ~/work/code/agnosticv
-cp ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.agnosticv .cursorrules
+cp -r ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursor/rules .cursor/
 ```
 
-**For both (All namespaces):**
-```bash
-# Combine both rules
-cd ~/my-project
-cat ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.showroom > .cursorrules
-echo "" >> .cursorrules
-cat ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.agnosticv >> .cursorrules
-```
+**Note**: The `.cursor/rules/` directory includes both showroom and agnosticv skills. Cursor only activates rules when triggered by user requests.
 
 ### Step 3: Restart Cursor
 
@@ -68,79 +65,163 @@ Close and reopen Cursor in the project directory.
 
 ---
 
+## Directory Structure
+
+After installation, your project will have:
+
+```
+my-project/
+├── .cursor/
+│   └── rules/
+│       ├── create-lab/
+│       │   └── RULE.md
+│       ├── create-demo/
+│       │   └── RULE.md
+│       ├── verify-content/
+│       │   └── RULE.md
+│       ├── blog-generate/
+│       │   └── RULE.md
+│       ├── agv-generator/
+│       │   └── RULE.md
+│       ├── agv-validator/
+│       │   └── RULE.md
+│       ├── generate-agv-description/
+│       │   └── RULE.md
+│       ├── validation-role-builder/
+│       │   └── RULE.md
+│       ├── showroom-standards/
+│       │   └── RULE.md (alwaysApply: true)
+│       └── agnosticv-standards/
+│           └── RULE.md (alwaysApply: true)
+```
+
+---
+
 ## Usage
 
-With `.cursorrules` in your project, simply ask Cursor naturally:
+With `.cursor/rules/` in your project, simply ask Cursor naturally using trigger phrases.
 
-**Instead of typing `/create-lab`, just ask:**
+### Showroom Skills
 
+**Create Lab:**
 ```
-"I need to create a workshop lab about CI/CD with OpenShift Pipelines"
+"create lab"
+"create workshop"
+"generate workshop module"
 ```
 
-Cursor will:
-1. Read `~/.cursor/skills/create-lab/SKILL.md`
-2. Follow the workflow defined there
-3. Ask you questions and guide you through creation
-
-**Other examples:**
-
+**Create Demo:**
 ```
-"Create a demo about OpenShift AI"
-"Validate my workshop content"
-"Generate a blog post from this lab"
-"Create an AgnosticV catalog for this workshop"
+"create demo"
+"generate demo"
+"new demo"
 ```
+
+**Verify Content:**
+```
+"verify content"
+"validate content"
+"check content quality"
+```
+
+**Generate Blog:**
+```
+"generate blog"
+"create blog post"
+"convert to blog"
+```
+
+### AgnosticV Skills
+
+**Generate Catalog:**
+```
+"create agv catalog"
+"generate agnosticv"
+"create catalog item"
+```
+
+**Validate Catalog:**
+```
+"validate agv"
+"validate catalog"
+"check agv catalog"
+```
+
+**Generate Description:**
+```
+"generate agv description"
+"create catalog description"
+```
+
+### Health Skills
+
+**Create Validation Role:**
+```
+"create validation role"
+"build validation role"
+"generate health check"
+```
+
+---
+
+## How RULE.md Files Work
+
+Each skill has a `RULE.md` file with YAML frontmatter:
+
+```yaml
+---
+description: "Workshop module generation skill"
+alwaysApply: false
+---
+
+# Lab Module Generator Skill
+
+## Trigger Commands
+
+When user says ANY of these phrases, invoke this skill:
+- "create lab"
+- "create workshop"
+- "generate workshop module"
+
+## Skill Execution
+
+**Action**: Read and follow `~/.cursor/skills/create-lab/SKILL.md` completely.
+```
+
+**Key Properties:**
+- `alwaysApply: false` - Only activates when trigger commands are detected
+- `alwaysApply: true` - Always applies (used for global standards)
+
+**Global Standards:**
+- `showroom-standards/RULE.md` - Always applies to Showroom content creation
+- `agnosticv-standards/RULE.md` - Always applies to AgnosticV catalog work
 
 ---
 
 ## Available Skills
 
-### Showroom (.cursorrules.showroom)
+### Showroom (Content Creation)
 
-Skills for Red Hat Showroom content creation:
+| Skill | Trigger Commands | Purpose |
+|-------|-----------------|---------|
+| create-lab | "create lab", "create workshop" | Workshop lab modules |
+| create-demo | "create demo", "generate demo" | Presenter-led demos |
+| verify-content | "verify content", "validate content" | Quality validation |
+| blog-generate | "generate blog", "create blog post" | Blog post generation |
 
-- **create-lab** - Workshop lab modules
-- **create-demo** - Presenter-led demos
-- **verify-content** - Quality validation
-- **blog-generate** - Blog post generation
+### AgnosticV (RHDP Provisioning)
 
-### AgnosticV (.cursorrules.agnosticv)
+| Skill | Trigger Commands | Purpose |
+|-------|-----------------|---------|
+| agv-generator | "create agv catalog", "generate catalog" | Create catalog items |
+| agv-validator | "validate agv", "validate catalog" | Validate configurations |
+| generate-agv-description | "generate agv description" | Generate descriptions |
 
-Skills for RHDP catalog provisioning:
+### Health (Post-Deployment Validation)
 
-- **agv-generator** - Create catalog items
-- **agv-validator** - Validate configurations
-- **generate-agv-description** - Generate descriptions
-
----
-
-## Project-Specific vs Global
-
-### Project-Specific (Recommended)
-
-Each project has its own `.cursorrules`:
-
-```
-~/my-workshop/.cursorrules           # Showroom skills
-~/work/code/agnosticv/.cursorrules   # AgnosticV skills
-~/my-blog-project/.cursorrules       # Showroom skills
-```
-
-**Advantages:**
-- Different projects can use different skill sets
-- Team members get same skills when they clone the repo
-- Version controlled with the project
-
-### Global (Alternative)
-
-Create a global `.cursorrules` in your home directory:
-
-```bash
-cp ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursorrules.showroom ~/.cursorrules
-```
-
-**Note:** Project-level `.cursorrules` override global ones.
+| Skill | Trigger Commands | Purpose |
+|-------|-----------------|---------|
+| validation-role-builder | "create validation role" | Create validation roles |
 
 ---
 
@@ -151,21 +232,25 @@ Check installation:
 ```bash
 # Verify skills are installed
 ls -la ~/.cursor/skills/
-# Should show: create-lab, create-demo, verify-content, etc.
+# Should show: create-lab, create-demo, verify-content, agv-generator, etc.
 
 # Verify docs are installed
 ls -la ~/.cursor/docs/
 # Should show: SKILL-COMMON-RULES.md, AGV-COMMON-RULES.md, etc.
 
-# Verify .cursorrules in your project
-cat .cursorrules
-# Should show rules telling Cursor to read skills
+# Verify .cursor/rules in your project
+ls -la .cursor/rules/
+# Should show: create-lab/, create-demo/, showroom-standards/, etc.
+
+# Check a RULE.md file
+cat .cursor/rules/create-lab/RULE.md
+# Should show YAML frontmatter and trigger commands
 ```
 
 Test in Cursor:
-1. Open Cursor in a project with `.cursorrules`
-2. Ask: "Create a workshop lab about Kubernetes"
-3. Cursor should read the skill and start asking questions
+1. Open Cursor in a project with `.cursor/rules/`
+2. Ask: "create lab about Kubernetes"
+3. Cursor should read the RULE.md, then follow SKILL.md instructions
 
 ---
 
@@ -177,11 +262,12 @@ When skills are updated in the repository:
 cd ~/work/code/rhdp-skills-marketplace
 git pull origin main
 
-# Reinstall skills
+# Reinstall skills (updates ~/.cursor/skills/)
 bash install.sh --platform cursor --namespace all
 
-# .cursorrules files don't need updating
-# (they just reference the skills, which are now updated)
+# Update project rules (copy new RULE.md files)
+cd ~/my-project
+cp -r ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursor/rules .cursor/
 ```
 
 ---
@@ -191,12 +277,13 @@ bash install.sh --platform cursor --namespace all
 ### Cursor doesn't follow the skill workflow
 
 **Check:**
-1. Is `.cursorrules` in the project root? `ls -la .cursorrules`
-2. Did you restart Cursor after adding `.cursorrules`?
+1. Is `.cursor/rules/` in the project root? `ls -la .cursor/rules/`
+2. Did you restart Cursor after adding `.cursor/rules/`?
 3. Are skills installed? `ls ~/.cursor/skills/`
+4. Are RULE.md files present? `ls .cursor/rules/create-lab/`
 
 **Fix:**
-- Ensure `.cursorrules` points to correct paths
+- Ensure `.cursor/rules/` directory structure is correct
 - Restart Cursor completely (Cmd+Q, then reopen)
 - Reinstall skills if needed
 
@@ -217,50 +304,88 @@ bash install.sh --platform cursor --namespace all
 
 This is expected! Claude Code has native Agent Skills support.
 
-For Cursor stable, you MUST use the `.cursorrules` approach.
+For Cursor stable, you MUST use the `.cursor/rules/` approach described here.
 
-For Cursor Nightly, Agent Skills work natively (no `.cursorrules` needed).
-
----
-
-## Comparison: Methods
-
-| Method | Cursor Version | Setup | Best For |
-|--------|---------------|-------|----------|
-| **Agent Skills** | Nightly only | Install to `~/.cursor/skills/` | Cursor Nightly users |
-| **.cursorrules (this)** | Stable ✅ | Install skills + copy `.cursorrules` | **Cursor Enterprise** |
-| **Cursor Commands** | Stable | Copy to `~/.cursor/commands/` | Simple prompts only |
-
-**Recommendation:** Use `.cursorrules` method (this approach) for Cursor stable/Enterprise.
+For Cursor Nightly, Agent Skills may work natively, but this is experimental.
 
 ---
 
-## Example .cursorrules Files
+## Comparison: Cursor Support Methods
 
-### Showroom Only
+| Method | Cursor Version | Setup | Reliability | Recommended |
+|--------|---------------|-------|-------------|-------------|
+| **Agent Skills** | Nightly only | Install to `~/.cursor/skills/` | Experimental | ❌ No |
+| **.cursor/rules/** | Stable ✅ | Install skills + copy rules | Working | ✅ Yes |
+| **.cursorrules** | Stable | Single file in root | Limited | ❌ No |
 
+**Current Recommendation:** Use `.cursor/rules/` method (this approach) for Cursor stable/Enterprise.
+
+**Long-term Recommendation:** Use **Claude Code** as the primary platform until Cursor fully supports Agent Skills.
+
+---
+
+## Example RULE.md File
+
+Here's what a typical RULE.md looks like:
+
+```yaml
+---
+description: "Workshop module generation skill - creates Red Hat Showroom workshop modules"
+alwaysApply: false
+---
+
+# Lab Module Generator Skill
+
+## Trigger Commands
+
+When user says ANY of these phrases, invoke this skill:
+- "create lab"
+- "create workshop"
+- "generate workshop module"
+- "new lab"
+
+## Skill Execution
+
+**Action**: Read and follow `~/.cursor/skills/create-lab/SKILL.md` completely.
+
+**OR if skills are in Claude directory**: Read and follow `~/.claude/skills/create-lab/SKILL.md` completely.
+
+## What This Skill Does
+
+Creates Red Hat Showroom workshop lab modules with:
+- AsciiDoc formatted content
+- Know/Do/Check structure
+- Module-based organization
+- Red Hat branding standards
+
+## Documentation
+
+Refer to: `~/.cursor/docs/SKILL-COMMON-RULES.md` for Red Hat Showroom standards.
 ```
-# RHDP Showroom Content Creation
 
-When user asks to create workshop lab content:
-Read and follow: `~/.cursor/skills/create-lab/SKILL.md`
+---
 
-When user asks to create demo content:
-Read and follow: `~/.cursor/skills/create-demo/SKILL.md`
+## Global Standards (alwaysApply: true)
 
-Apply standards from: `~/.cursor/docs/SKILL-COMMON-RULES.md`
-```
+Two special rules always apply when working in Cursor:
 
-### AgnosticV Only
+### showroom-standards/RULE.md
 
-```
-# RHDP AgnosticV Catalog Creation
+Enforces:
+- Sequential questioning (ask one question at a time)
+- Token management (don't dump content in chat)
+- AsciiDoc standards
+- Know/Do/Check structure
 
-When user asks to create AgnosticV catalog:
-Read and follow: `~/.cursor/skills/agv-generator/SKILL.md`
+### agnosticv-standards/RULE.md
 
-Apply standards from: `~/.cursor/docs/AGV-COMMON-RULES.md`
-```
+Enforces:
+- UUID validation (RFC 4122, uniqueness)
+- Category exactness (Workshops, Demos, Sandboxes only)
+- YAML standards
+- Workload dependencies
+
+These run automatically for all Showroom and AgnosticV work.
 
 ---
 
@@ -275,4 +400,6 @@ Apply standards from: `~/.cursor/docs/AGV-COMMON-RULES.md`
 **Version:** v1.0.0
 **Last Updated:** 2026-01-22
 **For:** Cursor IDE stable version (Enterprise compatible)
-**Method:** Reuse Claude Code skills via .cursorrules
+**Method:** Reuse Claude Code skills via .cursor/rules/
+**Status:** Experimental workaround until Cursor fully supports Agent Skills
+**Recommended Platform:** **Claude Code**
