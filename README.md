@@ -85,7 +85,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ---
 
-### ⚙️ agnosticv (RHDP Internal - Provisioning)
+### ⚙️ agnosticv (RHDP Internal/Advanced - Provisioning)
 
 **Purpose:** Manage RHDP catalog infrastructure provisioning and validation
 
@@ -106,7 +106,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ---
 
-### 🏥 health (RHDP Internal - Validation & Testing)
+### 🏥 health (RHDP Internal/Advanced - Validation & Testing)
 
 **Purpose:** Post-deployment validation, health checks, and automated testing
 

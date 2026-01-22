@@ -8,7 +8,7 @@ AI-powered skills for RHDP post-deployment validation and health checks.
 
 The **health** namespace provides skills for validating deployed RHDP environments, creating health check validation roles, and ensuring workloads are functioning correctly after deployment.
 
-**Target Audience:** RHDP internal team, QA engineers, automation developers
+**Target Audience:** RHDP internal team, advanced developers, QA engineers, automation developers
 
 **Focus:** Post-deployment validation, health checks, automated testing
 
