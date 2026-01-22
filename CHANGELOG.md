@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.4] - 2026-01-22
+
+### Changed - Slack Channel Updates
+
+**Community Support Channel:**
+- Updated all Slack references from `#forum-rhdp` to `#forum-demo-developers`
+- Added clickable links to Slack channel (https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+- Updated docs/_config.yml with Slack channel information in site description
+- Improved accessibility with direct Slack channel links throughout documentation
+
+**Documentation Files Updated:**
+- docs/index.md - Support section
+- docs/skills/index.md, ftl.md - Getting Help sections
+- docs/reference/glossary.md, quick-reference.md, troubleshooting.md
+- docs/setup/index.md, agnosticv.md
+
+**Install Script:**
+- Removed `/ftl` from available skills list (correctly marked as coming soon)
+
+### Focus
+This release improves community access by providing direct links to the correct Slack support channel and ensures install.sh only lists actually available skills.
+
 ## [v1.5.3] - 2026-01-22
 
 ### Changed - Documentation Updates
@@ -272,7 +294,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.3...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.4...HEAD
+[v1.5.4]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.4
 [v1.5.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.3
 [v1.5.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.2
 [v1.5.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.1
