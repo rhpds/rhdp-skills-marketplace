@@ -21,10 +21,13 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
 ## Quick Start
 
-### Installation (One Command)
+### Installation
+
+Download and run the installer:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh
 ```
 
 The installer will guide you through:
@@ -122,7 +125,8 @@ Future skills for intelligent automation, lab validation, and field-sourced cont
 Keep your skills current:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh -o /tmp/rhdp-update.sh
+bash /tmp/rhdp-update.sh
 ```
 
 ---

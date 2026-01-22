@@ -15,10 +15,13 @@ Supports: **Claude Code (Recommended)** | **Cursor (Experimental)**
 
 ## Quick Start
 
-### Installation (One Command)
+### Installation
+
+Download and run the installer:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh
 ```
 
 The installer will:
@@ -32,7 +35,8 @@ The installer will:
 Install the **showroom** namespace for creating Red Hat Showroom workshop labs and demos:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh
 # When prompted:
 # 1. Select your platform (Claude Code or Cursor)
 # 2. Select namespace: 1 (showroom)
@@ -49,7 +53,8 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 Install additional namespaces for AgnosticV provisioning, validation, and health checks:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh
 # When prompted:
 # 1. Select your platform (Claude Code or Cursor)
 # 2. Select namespace:
@@ -158,7 +163,8 @@ Deploy catalog → /validation-role-builder → Health checks → Verify readine
 Check for and install updates:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh -o /tmp/rhdp-update.sh
+bash /tmp/rhdp-update.sh
 ```
 
 The updater will:
@@ -343,14 +349,16 @@ bash -x <(curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketp
    ls ~/.cursor/skills/
    ```
 
-### Wrong platform detected
+### Specify platform and namespace
 
-Specify platform explicitly:
+You can skip interactive prompts by using command-line flags:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash -s -- --platform claude
-# or
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash -s -- --platform cursor
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh --platform claude --namespace showroom
+
+# or for Cursor
+bash /tmp/rhdp-install.sh --platform cursor --namespace all
 ```
 
 ---
