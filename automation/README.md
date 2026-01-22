@@ -66,6 +66,34 @@ AI-powered skill for automating RHDP workflows and operations.
 
 ---
 
+### /field-automation-builder
+
+AI-powered skill for integrating with field-sourced content repository.
+
+**Planned Features:**
+- Automatic catalog generation from [field-sourced-content](https://github.com/rhpds/field-sourced-content)
+- Field team content validation and standardization
+- Workshop template extraction and reuse
+- Automated content migration to RHDP catalog
+- Community content discovery and integration
+- Quality scoring and recommendation engine
+
+**Use Cases:**
+- Import field-created workshops into RHDP catalog
+- Standardize field content to Red Hat quality
+- Discover reusable content patterns from field teams
+- Automate catalog item creation from field demos
+- Bridge field innovation with RHDP infrastructure
+
+**Integration:**
+- Repository: [rhpds/field-sourced-content](https://github.com/rhpds/field-sourced-content)
+- Owner: Nate Stephany (RHDP Catalog Owner)
+- Status: Future integration planned
+
+**Status:** Planned for future release
+
+---
+
 ## Vision
 
 The automation namespace will provide intelligent automation capabilities that go beyond simple scripting:

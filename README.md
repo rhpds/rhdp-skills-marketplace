@@ -140,6 +140,7 @@ Deploy catalog → /validation-role-builder → Health checks → Verify readine
 |-------|-------------|----------|
 | `ftl` (future) | Fast Track Learner | Environment discovery and intelligent testing |
 | `automation` (future) | Workflow automation | Automated RHDP operations and orchestration |
+| `field-automation-builder` (future) | Field content integration | Import field-sourced content to RHDP catalog |
 
 **Workflow:**
 ```
@@ -284,7 +285,8 @@ rhdp-skills-marketplace/
 │   ├── README.md
 │   ├── skills/
 │   │   ├── ftl/ (future)
-│   │   └── automation/ (future)
+│   │   ├── automation/ (future)
+│   │   └── field-automation-builder/ (future)
 │   └── docs/
 │
 └── examples/
