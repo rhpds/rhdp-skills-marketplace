@@ -328,7 +328,9 @@ include::partial$_attributes.adoc[]
 
 ## Related Namespaces
 
-- [**agnosticv**](../agnosticv/README.md) - RHDP provisioning and infrastructure (internal/advanced)
+- [**agnosticv**](../agnosticv/README.md) - RHDP provisioning and infrastructure
+- [**health**](../health/README.md) - Post-deployment validation and health checks
+- [**automation**](../automation/README.md) - Intelligent automation and workflow orchestration
 
 ---
 

@@ -8,7 +8,7 @@ AI-powered skills for RHDP catalog infrastructure provisioning and validation.
 
 The **agnosticv** namespace provides skills for managing Red Hat Demo Platform (RHDP) catalog items with AgnosticV configuration. These skills help create, validate, and manage infrastructure provisioning for workshops and demos.
 
-**Target Audience:** RHDP internal team, advanced infrastructure developers
+**Target Audience:** RHDP Internal/Advanced developers
 
 **Focus:** Infrastructure provisioning, catalog management, validation
 
@@ -83,28 +83,6 @@ Generate catalog `description.adoc` from existing lab or demo content.
 **Output:** `description.adoc` file ready for AgV catalog
 
 [📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/generate-agv-description.html)
-
----
-
-### /validation-role-builder
-
-Create Ansible validation roles for RHDP workloads.
-
-**Features:**
-- Post-deployment validation tasks
-- OpenShift resource checks
-- Workload-specific validation
-- Idempotent validation tasks
-- Integration with AgV testing
-
-**Use When:**
-- Creating new workload validation
-- Automated post-deploy checks needed
-- Building CI/CD for catalogs
-
-**Output:** Ansible role with validation tasks
-
-[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/validation-role-builder.html)
 
 ---
 
@@ -475,6 +453,8 @@ Update `__meta__.catalog.category` in `common.yaml`:
 ## Related Namespaces
 
 - [**showroom**](../showroom/README.md) - Content creation for workshops and demos
+- [**health**](../health/README.md) - Post-deployment validation and health checks
+- [**automation**](../automation/README.md) - Intelligent automation and workflow orchestration
 
 ---
 
