@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.3] - 2026-01-22
+
+### Changed - Documentation Updates
+
+**FTL Skill Status:**
+- Marked `/ftl` skill as "Coming Soon" in all documentation
+- Moved from available Health skills to Coming Soon section
+- Added preview notice to ftl.md documentation page
+- Updated skills index with status column showing availability
+
+**User Accessibility:**
+- Updated AgnosticV and Health skill labels from "RHDP Team" to "RHDP Team or Advanced Users"
+- Clarifies that advanced users can leverage these skills, not just internal team members
+- Makes the platform more accessible to power users
+
+### Focus
+This release improves documentation accuracy by correctly marking in-development skills as "coming soon" and clarifying that AgnosticV and Health skills are available to advanced users.
+
 ## [v1.5.2] - 2026-01-22
 
 ### Changed - Showroom Template Reference Update
@@ -254,7 +272,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.3...HEAD
+[v1.5.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.3
 [v1.5.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.2
 [v1.5.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.1
 [v1.5.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.0
