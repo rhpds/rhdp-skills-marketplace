@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+
+# Temp files
+*.tmp
+.temp/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Test files
+test-output/
+.test/

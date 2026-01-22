@@ -1,0 +1,99 @@
+---
+layout: default
+title: Home
+---
+
+# RHDP Skills Marketplace
+
+AI-powered skills for Red Hat Demo Platform content creation and provisioning.
+
+**Supports:** Claude Code | Cursor
+
+---
+
+## Quick Start
+
+### Installation (One Command)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+```
+
+The installer will guide you through:
+1. Platform selection (Claude Code or Cursor)
+2. Namespace selection (showroom, agnosticv, or all)
+3. Automatic backup and installation
+
+---
+
+## What's Included?
+
+### 🎓 Showroom Namespace (Content Creation)
+
+For external developers and content creators:
+
+- **[/create-lab](skills/create-lab.html)** - Generate workshop lab modules
+- **[/create-demo](skills/create-demo.html)** - Generate presenter-led demos
+- **[/verify-content](skills/verify-content.html)** - Quality validation
+- **[/blog-generate](skills/blog-generate.html)** - Transform to blog posts
+
+[Learn more about Showroom skills →](setup/showroom.html)
+
+### ⚙️ AgnosticV Namespace (RHDP Provisioning)
+
+For RHDP internal and advanced users:
+
+- **[/agv-generator](skills/agv-generator.html)** - Create catalog items
+- **[/agv-validator](skills/agv-validator.html)** - Validate configurations
+- **[/generate-agv-description](skills/generate-agv-description.html)** - Generate descriptions
+- **[/validation-role-builder](skills/validation-role-builder.html)** - Create validation roles
+
+[Learn more about AgnosticV skills →](setup/agnosticv.html)
+
+---
+
+## Getting Started
+
+<div class="grid">
+  <div class="card">
+    <h3>📚 Setup Guide</h3>
+    <p>Install skills for Claude Code or Cursor</p>
+    <a href="setup/">Get Started →</a>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Quick Reference</h3>
+    <p>Common workflows and examples</p>
+    <a href="reference/quick-reference.html">View Reference →</a>
+  </div>
+
+  <div class="card">
+    <h3>🔧 Troubleshooting</h3>
+    <p>Common issues and solutions</p>
+    <a href="reference/troubleshooting.html">Get Help →</a>
+  </div>
+</div>
+
+---
+
+## Updates
+
+Keep your skills current:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+```
+
+---
+
+## Support
+
+- **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
+- **Slack:** #forum-rhdp or #forum-rhdp-content
+- **Version:** v1.0.0
+
+---
+
+## License
+
+Apache License 2.0 | [View on GitHub](https://github.com/rhpds/rhdp-skills-marketplace)

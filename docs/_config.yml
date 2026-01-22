@@ -1,0 +1,35 @@
+title: RHDP Skills Marketplace
+description: AI-powered skills for Red Hat Demo Platform content creation and provisioning
+theme: jekyll-theme-cayman
+markdown: kramdown
+
+# GitHub repository
+repository: rhpds/rhdp-skills-marketplace
+github:
+  repository_url: https://github.com/rhpds/rhdp-skills-marketplace
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: Setup
+    url: /setup/
+  - title: Skills
+    url: /skills/
+  - title: Reference
+    url: /reference/
+
+# Plugins
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+
+# Build settings
+relative_links:
+  enabled: true
+  collections: true
+
+include:
+  - README.md
+  - CONTRIBUTING.md
+  - CHANGELOG.md
