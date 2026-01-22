@@ -87,7 +87,7 @@ cd rhdp-skills-marketplace
 
 ### Wrong Namespace Installed
 
-**Symptom:** `/agv-generator` not found but `/create-lab` works
+**Symptom:** `/agnosticv-catalog-builder` not found but `/create-lab` works
 
 **Solution:**
 
@@ -186,7 +186,7 @@ include::partial$_attributes.adoc[]
 
 ## AgnosticV Skill Issues
 
-### agv-generator Can't Find Repository
+### agnosticv-catalog-builder Can't Find Repository
 
 **Symptom:** `AgnosticV repository not found at ~/work/code/agnosticv`
 

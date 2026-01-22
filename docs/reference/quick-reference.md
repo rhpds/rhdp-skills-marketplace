@@ -65,16 +65,14 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. cd ~/work/code/agnosticv
-2. git checkout main && git pull origin main
-3. /agv-generator
-4. Answer prompts (name, infrastructure, workloads)
-5. Review generated files
-6. git checkout -b <catalog-name>
-7. git add agd_v2/<catalog-name>/
-8. git commit -m "Add <catalog-name> catalog"
-9. git push origin <catalog-name>
-10. gh pr create --fill
-11. Test in RHDP Integration
+2. /agnosticv-catalog-builder
+3. Choose mode: 1 (Full Catalog)
+4. Git workflow runs automatically (pulls main, creates branch)
+5. Answer prompts (name, infrastructure, workloads)
+6. Review generated files (auto-committed to branch)
+7. git push origin <branch-name>
+8. gh pr create --fill
+9. Test in RHDP Integration
 ```
 
 ### Validating a Catalog
@@ -91,10 +89,11 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. Have Showroom content ready
-2. /generate-agv-description
-3. Provide Showroom repo URL or local path
-4. Review generated description.adoc
-5. Copy to AgnosticV catalog directory
+2. /agnosticv-catalog-builder
+3. Choose mode: 2 (Description Only)
+4. Provide Showroom repo URL or local path
+5. Review generated description.adoc
+6. Auto-committed to branch
 ```
 
 ---
@@ -110,10 +109,10 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 │   ├── create-demo/
 │   ├── verify-content/
 │   ├── blog-generate/
-│   ├── agv-generator/
+│   ├── agnosticv-catalog-builder/
 │   ├── agv-validator/
-│   ├── generate-agv-description/
-│   └── validation-role-builder/
+│   ├── validation-role-builder/
+│   └── ftl/
 └── docs/                # Skill documentation
     ├── SKILL-COMMON-RULES.md
     └── AGV-COMMON-RULES.md

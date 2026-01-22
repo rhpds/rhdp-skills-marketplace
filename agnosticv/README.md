@@ -16,26 +16,33 @@ The **agnosticv** namespace provides skills for managing Red Hat Demo Platform (
 
 ## Included Skills
 
-### /agv-generator
+### /agnosticv-catalog-builder
 
-Create complete AgnosticV catalog items with infrastructure configuration.
+Create or update AgnosticV catalog files (unified skill).
+
+**Modes:**
+- **Mode 1: Full Catalog** - Generate all files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
+- **Mode 2: Description Only** - Extract from Showroom content
+- **Mode 3: Info Template** - Document agnosticd_user_info usage
 
 **Features:**
 - Interactive catalog creation workflow
+- Built-in git workflow (pull main, create branch without feature/ prefix)
 - Reference catalog search by name or keywords
 - Workload recommendations based on technology
 - UUID generation and validation
-- Git workflow integration
-- Category and metadata management
+- Showroom content extraction
+- Auto-commit functionality
 
 **Use When:**
 - Creating new RHDP catalog items
+- Updating catalog descriptions
+- Creating info-message templates
 - Need infrastructure provisioning setup
-- Building on existing catalog patterns
 
-**Output:** Complete AgV catalog with `common.yaml`, `description.adoc`, `dev.yaml`
+**Output:** Complete AgV catalog or individual files based on mode
 
-[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/agv-generator.html)
+[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/agnosticv-catalog-builder.html)
 
 ---
 
@@ -64,51 +71,31 @@ Validate AgnosticV configurations against best practices and requirements.
 
 ---
 
-### /generate-agv-description
-
-Generate catalog `description.adoc` from existing lab or demo content.
-
-**Features:**
-- Extracts abstract from Showroom content
-- Technology detection from lab modules
-- AsciiDoc formatting for catalogs
-- Showroom URL integration
-- Learning outcomes extraction
-
-**Use When:**
-- Creating description for new catalog
-- Updating existing catalog description
-- Generating from completed Showroom content
-
-**Output:** `description.adoc` file ready for AgV catalog
-
-[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/generate-agv-description.html)
-
----
-
 ## Typical Workflows
 
 ### Creating a New Catalog
 
 ```
-1. /agv-generator
+1. /agnosticv-catalog-builder
+   ├─ Choose Mode 1 (Full Catalog)
+   ├─ Git workflow (auto: pull main, create branch)
    ├─ Provide AgV repository path
    ├─ Search for similar catalogs (optional)
    ├─ Choose infrastructure (CNV/SNO/AWS)
    ├─ Select workloads based on technology
    ├─ Generate UUID
    ├─ Detect Showroom repository
-   └─ Generate catalog files
+   ├─ Generate all 4 files
+   └─ Auto-commit to new branch
 
 2. Review generated files
    ├─ common.yaml (main configuration)
+   ├─ dev.yaml (development overrides)
    ├─ description.adoc (catalog description)
-   └─ dev.yaml (development overrides)
+   └─ info-message-template.adoc (user notification)
 
-3. Git workflow
-   ├─ git add agd_v2/<catalog-name>/
-   ├─ git commit -m "Add <catalog-name> catalog"
-   ├─ git push origin <catalog-name>
+3. Push and create PR
+   ├─ git push origin <branch-name>
    └─ gh pr create --fill
 
 4. Test in RHDP Integration
@@ -144,14 +131,14 @@ Generate catalog `description.adoc` from existing lab or demo content.
 ```
 1. Have Showroom content ready
 
-2. /generate-agv-description
-   └─ Provide Showroom repo or local path
+2. /agnosticv-catalog-builder
+   ├─ Choose Mode 2 (Description Only)
+   ├─ Provide Showroom repo or local path
+   ├─ Auto-extracts modules and technologies
+   └─ Auto-commits to branch
 
-3. Review generated description.adoc
-
-4. Copy to AgV catalog directory
-
-5. Commit and push changes
+3. Push changes
+   └─ git push origin <branch-name>
 ```
 
 ---

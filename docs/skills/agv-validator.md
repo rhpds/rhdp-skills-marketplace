@@ -35,7 +35,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 
 ### What You'll Need
 
-- Catalog files generated (typically from `/agv-generator`)
+- Catalog files generated (typically from `/agnosticv-catalog-builder`)
 - Current directory set to agnosticv repository
 - Git branch for your changes
 
@@ -96,7 +96,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 ### 1. Generate Catalog
 
 ```
-/agv-generator
+/agnosticv-catalog-builder
 → Create catalog files
 ```
 
@@ -227,8 +227,7 @@ workloads:
 
 ## Related Skills
 
-- `/agv-generator` - Generate catalog first
-- `/generate-agv-description` - Create catalog description
+- `/agnosticv-catalog-builder` - Create/update catalog (unified skill)
 - `/create-lab` - Create workshop content
 
 ---

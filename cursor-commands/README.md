@@ -56,7 +56,7 @@ cp ~/work/code/rhdp-skills-marketplace/cursor-commands/*.md .cursor/commands/
 
 ### AgnosticV (RHDP Provisioning)
 
-- **`/agv-generator`** - Create catalog items
+- **`/agnosticv-catalog-builder`** - Create/update catalog items (unified skill with 3 modes)
 
 ---
 
@@ -109,7 +109,7 @@ ls -la ~/.cursor/commands/
 # create-demo.md
 # verify-content.md
 # blog-generate.md
-# agv-generator.md
+# agnosticv-catalog-builder.md
 ```
 
 Test in Cursor:

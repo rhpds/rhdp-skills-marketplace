@@ -99,6 +99,273 @@ Creates user notification template:
 
 ---
 
+## Detailed Question-by-Question Workflow
+
+The skill asks questions step-by-step. Here's exactly what you'll see:
+
+### Mode 1: Full Catalog - Detailed Steps
+
+**Step 1: Mode Selection**
+```
+Q: What would you like to create or update?
+   1. Full Catalog (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
+   2. Description Only (description.adoc)
+   3. Info Message Template (info-message-template.adoc)
+
+Expected Answer: 1
+```
+
+**Step 2: Git Workflow (Automatic)**
+```
+✓ Checking current branch: main
+✓ Pulling latest from origin/main
+✓ Creating new branch...
+
+Q: What should we name your branch? (NO feature/ prefix)
+   Example: add-ansible-ai-workshop
+
+Expected Answer: add-your-catalog-name
+```
+
+**Step 3: Repository Path**
+```
+Q: What is your AgnosticV repository directory path?
+
+Expected Answer: ~/work/code/agnosticv
+```
+
+**Step 4: Search Similar Catalogs (Optional)**
+```
+Q: Search for similar catalogs to use as reference? (y/n)
+
+Expected Answer: y
+
+Q: Enter search keywords (technology, product, or catalog name)
+   Example: ansible, openshift, ai
+
+Expected Answer: ansible ai
+```
+
+**Step 5: Catalog Name**
+```
+Q: What is your catalog name (slug)?
+   Format: lowercase-with-dashes
+   Example: agentic-ai-openshift
+
+Expected Answer: your-catalog-slug
+```
+
+**Step 6: Display Name**
+```
+Q: What is the display name for the catalog?
+   Example: "Agentic AI on OpenShift"
+
+Expected Answer: Your Catalog Display Name
+```
+
+**Step 7: Category**
+```
+Q: Category? (Workshops, Demos, or Sandboxes)
+   - Workshops: Multi-user hands-on labs
+   - Demos: Presenter-led demonstrations
+   - Sandboxes: Self-service environments
+
+Expected Answer: Workshops
+```
+
+**Step 8: Infrastructure**
+```
+Q: Which infrastructure?
+   1. CNV multi-node (Most common - multi-user labs)
+   2. CNV SNO (Edge demos, lightweight)
+   3. AWS (GPU workloads, high memory)
+   4. HCP (Hosted Control Plane)
+
+Expected Answer: 1
+```
+
+**Step 9: Multi-user**
+```
+Q: Multi-user support? (y/n)
+   Choose 'y' for workshops with multiple participants
+
+Expected Answer: y
+```
+
+**Step 10: Technologies**
+```
+Q: What technologies will be used? (comma-separated)
+   Example: OpenShift AI, Ansible, Pipelines
+
+Expected Answer: OpenShift AI, LiteLLM, Ansible
+```
+
+**Step 11: Workload Selection**
+```
+Based on your technologies, recommended workloads:
+  - rhpds.openshift_ai.ocp4_workload_openshift_ai
+  - rhpds.litellm_virtual_keys.ocp4_workload_litellm_virtual_keys
+  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - rhpds.showroom.ocp4_workload_showroom
+
+Q: Use these workloads? (y/n)
+
+Expected Answer: y
+
+Q: Add additional workloads? (comma-separated, or press enter to skip)
+
+Expected Answer: (press enter or add custom workloads)
+```
+
+**Step 12: UUID Generation (Automatic)**
+```
+✓ Generating UUID...
+✓ Validating uniqueness...
+✓ UUID: 12345678-1234-1234-1234-123456789abc
+```
+
+**Step 13: Showroom Repository (Auto-detect or Ask)**
+```
+Q: Path or URL to your Showroom repository?
+   - Local path: ~/path/to/showroom
+   - HTTPS URL: https://github.com/org/repo
+
+Expected Answer: ~/work/code/showroom/my-workshop
+```
+
+**Step 14: Directory Selection**
+```
+Q: Where should the catalog be created?
+   1. agd_v2/ (Standard catalogs - recommended)
+   2. enterprise/ (Enterprise-specific)
+   3. summit-2025/ (Event-specific)
+
+Expected Answer: 1
+```
+
+**Step 15: File Generation (Automatic)**
+```
+✓ Generating common.yaml...
+✓ Generating dev.yaml...
+✓ Generating description.adoc...
+✓ Generating info-message-template.adoc...
+✓ Files created in: agd_v2/your-catalog-slug/
+```
+
+**Step 16: Git Commit (Automatic)**
+```
+✓ Staging files...
+✓ Committing to branch...
+   git add agd_v2/your-catalog-slug/
+   git commit -m "Add your-catalog-slug catalog"
+✓ Complete! Ready to push.
+```
+
+**Step 17: Next Steps (Displayed)**
+```
+=== Next Steps ===
+
+1. Review generated files:
+   cd ~/work/code/agnosticv/agd_v2/your-catalog-slug/
+
+2. Validate configuration:
+   /agv-validator
+
+3. Push to remote:
+   git push origin add-your-catalog-name
+
+4. Create pull request:
+   gh pr create --fill
+
+5. Test in RHDP Integration before requesting merge
+```
+
+### Mode 2: Description Only - Detailed Steps
+
+**Step 1: Mode Selection**
+```
+Q: What would you like to create or update?
+   2. Description Only (description.adoc)
+
+Expected Answer: 2
+```
+
+**Step 2: Git Workflow**
+```
+(Same as Mode 1 - automatic pull/branch)
+```
+
+**Step 3: Showroom Path**
+```
+Q: Path or URL to your Showroom repository?
+
+Expected Answer: ~/work/code/showroom/my-workshop
+```
+
+**Step 4: Catalog Directory**
+```
+Q: Where is the AgnosticV catalog directory?
+   Example: ~/work/code/agnosticv/agd_v2/my-catalog
+
+Expected Answer: ~/work/code/agnosticv/agd_v2/your-catalog-slug
+```
+
+**Step 5: Brief Overview (Optional)**
+```
+Q: Brief overview (2-3 sentences starting with product name)?
+   Or press enter to auto-generate from Showroom
+
+Expected Answer: (enter text or press enter to auto-generate)
+```
+
+**Step 6: File Generation**
+```
+✓ Reading Showroom content...
+✓ Extracting modules...
+✓ Identifying technologies...
+✓ Generating description.adoc...
+✓ Auto-committed to branch
+```
+
+### Mode 3: Info Template - Detailed Steps
+
+**Step 1: Mode Selection**
+```
+Q: What would you like to create or update?
+   3. Info Message Template (info-message-template.adoc)
+
+Expected Answer: 3
+```
+
+**Step 2: Git Workflow**
+```
+(Same as Mode 1 - automatic pull/branch)
+```
+
+**Step 3: Data Keys**
+```
+Q: What data keys are set in agnosticd_user_info.data?
+   Example: api_url, api_key, showroom_url
+
+Expected Answer: litellm_api_url, litellm_api_key, showroom_primary_view_url
+```
+
+**Step 4: Lab Code (Optional)**
+```
+Q: Lab code (e.g., LB1234)? (press enter to skip)
+
+Expected Answer: LB1688
+```
+
+**Step 5: File Generation**
+```
+✓ Generating info-message-template.adoc...
+✓ Including data placeholders: {litellm_api_url}, {litellm_api_key}...
+✓ Auto-committed to branch
+```
+
+---
+
 ## Common Workflows
 
 ### Workflow 1: Create Full Catalog from Scratch

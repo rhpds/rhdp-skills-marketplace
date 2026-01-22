@@ -60,7 +60,7 @@ For workshop and demo creators.
 
 For RHDP catalog creators.
 
-**Skills:** agv-generator, agv-validator, generate-agv-description
+**Skills:** agnosticv-catalog-builder (unified), agv-validator
 
 **Prerequisites:** RHDP access, AgnosticV repo at `~/work/code/agnosticv`
 

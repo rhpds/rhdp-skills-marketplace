@@ -314,7 +314,7 @@ Paste UserInfo JSON or variables
 
 ### Repository Not Found
 
-**Problem:** `/agv-generator` can't find AgnosticV repo
+**Problem:** `/agnosticv-catalog-builder` can't find AgnosticV repo
 
 **Solution:**
 ```bash

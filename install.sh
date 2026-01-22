@@ -160,7 +160,7 @@ select_namespace() {
   echo "     └─ Skills: create-lab, create-demo, verify-content, blog-generate"
   echo ""
   echo "  2) agnosticv (RHDP internal/advanced - Catalog provisioning)"
-  echo "     └─ Skills: agv-generator, agv-validator, generate-agv-description"
+  echo "     └─ Skills: agnosticv-catalog-builder, agv-validator"
   echo ""
   echo "  3) health (RHDP internal/advanced - Post-deployment validation)"
   echo "     └─ Skills: validation-role-builder"
@@ -376,15 +376,15 @@ show_success() {
   if [[ "$NAMESPACE" == "agnosticv" ]] || [[ "$NAMESPACE" == "all" ]]; then
     echo ""
     print_msg "$BLUE" "AgnosticV (RHDP Provisioning):"
-    echo "  • /agv-generator            - Create catalog items"
-    echo "  • /agv-validator            - Validate catalogs"
-    echo "  • /generate-agv-description - Generate descriptions"
+    echo "  • /agnosticv-catalog-builder - Create/update catalogs"
+    echo "  • /agv-validator             - Validate catalogs"
   fi
 
   if [[ "$NAMESPACE" == "health" ]] || [[ "$NAMESPACE" == "all" ]]; then
     echo ""
     print_msg "$BLUE" "Health (Post-Deployment Validation):"
-    echo "  • /validation-role-builder  - Create validation roles"
+    echo "  • /validation-role-builder - Create validation roles"
+    echo "  • /ftl                     - Automated grader/solver generation"
   fi
 
   echo ""

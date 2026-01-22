@@ -39,9 +39,8 @@ Skills work natively with `/` commands:
 - `/blog-generate` - Create blog post
 
 **AgnosticV:**
-- `/agv-generator` - Create catalog item
+- `/agnosticv-catalog-builder` - Create/update catalog items (unified)
 - `/agv-validator` - Validate configuration
-- `/generate-agv-description` - Generate description
 
 **Health:**
 - `/validation-role-builder` - Create validation role
@@ -54,7 +53,7 @@ Skills work natively with `/` commands:
 ls ~/.claude/skills/
 ```
 
-You should see: create-lab, create-demo, agv-generator, etc.
+You should see: create-lab, create-demo, agnosticv-catalog-builder, etc.
 
 ---
 

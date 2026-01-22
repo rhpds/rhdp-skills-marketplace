@@ -81,11 +81,9 @@ my-project/
 │       │   └── RULE.md
 │       ├── blog-generate/
 │       │   └── RULE.md
-│       ├── agv-generator/
+│       ├── agnosticv-catalog-builder/
 │       │   └── RULE.md
 │       ├── agv-validator/
-│       │   └── RULE.md
-│       ├── generate-agv-description/
 │       │   └── RULE.md
 │       ├── validation-role-builder/
 │       │   └── RULE.md
@@ -133,11 +131,13 @@ With `.cursor/rules/` in your project, simply ask Cursor naturally using trigger
 
 ### AgnosticV Skills
 
-**Generate Catalog:**
+**Create/Update Catalog (Unified):**
 ```
 "create agv catalog"
 "generate agnosticv"
 "create catalog item"
+"update catalog"
+"generate agv description"
 ```
 
 **Validate Catalog:**
@@ -145,12 +145,6 @@ With `.cursor/rules/` in your project, simply ask Cursor naturally using trigger
 "validate agv"
 "validate catalog"
 "check agv catalog"
-```
-
-**Generate Description:**
-```
-"generate agv description"
-"create catalog description"
 ```
 
 ### Health Skills
@@ -213,9 +207,8 @@ When user says ANY of these phrases, invoke this skill:
 
 | Skill | Trigger Commands | Purpose |
 |-------|-----------------|---------|
-| agv-generator | "create agv catalog", "generate catalog" | Create catalog items |
+| agnosticv-catalog-builder | "create agv catalog", "generate catalog", "update catalog" | Create/update catalog items (unified) |
 | agv-validator | "validate agv", "validate catalog" | Validate configurations |
-| generate-agv-description | "generate agv description" | Generate descriptions |
 
 ### Health (Post-Deployment Validation)
 
@@ -232,7 +225,7 @@ Check installation:
 ```bash
 # Verify skills are installed
 ls -la ~/.cursor/skills/
-# Should show: create-lab, create-demo, verify-content, agv-generator, etc.
+# Should show: create-lab, create-demo, verify-content, agnosticv-catalog-builder, etc.
 
 # Verify docs are installed
 ls -la ~/.cursor/docs/

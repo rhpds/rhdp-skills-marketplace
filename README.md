@@ -64,9 +64,8 @@ bash /tmp/rhdp-install.sh
 ```
 
 **AgnosticV Skills:**
-- `/agv-generator` - Create AgnosticV catalog items
+- `/agnosticv-catalog-builder` - Create/update AgnosticV catalog items (unified skill with 3 modes)
 - `/agv-validator` - Validate catalog configurations
-- `/generate-agv-description` - Generate catalog descriptions from lab content
 
 **Health Skills:**
 - `/validation-role-builder` - Create Ansible validation roles
@@ -105,13 +104,12 @@ bash /tmp/rhdp-install.sh
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `agv-generator` | Create catalog items | Building new RHDP catalog entries |
+| `agnosticv-catalog-builder` | Create/update catalogs (unified) | Building new RHDP catalog entries |
 | `agv-validator` | Validate configurations | Pre-deployment quality checks |
-| `generate-agv-description` | Generate descriptions | Creating catalog descriptions |
 
 **Workflow:**
 ```
-/agv-generator → Test in RHDP → /create-lab (with UserInfo) → Deploy
+/agnosticv-catalog-builder → Test in RHDP → /create-lab (with UserInfo) → Deploy
 ```
 
 **Documentation:** [agnosticv/README.md](agnosticv/README.md)
@@ -204,19 +202,22 @@ The updater will:
 
 ```bash
 # In Claude Code or Cursor
-/agv-generator
+/agnosticv-catalog-builder
 
+# Choose mode: 1 (Full Catalog)
+# Git workflow runs automatically (pull main, create branch)
 # Answer the prompts:
 # - Catalog name: "Agentic AI on OpenShift"
 # - Infrastructure: CNV multi-node
 # - Multi-user: Yes
 # - Workloads: OpenShift AI, LiteLLM, Showroom
 
-# Skill generates:
+# Skill generates and auto-commits:
 # ~/work/code/agnosticv/agd_v2/agentic-ai-openshift/
 # ├── common.yaml
 # ├── description.adoc
-# └── dev.yaml
+# ├── dev.yaml
+# └── info-message-template.adoc
 ```
 
 ### Validating a Catalog
@@ -297,9 +298,8 @@ rhdp-skills-marketplace/
 ├── agnosticv/              # Internal/Advanced namespace
 │   ├── README.md
 │   ├── skills/
-│   │   ├── agv-generator/
-│   │   ├── agv-validator/
-│   │   └── generate-agv-description/
+│   │   ├── agnosticv-catalog-builder/
+│   │   └── agv-validator/
 │   └── docs/
 │       ├── AGV-COMMON-RULES.md
 │       ├── workload-mappings.md
