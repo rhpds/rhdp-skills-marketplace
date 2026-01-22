@@ -173,14 +173,19 @@ if choice == 1:
   
 elif choice == 2:
   validation_scope = "standard"
-  checks_to_run = ["file_structure", "uuid", "yaml_syntax", "workloads", 
-                   "schema", "category", "infrastructure", "best_practices"]
-  
+  checks_to_run = ["file_structure", "uuid", "yaml_syntax", "category",
+                   "workloads", "authentication", "showroom", "infrastructure",
+                   "stage_files", "multiuser", "bastion", "collections",
+                   "deployer", "reporting_labels", "components", "asciidoc",
+                   "best_practices"]
+
 elif choice == 3:
   validation_scope = "full"
-  checks_to_run = ["file_structure", "uuid", "yaml_syntax", "workloads",
-                   "schema", "category", "infrastructure", "best_practices",
-                   "github_api", "collection_urls", "scm_refs"]
+  checks_to_run = ["file_structure", "uuid", "yaml_syntax", "category",
+                   "workloads", "authentication", "showroom", "infrastructure",
+                   "stage_files", "multiuser", "bastion", "collections",
+                   "deployer", "reporting_labels", "components", "asciidoc",
+                   "best_practices", "github_api", "collection_urls", "scm_refs"]
 ```
 
 ---
@@ -327,9 +332,9 @@ def search_uuid_in_repo(uuid, repo_path, current_catalog):
 ```python
 def check_category(config):
   """Category correctness validation"""
-  
-  valid_categories = ["Workshops", "Demos", "Sandboxes"]
-  
+
+  valid_categories = ["Workshops", "Demos", "Sandboxes", "Labs", "Brand_Events"]
+
   if '__meta__' not in config or 'catalog' not in config['__meta__']:
     errors.append({
       'check': 'category',
@@ -339,9 +344,9 @@ def check_category(config):
       'fix': 'Add __meta__.catalog section with category'
     })
     return
-  
+
   category = config['__meta__']['catalog'].get('category')
-  
+
   if not category:
     errors.append({
       'check': 'category',
@@ -351,7 +356,7 @@ def check_category(config):
       'fix': f'Add category: {valid_categories}'
     })
     return
-  
+
   if category not in valid_categories:
     errors.append({
       'check': 'category',
@@ -363,28 +368,43 @@ def check_category(config):
       'fix': f'Use one of: {", ".join(valid_categories)} (case-sensitive)'
     })
     return
-  
+
   passed_checks.append(f"✓ Category valid: {category}")
-  
+
   # Validate category alignment with configuration
   multiuser = config['__meta__']['catalog'].get('multiuser', False)
-  
-  if category == "Workshops" and not multiuser:
+
+  if category in ["Workshops", "Brand_Events"] and not multiuser:
     warnings.append({
       'check': 'category',
       'severity': 'WARNING',
-      'message': 'Category "Workshops" typically requires multiuser: true',
+      'message': f'Category "{category}" typically requires multiuser: true',
       'location': 'common.yaml:__meta__.catalog',
-      'recommendation': 'Set multiuser: true for workshop catalogs'
+      'recommendation': 'Set multiuser: true for workshop/event catalogs'
     })
-  
+
   if category == "Demos" and multiuser:
-    warnings.append({
+    errors.append({
       'check': 'category',
-      'severity': 'WARNING',
-      'message': 'Category "Demos" typically uses multiuser: false',
+      'severity': 'ERROR',
+      'message': 'Category "Demos" should not be multi-user',
       'location': 'common.yaml:__meta__.catalog',
-      'recommendation': 'Demos are usually single-user or small groups'
+      'current': 'multiuser: true',
+      'expected': 'multiuser: false',
+      'fix': 'Set multiuser: false for demos'
+    })
+
+  # Check workshopLabUiRedirect - should NOT be enabled for demos
+  workshop_ui_redirect = config['__meta__']['catalog'].get('workshopLabUiRedirect', False)
+
+  if category == "Demos" and workshop_ui_redirect:
+    errors.append({
+      'check': 'category',
+      'severity': 'ERROR',
+      'message': 'Demos should not have workshopLabUiRedirect enabled',
+      'location': 'common.yaml:__meta__.catalog',
+      'current': 'workshopLabUiRedirect: true',
+      'fix': 'Remove workshopLabUiRedirect or set to false for demos'
     })
 ```
 
@@ -695,6 +715,469 @@ def check_best_practices(config):
       'message': 'No maintainer/owner defined',
       'recommendation': 'Add __meta__.owners.maintainer for accountability'
     })
+```
+
+### Check 10: Stage Files Validation
+
+```python
+def check_stage_files(catalog_path):
+  """Validate stage-specific override files"""
+
+  stage_files = {
+    'dev.yaml': {
+      'required': True,
+      'expected_purpose': 'development'
+    },
+    'event.yaml': {
+      'required': False,
+      'expected_purpose': 'events'
+    },
+    'prod.yaml': {
+      'required': False,
+      'expected_purpose': 'production'
+    }
+  }
+
+  for filename, requirements in stage_files.items():
+    filepath = f"{catalog_path}/{filename}"
+
+    if os.path.exists(filepath):
+      try:
+        with open(filepath) as f:
+          stage_config = yaml.safe_load(f)
+
+        # Check purpose field
+        if 'purpose' in stage_config:
+          purpose = stage_config['purpose']
+          expected = requirements['expected_purpose']
+
+          if purpose != expected:
+            warnings.append({
+              'check': 'stage_files',
+              'severity': 'WARNING',
+              'message': f'{filename} has unexpected purpose value',
+              'location': f'{filename}:purpose',
+              'current': purpose,
+              'expected': expected,
+              'recommendation': f'Set purpose: {expected}'
+            })
+          else:
+            passed_checks.append(f"✓ {filename} purpose correct: {purpose}")
+
+        # Check scm_ref differentiation for event/prod
+        if filename in ['event.yaml', 'prod.yaml']:
+          scm_ref = stage_config.get('__meta__', {}).get('deployer', {}).get('scm_ref')
+
+          if scm_ref == 'main':
+            suggestions.append({
+              'check': 'stage_files',
+              'message': f'{filename} uses scm_ref: main',
+              'recommendation': 'Consider using tagged release (e.g., catalog-name-1.0.0) for production stability'
+            })
+
+      except yaml.YAMLError:
+        # YAML syntax errors handled elsewhere
+        pass
+
+    elif requirements['required']:
+      warnings.append({
+        'check': 'stage_files',
+        'severity': 'WARNING',
+        'message': f'Missing {filename}',
+        'location': catalog_path,
+        'fix': f'Create {filename} with purpose: {requirements["expected_purpose"]}'
+      })
+```
+
+### Check 11: Multi-User Configuration
+
+```python
+def check_multiuser_config(config):
+  """Multi-user specific validation"""
+
+  multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
+
+  if not multiuser:
+    return  # Skip checks for single-user catalogs
+
+  # Check num_users parameter exists
+  parameters = config.get('__meta__', {}).get('catalog', {}).get('parameters', [])
+  num_users_param = next((p for p in parameters if p.get('name') == 'num_users'), None)
+
+  if not num_users_param:
+    errors.append({
+      'check': 'multiuser',
+      'severity': 'ERROR',
+      'message': 'Multi-user catalog missing num_users parameter',
+      'location': 'common.yaml:__meta__.catalog.parameters',
+      'fix': 'Add num_users parameter with min/max values'
+    })
+    return
+
+  # Validate num_users schema
+  schema = num_users_param.get('openAPIV3Schema', {})
+
+  if not schema:
+    errors.append({
+      'check': 'multiuser',
+      'severity': 'ERROR',
+      'message': 'num_users parameter missing openAPIV3Schema',
+      'location': 'common.yaml:__meta__.catalog.parameters',
+      'fix': 'Add openAPIV3Schema with type: integer, default, minimum, maximum'
+    })
+    return
+
+  # Check for worker scaling configuration
+  if 'worker_instance_count' in config:
+    worker_formula = str(config['worker_instance_count'])
+
+    if 'num_users' not in worker_formula:
+      warnings.append({
+        'check': 'multiuser',
+        'severity': 'WARNING',
+        'message': 'worker_instance_count does not scale with num_users',
+        'location': 'common.yaml:worker_instance_count',
+        'current': config['worker_instance_count'],
+        'recommendation': 'Use formula based on num_users for multi-user scaling'
+      })
+    else:
+      passed_checks.append(f"✓ Worker scaling formula includes num_users")
+
+  # Check SalesforceID for large deployments
+  max_users = schema.get('maximum', 0)
+
+  if max_users > 10:
+    salesforce_params = [p for p in parameters if 'salesforce' in p.get('name', '').lower()]
+
+    if not salesforce_params:
+      suggestions.append({
+        'check': 'multiuser',
+        'message': f'Large deployment (max {max_users} users) without SalesforceID parameter',
+        'recommendation': 'Add SalesforceID parameter for tracking large deployments'
+      })
+
+  # Check workshopLabUiRedirect for multi-user workshops
+  catalog = config.get('__meta__', {}).get('catalog', {})
+  category = catalog.get('category', '')
+  workshop_ui_redirect = catalog.get('workshopLabUiRedirect', False)
+
+  if category in ['Workshops', 'Brand_Events'] and multiuser and not workshop_ui_redirect:
+    warnings.append({
+      'check': 'multiuser',
+      'severity': 'WARNING',
+      'message': 'Multi-user workshop without workshopLabUiRedirect enabled',
+      'location': 'common.yaml:__meta__.catalog',
+      'recommendation': 'Set workshopLabUiRedirect: true for multi-user workshops',
+      'fix': 'Add workshopLabUiRedirect: true to enable lab UI routing per user'
+    })
+
+  passed_checks.append(f"✓ Multi-user configuration present (max {max_users} users)")
+```
+
+### Check 12: Bastion Configuration
+
+```python
+def check_bastion_config(config):
+  """Bastion instance validation for CNV/AWS catalogs"""
+
+  cloud_provider = config.get('cloud_provider', '')
+
+  # Only check bastion for CNV and AWS
+  if cloud_provider not in ['openshift_cnv', 'aws', 'none']:
+    return
+
+  # Check bastion image
+  bastion_image = config.get('bastion_instance_image', config.get('default_instance_image', ''))
+
+  if bastion_image:
+    valid_images = ['rhel-9.4', 'rhel-9.5', 'rhel-9.6', 'rhel-10.0', 'RHEL-10.0-GOLD-latest']
+
+    if not any(img in bastion_image for img in valid_images):
+      warnings.append({
+        'check': 'bastion',
+        'severity': 'WARNING',
+        'message': f'Unusual bastion image: {bastion_image}',
+        'location': 'common.yaml:bastion_instance_image',
+        'valid_images': valid_images,
+        'recommendation': 'Use supported RHEL 9.x or 10.x images'
+      })
+    else:
+      passed_checks.append(f"✓ Bastion image valid: {bastion_image}")
+
+  # Check bastion resources
+  bastion_cores = config.get('bastion_cores')
+  bastion_memory = config.get('bastion_memory')
+
+  if bastion_cores and int(str(bastion_cores).replace('G', '').replace('i', '')) < 2:
+    warnings.append({
+      'check': 'bastion',
+      'severity': 'WARNING',
+      'message': f'Bastion has low CPU: {bastion_cores}',
+      'location': 'common.yaml:bastion_cores',
+      'recommendation': 'Minimum 2 cores recommended for bastion'
+    })
+
+  if bastion_memory and int(str(bastion_memory).replace('G', '').replace('i', '')) < 4:
+    warnings.append({
+      'check': 'bastion',
+      'severity': 'WARNING',
+      'message': f'Bastion has low memory: {bastion_memory}',
+      'location': 'common.yaml:bastion_memory',
+      'recommendation': 'Minimum 4Gi recommended for bastion'
+    })
+```
+
+### Check 13: Collection Versions
+
+```python
+def check_collection_versions(config):
+  """Validate git collection versions are specified"""
+
+  collections = config.get('requirements_content', {}).get('collections', [])
+
+  if not collections:
+    warnings.append({
+      'check': 'collections',
+      'severity': 'WARNING',
+      'message': 'No collections defined',
+      'location': 'common.yaml:requirements_content.collections',
+      'recommendation': 'Add required collections for workloads'
+    })
+    return
+
+  for coll in collections:
+    coll_name = coll.get('name', '')
+    coll_type = coll.get('type', '')
+    coll_version = coll.get('version', '')
+
+    if coll_type == 'git' or 'github.com' in coll_name:
+      if not coll_version:
+        errors.append({
+          'check': 'collections',
+          'severity': 'ERROR',
+          'message': f'Git collection missing version: {coll_name}',
+          'location': 'common.yaml:requirements_content.collections',
+          'fix': 'Add version: main (or specific tag/commit)'
+        })
+      elif coll_version == 'HEAD':
+        warnings.append({
+          'check': 'collections',
+          'severity': 'WARNING',
+          'message': f'Collection uses HEAD: {coll_name}',
+          'location': 'common.yaml:requirements_content.collections',
+          'recommendation': 'Use specific branch or tag for reproducibility'
+        })
+
+  passed_checks.append(f"✓ Collections defined ({len(collections)} collections)")
+```
+
+### Check 14: Deployer Configuration
+
+```python
+def check_deployer_config(config):
+  """Validate deployer configuration"""
+
+  deployer = config.get('__meta__', {}).get('deployer', {})
+
+  if not deployer:
+    errors.append({
+      'check': 'deployer',
+      'severity': 'ERROR',
+      'message': 'Missing __meta__.deployer section',
+      'location': 'common.yaml:__meta__',
+      'fix': 'Add deployer section with scm_url, scm_ref, execution_environment'
+    })
+    return
+
+  # Check required fields
+  required_fields = {
+    'scm_url': 'https://github.com/agnosticd/agnosticd-v2',
+    'scm_ref': 'main',
+    'execution_environment': {'image': 'quay.io/agnosticd/ee-multicloud:*'}
+  }
+
+  for field, example in required_fields.items():
+    if field not in deployer:
+      errors.append({
+        'check': 'deployer',
+        'severity': 'ERROR',
+        'message': f'Missing deployer.{field}',
+        'location': 'common.yaml:__meta__.deployer',
+        'fix': f'Add {field}',
+        'example': example
+      })
+
+  # Validate EE image
+  ee_image = deployer.get('execution_environment', {}).get('image', '')
+
+  if ee_image:
+    if not ee_image.startswith('quay.io/agnosticd/ee-multicloud:'):
+      warnings.append({
+        'check': 'deployer',
+        'severity': 'WARNING',
+        'message': 'Non-standard execution environment image',
+        'location': 'common.yaml:__meta__.deployer.execution_environment.image',
+        'current': ee_image,
+        'recommendation': 'Use quay.io/agnosticd/ee-multicloud:chained-YYYY-MM-DD'
+      })
+    else:
+      passed_checks.append(f"✓ Execution environment image valid")
+
+  passed_checks.append(f"✓ Deployer configuration present")
+```
+
+### Check 14a: Reporting Labels (Critical)
+
+```python
+def check_reporting_labels(config):
+  """Validate reporting labels for cost tracking"""
+
+  catalog = config.get('__meta__', {}).get('catalog', {})
+  reporting_labels = catalog.get('reportingLabels', {})
+
+  if not reporting_labels:
+    warnings.append({
+      'check': 'reporting_labels',
+      'severity': 'WARNING',
+      'message': 'Missing reportingLabels section',
+      'location': 'common.yaml:__meta__.catalog',
+      'recommendation': 'Add reportingLabels with primaryBU for cost tracking'
+    })
+    return
+
+  # Check for primaryBU (very important)
+  primary_bu = reporting_labels.get('primaryBU')
+
+  if not primary_bu:
+    errors.append({
+      'check': 'reporting_labels',
+      'severity': 'ERROR',
+      'message': 'Missing reportingLabels.primaryBU',
+      'location': 'common.yaml:__meta__.catalog.reportingLabels',
+      'fix': 'Add primaryBU field for cost allocation',
+      'example': 'primaryBU: Hybrid_Platforms'
+    })
+    return
+
+  # Validate primaryBU value (common values)
+  valid_bus = [
+    'Hybrid_Platforms',
+    'Application_Services',
+    'Ansible',
+    'RHEL',
+    'Middleware',
+    'Cloud_Services'
+  ]
+
+  if primary_bu not in valid_bus:
+    warnings.append({
+      'check': 'reporting_labels',
+      'severity': 'WARNING',
+      'message': f'Unusual primaryBU value: {primary_bu}',
+      'location': 'common.yaml:__meta__.catalog.reportingLabels.primaryBU',
+      'current': primary_bu,
+      'common_values': valid_bus,
+      'recommendation': 'Verify primaryBU is correct for cost tracking'
+    })
+
+  passed_checks.append(f"✓ Reporting labels configured: primaryBU={primary_bu}")
+```
+
+### Check 15: Component Propagation
+
+```python
+def check_component_propagation(config):
+  """Validate multi-stage catalog component data propagation"""
+
+  components = config.get('__meta__', {}).get('components', [])
+
+  if not components:
+    return  # Not a multi-stage catalog
+
+  for component in components:
+    comp_name = component.get('name', 'unknown')
+    propagate_data = component.get('propagate_provision_data', [])
+
+    if not propagate_data:
+      warnings.append({
+        'check': 'components',
+        'severity': 'WARNING',
+        'message': f'Component "{comp_name}" has no propagate_provision_data',
+        'location': 'common.yaml:__meta__.components',
+        'recommendation': 'Add propagate_provision_data to pass info between stages'
+      })
+      continue
+
+    # Common required propagations for OpenShift components
+    if 'openshift' in comp_name.lower():
+      required_propagations = [
+        'openshift_api_url',
+        'openshift_cluster_admin_token',
+        'bastion_public_hostname'
+      ]
+
+      for req in required_propagations:
+        if not any(p.get('name') == req for p in propagate_data):
+          warnings.append({
+            'check': 'components',
+            'severity': 'WARNING',
+            'message': f'Component "{comp_name}" missing common propagation: {req}',
+            'location': 'common.yaml:__meta__.components',
+            'recommendation': f'Add {req} to propagate_provision_data'
+          })
+
+  passed_checks.append(f"✓ Multi-stage catalog with {len(components)} component(s)")
+```
+
+### Check 16: AsciiDoc Templates
+
+```python
+def check_asciidoc_templates(catalog_path):
+  """Validate AsciiDoc template files"""
+
+  templates = {
+    'description.adoc': True,  # Required
+    'info-message-template.adoc': True,  # Required
+    'user-message-template.adoc': False  # Optional but recommended for multi-user
+  }
+
+  for template, required in templates.items():
+    filepath = f"{catalog_path}/{template}"
+
+    if os.path.exists(filepath):
+      try:
+        with open(filepath) as f:
+          content = f.read()
+
+        # Check for variable substitution syntax
+        if template.endswith('-template.adoc'):
+          if '{' not in content and '}' not in content:
+            warnings.append({
+              'check': 'asciidoc',
+              'severity': 'WARNING',
+              'message': f'{template} has no variable substitutions',
+              'location': template,
+              'recommendation': 'Add UserInfo variables like {bastion_public_hostname}'
+            })
+          else:
+            passed_checks.append(f"✓ {template} has variable substitutions")
+
+      except Exception as e:
+        warnings.append({
+          'check': 'asciidoc',
+          'severity': 'WARNING',
+          'message': f'Cannot read {template}: {e}',
+          'location': template
+        })
+
+    elif required:
+      warnings.append({
+        'check': 'asciidoc',
+        'severity': 'WARNING',
+        'message': f'Missing {template}',
+        'location': catalog_path,
+        'fix': f'Create {template} for catalog documentation'
+      })
 ```
 
 ---

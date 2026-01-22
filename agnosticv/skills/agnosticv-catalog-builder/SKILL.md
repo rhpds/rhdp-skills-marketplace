@@ -212,14 +212,20 @@ Choice [A/B/C]:
 
 RHDP catalogs MUST have exactly one category:
 
-1. Workshops - Hands-on learning with exercises
-2. Demos - Presenter-led demonstrations
-3. Sandboxes - Self-service playground environments
+1. Workshops - Multi-user hands-on learning with exercises
+2. Demos - Single-user presenter-led demonstrations
+3. Labs - General learning environments
+4. Sandboxes - Self-service playground environments
+5. Brand_Events - Events like Red Hat Summit, Red Hat One
 
-Q: Which category? [1-3]:
+Q: Which category? [1-5]:
 ```
 
-**Validate:** Must be one of: `Workshops`, `Demos`, `Sandboxes` (exact match, plural)
+**Validate:** Must be one of: `Workshops`, `Demos`, `Labs`, `Sandboxes`, `Brand_Events` (exact match)
+
+**Important validation rules:**
+- Workshops/Brand_Events → Must set multiuser: true
+- Demos → Must set multiuser: false (single-user only)
 
 ### Step 3: UUID Generation (REQUIRED)
 
@@ -256,25 +262,111 @@ fi
 
 Choose your OpenShift deployment type:
 
-1. CNV Multi-Node (Standard)
+1. CNV Multi-Node (Standard - Recommended for most)
    └─ Full OpenShift cluster on CNV pools
    └─ Best for: Multi-user workshops, complex workloads
+   └─ Component: agd-v2/ocp-cluster-cnv-pools/prod
 
 2. SNO (Single Node OpenShift)
    └─ Single-node cluster for lightweight demos
-   └─ Best for: Quick demos, single-user environments
+   └─ Best for: Quick demos, single-user environments, edge demos
+   └─ Component: agd-v2/ocp-cluster-cnv-pools/prod (cluster_size: sno)
 
-3. AWS
-   └─ Cloud-based OpenShift deployment
-   └─ Best for: AWS-specific features, large scale
+3. AWS (Cloud-based VMs)
+   └─ VM-based deployment on AWS
+   └─ Best for: GPU workloads, AWS-specific features, bastion-only demos
+   └─ Component: Custom (requires bastion + instances configuration)
 
-Q: Infrastructure choice [1-3]:
+4. CNV VMs (Cloud VMs on CNV)
+   └─ Virtual machines on CNV infrastructure
+   └─ Best for: RHEL demos, edge appliances, non-OpenShift workloads
+   └─ Component: Custom (cloud_provider: openshift_cnv, config: cloud-vms-base)
+
+Q: Infrastructure choice [1-4]:
 ```
 
-**Set cloud_provider based on choice:**
-- CNV Multi-Node → `cloud_provider: equinix_metal`, `sandbox_architecture: standard`
-- SNO → `cloud_provider: equinix_metal`, `sandbox_architecture: single-node`
-- AWS → `cloud_provider: ec2`, `sandbox_architecture: standard`
+**Set configuration based on choice:**
+
+1. **CNV Multi-Node:**
+```yaml
+config: openshift-workloads
+cloud_provider: none
+clusters:
+  - default:
+      api_url: "{{ openshift_api_url }}"
+      api_token: "{{ openshift_cluster_admin_token }}"
+
+__meta__:
+  components:
+    - name: openshift
+      display_name: OpenShift Cluster
+      item: agd-v2/ocp-cluster-cnv-pools/prod
+      parameter_values:
+        cluster_size: multinode
+        host_ocp4_installer_version: "4.20"
+        ocp4_fips_enable: false
+        num_users: "{{ num_users }}"
+```
+
+2. **SNO:**
+```yaml
+config: openshift-workloads
+cloud_provider: none
+clusters:
+  - default:
+      api_url: "{{ openshift_api_url }}"
+      api_token: "{{ openshift_cluster_admin_token }}"
+
+__meta__:
+  components:
+    - name: openshift
+      display_name: OpenShift Cluster
+      item: agd-v2/ocp-cluster-cnv-pools/prod
+      parameter_values:
+        cluster_size: sno
+        host_ocp4_installer_version: "4.20"
+        ocp4_fips_enable: false
+```
+
+3. **AWS:**
+```yaml
+cloud_provider: aws
+config: cloud-vms-base
+
+# Define security groups and instances
+security_groups:
+  - name: BastionSG
+    rules:
+      - name: SSH
+        from_port: 22
+        to_port: 22
+        protocol: tcp
+        cidr: "0.0.0.0/0"
+        rule_type: Ingress
+
+instances:
+  - name: bastion
+    count: 1
+    image: RHEL-10.0-GOLD-latest
+    flavor:
+      ec2: t3a.large
+    security_groups:
+      - BastionSG
+```
+
+4. **CNV VMs:**
+```yaml
+cloud_provider: openshift_cnv
+config: cloud-vms-base
+
+instances:
+  - name: bastion
+    count: 1
+    image: rhel-9.6
+    cores: 8
+    memory: 16G
+    image_size: 200Gi
+```
 
 ### Step 5: Authentication Setup
 
@@ -283,13 +375,49 @@ Q: Infrastructure choice [1-3]:
 
 How should users authenticate to OpenShift?
 
-1. htpasswd (Simple username/password)
-   └─ Workload: rhpds.ocp4_workload_authentication.ocp4_workload_authentication
+1. htpasswd (Simple username/password - Most common)
+   └─ Workload: agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
 
-2. Keycloak SSO (Enterprise authentication)
-   └─ Workload: rhpds.keycloak.ocp4_workload_keycloak
+2. Keycloak SSO (Enterprise authentication - For AAP/complex setups)
+   └─ Workload: agnosticd.core_workloads.ocp4_workload_authentication_keycloak
 
 Q: Authentication method [1-2]:
+```
+
+**Set workload based on choice:**
+
+1. **htpasswd:**
+```yaml
+workloads:
+  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  # ... other workloads
+
+# htpasswd configuration
+common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+ocp4_workload_authentication_htpasswd_admin_user: admin
+ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_base: user
+ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
+ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+```
+
+2. **Keycloak:**
+```yaml
+workloads:
+  - agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+  # ... other workloads
+
+# Keycloak configuration
+common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+ocp4_workload_authentication_keycloak_namespace: keycloak
+ocp4_workload_authentication_keycloak_channel: stable-v26.2
+ocp4_workload_authentication_keycloak_admin_username: admin
+ocp4_workload_authentication_keycloak_admin_password: "{{ common_password }}"
+ocp4_workload_authentication_keycloak_num_users: "{{ num_users }}"
+ocp4_workload_authentication_keycloak_user_username_base: user
+ocp4_workload_authentication_keycloak_user_password: "{{ common_password }}"
+ocp4_workload_authentication_keycloak_remove_kubeadmin: true
 ```
 
 ### Step 6: Workload Selection
@@ -380,21 +508,58 @@ fi
 
 ```
 👥 Multi-User Setup
-
-Q: Is this a multi-user workshop? [Y/n]
 ```
 
-**If YES:**
-```
-Q: How many concurrent users?
-   (Default: 30 for workshops, 1 for demos)
+**Auto-set based on category:**
+- **Workshops / Brand_Events:** Multiuser REQUIRED
+- **Demos:** Single-user only (multiuser: false)
+- **Labs / Sandboxes:** Ask user
 
-Number of users [default: 30]:
+**If multi-user (Workshops/Brand_Events):**
+```
+Q: How many concurrent users (maximum)?
+   Typical range: 10-60
+   Default: 30
+
+Max users [default: 30]:
 ```
 
 **Set in common.yaml:**
 ```yaml
-num_users: 30
+__meta__:
+  catalog:
+    multiuser: true
+    workshopLabUiRedirect: true  # Auto-enable for workshops
+    parameters:
+      - name: num_users
+        description: Number of users to provision within the environment
+        formLabel: User Count
+        openAPIV3Schema:
+          type: integer
+          default: 3
+          minimum: 3
+          maximum: 60
+```
+
+**Worker scaling formula (if CNV/SNO):**
+```yaml
+# Auto-scale workers based on num_users
+openshift_cnv_scale_cluster: "{{ (num_users | int) > 3 }}"
+
+# Per-user resource calculation
+# Example: 1 worker per 5 users (adjust based on workload)
+worker_instance_count: "{{ [(num_users | int / 5) | round(0, 'ceil') | int, 1] | max if (num_users | int) > 3 else 0 }}"
+
+ai_workers_cores: 32
+ai_workers_memory: 128Gi
+```
+
+**If single-user (Demos):**
+```yaml
+__meta__:
+  catalog:
+    multiuser: false  # Demos are always single-user
+    # NO workshopLabUiRedirect for demos
 ```
 
 ### Step 10: Generate Files
@@ -403,47 +568,198 @@ Now generate all four files:
 
 #### 10.1: Generate common.yaml
 
+**Modern catalog structure (2026+):**
+
 ```yaml
 ---
-asset_uuid: <generated-uuid>
-name: <display-name>
-description: <brief-description>
-category: <Workshops|Demos|Sandboxes>
+#include /includes/agd-v2-mapping.yaml
+#include /includes/sandbox-api.yaml
+#include /includes/catalog-icon-openshift.yaml  # or catalog-icon-project-dance, catalog-icon-rh-ai-2025
+#include /includes/terms-of-service.yaml
+#include /includes/access-restriction-rh1-2026-devs.yaml  # Optional - for restricted catalogs
 
-cloud_provider: <equinix_metal|ec2>
-sandbox_architecture: <standard|single-node>
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/salesforce-id.yaml
+#include /includes/parameters/num-users-salesforce.yaml  # If multi-user
 
-num_users: <number>
+#include /includes/secrets/ocp4_ai_offline_token.yaml
+#include /includes/secrets/s3-rhpds-private-bucket.yaml
 
-# Showroom integration
-student_guide_url: <showroom-github-pages-url>
-student_guide_url_raw: <showroom-raw-url>
+# -------------------------------------------------------------------
+# --- Catalog Item: <Display Name>
+# -------------------------------------------------------------------
 
+# -------------------------------------------------------------------
+# Mandatory Variables
+# -------------------------------------------------------------------
+config: openshift-workloads
+cloud_provider: none
+software_to_deploy: none
+openshift_cnv_scale_cluster: true
+clusters:
+  - default:
+      api_url: "{{ openshift_api_url }}"
+      api_token: "{{ openshift_cluster_admin_token }}"
+
+# -------------------------------------------------------------------
+# Platform
+# -------------------------------------------------------------------
+platform: rhpds
+
+# -------------------------------------------------------------------
+# CNV Specific (if using CNV pools)
+# -------------------------------------------------------------------
+bastion_instance_image: rhel-9.6
+bastion_cores: 2
+bastion_memory: 4Gi
+
+# Worker scaling formula
+worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
+ai_workers_cores: 32
+ai_workers_memory: 128Gi
+
+# -------------------------------------------------------------------
+# Common Password
+# -------------------------------------------------------------------
+common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+
+# -------------------------------------------------------------------
+# Student User on Bastion (if needed)
+# -------------------------------------------------------------------
+install_student_user: true
+student_name: lab-user
+student_sudo: true
+
+# -------------------------------------------------------------------
+# Custom collections for this environment
+# -------------------------------------------------------------------
+requirements_content:
+  collections:
+    - name: https://github.com/agnosticd/core_workloads.git
+      type: git
+      version: main
+    - name: https://github.com/agnosticd/showroom.git
+      type: git
+      version: v1.3.9
+    # Add other collections as needed
+
+# -------------------------------------------------------------------
 # Workloads
+# -------------------------------------------------------------------
 workloads:
-  - rhpds.ocp4_workload_authentication.ocp4_workload_authentication
-  - rhpds.showroom.ocp4_workload_showroom
-  # ... other selected workloads
+  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.showroom.ocp4_workload_showroom_ocp_integration
+  - agnosticd.showroom.ocp4_workload_showroom
+  # Add technology-specific workloads
 
-# Showroom workload configuration
-ocp4_workload_showroom_showroom_repo_url: <git-url>
-ocp4_workload_showroom_showroom_repo_ref: main
-ocp4_workload_showroom_showroom_entrypoint: content/index.adoc
+# ===================================================================
+# Workload: ocp4_workload_authentication_htpasswd
+# ===================================================================
+ocp4_workload_authentication_htpasswd_admin_user: admin
+ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_base: user
+ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
+ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+
+# ===================================================================
+# Workload: ocp4_workload_showroom
+# ===================================================================
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/showroom-repo.git
+ocp4_workload_showroom_content_git_repo_ref: main
+
+# -------------------------------------------------------------------
+# Metadata
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: <generated-uuid>
+  anarchy:
+    namespace: babylon-anarchy-7
+  components:
+    - name: openshift
+      display_name: OpenShift Cluster
+      item: agd-v2/ocp-cluster-cnv-pools/prod
+      parameter_values:
+        cluster_size: multinode  # or sno
+        host_ocp4_installer_version: "4.20"
+        ocp4_fips_enable: false
+        num_users: "{{ num_users }}"
+      propagate_provision_data:
+        - name: sandbox_openshift_api_key
+          var: sandbox_openshift_api_key
+        - name: sandbox_openshift_api_url
+          var: sandbox_openshift_api_url
+        - name: sandbox_openshift_namespace
+          var: sandbox_openshift_namespace
+        - name: openshift_cluster_admin_token
+          var: openshift_cluster_admin_token
+        - name: openshift_api_url
+          var: openshift_api_url
+        - name: bastion_public_hostname
+          var: bastion_ansible_host
+        - name: bastion_ssh_user_name
+          var: bastion_ansible_user
+        - name: bastion_ssh_password
+          var: bastion_ansible_ssh_pass
+        - name: bastion_ssh_port
+          var: bastion_ansible_port
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "<Display Name>"
+    category: <Workshops|Demos|Labs|Sandboxes|Brand_Events>
+    multiuser: true  # or false for demos
+    workshopLabUiRedirect: true  # Only for workshops
+    parameters:
+      - name: num_users
+        description: Number of users to provision within the environment
+        formLabel: User Count
+        openAPIV3Schema:
+          type: integer
+          default: 3
+          minimum: 3
+          maximum: 60
+    keywords:
+      - <keyword1>
+      - <keyword2>
+    labels:
+      Provider: RHDP
+      Product: <Product_Name>
+      Product_Family: <Product_Family>
+      # Brand_Event: Red_Hat_One_2026  # If Brand_Events
+    reportingLabels:
+      primaryBU: Hybrid_Platforms  # CRITICAL: For cost allocation (Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.)
+  owners:
+    maintainer:
+      - email: <email>
+        name: <Name>
+    sme:
+      - email: <sme-email>
+        name: <SME Name>
+  tower:
+    timeout: 14400  # 4 hours - adjust based on complexity
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
+      pull: missing
 ```
 
 #### 10.2: Generate dev.yaml
 
 ```yaml
 ---
-# Development environment overrides
-# Extend common.yaml for testing
-
-cloud_provider: "{{ cloud_provider }}"
-sandbox_architecture: "{{ sandbox_architecture }}"
-
-# Keep lightweight for dev
-num_users: 1
+# -------------------------------------------------------------------
+# Purpose - Cost tag. One of development, ilt, production, event
+# -------------------------------------------------------------------
+purpose: development
+__meta__:
+  deployer:
+    scm_ref: main
+    scm_type: git
 ```
+
+**Note:** dev.yaml is minimal - only overrides scm_ref and sets purpose tag for cost tracking.
 
 #### 10.3: Generate description.adoc
 

@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.0] - 2026-01-22
+
+### Changed - AgnosticV Skills Major Update
+Based on analysis of real production catalogs, significantly enhanced both AgnosticV skills:
+
+**`/agnosticv-validator` Enhancements:**
+- Added 8 new comprehensive validation checks (total: 17 checks)
+- **Check 10:** Stage files validation (dev.yaml, event.yaml, prod.yaml)
+- **Check 11:** Multi-user configuration validation (num_users parameter, worker scaling, SalesforceID, workshopLabUiRedirect)
+- **Check 12:** Bastion configuration validation (image versions, resource requirements)
+- **Check 13:** Collection versions validation (ensures git collections have versions)
+- **Check 14:** Deployer configuration validation (scm_url, scm_ref, execution_environment)
+- **Check 14a:** Reporting labels validation (primaryBU for cost tracking - CRITICAL)
+- **Check 15:** Component propagation validation (multi-stage catalog data flow)
+- **Check 16:** AsciiDoc template validation (variable substitutions)
+- Updated category validation to include "Labs" and "Brand_Events"
+- **Critical rule:** Demos MUST NOT be multi-user (ERROR level)
+- **Critical rule:** Demos MUST NOT have workshopLabUiRedirect enabled (ERROR level)
+- **Critical rule:** reportingLabels.primaryBU MUST be present for cost allocation (ERROR level)
+- **New rule:** Multi-user workshops SHOULD enable workshopLabUiRedirect (WARNING level)
+
+**`/agnosticv-catalog-builder` Enhancements:**
+- Updated category list to include "Labs" and "Brand_Events"
+- Modernized infrastructure selection with CNV pools (agd-v2/ocp-cluster-cnv-pools)
+- Added 4th infrastructure option: CNV VMs for RHEL demos and edge appliances
+- Updated authentication workloads to use correct collection names (agnosticd.core_workloads)
+- Completely rewritten common.yaml template matching 2026 best practices:
+  - #include statements for shared configuration
+  - Proper __meta__ structure with components and propagate_provision_data
+  - Modern worker scaling formulas based on num_users
+  - Proper bastion configuration (image, cores, memory)
+  - Requirements_content with git collections and versions
+  - Tower timeout configuration for complex deployments
+  - Deployer configuration with execution_environment
+  - **reportingLabels.primaryBU for cost allocation (CRITICAL)**
+- Auto-sets multiuser and workshopLabUiRedirect based on category
+- Worker scaling formulas for multi-user catalogs
+- Simplified dev.yaml to match real catalog patterns (purpose + scm_ref only)
+
+### Focus
+This release brings AgnosticV skills in line with 2026 production catalog standards. All templates and validation rules now match real catalogs deployed in RHDP.
+
 ## [v1.4.0] - 2026-01-22
 
 ### Added
