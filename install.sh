@@ -213,15 +213,15 @@ clone_repo() {
   local temp_dir=$(mktemp -d)
 
   if [[ "$DRY_RUN" == true ]]; then
-    print_msg "$YELLOW" "[DRY RUN] Would clone $REPO_URL to $temp_dir"
+    print_msg "$YELLOW" "[DRY RUN] Would clone $REPO_URL to $temp_dir" >&2
     echo "$temp_dir"
     return
   fi
 
-  print_msg "$BLUE" "Cloning repository..."
-  git clone --quiet "$REPO_URL" "$temp_dir"
-  print_msg "$GREEN" "✓ Repository cloned"
-  echo ""
+  print_msg "$BLUE" "Cloning repository..." >&2
+  git clone --quiet "$REPO_URL" "$temp_dir" >&2
+  print_msg "$GREEN" "✓ Repository cloned" >&2
+  echo "" >&2
 
   echo "$temp_dir"
 }
