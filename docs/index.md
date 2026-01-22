@@ -112,7 +112,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.2.1
+- **Version:** v1.2.2
 
 ---
 
