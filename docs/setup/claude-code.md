@@ -58,6 +58,28 @@ You should see: create-lab, create-demo, agv-generator, etc.
 
 ---
 
+## How to Use Skills in VS Code
+
+### Step 1: Open Claude Code
+
+Click the Claude icon in the VS Code sidebar, then click "Claude Code: Open"
+
+![Open Claude Code in VS Code](../assets/images/vscode-claude-open.png)
+
+### Step 2: Use Slash Commands
+
+Type `/` to see available skills. Start typing a skill name to filter (e.g., `/veri` for verify-content).
+
+![Using slash commands](../assets/images/vscode-slash-commands.png)
+
+### Step 3: Follow Skill Prompts
+
+Skills guide you with interactive questions. Select your answers and follow the workflow.
+
+![Skill in action](../assets/images/vscode-skill-running.png)
+
+---
+
 ## Updates
 
 ```bash
