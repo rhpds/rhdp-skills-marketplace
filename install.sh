@@ -95,7 +95,7 @@ detect_platform() {
   echo "  1) Claude Code"
   echo "  2) Cursor"
   echo ""
-  read -p "Enter your choice [1-2]: " choice
+  read -p "Enter your choice [1-2]: " choice < /dev/tty
 
   case $choice in
     1)
@@ -166,7 +166,7 @@ select_namespace() {
   echo ""
   echo "  4) all (Install all namespaces)"
   echo ""
-  read -p "Enter your choice [1-4]: " choice
+  read -p "Enter your choice [1-4]: " choice < /dev/tty
 
   case $choice in
     1)
@@ -309,7 +309,7 @@ install_cursor_rules() {
   # Check if .cursor/rules already exists
   if [[ -d "$cursor_rules_dest" ]]; then
     print_msg "$YELLOW" "⚠️  .cursor/rules already exists in current directory"
-    read -p "Overwrite? [y/N] " overwrite
+    read -p "Overwrite? [y/N] " overwrite < /dev/tty
     if [[ ! "$overwrite" =~ ^[Yy] ]]; then
       print_msg "$BLUE" "Skipping .cursor/rules installation"
       echo ""
@@ -410,7 +410,7 @@ main() {
   if [[ "$DRY_RUN" == false ]]; then
     echo ""
     print_msg "$YELLOW" "Ready to install $NAMESPACE namespace for $PLATFORM"
-    read -p "Continue? [Y/n] " confirm
+    read -p "Continue? [Y/n] " confirm < /dev/tty
     if [[ "$confirm" =~ ^[Nn] ]]; then
       print_msg "$RED" "Installation cancelled."
       exit 0
