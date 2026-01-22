@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.1.0] - 2026-01-22
+
 ### Added
 - GitHub releases and version tagging system
 - Install/update scripts now download from latest GitHub release
@@ -14,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Health namespace documentation added to GitHub Pages
 - `/ftl` skill moved to Health namespace (automated workshop grader/solver)
 - Comprehensive prerequisites for each skill
+- Automated release creation script (`scripts/create-release.sh`)
+- Release process documentation in `scripts/README.md`
 
 ### Changed
 - Install script uses GitHub releases API instead of cloning main branch
@@ -66,5 +70,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.1.0
 [1.0.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.0.0
