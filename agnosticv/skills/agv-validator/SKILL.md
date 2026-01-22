@@ -1,7 +1,17 @@
+---
+name: agv-validator
+description: Validate AgnosticV catalog configurations against best practices and deployment requirements
+---
+
+---
+context: main
+model: sonnet
+---
+
 # Skill: agv-validator
 
 **Name:** AgnosticV Catalog Validator
-**Description:** Validate AgnosticV configurations against best practices and deployment requirements  
+**Description:** Validate AgnosticV configurations against best practices and deployment requirements
 **Version:** 1.0.0
 **Last Updated:** 2026-01-22
 

@@ -1,3 +1,13 @@
+---
+name: agv-generator
+description: Create complete AgnosticV catalog items with infrastructure provisioning configuration for RHDP
+---
+
+---
+context: main
+model: sonnet
+---
+
 # Skill: agv-generator
 
 **Name:** AgnosticV Catalog Generator
