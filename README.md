@@ -44,19 +44,24 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ### For RHDP Internal/Advanced Users
 
-Install the **agnosticv** namespace for AgnosticV catalog provisioning and validation:
+Install additional namespaces for AgnosticV provisioning, validation, and health checks:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
 # When prompted:
 # 1. Select your platform (Claude Code or Cursor)
-# 2. Select namespace: 2 (agnosticv) or 3 (all)
+# 2. Select namespace:
+#    - 2 (agnosticv) - Catalog provisioning
+#    - 3 (health) - Post-deployment validation
+#    - 4 (all) - All namespaces
 ```
 
-**Additional Skills:**
+**AgnosticV Skills:**
 - `/agv-generator` - Create AgnosticV catalog items
 - `/agv-validator` - Validate catalog configurations
 - `/generate-agv-description` - Generate catalog descriptions from lab content
+
+**Health Skills:**
 - `/validation-role-builder` - Create Ansible validation roles
 
 ---
