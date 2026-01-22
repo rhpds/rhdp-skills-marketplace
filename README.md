@@ -411,7 +411,7 @@ cd rhdp-skills-marketplace
 ## Support
 
 - **Issues:** [GitHub Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- **RHDP Team:** Slack #forum-rhdp or #forum-rhdp-content
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - **Documentation:** https://rhpds.github.io/rhdp-skills-marketplace
 
 ---
