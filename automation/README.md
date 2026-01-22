@@ -139,9 +139,10 @@ The automation namespace will provide intelligent automation capabilities that g
 - Auto-remediate failed validations
 
 **showroom (Content):**
-- Auto-generate workshop environments from content
-- Sync content updates with environment refreshes
-- Test content against live deployments
+- Generate FTL graders from workshop modules
+- Create solver playbooks to validate workshop steps
+- Test workshop content before publishing to catalog
+- Enable learner self-assessment with automated grading
 
 ---
 
