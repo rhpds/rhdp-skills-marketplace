@@ -9,7 +9,13 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
 **Supports:** Claude Code (Recommended) | Cursor (Experimental)
 
-> **⚠️ Note for Cursor Users:** Agent Skills in Cursor are not fully supported yet. We're using the `.cursor/rules/` approach to reuse Claude Code skills. **Claude Code is the recommended platform.** [Learn more →](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/cursor-rules/README.md)
+> **⚠️ Important - Cursor Support is Experimental**
+>
+> Agent Skills in Cursor are **not fully supported yet** but will be supported in the future. We're using the `.cursor/rules/` approach to reuse Claude Code skills as a temporary workaround.
+>
+> **Claude Code is the recommended platform** for the best experience.
+>
+> [Learn more about Cursor support →](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/cursor-rules/README.md) | [Cursor Forum Discussion →](https://forum.cursor.com/t/support-for-claude-skills/148267)
 
 ---
 
