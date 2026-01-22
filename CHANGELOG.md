@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.2.2] - 2026-01-22
+
+### Changed
+- **Comprehensive documentation cleanup** - Removed all references to deprecated skills
+  - Updated README.md with unified skill examples and workflows
+  - Updated agnosticv/README.md to show new skill prominently
+  - Updated all Cursor support files (cursor-rules/, cursor-commands/)
+  - Updated all GitHub Pages documentation (setup, reference, skills)
+- **Enhanced GitHub Pages docs** for `/agnosticv-catalog-builder`
+  - Added detailed question-by-question workflow (17 steps for Mode 1, 6 for Mode 2, 5 for Mode 3)
+  - Shows exact questions users will see
+  - Includes expected answers and automatic steps
+- **Cursor rules updated**
+  - Removed old RULE.md files for deprecated skills
+  - Created new agnosticv-catalog-builder/RULE.md with all trigger phrases
+- **Install script** now shows correct skill names in all messages
+
+### Fixed
+- Removed lingering references to `/agv-generator` and `/generate-agv-description` across all documentation
+- Updated troubleshooting guides with correct skill names
+- Updated quick reference workflows to use unified skill
+
 ## [v1.2.1] - 2026-01-22
 
 ### Changed
