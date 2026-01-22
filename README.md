@@ -96,7 +96,6 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 | `agv-generator` | Create catalog items | Building new RHDP catalog entries |
 | `agv-validator` | Validate configurations | Pre-deployment quality checks |
 | `generate-agv-description` | Generate descriptions | Creating catalog descriptions |
-| `validation-role-builder` | Create validation roles | Automated post-deploy validation |
 
 **Workflow:**
 ```
@@ -104,6 +103,27 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 ```
 
 **Documentation:** [agnosticv/README.md](agnosticv/README.md)
+
+---
+
+### 🏥 health (RHDP Internal - Validation & Testing)
+
+**Purpose:** Post-deployment validation, health checks, and automated testing
+
+**Skills:**
+
+| Skill | Description | Use Case |
+|-------|-------------|----------|
+| `validation-role-builder` | Create validation roles | Automated post-deploy health checks |
+| `ftl` (future) | Fast Track Learner | Environment discovery and testing |
+| `automation` (future) | Workflow automation | Automated RHDP operations |
+
+**Workflow:**
+```
+Deploy catalog → /validation-role-builder → Health checks → Verify readiness
+```
+
+**Documentation:** [health/README.md](health/README.md)
 
 ---
 
@@ -225,12 +245,19 @@ rhdp-skills-marketplace/
 │   ├── skills/
 │   │   ├── agv-generator/
 │   │   ├── agv-validator/
-│   │   ├── generate-agv-description/
-│   │   └── validation-role-builder/
+│   │   └── generate-agv-description/
 │   └── docs/
 │       ├── AGV-COMMON-RULES.md
 │       ├── workload-mappings.md
 │       └── infrastructure-guide.md
+│
+├── health/                 # Internal/Testing namespace
+│   ├── README.md
+│   ├── skills/
+│   │   ├── validation-role-builder/
+│   │   ├── ftl/ (future)
+│   │   └── automation/ (future)
+│   └── docs/
 │
 └── examples/
     ├── showroom-lab-example/
