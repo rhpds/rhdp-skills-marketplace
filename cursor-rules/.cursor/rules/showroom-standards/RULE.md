@@ -61,4 +61,4 @@ All workshop modules must follow:
 
 ## Documentation Reference
 
-For complete standards, read: `~/.cursor/docs/SKILL-COMMON-RULES.md`
+For complete standards, read: `~/.cursor/docs/SKILL-COMMON-RULES.md` or `~/.claude/docs/SKILL-COMMON-RULES.md`

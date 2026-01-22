@@ -35,4 +35,4 @@ Creates RHDP AgnosticV catalog items with:
 
 ## Documentation
 
-Refer to: `~/.cursor/docs/AGV-COMMON-RULES.md` for AgnosticV standards.
+Refer to: `~/.cursor/docs/AGV-COMMON-RULES.md` or `~/.claude/docs/AGV-COMMON-RULES.md` for AgnosticV standards.

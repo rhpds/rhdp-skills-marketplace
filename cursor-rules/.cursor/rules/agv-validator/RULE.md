@@ -33,4 +33,4 @@ Validates RHDP AgnosticV catalog items for:
 
 ## Documentation
 
-Refer to: `~/.cursor/docs/AGV-COMMON-RULES.md` for AgnosticV standards.
+Refer to: `~/.cursor/docs/AGV-COMMON-RULES.md` or `~/.claude/docs/AGV-COMMON-RULES.md` for AgnosticV standards.

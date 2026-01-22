@@ -65,8 +65,8 @@ Category field MUST be EXACTLY one of:
 ## 5. Infrastructure Recommendations
 
 Consult these resources:
-- `~/.cursor/docs/infrastructure-guide.md` - Infrastructure patterns
-- `~/.cursor/docs/workload-mappings.md` - Workload compatibility
+- Infrastructure patterns: `~/.cursor/docs/infrastructure-guide.md` or `~/.claude/docs/infrastructure-guide.md`
+- Workload compatibility: `~/.cursor/docs/workload-mappings.md` or `~/.claude/docs/workload-mappings.md`
 
 ## 6. File Structure
 
@@ -80,4 +80,4 @@ Standard AgnosticV catalog structure:
 
 ## Documentation Reference
 
-For complete standards, read: `~/.cursor/docs/AGV-COMMON-RULES.md`
+For complete standards, read: `~/.cursor/docs/AGV-COMMON-RULES.md` or `~/.claude/docs/AGV-COMMON-RULES.md`

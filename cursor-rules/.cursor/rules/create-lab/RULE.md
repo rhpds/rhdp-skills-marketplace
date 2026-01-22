@@ -34,4 +34,4 @@ Creates Red Hat Showroom workshop lab modules with:
 
 ## Documentation
 
-Refer to: `~/.cursor/docs/SKILL-COMMON-RULES.md` for Red Hat Showroom standards.
+Refer to: `~/.cursor/docs/SKILL-COMMON-RULES.md` or `~/.claude/docs/SKILL-COMMON-RULES.md` for Red Hat Showroom standards.
