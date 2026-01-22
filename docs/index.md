@@ -65,9 +65,9 @@ For RHDP internal and advanced users:
 
 **Status:** In Development
 
-Future skills for intelligent automation, environment discovery, and field-sourced content integration:
+Future skills for intelligent automation, lab validation, and field-sourced content integration:
 
-- **[/ftl](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/automation/README.md)** - Fast Track Learner for environment discovery and intelligent testing
+- **[/ftl](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/automation/README.md)** - Finish The Labs: Automated grader and solver generation for workshop testing (based on [FTL grading system](https://github.com/redhat-gpte-devopsautomation/FTL))
 - **[/field-automation-builder](https://github.com/rhpds/field-sourced-content)** - Integration with field-sourced content repository for automated catalog generation
 
 [Learn more about Automation vision →](../automation/README.html)

@@ -138,13 +138,13 @@ Deploy catalog → /validation-role-builder → Health checks → Verify readine
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `ftl` (future) | Fast Track Learner | Environment discovery and intelligent testing |
+| `ftl` (future) | Finish The Labs | Automated grader/solver generation for workshop testing |
 | `automation` (future) | Workflow automation | Automated RHDP operations and orchestration |
 | `field-automation-builder` (future) | Field content integration | Import field-sourced content to RHDP catalog |
 
 **Workflow:**
 ```
-/ftl → Discover environment → Generate tests → /automation → Orchestrate workflows
+/create-lab → /ftl (generate grader/solver) → Test workshop → Deploy to RHDP
 ```
 
 **Documentation:** [automation/README.md](automation/README.md)

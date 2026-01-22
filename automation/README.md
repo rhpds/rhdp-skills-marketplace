@@ -16,25 +16,37 @@ The **automation** namespace provides skills for automating RHDP operations, int
 
 ## Future Skills (Planned)
 
-### /ftl (Fast Track Learner)
+### /ftl (Finish The Labs)
 
-AI-powered skill for rapid environment familiarization and intelligent testing.
+AI-powered skill for automated lab testing and validation based on [FTL grading system](https://github.com/redhat-gpte-devopsautomation/FTL).
 
 **Planned Features:**
-- Automatic environment discovery and mapping
-- Intelligent test generation based on deployed workloads
-- Learning path recommendations for new environments
-- Quick validation execution with smart checks
-- Environment readiness scoring and reporting
-- Anomaly detection in deployments
-- Auto-generated documentation from environment
+- Automatic generation of grader playbooks for workshop validation
+- Solver playbook creation for automated lab completion testing
+- Intelligent test role generation (package checks, service validation, file verification)
+- Workshop success criteria validation with detailed feedback
+- Self-assessment capabilities for learners
+- Integration with RHDP catalog deployments for automated testing
+- Pre-deployment validation: test labs before releasing to users
 
 **Use Cases:**
-- Rapidly understand a new RHDP catalog deployment
-- Generate tests automatically for custom workloads
-- Validate environment readiness before user handoff
-- Learn environment topology and dependencies
-- Create environment documentation automatically
+- Generate automated graders for workshop labs (test what learners will do)
+- Create solver playbooks to validate lab environment setup
+- Test workshop modules before publishing to RHDP catalog
+- Provide learners with self-assessment capabilities
+- Validate catalog deployments meet workshop requirements
+- Automate lab environment validation and readiness checks
+
+**Technical Approach:**
+- Based on Ansible playbooks for grading and solving
+- Test roles for common checks (packages installed, services running, users exist, file content)
+- Solver: Automates lab completion for testing
+- Grader: Validates learner actions with feedback on failures
+
+**Integration:**
+- Repository: [redhat-gpte-devopsautomation/FTL](https://github.com/redhat-gpte-devopsautomation/FTL)
+- RHDP Skills integration: Generate FTL graders from workshop content
+- Status: Future integration planned
 
 **Status:** Planned for future release
 
@@ -87,7 +99,7 @@ AI-powered skill for integrating with field-sourced content repository.
 
 **Integration:**
 - Repository: [rhpds/field-sourced-content](https://github.com/rhpds/field-sourced-content)
-- Owner: Nate Stephany (RHDP Catalog Owner)
+- Collaboration: RHDP Team
 - Status: Future integration planned
 
 **Status:** Planned for future release
@@ -98,11 +110,11 @@ AI-powered skill for integrating with field-sourced content repository.
 
 The automation namespace will provide intelligent automation capabilities that go beyond simple scripting:
 
-### Intelligent Testing (/ftl)
-- **Learn**: Automatically discover environment components
-- **Analyze**: Understand relationships and dependencies
-- **Test**: Generate and execute intelligent validation
-- **Report**: Provide readiness scores and recommendations
+### Intelligent Testing (/ftl - Finish The Labs)
+- **Generate Graders**: Create Ansible playbooks to validate learner actions
+- **Create Solvers**: Build automated lab completion playbooks for testing
+- **Validate Workshops**: Test what learners will do before publishing
+- **Self-Assessment**: Enable learners to check their work with detailed feedback
 
 ### Workflow Automation (/automation)
 - **Orchestrate**: Manage complex deployment workflows
@@ -135,22 +147,28 @@ The automation namespace will provide intelligent automation capabilities that g
 
 ## Use Case Scenarios
 
-### Scenario 1: Rapid Environment Onboarding
+### Scenario 1: Workshop Testing Before Release
 
 ```
-New team member joins RHDP:
+Content creator finishes workshop:
 
-1. /ftl analyzes their assigned catalog
-   └─ Discovers all deployed workloads
-   └─ Maps environment topology
-   └─ Identifies key components
+1. /create-lab generates workshop modules
+   └─ Multiple hands-on exercises created
+   └─ Learning outcomes defined
 
-2. /ftl generates personalized learning path
-   └─ Prioritizes critical components
-   └─ Creates hands-on exercises
-   └─ Generates test scenarios
+2. /ftl generates grader playbooks
+   └─ Creates validation tests for each exercise
+   └─ Defines success criteria checks
+   └─ Builds solver to test environment
 
-3. Team member productive in hours, not days
+3. Run solver to validate environment
+   └─ Ensures all steps can be completed
+   └─ Identifies missing dependencies
+   └─ Confirms workshop is ready
+
+4. Deploy to RHDP with graders
+   └─ Learners can self-assess their work
+   └─ Instant feedback on completion
 ```
 
 ### Scenario 2: Automated Deployment Pipeline
