@@ -70,7 +70,7 @@ For RHDP catalog creators.
 
 For RHDP validation roles.
 
-**Skills:** validation-role-builder
+**Skills:** deployment-health-checker
 
 ---
 

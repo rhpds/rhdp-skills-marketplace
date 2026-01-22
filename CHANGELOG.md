@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.3.1] - 2026-01-22
+
+### Changed
+- **Renamed `/validation-role-builder` to `/deployment-health-checker`** for clarity
+  - Better describes the skill's purpose: validating deployment health, not building validators
+  - Updated skill name in SKILL.md frontmatter (added frontmatter for consistency)
+  - Renamed skill directory: `health/skills/validation-role-builder/` → `health/skills/deployment-health-checker/`
+  - Updated all documentation references across repository
+  - Updated Cursor rules with new trigger phrases
+  - Updated install.sh and all setup guides
+
+### Migration
+- **Old:** `/validation-role-builder` → **New:** `/deployment-health-checker`
+- All functionality remains the same - only the name has changed
+- New trigger phrases emphasize deployment health checking
+
 ## [v1.3.0] - 2026-01-22
 
 ### Changed

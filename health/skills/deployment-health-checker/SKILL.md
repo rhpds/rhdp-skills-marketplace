@@ -1,4 +1,14 @@
-# Validation Role Builder Skill
+---
+name: deployment-health-checker
+description: Create validation roles for RHDP deployment health checks and post-deployment validation
+---
+
+---
+context: main
+model: sonnet
+---
+
+# Deployment Health Checker Skill
 
 You are assisting with creating validation roles for Red Hat Demo Platform (RHDP) workshops and demos. This skill follows a **collaborative pattern** where the user runs commands manually and shares output with you.
 

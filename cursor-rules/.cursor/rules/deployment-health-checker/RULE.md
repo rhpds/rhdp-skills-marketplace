@@ -1,25 +1,26 @@
 ---
-description: "Validation role builder - creates Ansible roles for post-deployment health checks"
+description: "Deployment health checker - creates Ansible roles for post-deployment health validation"
 alwaysApply: false
 ---
 
-# Validation Role Builder Skill
+# Deployment Health Checker Skill
 
 ## Trigger Commands
 
 When user says ANY of these phrases, invoke this skill:
+- "check deployment health"
 - "create validation role"
 - "build validation role"
 - "generate health check"
 - "create health check role"
-- "validation role builder"
-- "build ansible validation"
+- "deployment health"
+- "validate deployment"
 
 ## Skill Execution
 
-**Action**: Read and follow `~/.cursor/skills/validation-role-builder/SKILL.md` completely.
+**Action**: Read and follow `~/.cursor/skills/deployment-health-checker/SKILL.md` completely.
 
-**OR if skills are in Claude directory**: Read and follow `~/.claude/skills/validation-role-builder/SKILL.md` completely.
+**OR if skills are in Claude directory**: Read and follow `~/.claude/skills/deployment-health-checker/SKILL.md` completely.
 
 ## What This Skill Does
 

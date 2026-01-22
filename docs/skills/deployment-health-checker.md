@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /validation-role-builder
+title: /deployment-health-checker
 ---
 
-# /validation-role-builder
+# /deployment-health-checker
 
 Create Ansible validation roles for post-deployment health checks and verification.
 
@@ -45,7 +45,7 @@ Create Ansible validation roles for post-deployment health checks and verificati
 ## Quick Start
 
 1. Navigate to AgnosticD repository
-2. Run `/validation-role-builder`
+2. Run `/deployment-health-checker`
 3. Answer validation questions
 4. Review generated role
 5. Test validation role
@@ -118,7 +118,7 @@ Verify pods, deployments, routes:
 
 **Skill not found?**
 - Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/validation-role-builder`
+- Verify installation: `ls ~/.claude/skills/deployment-health-checker`
 
 **Validation fails on working deployment?**
 - Check timing - resources take time to be ready

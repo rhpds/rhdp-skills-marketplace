@@ -111,7 +111,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 │   ├── blog-generate/
 │   ├── agnosticv-catalog-builder/
 │   ├── agnosticv-validator/
-│   ├── validation-role-builder/
+│   ├── deployment-health-checker/
 │   └── ftl/
 └── docs/                # Skill documentation
     ├── SKILL-COMMON-RULES.md

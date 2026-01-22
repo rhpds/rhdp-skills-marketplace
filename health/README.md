@@ -16,7 +16,7 @@ The **health** namespace provides skills for validating deployed RHDP environmen
 
 ## Included Skills
 
-### /validation-role-builder
+### /deployment-health-checker
 
 Create Ansible validation roles for RHDP workloads and deployed environments.
 
@@ -36,7 +36,7 @@ Create Ansible validation roles for RHDP workloads and deployed environments.
 
 **Output:** Ansible role with comprehensive validation tasks
 
-[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/validation-role-builder.html)
+[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/deployment-health-checker.html)
 
 ---
 
@@ -45,7 +45,7 @@ Create Ansible validation roles for RHDP workloads and deployed environments.
 ### Creating Validation for New Workload
 
 ```
-1. /validation-role-builder
+1. /deployment-health-checker
    └─ Specify workload name and type
 
 2. Review generated validation role
@@ -85,7 +85,7 @@ Create Ansible validation roles for RHDP workloads and deployed environments.
 
 ### Generated Files
 
-After running `/validation-role-builder`, you'll have:
+After running `/deployment-health-checker`, you'll have:
 
 ```
 validation-role-name/

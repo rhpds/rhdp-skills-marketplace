@@ -7,7 +7,7 @@ Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **
 > **⚠️ Note:** Agent Skills work natively in **Claude Code** and **VS Code with Claude extension**. Cursor support is experimental and still being tested - skills may not work reliably in Cursor.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v1.3.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v1.3.1-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -68,7 +68,7 @@ bash /tmp/rhdp-install.sh
 - `/agnosticv-validator` - Validate catalog configurations
 
 **Health Skills:**
-- `/validation-role-builder` - Create Ansible validation roles
+- `/deployment-health-checker` - Create Ansible validation roles
 
 ---
 
@@ -124,11 +124,11 @@ bash /tmp/rhdp-install.sh
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `validation-role-builder` | Create validation roles | Automated post-deploy health checks |
+| `deployment-health-checker` | Create validation roles | Automated post-deploy health checks |
 
 **Workflow:**
 ```
-Deploy catalog → /validation-role-builder → Health checks → Verify readiness
+Deploy catalog → /deployment-health-checker → Health checks → Verify readiness
 ```
 
 **Documentation:** [health/README.md](health/README.md)
@@ -308,7 +308,7 @@ rhdp-skills-marketplace/
 ├── health/                 # Internal/Advanced namespace
 │   ├── README.md
 │   ├── skills/
-│   │   └── validation-role-builder/
+│   │   └── deployment-health-checker/
 │   └── docs/
 │
 ├── automation/             # Internal/Advanced namespace

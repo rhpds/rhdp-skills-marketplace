@@ -163,7 +163,7 @@ select_namespace() {
   echo "     └─ Skills: agnosticv-catalog-builder, agnosticv-validator"
   echo ""
   echo "  3) health (RHDP internal/advanced - Post-deployment validation)"
-  echo "     └─ Skills: validation-role-builder"
+  echo "     └─ Skills: deployment-health-checker"
   echo ""
   echo "  4) all (Install all namespaces)"
   echo ""
@@ -383,7 +383,7 @@ show_success() {
   if [[ "$NAMESPACE" == "health" ]] || [[ "$NAMESPACE" == "all" ]]; then
     echo ""
     print_msg "$BLUE" "Health (Post-Deployment Validation):"
-    echo "  • /validation-role-builder - Create validation roles"
+    echo "  • /deployment-health-checker - Create validation roles"
     echo "  • /ftl                     - Automated grader/solver generation"
   fi
 

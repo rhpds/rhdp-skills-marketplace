@@ -289,7 +289,7 @@ This enables:
 ## Related Skills
 
 - `/create-lab` - Create workshop content first
-- `/validation-role-builder` - Create deployment validators
+- `/deployment-health-checker` - Create deployment validators
 - `/verify-content` - Validate workshop quality
 
 ---

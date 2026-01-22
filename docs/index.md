@@ -52,7 +52,7 @@ For RHDP internal and advanced users:
 
 For RHDP internal and advanced users:
 
-- **[/validation-role-builder](skills/validation-role-builder.html)** - Create validation roles
+- **[/deployment-health-checker](skills/deployment-health-checker.html)** - Create validation roles
 - **[/ftl](skills/ftl.html)** - Finish The Labs: Automated grader and solver generation
 
 [Learn more about Health skills →](../health/README.html)
@@ -112,7 +112,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.3.0
+- **Version:** v1.3.1
 
 ---
 

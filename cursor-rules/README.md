@@ -85,7 +85,7 @@ my-project/
 │       │   └── RULE.md
 │       ├── agnosticv-validator/
 │       │   └── RULE.md
-│       ├── validation-role-builder/
+│       ├── deployment-health-checker/
 │       │   └── RULE.md
 │       ├── showroom-standards/
 │       │   └── RULE.md (alwaysApply: true)
@@ -214,7 +214,7 @@ When user says ANY of these phrases, invoke this skill:
 
 | Skill | Trigger Commands | Purpose |
 |-------|-----------------|---------|
-| validation-role-builder | "create validation role" | Create validation roles |
+| deployment-health-checker | "create validation role" | Create validation roles |
 
 ---
 

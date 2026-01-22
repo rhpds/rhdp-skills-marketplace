@@ -75,7 +75,7 @@ Validate catalog configurations and best practices.
 
 For creating validation and health check roles.
 
-### [/validation-role-builder](validation-role-builder.html)
+### [/deployment-health-checker](deployment-health-checker.html)
 Create Ansible validation roles for post-deployment checks.
 
 **Before you start:** Know what to validate (packages, services, etc.)
@@ -103,7 +103,7 @@ Generate automated graders and solvers for workshop testing.
 | blog-generate | Showroom | All | Complete workshop |
 | agnosticv-catalog-builder | AgnosticV | All | AgnosticV repo + access |
 | agnosticv-validator | AgnosticV | All | Catalog files |
-| validation-role-builder | Health | All | Validation requirements |
+| deployment-health-checker | Health | All | Validation requirements |
 | ftl | Health | All | Workshop with success criteria |
 
 ---

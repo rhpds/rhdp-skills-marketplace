@@ -43,7 +43,7 @@ Skills work natively with `/` commands:
 - `/agnosticv-validator` - Validate configuration
 
 **Health:**
-- `/validation-role-builder` - Create validation role
+- `/deployment-health-checker` - Create validation role
 
 ---
 
