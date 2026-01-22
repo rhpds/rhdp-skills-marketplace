@@ -13,6 +13,26 @@ Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **
 
 ---
 
+## 🎯 I Want To...
+
+**Create a customer demo or workshop?** → You want **Showroom** skills
+- `/create-demo` - Build a presenter-led demo (you present, customers watch)
+- `/create-lab` - Build a hands-on workshop (customers follow along step-by-step)
+
+**What you need:**
+1. Claude Code (CLI) or VS Code with Claude extension
+2. This installer (see Quick Start below)
+3. Your demo idea
+
+**What you DON'T need:**
+- No coding required
+- No Git knowledge needed
+- No command line experience required
+
+**RHDP Internal Team?** → See [Advanced Setup](#for-rhdp-internaladvanced-users) for AgnosticV and Health skills
+
+---
+
 ## Quick Start
 
 ### Installation

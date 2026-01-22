@@ -5,47 +5,62 @@ title: /create-lab
 
 # /create-lab
 
-Generate Red Hat Showroom workshop lab modules with Know/Do/Check structure.
+Create hands-on workshop content where customers follow along step-by-step.
+
+---
+
+## 🤔 Is This The Right Skill?
+
+**Use `/create-lab` if:**
+- ✅ Customers will DO things hands-on (click buttons, run commands)
+- ✅ You want Know → Do → Check structure (teach, practice, verify)
+- ✅ Multiple participants learning together
+
+**Use `/create-demo` instead if:**
+- ❌ YOU present and customers watch (like a PowerPoint)
+- ❌ One-directional presentation
+
+**Not sure?** Labs are more interactive. Demos are more presentational.
 
 ---
 
 ## Before You Start
 
-### Prerequisites
+### What You Need
 
-1. **Create your workshop repository from the template:**
-   ```bash
-   # Use the Red Hat Showroom template
-   # Go to: https://github.com/rhpds/showroom_template
-   # Click "Use this template" → "Create a new repository"
-   ```
+Have these ready before running the skill:
+- **Workshop topic** (e.g., "Getting started with OpenShift Pipelines")
+- **Learning goals** (what should customers learn?)
+- **Number of sections** you want (typically 3-5 modules)
+- **Reference materials** (product docs, screenshots, etc.)
 
-2. **Clone your new repository:**
-   ```bash
-   git clone git@github.com:yourusername/your-workshop.git
-   cd your-workshop
-   ```
+### What The AI Will Create
 
-3. **Have your content ready:**
-   - Product documentation URLs
-   - Architecture diagrams or screenshots
-   - Learning objectives (what users will learn)
+The skill generates:
+- Navigation page (index.adoc)
+- Module files (one per section)
+- Know/Do/Check structure for each module
+- Placeholder images and examples
 
-### What You'll Need
-
-- Workshop title and abstract
-- Number of modules (typically 3-5)
-- Technology stack (OpenShift, AAP, etc.)
-- Estimated completion time
+**You DON'T need:**
+- Git knowledge (the AI can help with that later)
+- Coding experience
+- AsciiDoc expertise (the AI writes that for you)
 
 ---
 
 ## Quick Start
 
-1. Open Claude Code in your workshop repository
-2. Run `/create-lab`
-3. Answer the guided questions
+1. Open Claude Code (or VS Code with Claude extension)
+2. Type `/create-lab`
+3. Answer the AI's questions:
+   - Workshop title
+   - Abstract (2-3 sentences)
+   - Technologies used
+   - Number of modules
+   - Learning objectives
 4. Review generated content
+5. Edit and customize as needed
 
 ---
 

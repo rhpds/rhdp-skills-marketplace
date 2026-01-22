@@ -5,49 +5,63 @@ title: /create-demo
 
 # /create-demo
 
-Generate Red Hat Showroom presenter-led demo content with Know/Show structure.
+Create presenter-led demo content where YOU present and customers watch.
+
+---
+
+## 🤔 Is This The Right Skill?
+
+**Use `/create-demo` if:**
+- ✅ YOU present while customers watch (like presenting PowerPoint)
+- ✅ You want Know → Show structure (explain, then demonstrate)
+- ✅ One presenter showing features
+
+**Use `/create-lab` instead if:**
+- ❌ Customers do hands-on activities (click buttons, run commands)
+- ❌ Multiple participants following step-by-step instructions
+
+**Not sure?** Demos are presentational (you drive). Labs are interactive (customers drive).
 
 ---
 
 ## Before You Start
 
-### Prerequisites
+### What You Need
 
-1. **Create your demo repository from the template:**
-   ```bash
-   # Use the Red Hat Showroom template
-   # Go to: https://github.com/rhpds/showroom_template
-   # Click "Use this template" → "Create a new repository"
-   ```
+Have these ready before running the skill:
+- **Demo topic** (e.g., "OpenShift AI capabilities")
+- **Key features** to highlight
+- **Number of sections** you want (typically 3-4 segments)
+- **Target audience** (technical, business, executive)
+- **Screenshots or talking points** (optional, can add later)
 
-2. **Clone your new repository:**
-   ```bash
-   git clone git@github.com:yourusername/your-demo.git
-   cd your-demo
-   ```
+### What The AI Will Create
 
-3. **Have your content ready:**
-   - Demo script or flow
-   - Key talking points
-   - Screenshots or diagrams to show
-   - Product features to highlight
+The skill generates:
+- Navigation page (index.adoc)
+- Section files (one per demo segment)
+- Know/Show structure for each section
+- Presenter notes and customer-facing content
 
-### What You'll Need
-
-- Demo title and description
-- Number of sections (typically 3-4)
-- Technology stack (OpenShift, AAP, etc.)
-- Estimated presentation time
-- Target audience (technical, business, etc.)
+**You DON'T need:**
+- Git knowledge (the AI can help with that later)
+- Coding experience
+- AsciiDoc expertise (the AI writes that for you)
 
 ---
 
 ## Quick Start
 
-1. Open Claude Code in your demo repository
-2. Run `/create-demo`
-3. Answer the guided questions
+1. Open Claude Code (or VS Code with Claude extension)
+2. Type `/create-demo`
+3. Answer the AI's questions:
+   - Demo title
+   - Description (2-3 sentences)
+   - Technologies/products to demo
+   - Number of sections
+   - Target audience level
 4. Review generated content
+5. Add your screenshots and customize
 
 ---
 

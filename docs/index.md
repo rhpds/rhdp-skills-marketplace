@@ -28,9 +28,9 @@ The installer will guide you through platform and namespace selection.
 
 ## What's Included?
 
-### 🎓 Showroom Namespace (Content Creation)
+**New to these terms?** [Check the Glossary →](reference/glossary.html)
 
-For external developers and content creators:
+### 🎓 Showroom (Most Users)
 
 - **[/create-lab](skills/create-lab.html)** - Generate workshop lab modules
 - **[/create-demo](skills/create-demo.html)** - Generate presenter-led demos
@@ -39,37 +39,29 @@ For external developers and content creators:
 
 [View all Showroom skills →](skills/index.html#showroom-skills-content-creation)
 
-### ⚙️ AgnosticV Namespace (RHDP Provisioning)
+### ⚙️ AgnosticV (RHDP Team)
 
-For RHDP internal and advanced users:
-
-- **[/agnosticv-catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs (unified)
+- **[/agnosticv-catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs
 - **[/agnosticv-validator](skills/agnosticv-validator.html)** - Validate configurations
 
-[Learn more about AgnosticV skills →](setup/agnosticv.html)
+[Learn more →](setup/agnosticv.html)
 
-### 🏥 Health Namespace (Post-Deployment Validation)
-
-For RHDP internal and advanced users:
+### 🏥 Health (RHDP Team)
 
 - **[/deployment-health-checker](skills/deployment-health-checker.html)** - Create validation roles
-- **[/ftl](skills/ftl.html)** - Finish The Labs: Automated grader and solver generation
+- **[/ftl](skills/ftl.html)** - Automated grader/solver generation
 
-[Learn more about Health skills →](../health/README.html)
+[Learn more →](../health/README.html)
 
 ---
 
 ## Coming Soon
 
-### 🤖 Automation Namespace (Intelligent Automation)
+### 🤖 Automation (In Development)
 
-**Status:** In Development
+- **[/field-automation-builder](https://github.com/rhpds/field-sourced-content)** - Field content integration
 
-Future skills for intelligent automation and field-sourced content integration:
-
-- **[/field-automation-builder](https://github.com/rhpds/field-sourced-content)** - Integration with field-sourced content repository for automated catalog generation
-
-[Learn more about Automation vision →](../automation/README.html)
+[Learn more →](../automation/README.html)
 
 ---
 
@@ -112,7 +104,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.3.1
+- **Version:** v1.4.0
 
 ---
 

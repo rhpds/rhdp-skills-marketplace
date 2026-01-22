@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.4.0] - 2026-01-22
+
+### Added
+- **Sales-friendly documentation** - Major accessibility improvements for non-technical users
+  - Added "I Want To..." quick start section in README.md for salespeople and content creators
+  - Created comprehensive glossary (docs/reference/glossary.md) explaining all technical terms in plain language
+  - Added decision trees to create-lab.md and create-demo.md for easier skill selection
+  - Enhanced install.sh with clear namespace descriptions and examples
+
+### Changed
+- **Simplified all documentation** following "less is more" principle
+  - Removed Git prerequisites from create-lab.md and create-demo.md
+  - Emphasized no coding/Git knowledge required for workshop creation
+  - Simplified docs/index.md with clearer audience sections (Most Users vs RHDP Team)
+  - Removed all time estimates from documentation
+  - Removed cost/pricing mentions - focus on capabilities only
+  - Changed language from "free text editor" to "AI-powered text editor"
+  - Consistently refer to "Claude Code (CLI) or VS Code with Claude extension"
+
+### Focus
+This release makes RHDP Skills Marketplace accessible to average salespeople and content creators who may not have technical backgrounds. Documentation now assumes zero Git knowledge and zero command line experience for Showroom skills.
+
 ## [v1.3.1] - 2026-01-22
 
 ### Changed
