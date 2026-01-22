@@ -398,7 +398,6 @@ show_success() {
     echo ""
     print_msg "$BLUE" "Health (Post-Deployment Validation):"
     echo "  • /deployment-health-checker - Create validation roles"
-    echo "  • /ftl                     - Automated grader/solver generation"
   fi
 
   echo ""
