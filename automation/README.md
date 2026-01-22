@@ -280,7 +280,7 @@ Have ideas for automation capabilities? We'd love to hear them!
 - Cost optimization methods
 
 **Contact:**
-- Slack: #forum-rhdp-automation
+- Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - GitHub: https://github.com/rhpds/rhdp-skills-marketplace/issues
 - Email: rhdp-team@redhat.com
 
@@ -308,5 +308,5 @@ Skills in this namespace are planned for future releases. Documentation reflects
 
 **Follow development:**
 - GitHub: https://github.com/rhpds/rhdp-skills-marketplace
-- Slack: #forum-rhdp-automation
+- Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - CHANGELOG: [View updates](../CHANGELOG.md)

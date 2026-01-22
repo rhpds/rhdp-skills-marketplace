@@ -895,7 +895,7 @@ link:<github-pages-url>[Open Guide^,role=params-link]
 
 * <Author Name> - mailto:<email>[<email>] - <slack-handle>
 
-For questions or feedback, reach out in Slack: #forum-rhdp-content
+For questions or feedback, reach out in Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 ```
 
 #### 10.4: Generate info-message-template.adoc
@@ -949,7 +949,7 @@ NOTE: The data above comes from `agnosticd_user_info.data` in your workload.
 
 == Support
 
-Questions? Reach out in Slack: #forum-rhdp
+Questions? Reach out in Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 ```
 
 **Explain agnosticd_user_info:**
@@ -990,7 +990,7 @@ link:{openshift_cluster_console_url}/showroom[Open Guide^]
 
 == Support
 
-Questions? #forum-rhdp
+Questions? [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 ```
 
 ### Step 11: Write Files
@@ -1267,7 +1267,7 @@ Recommended actions:
    git push origin <branch-name>
    gh pr create --fill
 
-4. Request review in #forum-rhdp
+4. Request review in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 ```
 
 ---

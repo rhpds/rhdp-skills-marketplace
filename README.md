@@ -424,18 +424,18 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-**Maintainer:** Prakhar Srivastava (@prakhar1985), Manager – Technical Marketing, Red Hat
+**Maintainers:**
+- Prakhar Srivastava (@prakhar1985)
+- Nate Stephany
 
 **RHDP Development Team:**
 - Tyrell Reddy
 - Juliano Mohr
 - Mitesh Sharma
 - Judd Maltin
-
-**Special Thanks:**
-- Nate Stephany (RHDP Catalog Owner)
-- Red Hat Demo Platform Team
-- Red Hat Showroom Community
+- Ritesh Shah
+- Tony Kay
+- Wolfgang
 
 ---
 

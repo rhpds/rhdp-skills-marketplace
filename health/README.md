@@ -284,7 +284,7 @@ Additional health check and validation skills may be added in future releases.
 
 - **Documentation:** https://rhpds.github.io/rhdp-skills-marketplace
 - **GitHub Issues:** https://github.com/rhpds/rhdp-skills-marketplace/issues
-- **Slack:** #forum-rhdp or #forum-rhdp-automation
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) or [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - **Ansible Collections:** https://github.com/agnosticd
 
 ---

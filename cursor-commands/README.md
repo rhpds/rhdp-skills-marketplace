@@ -182,7 +182,7 @@ Skills in Claude Code are more powerful and fully automated.
 
 - **Repository:** https://github.com/rhpds/rhdp-skills-marketplace
 - **Issues:** https://github.com/rhpds/rhdp-skills-marketplace/issues
-- **Slack:** #forum-rhdp or #forum-rhdp-content
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) or [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 
 ---
 

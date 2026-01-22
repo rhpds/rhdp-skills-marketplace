@@ -75,7 +75,7 @@ Examples:
    ```bash
    curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
    ```
-4. Announce in #forum-rhdp Slack channel
+4. Announce in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) Slack channel
 
 ## Manual Release Process
 

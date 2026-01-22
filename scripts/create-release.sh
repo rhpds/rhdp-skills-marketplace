@@ -208,7 +208,7 @@ show_success() {
   print_msg "$CYAN" "Next steps:"
   echo "  1. Verify release on GitHub"
   echo "  2. Test install script: curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash"
-  echo "  3. Announce release in #forum-rhdp Slack channel"
+  echo "  3. Announce release in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) Slack channel"
   echo ""
 }
 

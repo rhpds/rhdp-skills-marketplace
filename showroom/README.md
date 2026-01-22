@@ -322,7 +322,7 @@ include::partial$_attributes.adoc[]
 
 - **Documentation:** https://rhpds.github.io/rhdp-skills-marketplace
 - **GitHub Issues:** https://github.com/rhpds/rhdp-skills-marketplace/issues
-- **Slack:** #forum-rhdp-content
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 
 ---
 
