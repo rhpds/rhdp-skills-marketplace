@@ -269,7 +269,7 @@ rhdp-skills-marketplace/
 │       ├── workload-mappings.md
 │       └── infrastructure-guide.md
 │
-├── health/                 # Internal/Testing namespace
+├── health/                 # Internal/Advanced namespace
 │   ├── README.md
 │   ├── skills/
 │   │   └── validation-role-builder/
