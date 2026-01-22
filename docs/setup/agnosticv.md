@@ -30,18 +30,22 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Included Skills
 
-### /agv-generator
+### /agv-catalog
 
-Create complete AgnosticV catalog items with infrastructure provisioning configuration.
+Create or update AgnosticV catalog files (unified skill).
+
+**Modes:**
+- Full Catalog - Generate all files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
+- Description Only - Extract from Showroom content
+- Info Template - Document agnosticd_user_info usage
 
 **Features:**
-- Interactive catalog creation
-- Reference catalog search
+- Git workflow built-in (pull main, create branch)
 - Workload recommendations
-- UUID generation
-- Git workflow integration
+- UUID generation and validation
+- Showroom content extraction
 
-[View detailed documentation →](../skills/agv-generator.html)
+[View detailed documentation →](../skills/agv-catalog.html)
 
 ### /agv-validator
 
@@ -55,18 +59,6 @@ Validate AgnosticV configurations against best practices and deployment requirem
 - Best practice suggestions
 
 [View detailed documentation →](../skills/agv-validator.html)
-
-### /generate-agv-description
-
-Generate catalog descriptions from existing lab or demo content.
-
-**Features:**
-- Extract abstract from Showroom content
-- Technology detection
-- AsciiDoc formatting
-- Showroom URL integration
-
-[View detailed documentation →](../skills/generate-agv-description.html)
 
 ---
 
@@ -129,28 +121,23 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 ## Typical Workflow
 
 ```
-1. /agv-generator
-   ↓ Creates catalog files (common.yaml, description.adoc)
+1. /agv-catalog
+   ↓ Creates catalog files (git workflow built-in)
+   ↓ Generates: common.yaml, dev.yaml, description.adoc, info-message-template.adoc
 
-2. Git commit and push to feature branch
-   ↓
-
-3. Test in RHDP Integration environment
-   ↓
-
-4. /agv-validator (if issues found)
+2. /agv-validator
    ↓ Validates configuration
 
-5. Fix issues and retest
+3. Push and create PR (git already committed)
    ↓
 
-6. Create Pull Request
+4. Test in RHDP Integration environment
    ↓
 
-7. Deploy via GitOps (Argo CD)
+5. Deploy via GitOps (Argo CD)
    ↓
 
-8. /create-lab with UserInfo variables
+6. /create-lab with UserInfo variables
    ↓ Generate workshop content using deployed resources
 ```
 
@@ -158,19 +145,23 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Example: Creating a Catalog
 
-### Step 1: Run /agv-generator
+### Step 1: Run /agv-catalog
 
 ```
 In Claude Code or Cursor:
-/agv-generator
+/agv-catalog
 
+Choose mode: 1 (Full Catalog)
+Git workflow: Pulls main, creates branch automatically
 Answer prompts:
 - AgnosticV path: ~/work/code/agnosticv
-- Existing catalog reference? Search for similar catalog
+- Search similar catalogs
 - Catalog name: "Agentic AI on OpenShift"
 - Infrastructure: CNV multi-node
 - Multi-user: Yes
 - Workloads: OpenShift AI, LiteLLM, Showroom
+
+Auto-commits to new branch
 ```
 
 ### Step 2: Review Generated Files
@@ -184,13 +175,11 @@ ls -la
 # └── dev.yaml            # Development overrides
 ```
 
-### Step 3: Git Workflow
+### Step 3: Push and Create PR
 
 ```bash
-git status
-git add agd_v2/agentic-ai-openshift/
-git commit -m "Add Agentic AI on OpenShift catalog"
-git push origin agentic-ai-openshift
+# /agv-catalog already committed to branch
+git push origin your-branch-name
 gh pr create --fill
 ```
 

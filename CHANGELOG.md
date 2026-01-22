@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.2.0] - 2026-01-22
+
+### Added
+- **New unified `/agv-catalog` skill** - Consolidates `/agv-generator` and `/generate-agv-description`
+  - Mode 1: Full Catalog (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
+  - Mode 2: Description Only (extract from Showroom)
+  - Mode 3: Info Template (agnosticd_user_info documentation)
+  - Built-in git workflow (pull main, create branch without feature/ prefix)
+  - Auto-commit functionality
+
+### Changed
+- AgnosticV workflow simplified - one skill for all catalog operations
+- Git workflow now enforced in all AgnosticV skills (no feature/ prefix)
+- Documentation updated to reference unified skill
+
+### Deprecated
+- `/agv-generator` - Use `/agv-catalog` Mode 1 instead
+- `/generate-agv-description` - Use `/agv-catalog` Mode 2 instead
+
+### Removed
+- docs/skills/agv-generator.md documentation page (replaced by agv-catalog.md)
+- docs/skills/generate-agv-description.md documentation page (replaced by agv-catalog.md)
+
 ## [v1.1.0] - 2026-01-22
 
 ### Added
@@ -70,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.2.0
 [v1.1.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.1.0
 [1.0.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.0.0

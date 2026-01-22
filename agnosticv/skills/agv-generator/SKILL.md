@@ -10,9 +10,19 @@ model: sonnet
 
 # Skill: agv-generator
 
-**Name:** AgnosticV Catalog Generator
+**⚠️ DEPRECATED - Use `/agv-catalog` instead**
+
+This skill has been consolidated into `/agv-catalog`. Please use:
+- `/agv-catalog` Mode 1 (Full Catalog) for the same functionality
+- Includes improved git workflow and additional features
+
+[View /agv-catalog documentation](../agv-catalog/SKILL.md)
+
+---
+
+**Name:** AgnosticV Catalog Generator (Deprecated)
 **Description:** Create complete AgnosticV catalog items with infrastructure provisioning configuration for RHDP
-**Version:** 1.0.0
+**Version:** 1.0.0 (Deprecated)
 **Last Updated:** 2026-01-22
 
 ---

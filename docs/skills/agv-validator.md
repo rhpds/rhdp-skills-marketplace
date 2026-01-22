@@ -233,4 +233,4 @@ workloads:
 
 ---
 
-[← Back to Skills](index.html) | [Next: /generate-agv-description →](generate-agv-description.html)
+[← Back to Skills](index.html) | [Next: /agv-catalog →](agv-catalog.html)

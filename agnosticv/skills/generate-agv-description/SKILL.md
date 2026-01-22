@@ -10,6 +10,16 @@ model: sonnet
 
 # generate-agv-description
 
+**⚠️ DEPRECATED - Use `/agv-catalog` instead**
+
+This skill has been consolidated into `/agv-catalog`. Please use:
+- `/agv-catalog` Mode 2 (Description Only) for the same functionality
+- Includes improved Showroom extraction and git workflow
+
+[View /agv-catalog documentation](../agv-catalog/SKILL.md)
+
+---
+
 Generate a properly formatted `description.adoc` file for AgnosticV catalog entries that appears in the Red Hat Demo Platform UI.
 
 ## Quick Start
