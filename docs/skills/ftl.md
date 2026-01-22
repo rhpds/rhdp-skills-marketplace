@@ -9,7 +9,7 @@ Finish The Labs - Automated grader and solver generation for workshop testing an
 
 > **🚧 Coming Soon**
 > This skill is currently in development. The documentation below is a preview of planned functionality.
-> Interested in this skill? Share your feedback in Slack: #forum-rhdp
+> Interested in this skill? Share your feedback in Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 
 ---
 
