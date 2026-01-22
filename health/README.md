@@ -201,33 +201,17 @@ validate_deployment: true
 
 ## Future Skills (Planned)
 
-### /ftl (Fast Track Learner)
+Additional health check and validation skills may be added in future releases.
 
-AI-powered skill for rapid environment familiarization and testing.
+**Potential areas:**
+- Advanced workload-specific validators
+- Performance testing automation
+- Security scanning integration
+- Compliance checking automation
 
-**Planned Features:**
-- Automatic environment discovery
-- Intelligent test generation
-- Learning path recommendations
-- Quick validation execution
-- Environment readiness scoring
-
-**Status:** Planned for future release
-
----
-
-### /automation
-
-AI-powered skill for automating RHDP workflows and operations.
-
-**Planned Features:**
-- Automated deployment workflows
-- Smart remediation suggestions
-- Workflow orchestration
-- Environment lifecycle automation
-- Integration with RHDP APIs
-
-**Status:** Planned for future release
+**Related Skills:**
+- See [automation namespace](../automation/README.md) for /ftl and workflow automation
+- See [agnosticv namespace](../agnosticv/README.md) for catalog validation
 
 ---
 

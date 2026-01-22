@@ -115,8 +115,6 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `validation-role-builder` | Create validation roles | Automated post-deploy health checks |
-| `ftl` (future) | Fast Track Learner | Environment discovery and testing |
-| `automation` (future) | Workflow automation | Automated RHDP operations |
 
 **Workflow:**
 ```
@@ -124,6 +122,26 @@ Deploy catalog → /validation-role-builder → Health checks → Verify readine
 ```
 
 **Documentation:** [health/README.md](health/README.md)
+
+---
+
+### 🤖 automation (RHDP Internal/Advanced - Intelligent Automation)
+
+**Purpose:** Workflow automation, intelligent testing, and environment discovery
+
+**Skills:**
+
+| Skill | Description | Use Case |
+|-------|-------------|----------|
+| `ftl` (future) | Fast Track Learner | Environment discovery and intelligent testing |
+| `automation` (future) | Workflow automation | Automated RHDP operations and orchestration |
+
+**Workflow:**
+```
+/ftl → Discover environment → Generate tests → /automation → Orchestrate workflows
+```
+
+**Documentation:** [automation/README.md](automation/README.md)
 
 ---
 
@@ -254,7 +272,12 @@ rhdp-skills-marketplace/
 ├── health/                 # Internal/Testing namespace
 │   ├── README.md
 │   ├── skills/
-│   │   ├── validation-role-builder/
+│   │   └── validation-role-builder/
+│   └── docs/
+│
+├── automation/             # Internal/Advanced namespace
+│   ├── README.md
+│   ├── skills/
 │   │   ├── ftl/ (future)
 │   │   └── automation/ (future)
 │   └── docs/
