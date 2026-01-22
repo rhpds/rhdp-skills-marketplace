@@ -7,21 +7,9 @@ title: Home
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-**Supports:** Claude Code (Recommended) | Cursor (Experimental)
-
-> **⚠️ Important - Cursor Support is Experimental**
->
-> Agent Skills in Cursor are **not fully supported yet** but will be supported in the future. We're using the `.cursor/rules/` approach to reuse Claude Code skills as a temporary workaround.
->
-> **Claude Code is the recommended platform** for the best experience.
->
-> [Learn more about Cursor support →](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/cursor-rules/README.md) | [Cursor Forum Discussion →](https://forum.cursor.com/t/support-for-claude-skills/148267)
-
 ---
 
 ## Quick Start
-
-### Installation
 
 Download and run the installer:
 
@@ -30,21 +18,11 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 bash /tmp/rhdp-install.sh
 ```
 
-The installer will guide you through:
-1. Platform selection (Claude Code or Cursor)
-2. Namespace selection (showroom, agnosticv, health, or all)
-3. Automatic backup and installation
+The installer will guide you through platform and namespace selection.
 
-**For Claude Code users:**
-- Skills installed to `~/.claude/skills/`
-- Ready to use with `/skill-name` commands
-- Native Agent Skills support
+**Using Claude Code?** Skills work natively with `/skill-name` commands.
 
-**For Cursor users:**
-- Skills installed to `~/.cursor/skills/`
-- Rules installed to `.cursor/rules/` in current directory
-- Use trigger phrases like "create lab" or "validate agv"
-- ⚠️ Experimental - Claude Code is recommended
+**Using Cursor?** [See Cursor setup guide →](setup/cursor.html) *(experimental support)*
 
 ---
 
