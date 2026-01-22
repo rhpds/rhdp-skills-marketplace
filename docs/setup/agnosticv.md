@@ -13,7 +13,7 @@ Complete setup guide for RHDP provisioning skills.
 
 The **agnosticv** namespace provides AI-powered skills for managing RHDP catalog infrastructure provisioning and validation. These skills are designed for RHDP internal team members and advanced users who need to create and manage AgnosticV catalog items.
 
-**Target Audience:** RHDP internal team, advanced infrastructure developers
+**Target Audience:** RHDP Internal/Advanced developers
 
 ---
 
@@ -67,18 +67,6 @@ Generate catalog descriptions from existing lab or demo content.
 - Showroom URL integration
 
 [View detailed documentation →](../skills/generate-agv-description.html)
-
-### /validation-role-builder
-
-Create Ansible validation roles for RHDP workloads.
-
-**Features:**
-- Post-deployment validation
-- OpenShift resource checks
-- Workload-specific validation
-- Idempotent validation tasks
-
-[View detailed documentation →](../skills/validation-role-builder.html)
 
 ---
 

@@ -21,7 +21,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 The installer will guide you through:
 1. Platform selection (Claude Code or Cursor)
-2. Namespace selection (showroom, agnosticv, or all)
+2. Namespace selection (showroom, agnosticv, health, or all)
 3. Automatic backup and installation
 
 ---
@@ -46,9 +46,16 @@ For RHDP internal and advanced users:
 - **[/agv-generator](skills/agv-generator.html)** - Create catalog items
 - **[/agv-validator](skills/agv-validator.html)** - Validate configurations
 - **[/generate-agv-description](skills/generate-agv-description.html)** - Generate descriptions
-- **[/validation-role-builder](skills/validation-role-builder.html)** - Create validation roles
 
 [Learn more about AgnosticV skills →](setup/agnosticv.html)
+
+### 🏥 Health Namespace (Post-Deployment Validation)
+
+For RHDP internal and advanced users:
+
+- **[/validation-role-builder](skills/validation-role-builder.html)** - Create validation roles
+
+[Learn more about Health skills →](../health/README.html)
 
 ---
 
