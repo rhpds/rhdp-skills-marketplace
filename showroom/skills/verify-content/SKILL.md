@@ -34,7 +34,6 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
 **Detection Priority:**
 1. **Current Git Repo**: `.claude/prompts/` in current repository (highest priority)
 2. **Global Home**: `~/.claude/prompts/` (user's global settings)
-3. **Template Fallback**: `showroom_template_nookbag/.claude/prompts/` (source of truth)
 
 **Prompt Detection Steps:**
 
@@ -53,11 +52,6 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
    ls ~/.claude/prompts/*.txt 2>/dev/null
    ```
 
-4. **Check template fallback:**
-   ```bash
-   ls ~/work/code/showroom_template_nookbag/.claude/prompts/*.txt 2>/dev/null
-   ```
-
 **If multiple locations found, ask user:**
 
 ```
@@ -69,17 +63,13 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
 2. Global home: ~/.claude/prompts/
    └─ Last updated: 13 Jan 14:47 (10 prompts)
 
-3. Template (source): ~/work/code/showroom_template_nookbag/.claude/prompts/
-   └─ Last updated: 13 Jan 16:04 (10 prompts)
-
 Which prompts should I use for verification?
 
 Options:
 1. Current repo (use repo-specific prompts) - Recommended if customized
 2. Global home (use your personal defaults)
-3. Template (use latest from source of truth)
 
-Your choice: [1/2/3]
+Your choice: [1/2]
 ```
 
 **If only one location found:**
@@ -95,11 +85,11 @@ Your choice: [1/2/3]
 ```
 ❌ ERROR: No verification prompts found in any location.
 
-Please run:
-cd ~/work/code/showroom_template_nookbag
-cp .claude/prompts/*.txt ~/.claude/prompts/
+Verification prompts should be in:
+- Current repo: .claude/prompts/ (if repo-specific)
+- Global home: ~/.claude/prompts/ (for all projects)
 
-Then try /verify-content again.
+Please ensure verification prompts are available in one of these locations.
 ```
 
 **After user selects, confirm and show which prompts will be used:**
@@ -533,9 +523,8 @@ Every verification run checks:
 **Why multiple prompt locations?**
 
 Different repositories may need customized verification rules:
-- **Global defaults** (`~/.claude/prompts/`): Your standard verification rules
+- **Global defaults** (`~/.claude/prompts/`): Your standard verification rules for all projects
 - **Repo-specific** (`.claude/prompts/` in git repo): Custom rules for specific projects
-- **Template source** (`showroom_template_nookbag`): Latest upstream verification standards
 
 **Recommended workflow:**
 
@@ -548,20 +537,12 @@ Different repositories may need customized verification rules:
    - Example: Relaxed rules for internal documentation
    - Example: Additional industry-specific validation
 
-3. **Updating prompts**: Pull from template when new rules are released
-   ```bash
-   cd ~/work/code/showroom_template_nookbag
-   git pull
-   cp .claude/prompts/*.txt ~/.claude/prompts/
-   ```
-
 **How the skill detects prompts:**
 
 1. Checks current git repo for `.claude/prompts/*.txt`
 2. Checks global home `~/.claude/prompts/*.txt`
-3. Falls back to template `showroom_template_nookbag/.claude/prompts/*.txt`
-4. Asks you which to use if multiple locations found
-5. Shows you which prompts will be used before running verification
+3. Asks you which to use if multiple locations found
+4. Shows you which prompts will be used before running verification
 
 **When to customize prompts in repo:**
 - ✅ Partner content with additional requirements
