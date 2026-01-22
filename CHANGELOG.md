@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/generate-agv-description` - Use `/agv-catalog` Mode 2 instead
 
 ### Removed
+- `/agv-generator` skill directory (replaced by /agv-catalog)
+- `/generate-agv-description` skill directory (replaced by /agv-catalog)
 - docs/skills/agv-generator.md documentation page (replaced by agv-catalog.md)
 - docs/skills/generate-agv-description.md documentation page (replaced by agv-catalog.md)
 
