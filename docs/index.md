@@ -37,7 +37,7 @@ For external developers and content creators:
 - **[/verify-content](skills/verify-content.html)** - Quality validation
 - **[/blog-generate](skills/blog-generate.html)** - Transform to blog posts
 
-[Learn more about Showroom skills →](setup/showroom.html)
+[View all Showroom skills →](skills/index.html#showroom-skills-content-creation)
 
 ### ⚙️ AgnosticV Namespace (RHDP Provisioning)
 
