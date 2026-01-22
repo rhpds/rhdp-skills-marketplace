@@ -39,14 +39,14 @@ The installer will guide you through platform and namespace selection.
 
 [View all Showroom skills →](skills/index.html#showroom-skills-content-creation)
 
-### ⚙️ AgnosticV (RHDP Team)
+### ⚙️ AgnosticV (RHDP Team or Advanced Users)
 
 - **[/agnosticv-catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs
 - **[/agnosticv-validator](skills/agnosticv-validator.html)** - Validate configurations
 
 [Learn more →](setup/agnosticv.html)
 
-### 🏥 Health (RHDP Team)
+### 🏥 Health (RHDP Team or Advanced Users)
 
 - **[/deployment-health-checker](skills/deployment-health-checker.html)** - Create validation roles
 
