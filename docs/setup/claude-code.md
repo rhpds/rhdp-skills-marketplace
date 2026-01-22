@@ -62,13 +62,13 @@ You should see: create-lab, create-demo, agv-generator, etc.
 
 ### Step 1: Open Claude Code
 
-Click the Claude icon in the VS Code sidebar, then click "Claude Code: Open"
+Click the Claude icon in the VS Code activity bar to open Claude Code.
 
-![Open Claude Code in VS Code](../assets/images/vscode-claude-open.png)
+![Claude Code icon](../assets/images/vscode-claude-icon.png)
 
 ### Step 2: Use Slash Commands
 
-Type `/` to see available skills. Start typing a skill name to filter (e.g., `/veri` for verify-content).
+Type `/` to see available skills. The menu shows all installed skills under "Slash Commands".
 
 ![Using slash commands](../assets/images/vscode-slash-commands.png)
 
