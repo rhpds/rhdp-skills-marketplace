@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.2] - 2026-01-22
+
+### Changed - Showroom Template Reference Update
+Updated `/agnosticv-catalog-builder` skill to reference the correct Showroom template:
+
+**Template Change:**
+- Changed from `showroom-cookiecutter` to `showroom_template_nookbag`
+- Updated repository URL to https://github.com/rhpds/showroom_template_nookbag
+- Removed cookiecutter-specific instructions
+- Simplified example to directly reference the nookbag template
+
+### Focus
+This release ensures users are directed to the correct and currently maintained Showroom template when creating new repositories.
+
 ## [v1.5.1] - 2026-01-22
 
 ### Changed - AgnosticV Catalog Builder Refinement
@@ -240,7 +254,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.2...HEAD
+[v1.5.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.2
 [v1.5.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.1
 [v1.5.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.0
 [v1.4.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.4.0

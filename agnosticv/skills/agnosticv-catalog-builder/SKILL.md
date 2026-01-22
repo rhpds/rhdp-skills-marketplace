@@ -519,22 +519,19 @@ Q: Do you have a Showroom repository created for this catalog? [Y/n]
 ```
 📚 Create Showroom Repository
 
-Use the Showroom Cookiecutter template to create your repository:
+Use the Showroom Nookbag template to create your repository:
 
-Repository: https://github.com/rhpds/showroom-cookiecutter
+Repository: https://github.com/rhpds/showroom_template_nookbag
 
 Instructions:
-1. Visit: https://github.com/rhpds/showroom-cookiecutter
+1. Visit: https://github.com/rhpds/showroom_template_nookbag
 2. Follow the README to generate your showroom repository
 3. Recommended naming: {short-name}-showroom
 4. Create in: github.com/rhpds organization
 
 Example:
-  $ cookiecutter gh:rhpds/showroom-cookiecutter
-
-  repo_name [my-workshop]: {short-name}-showroom
-  author_name [Your Name]: <your-name>
-  description [Workshop description]: <catalog-description>
+  Use the nookbag template to create your repository:
+  https://github.com/rhpds/showroom_template_nookbag
 
 Once created, come back and re-run this skill with the repository URL.
 
