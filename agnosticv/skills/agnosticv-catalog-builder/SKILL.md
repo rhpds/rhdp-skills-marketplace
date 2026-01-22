@@ -1,5 +1,5 @@
 ---
-name: agv-catalog
+name: agnosticv-catalog-builder
 description: Create or update AgnosticV catalog files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
 ---
 
@@ -8,11 +8,11 @@ context: main
 model: sonnet
 ---
 
-# Skill: agv-catalog
+# Skill: agnosticv-catalog-builder
 
 **Name:** AgnosticV Catalog Builder
 **Description:** Create or update AgnosticV catalog files for RHDP deployments
-**Version:** 2.0.0
+**Version:** 2.0.1
 **Last Updated:** 2026-01-22
 
 ---
