@@ -43,9 +43,8 @@ For external developers and content creators:
 
 For RHDP internal and advanced users:
 
-- **[/agv-generator](skills/agv-generator.html)** - Create catalog items
+- **[/agv-catalog](skills/agv-catalog.html)** - Create/update catalogs (unified)
 - **[/agv-validator](skills/agv-validator.html)** - Validate configurations
-- **[/generate-agv-description](skills/generate-agv-description.html)** - Generate descriptions
 
 [Learn more about AgnosticV skills →](setup/agnosticv.html)
 

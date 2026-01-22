@@ -53,12 +53,12 @@ Transform workshop content into blog post format.
 
 For creating and managing RHDP catalog items.
 
-### [/agv-generator](agv-generator.html)
-Create AgnosticV catalog items with infrastructure configuration.
+### [/agv-catalog](agv-catalog.html)
+Create or update AgnosticV catalog files (unified skill).
 
 **Before you start:** Clone agnosticv repo, verify RHDP access
 
-**Use when:** Creating new RHDP catalog items
+**Use when:** Creating catalogs, updating descriptions, or generating info templates
 
 ---
 
@@ -68,15 +68,6 @@ Validate catalog configurations and best practices.
 **Before you start:** Have catalog files in agnosticv repo
 
 **Use when:** Validating before creating PR
-
----
-
-### [/generate-agv-description](generate-agv-description.html)
-Generate catalog descriptions from workshop content.
-
-**Before you start:** Complete workshop content and catalog structure
-
-**Use when:** Creating catalog description.adoc files
 
 ---
 
@@ -110,9 +101,8 @@ Generate automated graders and solvers for workshop testing.
 | create-demo | Showroom | All | Showroom template repo |
 | verify-content | Showroom | All | Workshop content |
 | blog-generate | Showroom | All | Complete workshop |
-| agv-generator | AgnosticV | All | AgnosticV repo + access |
+| agv-catalog | AgnosticV | All | AgnosticV repo + access |
 | agv-validator | AgnosticV | All | Catalog files |
-| generate-agv-description | AgnosticV | All | Workshop + catalog |
 | validation-role-builder | Health | All | Validation requirements |
 | ftl | Health | All | Workshop with success criteria |
 
