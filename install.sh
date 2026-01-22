@@ -19,7 +19,8 @@ DRY_RUN=false
 NAMESPACE=""
 PLATFORM=""
 FORCE=false
-REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace.git"
+REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace"
+GITHUB_API_URL="https://api.github.com/repos/rhpds/rhdp-skills-marketplace/releases/latest"
 
 # Installation paths (will be set based on platform)
 SKILLS_DIR=""
@@ -208,19 +209,48 @@ backup_existing() {
   echo ""
 }
 
-# Clone repository
-clone_repo() {
+# Download latest release
+download_release() {
   local temp_dir=$(mktemp -d)
 
   if [[ "$DRY_RUN" == true ]]; then
-    print_msg "$YELLOW" "[DRY RUN] Would clone $REPO_URL to $temp_dir" >&2
+    print_msg "$YELLOW" "[DRY RUN] Would download latest release to $temp_dir" >&2
     echo "$temp_dir"
     return
   fi
 
-  print_msg "$BLUE" "Cloning repository..." >&2
-  git clone --quiet "$REPO_URL" "$temp_dir" >&2
-  print_msg "$GREEN" "✓ Repository cloned" >&2
+  print_msg "$BLUE" "Fetching latest release..." >&2
+
+  # Get latest release info from GitHub API
+  local release_info
+  if ! release_info=$(curl -s "$GITHUB_API_URL" 2>/dev/null); then
+    print_msg "$YELLOW" "⚠️  Could not fetch release info from GitHub API, falling back to main branch" >&2
+    git clone --quiet --depth 1 "${REPO_URL}.git" "$temp_dir" >&2
+    print_msg "$GREEN" "✓ Repository downloaded" >&2
+    echo "" >&2
+    echo "$temp_dir"
+    return
+  fi
+
+  # Extract tarball URL and tag name
+  local tarball_url=$(echo "$release_info" | grep -o '"tarball_url": "[^"]*' | cut -d'"' -f4)
+  local tag_name=$(echo "$release_info" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
+
+  if [[ -z "$tarball_url" ]]; then
+    print_msg "$YELLOW" "⚠️  No releases found, falling back to main branch" >&2
+    git clone --quiet --depth 1 "${REPO_URL}.git" "$temp_dir" >&2
+    print_msg "$GREEN" "✓ Repository downloaded" >&2
+    echo "" >&2
+    echo "$temp_dir"
+    return
+  fi
+
+  print_msg "$BLUE" "Downloading release $tag_name..." >&2
+
+  # Download and extract tarball
+  curl -sL "$tarball_url" | tar xz -C "$temp_dir" --strip-components=1
+
+  print_msg "$GREEN" "✓ Release $tag_name downloaded" >&2
   echo "" >&2
 
   echo "$temp_dir"
@@ -422,7 +452,7 @@ main() {
   # Perform installation
   backup_existing
 
-  local repo_dir=$(clone_repo)
+  local repo_dir=$(download_release)
 
   if [[ "$NAMESPACE" == "all" ]]; then
     install_namespace "$repo_dir" "showroom"

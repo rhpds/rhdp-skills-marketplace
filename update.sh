@@ -16,7 +16,8 @@ NC='\033[0m' # No Color
 
 # Default values
 FORCE=false
-REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace.git"
+REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace"
+GITHUB_API_URL="https://api.github.com/repos/rhpds/rhdp-skills-marketplace/releases/latest"
 INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh"
 
 # Installation paths (will be detected)
@@ -117,16 +118,29 @@ detect_installation() {
 check_latest_version() {
   print_msg "$BLUE" "Checking for latest version..."
 
-  local temp_dir=$(mktemp -d)
-  git clone --quiet --depth 1 "$REPO_URL" "$temp_dir" 2>/dev/null
+  # Get latest release from GitHub API
+  local release_info
+  if ! release_info=$(curl -s "$GITHUB_API_URL" 2>/dev/null); then
+    print_msg "$YELLOW" "⚠️  Could not fetch release info from GitHub API, checking main branch..." >&2
+    local temp_dir=$(mktemp -d)
+    git clone --quiet --depth 1 "${REPO_URL}.git" "$temp_dir" 2>/dev/null
+    LATEST_VERSION=$(cat "$temp_dir/VERSION")
+    rm -rf "$temp_dir"
+  else
+    # Extract tag name from release info
+    LATEST_VERSION=$(echo "$release_info" | grep -o '"tag_name": "[^"]*' | cut -d'"' -f4)
 
-  LATEST_VERSION=$(cat "$temp_dir/VERSION")
+    if [[ -z "$LATEST_VERSION" ]]; then
+      print_msg "$YELLOW" "⚠️  No releases found, checking main branch..." >&2
+      local temp_dir=$(mktemp -d)
+      git clone --quiet --depth 1 "${REPO_URL}.git" "$temp_dir" 2>/dev/null
+      LATEST_VERSION=$(cat "$temp_dir/VERSION")
+      rm -rf "$temp_dir"
+    fi
+  fi
 
   print_msg "$GREEN" "✓ Latest version: $LATEST_VERSION"
   echo ""
-
-  # Cleanup
-  rm -rf "$temp_dir"
 }
 
 # Compare versions
@@ -144,23 +158,34 @@ compare_versions() {
 
 # Show changelog
 show_changelog() {
-  local temp_dir=$(mktemp -d)
-  git clone --quiet --depth 1 "$REPO_URL" "$temp_dir" 2>/dev/null
-
   print_msg "$CYAN" "What's New in $LATEST_VERSION:"
   echo ""
 
-  # Extract latest version section from CHANGELOG
-  if [[ -f "$temp_dir/CHANGELOG.md" ]]; then
-    awk "/## \[$LATEST_VERSION\]/,/## \[/{if (/## \[/ && NR!=1) exit; print}" "$temp_dir/CHANGELOG.md" | grep -v "^## \[$LATEST_VERSION\]" | head -n 20
+  # Get release notes from GitHub API
+  local release_info
+  if release_info=$(curl -s "$GITHUB_API_URL" 2>/dev/null); then
+    local release_body=$(echo "$release_info" | grep -o '"body": "[^"]*' | cut -d'"' -f4 | sed 's/\\n/\n/g' | sed 's/\\r//g')
+
+    if [[ -n "$release_body" ]]; then
+      echo "$release_body" | head -n 20
+    else
+      # Fallback to CHANGELOG.md if no release body
+      local temp_dir=$(mktemp -d)
+      git clone --quiet --depth 1 "${REPO_URL}.git" "$temp_dir" 2>/dev/null
+
+      if [[ -f "$temp_dir/CHANGELOG.md" ]]; then
+        awk "/## \[$LATEST_VERSION\]/,/## \[/{if (/## \[/ && NR!=1) exit; print}" "$temp_dir/CHANGELOG.md" | grep -v "^## \[$LATEST_VERSION\]" | head -n 20
+      else
+        echo "No changelog available."
+      fi
+
+      rm -rf "$temp_dir"
+    fi
   else
-    echo "No changelog available."
+    echo "Could not fetch changelog from GitHub."
   fi
 
   echo ""
-
-  # Cleanup
-  rm -rf "$temp_dir"
 }
 
 # Perform update

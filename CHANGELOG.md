@@ -5,6 +5,22 @@ All notable changes to the RHDP Skills Marketplace will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- GitHub releases and version tagging system
+- Install/update scripts now download from latest GitHub release
+- Individual skill documentation pages with "Before You Start" sections
+- Health namespace documentation added to GitHub Pages
+- `/ftl` skill moved to Health namespace (automated workshop grader/solver)
+- Comprehensive prerequisites for each skill
+
+### Changed
+- Install script uses GitHub releases API instead of cloning main branch
+- Update script checks latest release via GitHub API
+- Improved fallback to main branch if releases unavailable
+- Documentation structure reorganized for clarity
+
 ## [1.0.0] - 2026-01-22
 
 ### Added
@@ -19,7 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `agv-generator` - Create AgnosticV catalog items with infrastructure provisioning
 - `agv-validator` - Validate AgnosticV configurations and best practices
 - `generate-agv-description` - Generate catalog descriptions from lab/demo content
+
+#### Health Namespace (RHDP Internal - Post-Deployment Validation)
 - `validation-role-builder` - Create Ansible validation roles for RHDP workloads
+- `ftl` - Finish The Labs: Automated grader and solver generation for workshop testing
 
 #### Installation System
 - Platform-agnostic installation script with Claude Code and Cursor support
@@ -47,4 +66,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.0.0
