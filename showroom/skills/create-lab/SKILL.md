@@ -6,9 +6,6 @@ description: Guide you through creating a single Red Hat Showroom workshop modul
 ---
 context: main
 model: sonnet
-hooks:
-  PreToolUse:
-    - .claude/hooks/validate-paths.sh
 ---
 
 # Lab Module Generator

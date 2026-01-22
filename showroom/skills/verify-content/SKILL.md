@@ -6,9 +6,6 @@ description: Run comprehensive quality verification on workshop or demo content 
 ---
 context: fork
 model: sonnet
-hooks:
-  PreToolUse:
-    - .claude/hooks/validate-paths.sh
 ---
 
 # Content Verification Skill

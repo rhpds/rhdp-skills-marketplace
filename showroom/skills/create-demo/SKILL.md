@@ -6,9 +6,6 @@ description: Guide you through creating a Red Hat Showroom demo module using the
 ---
 context: main
 model: sonnet
-hooks:
-  PreToolUse:
-    - .claude/hooks/validate-paths.sh
 ---
 
 # Demo Module Generator
