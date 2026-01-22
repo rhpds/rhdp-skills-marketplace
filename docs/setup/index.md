@@ -20,7 +20,7 @@ Quick start for installing RHDP Skills Marketplace.
 
   <div class="card">
     <h3>🧪 Cursor (Experimental)</h3>
-    <p>Via .cursor/rules workaround</p>
+    <p>Still testing - may not work reliably</p>
     <a href="cursor.html">Cursor Setup →</a>
   </div>
 </div>

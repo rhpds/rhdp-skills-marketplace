@@ -2,9 +2,9 @@
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-Supports: **Claude Code (Recommended)** | **Cursor (Experimental)**
+Supports: **Claude Code (Recommended)** | **Cursor (Experimental - Still Testing)**
 
-> **⚠️ Note:** Agent Skills in Cursor are not fully supported yet. Claude Code is the recommended platform.
+> **⚠️ Note:** Agent Skills in Cursor are not fully supported yet and we're still testing workarounds. Skills may not work reliably in Cursor. **Claude Code is the recommended platform.**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Version](https://img.shields.io/badge/version-v1.0.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
@@ -245,25 +245,25 @@ Skills are installed to:
 
 **Native Agent Skills support** - skills work out of the box with `/skill-name` commands.
 
-### Cursor (Experimental)
+### Cursor (Experimental - Still Testing)
 
 **⚠️ Experimental:** Agent Skills in Cursor are not fully supported yet. The Cursor team stated it's "not ready for primetime" ([source](https://forum.cursor.com/t/support-for-claude-skills/148267)).
 
 **Current approach for Cursor:**
 
-Skills are installed to `~/.cursor/skills/` and `~/.cursor/docs/`, then reused via `.cursor/rules/` directory in your project:
+We're testing a workaround using `.cursor/rules/` directory:
 
 1. Install skills: `bash install.sh --platform cursor --namespace all`
-2. Copy rules to project: `cp -r cursor-rules/.cursor/rules .cursor/`
+2. Rules automatically installed to `.cursor/rules/` in current directory
 3. Use trigger phrases like "create lab" or "validate agv"
 
 **Status:**
-- Works in Cursor stable/Enterprise
-- Uses `.cursor/rules/RULE.md` files to reference skills
+- **Still testing** - may not work reliably
+- Uses `.cursor/rules/RULE.md` files to reference skills from `~/.cursor/skills/`
 - Experimental workaround until Cursor fully supports Agent Skills
 - See: [cursor-rules/README.md](cursor-rules/README.md)
 
-**Recommendation:** Use Claude Code for best experience. Cursor support is experimental.
+**Recommendation:** Use Claude Code for best experience. Cursor support is experimental and still being tested.
 
 ---
 

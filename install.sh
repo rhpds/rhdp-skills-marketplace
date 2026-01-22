@@ -92,8 +92,8 @@ detect_platform() {
 
   print_msg "$BLUE" "Which AI coding assistant are you using?"
   echo ""
-  echo "  1) Claude Code"
-  echo "  2) Cursor"
+  echo "  1) Claude Code (Recommended - Native support)"
+  echo "  2) Cursor (Experimental - Still testing, may not work reliably)"
   echo ""
   read -p "Enter your choice [1-2]: " choice < /dev/tty
 
@@ -367,7 +367,8 @@ show_success() {
   else
     print_msg "$YELLOW" "  ⚠️  Cursor Users - Important!"
     echo ""
-    echo "  Agent Skills in Cursor are experimental. Claude Code is the recommended platform."
+    echo "  Agent Skills in Cursor are experimental and we're still testing."
+    echo "  Skills may not work reliably. Claude Code is the recommended platform."
     echo ""
     echo "  ✓ Skills installed to: ~/.cursor/skills/"
     echo "  ✓ Docs installed to: ~/.cursor/docs/"

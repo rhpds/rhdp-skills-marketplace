@@ -22,7 +22,7 @@ The installer will guide you through platform and namespace selection.
 
 **Using Claude Code?** Skills work natively with `/skill-name` commands.
 
-**Using Cursor?** [See Cursor setup guide →](setup/cursor.html) *(experimental support)*
+**Using Cursor?** [See Cursor setup guide →](setup/cursor.html) *(experimental - still testing, may not work reliably)*
 
 ---
 

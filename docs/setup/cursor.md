@@ -5,9 +5,11 @@ title: Cursor Setup
 
 # Cursor Setup
 
-> **⚠️ Experimental Support**
+> **⚠️ Experimental Support - Still Testing**
 >
-> Agent Skills are not fully supported in Cursor yet. We recommend **Claude Code** for the best experience.
+> Agent Skills are not fully supported in Cursor yet and we're still testing the `.cursor/rules/` workaround. **Skills may not work reliably in Cursor.**
+>
+> We recommend **Claude Code** for the best experience.
 >
 > [Why Cursor support is experimental →](https://forum.cursor.com/t/support-for-claude-skills/148267)
 
