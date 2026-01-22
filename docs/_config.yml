@@ -1,7 +1,11 @@
 title: RHDP Skills Marketplace
-description: AI-powered skills for Red Hat Demo Platform content creation and provisioning
+description: AI-powered skills for Red Hat Demo Platform content creation and provisioning. Questions? Join us on Slack at #forum-demo-developers
 theme: jekyll-theme-cayman
 markdown: kramdown
+
+# Contact
+slack_channel: https://redhat.enterprise.slack.com/archives/C04MLMA15MX
+slack_channel_name: "#forum-demo-developers"
 
 # GitHub repository
 repository: rhpds/rhdp-skills-marketplace

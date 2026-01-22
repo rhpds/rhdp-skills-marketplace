@@ -220,7 +220,7 @@ A project folder tracked by Git. Contains all files and history.
 
 ## Still Confused?
 
-- **Slack:** #forum-rhdp or #forum-rhdp-content
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - **GitHub Issues:** [Report unclear documentation](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Email:** Ask your Red Hat contact
 

@@ -303,7 +303,7 @@ uuidgen
 ## Support Resources
 
 - **GitHub Issues:** [Report bugs](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- **Slack:** #forum-rhdp or #forum-rhdp-content
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 - **Documentation:** [Full docs](https://rhpds.github.io/rhdp-skills-marketplace)
 - **Changelog:** [Version history](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/CHANGELOG.md)
 

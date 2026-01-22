@@ -415,9 +415,8 @@ HOME=/custom/home/path bash <(curl -fsSL https://raw.githubusercontent.com/rhpds
 
 **GitHub Issues:** [Create new issue](https://github.com/rhpds/rhdp-skills-marketplace/issues/new)
 
-**Slack (RHDP Internal):**
-- #forum-rhdp - General RHDP questions
-- #forum-rhdp-content - Content creation questions
+**Slack:**
+- [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) - RHDP questions and support
 
 **Include in Your Request:**
 ```

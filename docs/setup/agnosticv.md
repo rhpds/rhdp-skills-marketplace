@@ -351,7 +351,7 @@ uuidgen
 1. Read error messages carefully
 2. Fix errors one at a time
 3. Re-validate after each fix
-4. Ask in #forum-rhdp if stuck
+4. Ask in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) if stuck
 
 ---
 

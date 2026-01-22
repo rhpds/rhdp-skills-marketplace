@@ -93,7 +93,7 @@ ls .cursor/rules/
 
 - [Troubleshooting Guide](../reference/troubleshooting.html)
 - [GitHub Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- Slack: #forum-rhdp
+- Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 
 ---
 

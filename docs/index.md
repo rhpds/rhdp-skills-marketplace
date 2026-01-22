@@ -106,8 +106,8 @@ bash /tmp/rhdp-update.sh
 ## Support
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.5.2
+- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+- **Version:** v1.5.3
 
 ---
 
