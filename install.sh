@@ -48,7 +48,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 [OPTIONS]"
       echo ""
       echo "Options:"
-      echo "  --namespace <name>   Install specific namespace (showroom, agnosticv, all)"
+      echo "  --namespace <name>   Install specific namespace (showroom, agnosticv, health, all)"
       echo "  --platform <name>    Specify platform (claude, cursor)"
       echo "  --dry-run            Show what would be installed without making changes"
       echo "  --force              Force installation even if already installed"
@@ -158,12 +158,15 @@ select_namespace() {
   echo "  1) showroom (Recommended for content creators)"
   echo "     └─ Skills: create-lab, create-demo, verify-content, blog-generate"
   echo ""
-  echo "  2) agnosticv (RHDP internal/advanced users)"
-  echo "     └─ Skills: agv-generator, agv-validator, generate-agv-description, validation-role-builder"
+  echo "  2) agnosticv (RHDP internal/advanced - Catalog provisioning)"
+  echo "     └─ Skills: agv-generator, agv-validator, generate-agv-description"
   echo ""
-  echo "  3) all (Install both namespaces)"
+  echo "  3) health (RHDP internal/advanced - Post-deployment validation)"
+  echo "     └─ Skills: validation-role-builder"
   echo ""
-  read -p "Enter your choice [1-3]: " choice
+  echo "  4) all (Install all namespaces)"
+  echo ""
+  read -p "Enter your choice [1-4]: " choice
 
   case $choice in
     1)
@@ -173,6 +176,9 @@ select_namespace() {
       NAMESPACE="agnosticv"
       ;;
     3)
+      NAMESPACE="health"
+      ;;
+    4)
       NAMESPACE="all"
       ;;
     *)
@@ -305,6 +311,11 @@ show_success() {
     echo "  • /agv-generator            - Create catalog items"
     echo "  • /agv-validator            - Validate catalogs"
     echo "  • /generate-agv-description - Generate descriptions"
+  fi
+
+  if [[ "$NAMESPACE" == "health" ]] || [[ "$NAMESPACE" == "all" ]]; then
+    echo ""
+    print_msg "$BLUE" "Health (Post-Deployment Validation):"
     echo "  • /validation-role-builder  - Create validation roles"
   fi
 
@@ -349,6 +360,7 @@ main() {
   if [[ "$NAMESPACE" == "all" ]]; then
     install_namespace "$repo_dir" "showroom"
     install_namespace "$repo_dir" "agnosticv"
+    install_namespace "$repo_dir" "health"
   else
     install_namespace "$repo_dir" "$NAMESPACE"
   fi
