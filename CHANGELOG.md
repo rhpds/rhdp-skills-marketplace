@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.1] - 2026-01-22
+
+### Changed - AgnosticV Catalog Builder Refinement
+Minor refinements to `/agnosticv-catalog-builder`:
+
+**Template Updates:**
+- Kept tag variable in common.yaml template (tag: main with override pattern)
+- Simplified catalog details questions (Step 8) - removed extra questions about collections and showroom repos
+- Maintained focus on core file generation: dev.yaml, common.yaml, description.adoc, info-message-template.adoc
+
+**Validation:**
+- Validator already comprehensively checks all core files
+- Check 1: File structure (common.yaml required, dev.yaml and description.adoc recommended)
+- Check 10: Stage files (dev.yaml purpose validation)
+- Check 14: Deployer configuration in common.yaml
+- Check 16: AsciiDoc templates (description.adoc and info-message-template.adoc)
+
+### Focus
+This release refines the catalog-builder workflow to focus on the 4 core files (dev, common, description, info) while keeping the tag variable pattern for version management.
+
 ## [v1.5.0] - 2026-01-22
 
 ### Changed - AgnosticV Skills Major Update
@@ -220,7 +240,13 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.1...HEAD
+[v1.5.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.1
+[v1.5.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.0
+[v1.4.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.4.0
+[v1.3.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.3.1
+[v1.3.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.3.0
+[v1.2.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.2.2
 [v1.2.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.2.1
 [v1.2.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.2.0
 [v1.1.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.1.0

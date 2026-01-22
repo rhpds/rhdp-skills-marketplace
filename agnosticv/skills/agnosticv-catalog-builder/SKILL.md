@@ -485,21 +485,21 @@ Q: Display name (appears in RHDP UI):
 
 Name:
 
+Q: Short name (lowercase, hyphens, descriptive):
+   Example: ansible-aap-ai-workshop
+
+Short name:
+
 Q: Brief description (1-2 sentences):
    This appears in the catalog listing.
 
 Description:
-
-Q: Catalog directory name (lowercase, hyphens):
-   Example: ansible-aap-ai-workshop
-
-Directory name:
 ```
 
 **Validate directory doesn't exist:**
 ```bash
-if [[ -d "$AGV_PATH/agd_v2/$directory_name" ]]; then
-  echo "⚠️  Directory already exists: $directory_name"
+if [[ -d "$AGV_PATH/agd_v2/$short_name" ]]; then
+  echo "⚠️  Directory already exists: $short_name"
   echo "Choose a different name."
 fi
 ```
@@ -588,6 +588,12 @@ Now generate all four files:
 # -------------------------------------------------------------------
 # --- Catalog Item: <Display Name>
 # -------------------------------------------------------------------
+
+# ===================================================================
+# Repository Tag
+# Tag for all repositories that are used in this config.
+# ===================================================================
+tag: main  # Override in prod.yaml, event.yaml with specific tag (e.g., <short-name>-1.0.0)
 
 # -------------------------------------------------------------------
 # Mandatory Variables
