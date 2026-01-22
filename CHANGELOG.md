@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.5] - 2026-01-22
+
+### Changed - README Slack Channel Update
+
+**Completed Slack Channel Migration:**
+- Updated main README.md Slack reference to #forum-demo-developers
+- All repository files now use the correct community support channel
+- Ensures consistency across documentation and root repository files
+
+### Focus
+This release completes the Slack channel migration by updating the main README.md file that was missed in v1.5.4.
+
 ## [v1.5.4] - 2026-01-22
 
 ### Changed - Slack Channel Updates
@@ -294,7 +306,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.4...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.5...HEAD
+[v1.5.5]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.5
 [v1.5.4]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.4
 [v1.5.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.3
 [v1.5.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.2
