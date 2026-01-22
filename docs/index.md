@@ -54,6 +54,7 @@ For RHDP internal and advanced users:
 For RHDP internal and advanced users:
 
 - **[/validation-role-builder](skills/validation-role-builder.html)** - Create validation roles
+- **[/ftl](skills/ftl.html)** - Finish The Labs: Automated grader and solver generation
 
 [Learn more about Health skills →](../health/README.html)
 
@@ -65,9 +66,8 @@ For RHDP internal and advanced users:
 
 **Status:** In Development
 
-Future skills for intelligent automation, lab validation, and field-sourced content integration:
+Future skills for intelligent automation and field-sourced content integration:
 
-- **[/ftl](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/automation/README.md)** - Finish The Labs: Automated grader and solver generation for workshop testing (based on [FTL grading system](https://github.com/redhat-gpte-devopsautomation/FTL))
 - **[/field-automation-builder](https://github.com/rhpds/field-sourced-content)** - Integration with field-sourced content repository for automated catalog generation
 
 [Learn more about Automation vision →](../automation/README.html)

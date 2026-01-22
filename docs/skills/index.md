@@ -93,6 +93,15 @@ Create Ansible validation roles for post-deployment checks.
 
 ---
 
+### [/ftl](ftl.html)
+Generate automated graders and solvers for workshop testing.
+
+**Before you start:** Have workshop content with clear success criteria
+
+**Use when:** Creating automated workshop validation
+
+---
+
 ## Quick Reference
 
 | Skill | Namespace | Platform | Prerequisites |
@@ -105,6 +114,7 @@ Create Ansible validation roles for post-deployment checks.
 | agv-validator | AgnosticV | All | Catalog files |
 | generate-agv-description | AgnosticV | All | Workshop + catalog |
 | validation-role-builder | Health | All | Validation requirements |
+| ftl | Health | All | Workshop with success criteria |
 
 ---
 
