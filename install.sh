@@ -160,7 +160,7 @@ select_namespace() {
   echo "     └─ Skills: create-lab, create-demo, verify-content, blog-generate"
   echo ""
   echo "  2) agnosticv (RHDP internal/advanced - Catalog provisioning)"
-  echo "     └─ Skills: agnosticv-catalog-builder, agv-validator"
+  echo "     └─ Skills: agnosticv-catalog-builder, agnosticv-validator"
   echo ""
   echo "  3) health (RHDP internal/advanced - Post-deployment validation)"
   echo "     └─ Skills: validation-role-builder"
@@ -377,7 +377,7 @@ show_success() {
     echo ""
     print_msg "$BLUE" "AgnosticV (RHDP Provisioning):"
     echo "  • /agnosticv-catalog-builder - Create/update catalogs"
-    echo "  • /agv-validator             - Validate catalogs"
+    echo "  • /agnosticv-validator             - Validate catalogs"
   fi
 
   if [[ "$NAMESPACE" == "health" ]] || [[ "$NAMESPACE" == "all" ]]; then
@@ -410,7 +410,7 @@ show_success() {
     echo "  2. Ask naturally using trigger phrases:"
     echo "     - 'create lab' (triggers create-lab skill)"
     echo "     - 'create demo' (triggers create-demo skill)"
-    echo "     - 'validate agv' (triggers agv-validator skill)"
+    echo "     - 'validate agv' (triggers agnosticv-validator skill)"
     echo ""
     echo "  3. For other projects, copy .cursor/rules:"
     echo "     cp -r .cursor/rules /path/to/other/project/.cursor/"

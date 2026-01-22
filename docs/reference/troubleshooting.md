@@ -243,7 +243,7 @@ __meta__:
 3. Check AgnosticD core_workloads repository
 4. Update `requirements_content.collections` in `common.yaml`
 
-### agv-validator Reports Many Errors
+### agnosticv-validator Reports Many Errors
 
 **Symptom:** Validation fails with multiple errors
 
@@ -255,7 +255,7 @@ __meta__:
 4. Consider **SUGGESTIONS** (optional)
 5. Re-validate after each fix:
    ```
-   /agv-validator
+   /agnosticv-validator
    ```
 
 ### Cannot Push to Remote

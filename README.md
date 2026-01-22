@@ -7,7 +7,7 @@ Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **
 > **⚠️ Note:** Agent Skills work natively in **Claude Code** and **VS Code with Claude extension**. Cursor support is experimental and still being tested - skills may not work reliably in Cursor.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v1.2.2-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v1.3.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -65,7 +65,7 @@ bash /tmp/rhdp-install.sh
 
 **AgnosticV Skills:**
 - `/agnosticv-catalog-builder` - Create/update AgnosticV catalog items (unified skill with 3 modes)
-- `/agv-validator` - Validate catalog configurations
+- `/agnosticv-validator` - Validate catalog configurations
 
 **Health Skills:**
 - `/validation-role-builder` - Create Ansible validation roles
@@ -105,7 +105,7 @@ bash /tmp/rhdp-install.sh
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `agnosticv-catalog-builder` | Create/update catalogs (unified) | Building new RHDP catalog entries |
-| `agv-validator` | Validate configurations | Pre-deployment quality checks |
+| `agnosticv-validator` | Validate configurations | Pre-deployment quality checks |
 
 **Workflow:**
 ```
@@ -224,7 +224,7 @@ The updater will:
 
 ```bash
 # In Claude Code or Cursor
-/agv-validator
+/agnosticv-validator
 
 # Skill checks:
 # ✓ UUID format and uniqueness
@@ -299,7 +299,7 @@ rhdp-skills-marketplace/
 │   ├── README.md
 │   ├── skills/
 │   │   ├── agnosticv-catalog-builder/
-│   │   └── agv-validator/
+│   │   └── agnosticv-validator/
 │   └── docs/
 │       ├── AGV-COMMON-RULES.md
 │       ├── workload-mappings.md

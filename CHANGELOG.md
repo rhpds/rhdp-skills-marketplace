@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.3.0] - 2026-01-22
+
+### Changed
+- **Renamed `/agv-validator` to `/agnosticv-validator`** for consistency and better discoverability
+  - Updated skill name in SKILL.md frontmatter
+  - Renamed skill directory: agv-validator → agnosticv-validator
+  - Updated all documentation references across repository
+  - Updated Cursor rules and trigger phrases
+  - Updated install.sh and all setup guides
+
+### Migration
+- **Old:** `/agv-validator` → **New:** `/agnosticv-validator`
+- All functionality remains the same, only the name has changed
+- Both AgnosticV skills now use consistent naming:
+  - `/agnosticv-catalog-builder` - Create/update catalogs
+  - `/agnosticv-validator` - Validate catalogs
+
 ## [v1.2.2] - 2026-01-22
 
 ### Changed

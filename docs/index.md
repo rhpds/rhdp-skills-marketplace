@@ -44,7 +44,7 @@ For external developers and content creators:
 For RHDP internal and advanced users:
 
 - **[/agnosticv-catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs (unified)
-- **[/agv-validator](skills/agv-validator.html)** - Validate configurations
+- **[/agnosticv-validator](skills/agnosticv-validator.html)** - Validate configurations
 
 [Learn more about AgnosticV skills →](setup/agnosticv.html)
 
@@ -112,7 +112,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** #forum-rhdp or #forum-rhdp-content
-- **Version:** v1.2.2
+- **Version:** v1.3.0
 
 ---
 

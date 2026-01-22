@@ -40,7 +40,7 @@ Skills work natively with `/` commands:
 
 **AgnosticV:**
 - `/agnosticv-catalog-builder` - Create/update catalog items (unified)
-- `/agv-validator` - Validate configuration
+- `/agnosticv-validator` - Validate configuration
 
 **Health:**
 - `/validation-role-builder` - Create validation role

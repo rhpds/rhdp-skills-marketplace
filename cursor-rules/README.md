@@ -83,7 +83,7 @@ my-project/
 │       │   └── RULE.md
 │       ├── agnosticv-catalog-builder/
 │       │   └── RULE.md
-│       ├── agv-validator/
+│       ├── agnosticv-validator/
 │       │   └── RULE.md
 │       ├── validation-role-builder/
 │       │   └── RULE.md
@@ -208,7 +208,7 @@ When user says ANY of these phrases, invoke this skill:
 | Skill | Trigger Commands | Purpose |
 |-------|-----------------|---------|
 | agnosticv-catalog-builder | "create agv catalog", "generate catalog", "update catalog" | Create/update catalog items (unified) |
-| agv-validator | "validate agv", "validate catalog" | Validate configurations |
+| agnosticv-validator | "validate agv", "validate catalog" | Validate configurations |
 
 ### Health (Post-Deployment Validation)
 

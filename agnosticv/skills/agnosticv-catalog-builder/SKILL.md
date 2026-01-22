@@ -659,7 +659,7 @@ echo "✓ Committed to branch: $branch_name"
 echo ""
 echo "Next steps:"
 echo "  1. Test locally: agnosticv_cli dev.yaml"
-echo "  2. Run validator: /agv-validator"
+echo "  2. Run validator: /agnosticv-validator"
 echo "  3. Create PR: gh pr create --fill"
 ```
 
@@ -843,7 +843,7 @@ echo ""
 echo "Next steps:"
 echo "  1. Push: git push origin $branch_name"
 echo "  2. Create PR: gh pr create --fill"
-echo "  3. Validate: /agv-validator"
+echo "  3. Validate: /agnosticv-validator"
 ```
 
 ---
@@ -860,7 +860,7 @@ Your catalog files are ready!
 Recommended actions:
 
 1. Validate configuration:
-   /agv-validator
+   /agnosticv-validator
 
 2. Test locally (if you have agnosticd-cli):
    cd agd_v2/<catalog-name>
@@ -946,7 +946,7 @@ Please provide a branch name without 'feature/':
 
 1. **Always pull main before starting** - Ensures latest catalog patterns
 2. **Use descriptive branch names** - No feature/ prefix, just: add-catalog-name
-3. **Validate before PR** - Use /agv-validator
+3. **Validate before PR** - Use /agnosticv-validator
 4. **Test in dev first** - Use dev.yaml for testing
 5. **Document user data** - Clear info-message-template.adoc
 6. **Start with product name** - Description overview must start with product, not "This workshop"
@@ -1031,7 +1031,7 @@ Recommended workloads:
 ✓ Committed to branch: add-ansible-ai-workshop
 
 Next steps:
-  1. Validate: /agv-validator
+  1. Validate: /agnosticv-validator
   2. Push: git push origin add-ansible-ai-workshop
   3. Create PR: gh pr create --fill
 ```
@@ -1127,7 +1127,7 @@ Template usage:
 ## References
 
 ### Related Skills
-- `/agv-validator` - Validate catalog configuration
+- `/agnosticv-validator` - Validate catalog configuration
 - `/create-lab` - Create Showroom workshop content
 - `/ftl` - Create graders/solvers for workshop testing
 

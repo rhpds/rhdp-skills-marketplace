@@ -46,7 +46,7 @@ Create or update AgnosticV catalog files (unified skill).
 
 ---
 
-### /agv-validator
+### /agnosticv-validator
 
 Validate AgnosticV configurations against best practices and requirements.
 
@@ -67,7 +67,7 @@ Validate AgnosticV configurations against best practices and requirements.
 
 **Output:** Validation report with errors, warnings, and suggestions
 
-[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/agv-validator.html)
+[📚 Documentation](https://rhpds.github.io/rhdp-skills-marketplace/skills/agnosticv-validator.html)
 
 ---
 
@@ -104,7 +104,7 @@ Validate AgnosticV configurations against best practices and requirements.
    ├─ Extract UserInfo from Advanced settings
    └─ Test workshop/demo content
 
-5. /agv-validator (if issues found)
+5. /agnosticv-validator (if issues found)
    └─ Fix errors and warnings
 
 6. Request PR merge after successful testing
@@ -115,14 +115,14 @@ Validate AgnosticV configurations against best practices and requirements.
 ```
 1. cd ~/work/code/agnosticv/<directory>/<catalog-name>
 
-2. /agv-validator
+2. /agnosticv-validator
    └─ Review validation report
 
 3. Fix errors (MUST fix before deployment)
 
 4. Address warnings (SHOULD fix for quality)
 
-5. /agv-validator (again)
+5. /agnosticv-validator (again)
    └─ Confirm all issues resolved
 ```
 
@@ -324,7 +324,7 @@ Key rules:
 1. **Search first** - Check for similar existing catalogs before creating new
 2. **Use references** - Base new catalogs on proven templates
 3. **Test early** - Deploy to Integration before PR
-4. **Validate always** - Run `/agv-validator` before creating PR
+4. **Validate always** - Run `/agnosticv-validator` before creating PR
 5. **Document changes** - Clear commit messages explaining purpose
 
 ### Workload Selection
@@ -338,7 +338,7 @@ Key rules:
 
 1. **Branch naming** - Use descriptive names (NO `feature/` prefix)
 2. **Atomic commits** - One logical change per commit
-3. **Test before push** - Validate locally first with `/agv-validator`
+3. **Test before push** - Validate locally first with `/agnosticv-validator`
 4. **Clean commits** - No debug code or temporary files
 
 ### Category Selection
@@ -376,7 +376,7 @@ uuidgen  # Generate new UUID
 
 ### Validation Fails
 
-**Symptom:** `/agv-validator` reports errors
+**Symptom:** `/agnosticv-validator` reports errors
 
 **Solution:**
 1. Read error messages carefully

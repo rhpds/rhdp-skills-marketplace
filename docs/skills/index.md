@@ -62,7 +62,7 @@ Create or update AgnosticV catalog files (unified skill).
 
 ---
 
-### [/agv-validator](agv-validator.html)
+### [/agnosticv-validator](agnosticv-validator.html)
 Validate catalog configurations and best practices.
 
 **Before you start:** Have catalog files in agnosticv repo
@@ -102,7 +102,7 @@ Generate automated graders and solvers for workshop testing.
 | verify-content | Showroom | All | Workshop content |
 | blog-generate | Showroom | All | Complete workshop |
 | agnosticv-catalog-builder | AgnosticV | All | AgnosticV repo + access |
-| agv-validator | AgnosticV | All | Catalog files |
+| agnosticv-validator | AgnosticV | All | Catalog files |
 | validation-role-builder | Health | All | Validation requirements |
 | ftl | Health | All | Workshop with success criteria |
 

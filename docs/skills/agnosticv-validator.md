@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /agv-validator
+title: /agnosticv-validator
 ---
 
-# /agv-validator
+# /agnosticv-validator
 
 Validate AgnosticV catalog configurations and best practices before creating pull request.
 
@@ -44,7 +44,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 ## Quick Start
 
 1. Navigate to AgnosticV repository
-2. Run `/agv-validator`
+2. Run `/agnosticv-validator`
 3. Review validation results
 4. Fix any issues found
 5. Create pull request when clean
@@ -103,7 +103,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 ### 2. Validate Configuration
 
 ```
-/agv-validator
+/agnosticv-validator
 → Check for issues
 → Get validation report
 ```
@@ -120,7 +120,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 ### 4. Re-validate
 
 ```
-/agv-validator
+/agnosticv-validator
 → Confirm all issues resolved
 ```
 
@@ -211,7 +211,7 @@ workloads:
 
 **Skill not found?**
 - Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/agv-validator`
+- Verify installation: `ls ~/.claude/skills/agnosticv-validator`
 
 **Validation fails but looks correct?**
 - Check for hidden characters or extra spaces

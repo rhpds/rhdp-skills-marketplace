@@ -47,7 +47,7 @@ Create or update AgnosticV catalog files (unified skill).
 
 [View detailed documentation →](../skills/agnosticv-catalog-builder.html)
 
-### /agv-validator
+### /agnosticv-validator
 
 Validate AgnosticV configurations against best practices and deployment requirements.
 
@@ -58,7 +58,7 @@ Validate AgnosticV configurations against best practices and deployment requirem
 - Infrastructure recommendations
 - Best practice suggestions
 
-[View detailed documentation →](../skills/agv-validator.html)
+[View detailed documentation →](../skills/agnosticv-validator.html)
 
 ---
 
@@ -125,7 +125,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
    ↓ Creates catalog files (git workflow built-in)
    ↓ Generates: common.yaml, dev.yaml, description.adoc, info-message-template.adoc
 
-2. /agv-validator
+2. /agnosticv-validator
    ↓ Validates configuration
 
 3. Push and create PR (git already committed)
@@ -193,7 +193,7 @@ gh pr create --fill
 ### Step 5: Validate (if issues)
 
 ```
-/agv-validator
+/agnosticv-validator
 
 Checks:
 ✓ UUID format
@@ -291,7 +291,7 @@ Paste UserInfo JSON or variables
 1. **Search first** - Check for similar existing catalogs
 2. **Use references** - Base on proven templates
 3. **Test early** - Deploy to Integration before PR
-4. **Validate always** - Run /agv-validator before PR
+4. **Validate always** - Run /agnosticv-validator before PR
 5. **Document changes** - Clear commit messages
 
 ### Workload Selection
@@ -345,7 +345,7 @@ uuidgen
 
 ### Validation Fails
 
-**Problem:** /agv-validator reports errors
+**Problem:** /agnosticv-validator reports errors
 
 **Solution:**
 1. Read error messages carefully

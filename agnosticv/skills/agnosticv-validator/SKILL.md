@@ -1,5 +1,5 @@
 ---
-name: agv-validator
+name: agnosticv-validator
 description: Validate AgnosticV catalog configurations against best practices and deployment requirements
 ---
 
@@ -8,7 +8,7 @@ context: main
 model: sonnet
 ---
 
-# Skill: agv-validator
+# Skill: agnosticv-validator
 
 **Name:** AgnosticV Catalog Validator
 **Description:** Validate AgnosticV configurations against best practices and deployment requirements
@@ -25,7 +25,7 @@ Comprehensive validation of AgnosticV catalog configurations before deployment. 
 
 ## When to Use This Skill
 
-Use `/agv-validator` when you need to:
+Use `/agnosticv-validator` when you need to:
 
 - Validate a new catalog before creating PR
 - Troubleshoot catalog deployment failures
@@ -775,7 +775,7 @@ STATUS: {% if errors %}❌ FAILED - Fix errors before deploying to RHDP{% elif w
 Next steps:
 {% if errors %}
 1. Fix the {{ errors|length }} error(s) listed above
-2. Run validation again: /agv-validator
+2. Run validation again: /agnosticv-validator
 3. Address warnings for better quality
 4. Test in RHDP Integration environment
 {% elif warnings %}
@@ -872,7 +872,7 @@ How to fix:
 
 3. Save file
 
-4. Re-run validation: /agv-validator
+4. Re-run validation: /agnosticv-validator
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {% endfor %}
@@ -965,7 +965,7 @@ Common issues:
 Try:
 1. Navigate to catalog directory: cd {{ agv_path }}/agd_v2/<catalog-name>
 2. Verify common.yaml exists: ls -la
-3. Run validator again: /agv-validator
+3. Run validator again: /agnosticv-validator
 
 Exit or try again? [Try again/Exit]
 ```
@@ -1029,7 +1029,7 @@ You have {{ errors|length }} error(s) that must be fixed before deployment.
 Next steps:
 1. Review errors above
 2. Fix issues in catalog files
-3. Run /agv-validator again
+3. Run /agnosticv-validator again
 4. Repeat until all errors resolved
 
 {% elif warnings %}
@@ -1055,7 +1055,7 @@ Next steps:
 
 {% endif %}
 
-👋 Exiting /agv-validator
+👋 Exiting /agnosticv-validator
 ```
 
 ---

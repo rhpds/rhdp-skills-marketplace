@@ -269,7 +269,7 @@ Expected Answer: 1
    cd ~/work/code/agnosticv/agd_v2/your-catalog-slug/
 
 2. Validate configuration:
-   /agv-validator
+   /agnosticv-validator
 
 3. Push to remote:
    git push origin add-your-catalog-name
@@ -382,7 +382,7 @@ Expected Answer: LB1688
 
 Then validate and create PR:
 ```
-/agv-validator
+/agnosticv-validator
 → Check configuration
 
 git push origin your-branch
@@ -547,7 +547,7 @@ From `agd_v2/agentic-ai-openshift/info-message-template.adoc`:
 
 - **Start with product name** - Description overview must start with product, not "This workshop"
 - **Use real examples** - Reference existing catalogs for patterns
-- **Validate before PR** - Always run `/agv-validator`
+- **Validate before PR** - Always run `/agnosticv-validator`
 - **Test in dev first** - Use dev.yaml for testing
 - **No feature/ prefix** - Branch names should be descriptive without feature/
 - **Convert lists to strings** - For info templates: `{{ my_list | join(', ') }}`
@@ -584,7 +584,7 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 
 ## Related Skills
 
-- `/agv-validator` - Validate catalog before PR
+- `/agnosticv-validator` - Validate catalog before PR
 - `/create-lab` - Create Showroom workshop first
 - `/ftl` - Create automated graders/solvers
 
@@ -602,4 +602,4 @@ All functionality consolidated into one unified skill with improved workflow.
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agv-validator →](agv-validator.html)
+[← Back to Skills](index.html) | [Next: /agnosticv-validator →](agnosticv-validator.html)

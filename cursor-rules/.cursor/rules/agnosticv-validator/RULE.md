@@ -17,9 +17,9 @@ When user says ANY of these phrases, invoke this skill:
 
 ## Skill Execution
 
-**Action**: Read and follow `~/.cursor/skills/agv-validator/SKILL.md` completely.
+**Action**: Read and follow `~/.cursor/skills/agnosticv-validator/SKILL.md` completely.
 
-**OR if skills are in Claude directory**: Read and follow `~/.claude/skills/agv-validator/SKILL.md` completely.
+**OR if skills are in Claude directory**: Read and follow `~/.claude/skills/agnosticv-validator/SKILL.md` completely.
 
 ## What This Skill Does
 

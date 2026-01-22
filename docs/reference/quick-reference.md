@@ -79,7 +79,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. cd ~/work/code/agnosticv/<directory>/<catalog-name>
-2. /agv-validator
+2. /agnosticv-validator
 3. Review validation report
 4. Fix errors and warnings
 5. Re-validate
@@ -110,7 +110,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 │   ├── verify-content/
 │   ├── blog-generate/
 │   ├── agnosticv-catalog-builder/
-│   ├── agv-validator/
+│   ├── agnosticv-validator/
 │   ├── validation-role-builder/
 │   └── ftl/
 └── docs/                # Skill documentation

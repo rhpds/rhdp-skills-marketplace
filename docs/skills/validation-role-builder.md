@@ -130,7 +130,7 @@ Verify pods, deployments, routes:
 ## Related Skills
 
 - `/agnosticv-catalog-builder` - Create catalog with validation enabled
-- `/agv-validator` - Validate catalog configuration
+- `/agnosticv-validator` - Validate catalog configuration
 
 ---
 
