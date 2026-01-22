@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Included Skills
 
-### /agv-catalog
+### /agnosticv-catalog-builder
 
 Create or update AgnosticV catalog files (unified skill).
 
@@ -45,7 +45,7 @@ Create or update AgnosticV catalog files (unified skill).
 - UUID generation and validation
 - Showroom content extraction
 
-[View detailed documentation →](../skills/agv-catalog.html)
+[View detailed documentation →](../skills/agnosticv-catalog-builder.html)
 
 ### /agv-validator
 
@@ -121,7 +121,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 ## Typical Workflow
 
 ```
-1. /agv-catalog
+1. /agnosticv-catalog-builder
    ↓ Creates catalog files (git workflow built-in)
    ↓ Generates: common.yaml, dev.yaml, description.adoc, info-message-template.adoc
 
@@ -145,11 +145,11 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Example: Creating a Catalog
 
-### Step 1: Run /agv-catalog
+### Step 1: Run /agnosticv-catalog-builder
 
 ```
 In Claude Code or Cursor:
-/agv-catalog
+/agnosticv-catalog-builder
 
 Choose mode: 1 (Full Catalog)
 Git workflow: Pulls main, creates branch automatically
@@ -178,7 +178,7 @@ ls -la
 ### Step 3: Push and Create PR
 
 ```bash
-# /agv-catalog already committed to branch
+# /agnosticv-catalog-builder already committed to branch
 git push origin your-branch-name
 gh pr create --fill
 ```

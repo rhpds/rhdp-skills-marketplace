@@ -25,7 +25,7 @@ Unified skill for creating and updating AgnosticV catalog configurations. Handle
 
 ## When to Use This Skill
 
-Use `/agv-catalog` when you need to:
+Use `/agnosticv-catalog-builder` when you need to:
 
 - Create a complete new RHDP catalog item
 - Generate just description.adoc from Showroom content
@@ -958,7 +958,7 @@ Please provide a branch name without 'feature/':
 ### Example 1: Full Catalog Creation
 
 ```
-User: /agv-catalog
+User: /agnosticv-catalog-builder
 Skill: 🏗️  AgnosticV Catalog Builder
 
 What would you like to create or update?
@@ -1039,7 +1039,7 @@ Next steps:
 ### Example 2: Description Only
 
 ```
-User: /agv-catalog
+User: /agnosticv-catalog-builder
 
 What would you like to create or update?
 Your choice [1-3]: 2
@@ -1083,7 +1083,7 @@ Found: agd_v2/openshift-pipelines-intro/
 ### Example 3: Info Message Template Only
 
 ```
-User: /agv-catalog
+User: /agnosticv-catalog-builder
 
 Your choice [1-3]: 3
 

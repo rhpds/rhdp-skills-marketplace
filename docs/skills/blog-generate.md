@@ -161,4 +161,4 @@ blog/
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agv-catalog →](agv-catalog.html)
+[← Back to Skills](index.html) | [Next: /agnosticv-catalog-builder →](agnosticv-catalog-builder.html)

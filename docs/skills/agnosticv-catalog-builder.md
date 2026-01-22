@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /agv-catalog
+title: /agnosticv-catalog-builder
 ---
 
-# /agv-catalog
+# /agnosticv-catalog-builder
 
 Create or update AgnosticV catalog files for RHDP deployments (unified skill).
 
@@ -57,7 +57,7 @@ Depending on what you're creating:
 ## Quick Start
 
 1. Navigate to AgnosticV repository
-2. Run `/agv-catalog`
+2. Run `/agnosticv-catalog-builder`
 3. Choose mode: Full Catalog / Description Only / Info Template
 4. Answer guided questions
 5. Review generated files
@@ -104,7 +104,7 @@ Creates user notification template:
 ### Workflow 1: Create Full Catalog from Scratch
 
 ```
-/agv-catalog
+/agnosticv-catalog-builder
 → Mode: 1 (Full Catalog)
 → Git: Pull main, create branch (no feature/ prefix)
 → Search similar catalogs
@@ -125,7 +125,7 @@ gh pr create --fill
 ### Workflow 2: Update Description After Content Changes
 
 ```
-/agv-catalog
+/agnosticv-catalog-builder
 → Mode: 2 (Description Only)
 → Point to Showroom repo
 → Auto-extracts modules and technologies
@@ -136,7 +136,7 @@ gh pr create --fill
 ### Workflow 3: Add Info Template for User Data
 
 ```
-/agv-catalog
+/agnosticv-catalog-builder
 → Mode: 3 (Info Template)
 → Specify data keys from workload
 → Generates template with placeholders
@@ -291,7 +291,7 @@ From `agd_v2/agentic-ai-openshift/info-message-template.adoc`:
 
 **Skill not found?**
 - Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/agv-catalog`
+- Verify installation: `ls ~/.claude/skills/agnosticv-catalog-builder`
 
 **Branch already exists?**
 ```bash
@@ -327,9 +327,9 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 
 If you used `/agv-generator` or `/generate-agv-description`:
 
-**Old:** `/agv-generator` → **New:** `/agv-catalog` (Mode 1: Full Catalog)
+**Old:** `/agv-generator` → **New:** `/agnosticv-catalog-builder` (Mode 1: Full Catalog)
 
-**Old:** `/generate-agv-description` → **New:** `/agv-catalog` (Mode 2: Description Only)
+**Old:** `/generate-agv-description` → **New:** `/agnosticv-catalog-builder` (Mode 2: Description Only)
 
 All functionality consolidated into one unified skill with improved workflow.
 
