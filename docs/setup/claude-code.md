@@ -1,11 +1,15 @@
 ---
 layout: default
-title: Claude Code Setup
+title: Claude Code & VS Code Setup
 ---
 
-# Claude Code Setup (Recommended)
+# Claude Code & VS Code Setup (Recommended)
 
 Native Agent Skills support - the best experience.
+
+**Works with:**
+- Claude Code CLI
+- VS Code with Claude extension
 
 ---
 
@@ -17,10 +21,10 @@ bash /tmp/rhdp-install.sh
 ```
 
 When prompted:
-1. Select **1 (Claude Code)**
+1. Select **1 (Claude Code or VS Code with Claude extension)**
 2. Choose your namespace
 
-Restart Claude Code after installation.
+Restart Claude Code or VS Code after installation.
 
 ---
 

@@ -2,9 +2,9 @@
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-Supports: **Claude Code (Recommended)** | **Cursor (Experimental - Still Testing)**
+Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **Cursor (Experimental - Still Testing)**
 
-> **⚠️ Note:** Agent Skills in Cursor are not fully supported yet and we're still testing workarounds. Skills may not work reliably in Cursor. **Claude Code is the recommended platform.**
+> **⚠️ Note:** Agent Skills work natively in **Claude Code** and **VS Code with Claude extension**. Cursor support is experimental and still being tested - skills may not work reliably in Cursor.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Version](https://img.shields.io/badge/version-v1.0.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
@@ -244,6 +244,14 @@ Skills are installed to:
 - Docs: `~/.claude/docs/`
 
 **Native Agent Skills support** - skills work out of the box with `/skill-name` commands.
+
+### VS Code with Claude Extension
+
+Skills are installed to:
+- Skills: `~/.claude/skills/`
+- Docs: `~/.claude/docs/`
+
+**Native Agent Skills support** - same installation as Claude Code, skills work with `/skill-name` commands in VS Code.
 
 ### Cursor (Experimental - Still Testing)
 

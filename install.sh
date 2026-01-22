@@ -92,7 +92,7 @@ detect_platform() {
 
   print_msg "$BLUE" "Which AI coding assistant are you using?"
   echo ""
-  echo "  1) Claude Code (Recommended - Native support)"
+  echo "  1) Claude Code or VS Code with Claude extension (Recommended - Native support)"
   echo "  2) Cursor (Experimental - Still testing, may not work reliably)"
   echo ""
   read -p "Enter your choice [1-2]: " choice < /dev/tty
@@ -361,7 +361,7 @@ show_success() {
   print_msg "$CYAN" "Next Steps:"
 
   if [[ "$PLATFORM" == "claude" ]]; then
-    echo "  1. Restart Claude Code to load the new skills"
+    echo "  1. Restart Claude Code (or VS Code) to load the new skills"
     echo "  2. Try running a skill, e.g., /create-lab"
     echo "  3. Check for updates periodically with update.sh"
   else

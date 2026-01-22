@@ -19,6 +19,12 @@ Quick start for installing RHDP Skills Marketplace.
   </div>
 
   <div class="card">
+    <h3>💻 VS Code with Claude</h3>
+    <p>Native Agent Skills support</p>
+    <a href="claude-code.html">Same as Claude Code →</a>
+  </div>
+
+  <div class="card">
     <h3>🧪 Cursor (Experimental)</h3>
     <p>Still testing - may not work reliably</p>
     <a href="cursor.html">Cursor Setup →</a>

@@ -20,7 +20,7 @@ bash /tmp/rhdp-install.sh
 
 The installer will guide you through platform and namespace selection.
 
-**Using Claude Code?** Skills work natively with `/skill-name` commands.
+**Using Claude Code or VS Code with Claude extension?** Skills work natively with `/skill-name` commands.
 
 **Using Cursor?** [See Cursor setup guide →](setup/cursor.html) *(experimental - still testing, may not work reliably)*
 
