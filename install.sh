@@ -287,6 +287,44 @@ save_version() {
   echo "$version|$NAMESPACE|$PLATFORM|$timestamp" > "$version_file"
 }
 
+# Install Cursor rules to current directory
+install_cursor_rules() {
+  local repo_dir=$1
+
+  # Only install rules for Cursor platform
+  if [[ "$PLATFORM" != "cursor" ]]; then
+    return
+  fi
+
+  print_msg "$BLUE" "Installing Cursor rules to current directory..."
+
+  local cursor_rules_src="$repo_dir/cursor-rules/.cursor/rules"
+  local cursor_rules_dest=".cursor/rules"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    print_msg "$YELLOW" "[DRY RUN] Would copy $cursor_rules_src to $cursor_rules_dest"
+    return
+  fi
+
+  # Check if .cursor/rules already exists
+  if [[ -d "$cursor_rules_dest" ]]; then
+    print_msg "$YELLOW" "⚠️  .cursor/rules already exists in current directory"
+    read -p "Overwrite? [y/N] " overwrite
+    if [[ ! "$overwrite" =~ ^[Yy] ]]; then
+      print_msg "$BLUE" "Skipping .cursor/rules installation"
+      echo ""
+      return
+    fi
+    rm -rf "$cursor_rules_dest"
+  fi
+
+  # Copy .cursor/rules to current directory
+  mkdir -p .cursor
+  cp -r "$cursor_rules_src" "$cursor_rules_dest"
+  print_msg "$GREEN" "✓ Installed .cursor/rules to current directory"
+  echo ""
+}
+
 # Show success message
 show_success() {
   print_msg "$GREEN" "═══════════════════════════════════════════════════════════"
@@ -331,17 +369,22 @@ show_success() {
     echo ""
     echo "  Agent Skills in Cursor are experimental. Claude Code is the recommended platform."
     echo ""
+    echo "  ✓ Skills installed to: ~/.cursor/skills/"
+    echo "  ✓ Docs installed to: ~/.cursor/docs/"
+    echo "  ✓ Rules installed to: .cursor/rules/ (current directory)"
+    echo ""
     echo "  To use skills in Cursor stable/Enterprise:"
-    echo "  1. Copy .cursor/rules to your project:"
-    echo "     cd ~/my-project"
-    echo "     cp -r ~/work/code/rhdp-skills-marketplace/cursor-rules/.cursor/rules .cursor/"
+    echo "  1. Restart Cursor in this directory"
     echo ""
-    echo "  2. See cursor-rules/README.md for full instructions"
-    echo ""
-    echo "  3. Restart Cursor and ask naturally:"
+    echo "  2. Ask naturally using trigger phrases:"
     echo "     - 'create lab' (triggers create-lab skill)"
     echo "     - 'create demo' (triggers create-demo skill)"
     echo "     - 'validate agv' (triggers agv-validator skill)"
+    echo ""
+    echo "  3. For other projects, copy .cursor/rules:"
+    echo "     cp -r .cursor/rules /path/to/other/project/.cursor/"
+    echo ""
+    echo "  See: cursor-rules/README.md for full documentation"
     echo ""
     echo "  Alternative: Try Nightly channel (Settings > Beta > Update Channel)"
     echo "  See: https://forum.cursor.com/t/support-for-claude-skills/148267"
@@ -389,6 +432,9 @@ main() {
   fi
 
   save_version "$repo_dir"
+
+  # Install Cursor rules to current directory (Cursor only)
+  install_cursor_rules "$repo_dir"
 
   # Cleanup
   if [[ "$DRY_RUN" == false ]]; then

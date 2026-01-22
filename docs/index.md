@@ -26,6 +26,17 @@ The installer will guide you through:
 2. Namespace selection (showroom, agnosticv, health, or all)
 3. Automatic backup and installation
 
+**For Claude Code users:**
+- Skills installed to `~/.claude/skills/`
+- Ready to use with `/skill-name` commands
+- Native Agent Skills support
+
+**For Cursor users:**
+- Skills installed to `~/.cursor/skills/`
+- Rules installed to `.cursor/rules/` in current directory
+- Use trigger phrases like "create lab" or "validate agv"
+- ⚠️ Experimental - Claude Code is recommended
+
 ---
 
 ## What's Included?
