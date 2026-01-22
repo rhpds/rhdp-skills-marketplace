@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.6] - 2026-01-22
+
+### Changed - Complete Slack Migration & Credits Update
+
+**Completed Slack Channel Migration:**
+- Updated all remaining Slack references across the entire repository
+- Added clickable links to #forum-demo-developers in all namespace READMEs
+- Updated agnosticv-catalog-builder skill documentation
+- Updated scripts (create-release.sh) and command documentation
+- Total: 24 references across 10+ files now use correct channel
+
+**Credits Updates:**
+- Updated maintainers section: Prakhar Srivastava and Nate Stephany
+- Added development team members: Ritesh Shah, Tony Kay, Wolfgang
+- Removed position titles (Manager, Catalog Owner) as requested
+- Removed Special Thanks section for cleaner credits
+
+**Files Updated:**
+- agnosticv/, showroom/, health/, automation/ namespace READMEs
+- cursor-rules/, cursor-commands/ READMEs
+- scripts/README.md and scripts/create-release.sh
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md
+- Main README.md
+
+### Focus
+This release completes the comprehensive Slack channel migration across all repository files and updates the project credits to reflect current maintainers and development team.
+
 ## [v1.5.5] - 2026-01-22
 
 ### Changed - README Slack Channel Update
@@ -306,7 +333,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.5...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.6...HEAD
+[v1.5.6]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.6
 [v1.5.5]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.5
 [v1.5.4]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.4
 [v1.5.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.3

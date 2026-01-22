@@ -424,18 +424,18 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-**Maintainers:**
-- Prakhar Srivastava (@prakhar1985)
-- Nate Stephany
-
 **RHDP Development Team:**
+- Wolfgang
+- Tony Kay
 - Tyrell Reddy
 - Juliano Mohr
 - Mitesh Sharma
 - Judd Maltin
 - Ritesh Shah
-- Tony Kay
-- Wolfgang
+
+**Maintainers:**
+- Prakhar Srivastava (@prakhar1985)
+- Nate Stephany
 
 ---
 
