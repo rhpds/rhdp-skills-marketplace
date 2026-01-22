@@ -19,13 +19,13 @@ Based on analysis of real production catalogs, significantly enhanced both Agnos
 - **Check 12:** Bastion configuration validation (image versions, resource requirements)
 - **Check 13:** Collection versions validation (ensures git collections have versions)
 - **Check 14:** Deployer configuration validation (scm_url, scm_ref, execution_environment)
-- **Check 14a:** Reporting labels validation (primaryBU for cost tracking - CRITICAL)
+- **Check 14a:** Reporting labels validation (primaryBU for business unit tracking - CRITICAL)
 - **Check 15:** Component propagation validation (multi-stage catalog data flow)
 - **Check 16:** AsciiDoc template validation (variable substitutions)
 - Updated category validation to include "Labs" and "Brand_Events"
 - **Critical rule:** Demos MUST NOT be multi-user (ERROR level)
 - **Critical rule:** Demos MUST NOT have workshopLabUiRedirect enabled (ERROR level)
-- **Critical rule:** reportingLabels.primaryBU MUST be present for cost allocation (ERROR level)
+- **Critical rule:** reportingLabels.primaryBU MUST be present for business unit tracking (ERROR level)
 - **New rule:** Multi-user workshops SHOULD enable workshopLabUiRedirect (WARNING level)
 
 **`/agnosticv-catalog-builder` Enhancements:**
@@ -41,7 +41,7 @@ Based on analysis of real production catalogs, significantly enhanced both Agnos
   - Requirements_content with git collections and versions
   - Tower timeout configuration for complex deployments
   - Deployer configuration with execution_environment
-  - **reportingLabels.primaryBU for cost allocation (CRITICAL)**
+  - **reportingLabels.primaryBU for business unit tracking (CRITICAL)**
 - Auto-sets multiuser and workshopLabUiRedirect based on category
 - Worker scaling formulas for multi-user catalogs
 - Simplified dev.yaml to match real catalog patterns (purpose + scm_ref only)

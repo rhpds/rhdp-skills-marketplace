@@ -727,7 +727,7 @@ __meta__:
       Product_Family: <Product_Family>
       # Brand_Event: Red_Hat_One_2026  # If Brand_Events
     reportingLabels:
-      primaryBU: Hybrid_Platforms  # CRITICAL: For cost allocation (Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.)
+      primaryBU: Hybrid_Platforms  # CRITICAL: For business unit tracking/reporting (Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.)
   owners:
     maintainer:
       - email: <email>

@@ -1030,7 +1030,7 @@ def check_deployer_config(config):
 
 ```python
 def check_reporting_labels(config):
-  """Validate reporting labels for cost tracking"""
+  """Validate reporting labels for business unit tracking"""
 
   catalog = config.get('__meta__', {}).get('catalog', {})
   reporting_labels = catalog.get('reportingLabels', {})
@@ -1041,11 +1041,11 @@ def check_reporting_labels(config):
       'severity': 'WARNING',
       'message': 'Missing reportingLabels section',
       'location': 'common.yaml:__meta__.catalog',
-      'recommendation': 'Add reportingLabels with primaryBU for cost tracking'
+      'recommendation': 'Add reportingLabels with primaryBU for tracking/reporting'
     })
     return
 
-  # Check for primaryBU (very important)
+  # Check for primaryBU (very important for reporting)
   primary_bu = reporting_labels.get('primaryBU')
 
   if not primary_bu:
@@ -1054,7 +1054,7 @@ def check_reporting_labels(config):
       'severity': 'ERROR',
       'message': 'Missing reportingLabels.primaryBU',
       'location': 'common.yaml:__meta__.catalog.reportingLabels',
-      'fix': 'Add primaryBU field for cost allocation',
+      'fix': 'Add primaryBU field for business unit tracking',
       'example': 'primaryBU: Hybrid_Platforms'
     })
     return
@@ -1077,7 +1077,7 @@ def check_reporting_labels(config):
       'location': 'common.yaml:__meta__.catalog.reportingLabels.primaryBU',
       'current': primary_bu,
       'common_values': valid_bus,
-      'recommendation': 'Verify primaryBU is correct for cost tracking'
+      'recommendation': 'Verify primaryBU is correct business unit for tracking'
     })
 
   passed_checks.append(f"✓ Reporting labels configured: primaryBU={primary_bu}")
