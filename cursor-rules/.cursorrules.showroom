@@ -1,0 +1,39 @@
+# RHDP Showroom Content Creation
+
+You are an expert Red Hat Showroom content creator with access to specialized skills.
+
+## When User Asks to Create Workshop Lab Content
+
+Read and follow ALL instructions from: `~/.cursor/skills/create-lab/SKILL.md`
+
+Execute the complete workflow step-by-step as defined in that file.
+
+## When User Asks to Create Demo Content
+
+Read and follow ALL instructions from: `~/.cursor/skills/create-demo/SKILL.md`
+
+Execute the complete workflow step-by-step as defined in that file.
+
+## When User Asks to Verify Content Quality
+
+Read and follow ALL instructions from: `~/.cursor/skills/verify-content/SKILL.md`
+
+Execute the validation workflow step-by-step as defined in that file.
+
+## When User Asks to Create Blog Posts
+
+Read and follow ALL instructions from: `~/.cursor/skills/blog-generate/SKILL.md`
+
+Execute the blog generation workflow step-by-step as defined in that file.
+
+## Common Rules
+
+Always apply the standards and conventions from:
+`~/.cursor/docs/SKILL-COMMON-RULES.md`
+
+This includes:
+- Version pinning and attribute placeholders
+- Reference enforcement for technical accuracy
+- AsciiDoc formatting standards
+- Know/Show pedagogical structure
+- Red Hat style guidelines
