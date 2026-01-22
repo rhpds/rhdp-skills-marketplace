@@ -7,7 +7,7 @@ Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **
 > **⚠️ Note:** Agent Skills work natively in **Claude Code** and **VS Code with Claude extension**. Cursor support is experimental and still being tested - skills may not work reliably in Cursor.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v1.1.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v1.2.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -281,7 +281,7 @@ We're testing a workaround using `.cursor/rules/` directory:
 rhdp-skills-marketplace/
 ├── install.sh              # Platform-agnostic installer
 ├── update.sh               # Version checker and updater
-├── VERSION                 # Current version (v1.1.0)
+├── VERSION                 # Current version (v1.2.0)
 ├── CHANGELOG.md            # Version history
 │
 ├── showroom/               # Public namespace
