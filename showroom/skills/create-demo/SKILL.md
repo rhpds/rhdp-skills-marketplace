@@ -80,7 +80,6 @@ This skill supports optional command-line arguments for faster workflows.
 
 - Ask ONE question or ONE group of related questions at a time
 - WAIT for user's answer before proceeding
-- If user chooses "Yes, help me create new catalog" in Step 2.5, you MUST complete the ENTIRE AgV workflow before proceeding to Step 3
 - Do NOT ask questions from multiple steps together
 - Do NOT skip workflows based on incomplete answers
 
@@ -96,19 +95,16 @@ This skill supports optional command-line arguments for faster workflows.
 ```
 ❌ Asking all at once:
 1. Module file name?
-2. Do you need AgV help? [1/2/3/4]
-3. UserInfo variables?
-4. Presentation objective?
-5. Number of demos?
+2. UserInfo variables?
+3. Presentation objective?
+4. Number of demos?
 ```
 
 **Example of CORRECT approach**:
 ```
 ✅ Ask sequentially:
-Step 2.5: Do you need AgV help? [1/2/3/4]
-[WAIT for answer]
-[If answer is 3, complete ENTIRE AgV workflow]
-[If answer is 1 or 2, proceed to Step 3]
+Step 2: Complete overall demo story planning
+[WAIT for completion]
 
 Step 3.1: Module file name?
 [WAIT for answer]
@@ -346,7 +342,7 @@ Now for this specific module:
    - If not provided: Generate from templates and common value propositions
 
 3. **UserInfo variables** (optional, for accurate showroom content):
-   - If not already provided in Step 2.5, **I must ask the user:**
+   - **I must ask the user:**
 
    ```
    Q: Do you have access to a deployed environment on demo.redhat.com or integration.demo.redhat.com?
@@ -407,7 +403,7 @@ Now for this specific module:
 
 ### Step 4: Get UserInfo Variables (if applicable)
 
-If UserInfo variables weren't already provided in Step 2.5 or Step 3, I'll ask for them now.
+If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
 
 **RECOMMENDED: Get from Deployed Environment (Primary Method)**
 
@@ -1393,14 +1389,13 @@ User: Perfect! Create Module 1.
 Skill: Great! Now let me gather details for Module 1...
 
 Q1: Module file name? → "03-platform-value.adoc"
-Q2: AgnosticV catalog item? → "ocp4_workload_demo"
-Q3: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift
-Q4: Target audience details? → C-level (using overall)
-Q5: Business scenario? → "RetailCo" (using overall story)
-Q6: Technology? → "OpenShift Container Platform"
-Q7: Demo parts? → 3
-Q8: Key metrics? → "8 weeks → 10 minutes" (using overall)
-Q9: Diagrams? → Architecture diagram: ~/diagrams/retail-platform.png
+Q2: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift
+Q3: Target audience details? → C-level (using overall)
+Q4: Business scenario? → "RetailCo" (using overall story)
+Q5: Technology? → "OpenShift Container Platform"
+Q6: Demo parts? → 3
+Q7: Key metrics? → "8 weeks → 10 minutes" (using overall)
+Q8: Diagrams? → Architecture diagram: ~/diagrams/retail-platform.png
 
 [Generates Module 1 with RetailCo story]
 [Sets up story arc for Module 2]
@@ -1441,14 +1436,13 @@ User: Create demo for OpenShift AI value proposition. I have:
 Skill: Excellent! Let me gather details...
 
 Q1: Module file name? → "03-ai-platform-demo.adoc"
-Q2: AgnosticV catalog item? → "ocp4_workload_rhods_demo"
-Q3: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai
-Q4: Target audience? → C-level executives
-Q5: Business scenario? → "TechCorp needs faster AI model deployment"
-Q6: Technology? → "Red Hat OpenShift AI"
-Q7: Demo parts? → 3
-Q8: Key metrics? → "Weeks to hours for model deployment"
-Q9: Diagrams/screenshots? → Yes:
+Q2: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai
+Q3: Target audience? → C-level executives
+Q4: Business scenario? → "TechCorp needs faster AI model deployment"
+Q5: Technology? → "Red Hat OpenShift AI"
+Q6: Demo parts? → 3
+Q7: Key metrics? → "Weeks to hours for model deployment"
+Q8: Diagrams/screenshots? → Yes:
     - Architecture: ~/diagrams/ai-platform-architecture.png
     - Before workflow: ~/diagrams/before-manual-ml.png
     - After workflow: ~/diagrams/after-automated-ml.png
