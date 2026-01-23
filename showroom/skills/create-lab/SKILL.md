@@ -71,7 +71,6 @@ This skill supports optional command-line arguments for faster workflows.
 
 - Ask ONE question or ONE group of related questions at a time
 - WAIT for user's answer before proceeding
-- If user chooses "Yes, help me create new catalog" in Step 2.5, you MUST complete the ENTIRE AgV workflow before proceeding to Step 3
 - Do NOT ask questions from multiple steps together
 - Do NOT skip workflows based on incomplete answers
 
@@ -113,19 +112,16 @@ This skill supports optional command-line arguments for faster workflows.
 ```
 ❌ Asking all at once:
 1. Module file name?
-2. Do you need AgV help? [1/2/3/4]
-3. UserInfo variables?
-4. Learning objective?
-5. Number of exercises?
+2. UserInfo variables?
+3. Learning objective?
+4. Number of exercises?
 ```
 
 **Example of CORRECT approach**:
 ```
 ✅ Ask sequentially:
-Step 2.5: Do you need AgV help? [1/2/3/4]
-[WAIT for answer]
-[If answer is 3, complete ENTIRE AgV workflow]
-[If answer is 1 or 2, proceed to Step 3]
+Step 2: Complete overall lab story planning
+[WAIT for completion]
 
 Step 3.1: Module file name?
 [WAIT for answer]
@@ -416,10 +412,6 @@ Using the lab title and slug from Step 2, update:
 
 **Note**: These files must be updated BEFORE Step 8 (Generate Files).
 
-**If user chooses option 1 or 2 (NO AgV help):**
-- Use placeholder attributes in module content
-- Proceed directly to Step 3
-
 ---
 
 ### Step 3: Gather Module-Specific Details
@@ -442,7 +434,7 @@ Now for this specific module:
    - If not provided: Generate from templates and common patterns
 
 3. **UserInfo variables** (optional, for accurate showroom content):
-   - If not already provided in Step 2.5, **I must ask the user:**
+   - **I must ask the user:**
 
    ```
    Q: Do you have access to a deployed environment on demo.redhat.com or integration.demo.redhat.com?
@@ -523,7 +515,7 @@ Now for this specific module:
 
 ### Step 4: Get UserInfo Variables (if applicable)
 
-If UserInfo variables weren't already provided in Step 2.5 or Step 3, I'll ask for them now.
+If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
 
 **RECOMMENDED: Get from Deployed Environment (Primary Method)**
 
@@ -1497,13 +1489,12 @@ User: Perfect! Let's start with Module 1.
 Skill: Excellent! Now let me gather details for Module 1...
 
 Q1: Module file name? → "03-pipelines-intro.adoc"
-Q2: AgnosticV catalog item? → None
-Q3: Reference materials? → https://docs.openshift.com/pipelines/1.12/
-Q4: Learning objective? → "Create and execute your first Tekton pipeline"
-Q5: Business scenario? → "DevOps Corp" (using overall story)
-Q6: Technology? → "OpenShift Pipelines / Tekton"
-Q7: Exercise count? → 3
-Q8: Diagrams/code? → No, not yet
+Q2: Reference materials? → https://docs.openshift.com/pipelines/1.12/
+Q3: Learning objective? → "Create and execute your first Tekton pipeline"
+Q4: Business scenario? → "DevOps Corp" (using overall story)
+Q5: Technology? → "OpenShift Pipelines / Tekton"
+Q6: Exercise count? → 3
+Q7: Diagrams/code? → No, not yet
 
 [Generates Module 1 with DevOps Corp story]
 [Sets up story arc for modules 2 and 3]
@@ -1536,8 +1527,7 @@ A: content/modules/ROOT/pages/03-pipelines-intro.adoc
 I'll continue the DevOps Corp story. Now for Module 2 details...
 
 Q1: Module file name? → "04-pipelines-git.adoc"
-Q2: AgnosticV catalog item? → None
-Q3: Reference materials? → https://docs.openshift.com/pipelines/.../triggers
+Q2: Reference materials? → https://docs.openshift.com/pipelines/.../triggers
 Q4: Learning objective? → "Automate pipeline execution via Git webhooks"
 Q5: Technology? → "OpenShift Pipelines / Tekton Triggers"
 Q6: Exercise count? → 3
@@ -1572,49 +1562,7 @@ Skill: I'll create that module. Let me ask a few questions...
 ✓ Ready to add to nav.adoc
 ```
 
-### Example 2: Create Module with AgnosticV Integration
-
-```
-User: Create Module 1 for Red Hat OpenShift AI demo
-
-Skill: Let me gather information...
-
-Q1: Module file name? → "03-rhods-intro.adoc"
-Q2: AgnosticV catalog item? → "ocp4_workload_rhods_demo"
-Q3: Reference materials? → https://docs.redhat.com/en/documentation/red_hat_openshift_ai/
-Q4: Learning objective? → "Deploy and test AI/ML workloads on OpenShift AI"
-Q5: Business scenario? → ACME Corp (first module)
-Q6: Technology focus? → "Red Hat OpenShift AI"
-Q7: Exercise count? → 3
-
-[Reads AgnosticV catalog]
-→ Found: ~/work/code/agnosticv/catalogs/ocp4_workload_rhods_demo/common.yaml
-→ Workloads: rhpds.rhods_demo.ocp4_workload_rhods_demo
-
-[Reads AgnosticD workload]
-→ Location: ~/work/code/agnosticd-v2/collections/ansible_collections/rhpds/rhods_demo/
-→ Extracted UserInfo variables:
-  - openshift_console_url
-  - rhods_dashboard_url
-  - user_name
-  - user_password
-
-[Generates module with:]
-- Variables mapped to Showroom attributes:
-  * {openshift_console_url}
-  * {rhods_dashboard_url}
-  * {user}
-  * {password}
-- Commands using these variables
-- Example: "Log into OpenShift Console at {openshift_console_url}"
-
-✓ Created: content/modules/ROOT/pages/03-rhods-intro.adoc
-✓ AgnosticV variables integrated
-✓ 3 exercises with dynamic variables
-✓ Screenshot guide provided
-```
-
-### Example 3: Create Module with Diagrams and Code Blocks
+### Example 2: Create Module with Diagrams and Code Blocks
 
 ```
 User: Create Module 1 for container security. I have an architecture diagram
@@ -1623,13 +1571,12 @@ User: Create Module 1 for container security. I have an architecture diagram
 Skill: Great! Let me ask some questions...
 
 Q1: Module file name? → "03-security-intro.adoc"
-Q2: AgnosticV catalog item? → None
-Q3: Reference materials? → https://docs.redhat.com/en/documentation/...
-Q4: Learning objective? → "Implement container security best practices"
-Q5: Business scenario? → ACME Corp
-Q6: Technology? → "Container security, Podman, OpenShift"
-Q7: Exercise count? → 3
-Q8: Diagrams/screenshots/code? → Yes, I have:
+Q2: Reference materials? → https://docs.redhat.com/en/documentation/...
+Q3: Learning objective? → "Implement container security best practices"
+Q4: Business scenario? → ACME Corp
+Q5: Technology? → "Container security, Podman, OpenShift"
+Q6: Exercise count? → 3
+Q7: Diagrams/screenshots/code? → Yes, I have:
     - Architecture diagram: ~/diagrams/security-architecture.png
     - Code: Secure Dockerfile examples (paste below)
 
