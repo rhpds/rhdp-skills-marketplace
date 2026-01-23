@@ -291,6 +291,12 @@ install_namespace() {
         if [[ "$DRY_RUN" == true ]]; then
           print_msg "$YELLOW" "  [DRY RUN] Would install skill: $skill_name"
         else
+          # Backup and remove existing skill directory if it exists to ensure clean install
+          if [[ -d "$SKILLS_DIR/$skill_name" ]]; then
+            local backup_dir="$SKILLS_DIR/.backup-$(date +%Y%m%d-%H%M%S)"
+            mkdir -p "$backup_dir"
+            mv "$SKILLS_DIR/$skill_name" "$backup_dir/$skill_name"
+          fi
           cp -r "$skill" "$SKILLS_DIR/$skill_name"
           print_msg "$GREEN" "  ✓ Installed skill: $skill_name"
         fi
@@ -306,6 +312,12 @@ install_namespace() {
         if [[ "$DRY_RUN" == true ]]; then
           print_msg "$YELLOW" "  [DRY RUN] Would install doc: $doc_name"
         else
+          # Backup existing doc if it exists to ensure clean install
+          if [[ -f "$DOCS_DIR/$doc_name" ]]; then
+            local backup_dir="$DOCS_DIR/.backup-$(date +%Y%m%d-%H%M%S)"
+            mkdir -p "$backup_dir"
+            mv "$DOCS_DIR/$doc_name" "$backup_dir/$doc_name"
+          fi
           cp "$doc" "$DOCS_DIR/$doc_name"
           print_msg "$GREEN" "  ✓ Installed doc: $doc_name"
         fi

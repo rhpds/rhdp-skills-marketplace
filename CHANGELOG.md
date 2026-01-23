@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.8] - 2026-01-23
+
+### Fixed - Install Script & Removed Obsolete AGV File
+
+**Install/Update Script Fixes:**
+- Fixed install.sh to properly override existing skills during updates
+- Added backup functionality before overwriting (creates .backup-TIMESTAMP/)
+- Skills and docs now correctly update when running update.sh
+- Previously, `cp -r` without `-f` flag didn't force overwrite existing directories
+- Now removes old files after backing them up to ensure clean installation
+
+**Removed Obsolete File:**
+- Deleted agnosticv/docs/AGV-COMMON-RULES.md (backed up to .archive/)
+- This file instructed showroom skills to ask AgV questions (removed in v1.5.7)
+- File was being loaded globally by Claude causing unwanted AgV prompts
+- agnosticv skills have complete workflows in their own SKILL.md files
+- Updated agnosticv-catalog-builder and agnosticv-validator references
+
+**Impact:**
+- Users running update.sh will now get the actual latest skill files
+- No more stale skills after updates
+- No more unwanted AgV questions in showroom skills
+- Cleaner, more predictable update experience
+
+**Files Updated:**
+- install.sh (added backup+override logic for skills and docs)
+- agnosticv/docs/AGV-COMMON-RULES.md (deleted, backed up to .archive/)
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md (removed reference)
+- agnosticv/skills/agnosticv-validator/SKILL.md (removed reference)
+
+### Focus
+This release fixes the update mechanism to ensure users get the latest versions, and removes the obsolete file causing AgV questions in showroom skills.
+
 ## [v1.5.7] - 2026-01-23
 
 ### Changed - Removed AgnosticV Questions from Showroom Skills

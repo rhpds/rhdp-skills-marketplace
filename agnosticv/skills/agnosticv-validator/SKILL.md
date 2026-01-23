@@ -1545,7 +1545,6 @@ Next steps:
 
 ## References
 
-- [AGV Common Rules](../../docs/AGV-COMMON-RULES.md) - Full AgV configuration contract
 - [babylon_checks.py](https://github.com/rhpds/agnosticv/blob/main/.tests/babylon_checks.py) - Validation patterns
 - [Workload Mappings](../../docs/workload-mappings.md) - Technology to workload reference
 - [Infrastructure Guide](../../docs/infrastructure-guide.md) - CNV/SNO/AWS decision tree

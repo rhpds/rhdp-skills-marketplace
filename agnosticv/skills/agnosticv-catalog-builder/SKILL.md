@@ -1529,7 +1529,6 @@ Template usage:
 - `/ftl` - Create graders/solvers for workshop testing
 
 ### Documentation
-- `~/.claude/docs/AGV-COMMON-RULES.md` - AgV configuration contract
 - `~/.claude/docs/workload-mappings.md` - Technology to workload mapping
 - `~/.claude/docs/infrastructure-guide.md` - Infrastructure selection guide
 
