@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.7] - 2026-01-23
+
+### Changed - Removed AgnosticV Questions from Showroom Skills
+
+**Simplified Skill Workflow:**
+- Removed AgnosticV catalog workflow questions from create-lab skill
+- Removed AgnosticV catalog workflow questions from create-demo skill
+- Skills now focus solely on content creation without infrastructure provisioning interruptions
+- Cleaned up 7 references in create-lab/SKILL.md
+- Cleaned up 4 references in create-demo/SKILL.md
+
+**Impact:**
+- Skills no longer ask "Do you need help with AgnosticV catalog files?"
+- Workflow proceeds directly from story planning (Step 2) to module details (Step 3)
+- Users who need AgV setup use /agnosticv-catalog-builder separately
+- Cleaner, more focused content creation experience
+
+**Files Updated:**
+- showroom/skills/create-lab/SKILL.md (42 insertions, 59 deletions)
+- showroom/skills/create-demo/SKILL.md (42 insertions, 42 deletions)
+
+### Focus
+This release streamlines the showroom content creation workflow by removing infrastructure provisioning questions, allowing users to focus purely on creating lab and demo content.
+
 ## [v1.5.6] - 2026-01-22
 
 ### Changed - Complete Slack Migration & Credits Update
