@@ -325,6 +325,84 @@ install_namespace() {
     done
   fi
 
+  # Copy templates (only for showroom namespace)
+  if [[ "$ns" == "showroom" ]] && [[ -d "$repo_dir/$ns/templates" ]]; then
+    local TEMPLATES_DIR="$HOME/.claude/templates"
+    if [[ "$DRY_RUN" == false ]]; then
+      mkdir -p "$TEMPLATES_DIR"
+    fi
+
+    for template_type in "$repo_dir/$ns/templates"/*; do
+      if [[ -d "$template_type" ]]; then
+        local type_name=$(basename "$template_type")
+        if [[ "$DRY_RUN" == true ]]; then
+          print_msg "$YELLOW" "  [DRY RUN] Would install templates: $type_name"
+        else
+          # Backup and remove existing template directory if it exists
+          if [[ -d "$TEMPLATES_DIR/$type_name" ]]; then
+            local backup_dir="$TEMPLATES_DIR/.backup-$(date +%Y%m%d-%H%M%S)"
+            mkdir -p "$backup_dir"
+            mv "$TEMPLATES_DIR/$type_name" "$backup_dir/$type_name"
+          fi
+          cp -r "$template_type" "$TEMPLATES_DIR/$type_name"
+          print_msg "$GREEN" "  ✓ Installed templates: $type_name"
+        fi
+      fi
+    done
+  fi
+
+  # Copy prompts (only for showroom namespace)
+  if [[ "$ns" == "showroom" ]] && [[ -d "$repo_dir/$ns/prompts" ]]; then
+    local PROMPTS_DIR="$HOME/.claude/prompts"
+    if [[ "$DRY_RUN" == false ]]; then
+      mkdir -p "$PROMPTS_DIR"
+    fi
+
+    for prompt in "$repo_dir/$ns/prompts"/*.txt; do
+      if [[ -f "$prompt" ]]; then
+        local prompt_name=$(basename "$prompt")
+        if [[ "$DRY_RUN" == true ]]; then
+          print_msg "$YELLOW" "  [DRY RUN] Would install prompt: $prompt_name"
+        else
+          # Backup existing prompt if it exists
+          if [[ -f "$PROMPTS_DIR/$prompt_name" ]]; then
+            local backup_dir="$PROMPTS_DIR/.backup-$(date +%Y%m%d-%H%M%S)"
+            mkdir -p "$backup_dir"
+            mv "$PROMPTS_DIR/$prompt_name" "$backup_dir/$prompt_name"
+          fi
+          cp "$prompt" "$PROMPTS_DIR/$prompt_name"
+          print_msg "$GREEN" "  ✓ Installed prompt: $prompt_name"
+        fi
+      fi
+    done
+  fi
+
+  # Copy agents (only for showroom namespace)
+  if [[ "$ns" == "showroom" ]] && [[ -d "$repo_dir/$ns/agents" ]]; then
+    local AGENTS_DIR="$HOME/.claude/agents"
+    if [[ "$DRY_RUN" == false ]]; then
+      mkdir -p "$AGENTS_DIR"
+    fi
+
+    for agent in "$repo_dir/$ns/agents"/*.md; do
+      if [[ -f "$agent" ]]; then
+        local agent_name=$(basename "$agent")
+        if [[ "$DRY_RUN" == true ]]; then
+          print_msg "$YELLOW" "  [DRY RUN] Would install agent: $agent_name"
+        else
+          # Backup existing agent if it exists
+          if [[ -f "$AGENTS_DIR/$agent_name" ]]; then
+            local backup_dir="$AGENTS_DIR/.backup-$(date +%Y%m%d-%H%M%S)"
+            mkdir -p "$backup_dir"
+            mv "$AGENTS_DIR/$agent_name" "$backup_dir/$agent_name"
+          fi
+          cp "$agent" "$AGENTS_DIR/$agent_name"
+          print_msg "$GREEN" "  ✓ Installed agent: $agent_name"
+        fi
+      fi
+    done
+  fi
+
   echo ""
 }
 

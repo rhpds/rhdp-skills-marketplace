@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.6.0] - 2026-01-23
+
+### Added - Templates, Prompts, and Agents for Showroom Skills
+
+**Critical Infrastructure for Skills:**
+- Added templates/ directory with demo and workshop templates
+- Added prompts/ directory with verification and quality control prompts
+- Added agents/ directory with specialized content creation agents
+- Updated install.sh to automatically install these resources to ~/.claude/
+
+**Templates Added (showroom/templates/):**
+- **Demo templates**: 7 AsciiDoc templates (index, overview, details, 3 modules, conclusion)
+- **Workshop templates**: Conclusion template + examples + learner/facilitator templates
+- Templates are used by `/create-lab` and `/create-demo` skills for consistent content generation
+
+**Prompts Added (showroom/prompts/):**
+- `enhanced_verification_demo.txt` - Comprehensive demo quality checklist
+- `enhanced_verification_workshop.txt` - Comprehensive workshop quality checklist
+- `redhat_style_guide_validation.txt` - Red Hat style and branding rules
+- `verify_accessibility_compliance_demo.txt` - Demo accessibility requirements
+- `verify_accessibility_compliance_workshop.txt` - Workshop accessibility requirements
+- `verify_accessibility_compliance.txt` - General accessibility standards
+- `verify_content_quality.txt` - Content quality and pedagogical standards
+- `verify_technical_accuracy_demo.txt` - Technical accuracy for demos
+- `verify_technical_accuracy_workshop.txt` - Technical accuracy for workshops
+- `verify_workshop_structure.txt` - Workshop structure requirements
+- Total: 10 verification prompts for automated quality control
+
+**Agents Added (showroom/agents/):**
+- `accessibility-checker.md` - Validates WCAG compliance and accessibility
+- `content-converter.md` - Converts between content formats
+- `migration-assistant.md` - Helps migrate content to Showroom format
+- `researcher.md` - Researches technical topics for accuracy
+- `style-enforcer.md` - Enforces Red Hat style guidelines
+- `technical-editor.md` - Reviews technical accuracy
+- `technical-writer.md` - Assists with technical writing
+- `workshop-reviewer.md` - Reviews workshop content quality
+- Total: 8 specialized agents for content creation and verification
+
+**Installation Behavior:**
+- Templates, prompts, and agents are installed to `~/.claude/` (global)
+- Only installed when showroom namespace is selected
+- Backup functionality: Creates `.backup-TIMESTAMP/` before overwriting
+- Skills can use local `.claude/` in git repos or global `~/.claude/` in home directory
+- Dry-run mode shows what would be installed without making changes
+
+**Impact:**
+- `/create-lab` and `/create-demo` skills now work properly with templates
+- `/verify-content` skill can use verification prompts for quality control
+- Skills generate higher quality content using standardized templates
+- Automated quality checks ensure Red Hat standards compliance
+- Content creators get consistent, professional output
+- Fixes errors where skills tried to read non-existent template files
+
+**Source:**
+- Templates, prompts, and agents sourced from proven showroom_template_nookbag repository
+- Battle-tested in production Showroom content creation workflows
+- Represents best practices from Red Hat Demo Platform team
+
+**Files Added:**
+- showroom/templates/demo/ (7 files)
+- showroom/templates/workshop/ (3 directories with multiple templates)
+- showroom/prompts/ (10 .txt files)
+- showroom/agents/ (8 .md files)
+- install.sh (updated to install templates, prompts, agents)
+
+### Focus
+This release adds essential infrastructure (templates, prompts, agents) that the showroom skills depend on. Without these files, skills would fail when trying to read templates or apply verification criteria. This is a critical update for anyone using `/create-lab`, `/create-demo`, or `/verify-content` skills.
+
 ## [v1.5.8] - 2026-01-23
 
 ### Fixed - Install Script & Refactored AGV Documentation
