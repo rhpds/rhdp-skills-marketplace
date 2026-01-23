@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.6.1] - 2026-01-23
+
+### Fixed - Install and Update Scripts Simplified
+
+**Non-Interactive Installation:**
+- Removed unnecessary confirmation prompts from install.sh
+- Removed "Continue? [Y/n]" prompt - if user runs the script, they want to install
+- Removed --force flag entirely (unnecessary complexity)
+- Scripts now work properly when piped from curl
+
+**Automatic Updates:**
+- update.sh now automatically updates without asking "Would you like to update now?"
+- Removed --force flag from update.sh
+- Update script detects namespace from existing installation
+- Shows changelog and immediately updates
+
+**Impact:**
+- `curl ... | bash` patterns work reliably
+- No `/dev/tty` errors in non-interactive environments
+- Cleaner, simpler user experience
+- Scripts do what users expect without extra prompts
+
+**Files Updated:**
+- install.sh (removed FORCE variable, removed confirmation prompt, simplified help text)
+- update.sh (removed FORCE variable, removed confirmation prompt, auto-updates)
+- VERSION (bumped to v1.6.1)
+
+### Focus
+This patch release fixes the installation and update experience by removing unnecessary prompts and complexity. Scripts now "just work" when run.
+
 ## [v1.6.0] - 2026-01-23
 
 ### Added - Templates, Prompts, and Agents for Showroom Skills

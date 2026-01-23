@@ -15,7 +15,6 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Default values
-FORCE=false
 REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace"
 GITHUB_API_URL="https://api.github.com/repos/rhpds/rhdp-skills-marketplace/releases/latest"
 INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh"
@@ -30,20 +29,14 @@ CURRENT_PLATFORM=""
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --force)
-      FORCE=true
-      shift
-      ;;
     --help)
-      echo "Usage: $0 [OPTIONS]"
+      echo "Usage: $0"
+      echo ""
+      echo "Updates RHDP Skills Marketplace to the latest version."
+      echo "Automatically detects your current installation and updates it."
       echo ""
       echo "Options:"
-      echo "  --force    Force update even if already on latest version"
       echo "  --help     Show this help message"
-      echo ""
-      echo "Examples:"
-      echo "  $0          # Check for updates and prompt to install"
-      echo "  $0 --force  # Force update to latest version"
       exit 0
       ;;
     *)
@@ -196,8 +189,7 @@ perform_update() {
   # Download and run install script with current settings
   curl -fsSL "$INSTALL_SCRIPT_URL" | bash -s -- \
     --platform "$CURRENT_PLATFORM" \
-    --namespace "$CURRENT_NAMESPACE" \
-    --force
+    --namespace "$CURRENT_NAMESPACE"
 
   print_msg "$GREEN" "✓ Update complete!"
   echo ""
@@ -211,32 +203,18 @@ main() {
   check_latest_version
 
   # Compare versions
-  if compare_versions && [[ "$FORCE" == false ]]; then
+  if compare_versions; then
     print_msg "$GREEN" "✓ You are already on the latest version ($CURRENT_VERSION)"
     echo ""
-    print_msg "$BLUE" "To force reinstall, run:"
-    echo "  curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash -s -- --force"
-    echo ""
     exit 0
   fi
 
-  if [[ "$FORCE" == false ]]; then
-    print_msg "$YELLOW" "Update available: $CURRENT_VERSION → $LATEST_VERSION"
-    echo ""
-    show_changelog
-  else
-    print_msg "$YELLOW" "Force reinstalling version $LATEST_VERSION"
-    echo ""
-  fi
-
-  # Confirm update
-  read -p "Would you like to update now? [Y/n] " confirm
-  if [[ "$confirm" =~ ^[Nn] ]]; then
-    print_msg "$RED" "Update cancelled."
-    exit 0
-  fi
-
+  # Show what's new
+  print_msg "$YELLOW" "Update available: $CURRENT_VERSION → $LATEST_VERSION"
   echo ""
+  show_changelog
+
+  # Perform update automatically
   perform_update
 }
 

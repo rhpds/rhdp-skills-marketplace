@@ -18,7 +18,6 @@ NC='\033[0m' # No Color
 DRY_RUN=false
 NAMESPACE=""
 PLATFORM=""
-FORCE=false
 REPO_URL="https://github.com/rhpds/rhdp-skills-marketplace"
 GITHUB_API_URL="https://api.github.com/repos/rhpds/rhdp-skills-marketplace/releases/latest"
 
@@ -41,10 +40,6 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=true
       shift
       ;;
-    --force)
-      FORCE=true
-      shift
-      ;;
     --help)
       echo "Usage: $0 [OPTIONS]"
       echo ""
@@ -60,7 +55,6 @@ while [[ $# -gt 0 ]]; do
       echo "                       cursor - Cursor IDE (experimental)"
       echo ""
       echo "  --dry-run            Show what would be installed without making changes"
-      echo "  --force              Force installation even if already installed"
       echo "  --help               Show this help message"
       echo ""
       echo "Examples:"
@@ -540,15 +534,10 @@ main() {
   check_prerequisites
   select_namespace
 
-  # Confirm installation
+  # Show installation plan
   if [[ "$DRY_RUN" == false ]]; then
     echo ""
-    print_msg "$YELLOW" "Ready to install $NAMESPACE namespace for $PLATFORM"
-    read -p "Continue? [Y/n] " confirm < /dev/tty
-    if [[ "$confirm" =~ ^[Nn] ]]; then
-      print_msg "$RED" "Installation cancelled."
-      exit 0
-    fi
+    print_msg "$YELLOW" "Installing $NAMESPACE namespace for $PLATFORM..."
     echo ""
   fi
 
