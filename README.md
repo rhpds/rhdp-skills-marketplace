@@ -2,12 +2,12 @@
 
 AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
-Supports: **Claude Code (Recommended)** | **VS Code with Claude Extension** | **Cursor (Experimental - Still Testing)**
+Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 
-> **⚠️ Note:** Agent Skills work natively in **Claude Code** and **VS Code with Claude extension**. Cursor support is experimental and still being tested - skills may not work reliably in Cursor.
+> **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v1.5.1-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v1.7.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -274,25 +274,36 @@ Skills are installed to:
 
 **Native Agent Skills support** - same installation as Claude Code, skills work with `/skill-name` commands in VS Code.
 
-### Cursor (Experimental - Still Testing)
+### Cursor 2.4+
 
-**⚠️ Experimental:** Agent Skills in Cursor are not fully supported yet. The Cursor team stated it's "not ready for primetime" ([source](https://forum.cursor.com/t/support-for-claude-skills/148267)).
+**✅ Fully Supported:** Cursor 2.4+ implements the [Agent Skills open standard](https://agentskills.io).
 
-**Current approach for Cursor:**
+**Installation:**
 
-We're testing a workaround using `.cursor/rules/` directory:
+```bash
+bash install.sh --platform cursor --namespace all
+```
 
-1. Install skills: `bash install.sh --platform cursor --namespace all`
-2. Rules automatically installed to `.cursor/rules/` in current directory
-3. Use trigger phrases like "create lab" or "validate agv"
+Skills are installed to:
+- Skills: `~/.cursor/skills/`
+- Docs: `~/.cursor/docs/`
 
-**Status:**
-- **Still testing** - may not work reliably
-- Uses `.cursor/rules/RULE.md` files to reference skills from `~/.cursor/skills/`
-- Experimental workaround until Cursor fully supports Agent Skills
-- See: [cursor-rules/README.md](cursor-rules/README.md)
+**How to use:**
 
-**Recommendation:** Use Claude Code for best experience. Cursor support is experimental and still being tested.
+1. **Explicit invocation:** Type `/skill-name` in Agent chat
+   - `/create-lab`
+   - `/create-demo`
+   - `/agnosticv-catalog-builder`
+
+2. **Natural language:** The agent will apply relevant skills automatically
+   - "Help me create a workshop lab"
+   - "Generate demo content"
+
+**Verify installation:**
+
+Open Cursor Settings (`Cmd+Shift+J` or `Ctrl+Shift+J`) → Rules → Agent Decides section
+
+**Requirements:** Cursor version 2.4.0 or later
 
 ---
 

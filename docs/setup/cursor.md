@@ -5,13 +5,22 @@ title: Cursor Setup
 
 # Cursor Setup
 
-> **⚠️ Experimental Support - Still Testing**
+> **✅ Cursor 2.4+ Supported**
 >
-> Agent Skills are not fully supported in Cursor yet and we're still testing the `.cursor/rules/` workaround. **Skills may not work reliably in Cursor.**
->
-> We recommend **Claude Code** for the best experience.
->
-> [Why Cursor support is experimental →](https://forum.cursor.com/t/support-for-claude-skills/148267)
+> Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io). RHDP skills work natively in Cursor with auto-discovery from `~/.cursor/skills/`.
+
+---
+
+## Prerequisites
+
+**Cursor Version:** 2.4 or later
+
+Check your version:
+1. Open Cursor
+2. Click **Cursor** menu → **About Cursor**
+3. Version should be **2.4.0** or higher
+
+If you're on an older version, update Cursor first.
 
 ---
 
@@ -23,53 +32,159 @@ bash /tmp/rhdp-install.sh
 ```
 
 When prompted:
-1. Select **2 (Cursor)**
-2. Choose your namespace
+1. Select **2 (Cursor 2.4+)**
+2. Choose your namespace:
+   - **showroom** - Create demos/workshops (most users)
+   - **agnosticv** - RHDP catalog work (internal)
+   - **health** - Deployment validation (internal)
+   - **all** - Install everything
 
-Restart Cursor after installation.
+The installer will:
+- ✅ Install skills to `~/.cursor/skills/`
+- ✅ Install documentation to `~/.cursor/docs/`
+- ✅ Create version tracking file
+
+**Restart Cursor** after installation to load the new skills.
+
+---
+
+## Verify Installation
+
+### Option 1: View in Settings
+
+1. Open Cursor Settings: `Cmd+Shift+J` (Mac) or `Ctrl+Shift+J` (Windows/Linux)
+2. Navigate to **Rules**
+3. Look in the **"Agent Decides"** section
+4. You should see your installed skills listed
+
+### Option 2: Use in Chat
+
+1. Open Agent chat
+2. Type `/` to see available skills
+3. Search for installed skills:
+   - `/create-lab`
+   - `/create-demo`
+   - `/verify-content`
+   - etc.
 
 ---
 
 ## Usage
 
-Use trigger phrases instead of `/commands`:
+### Method 1: Explicit Invocation
+
+Type `/` in Agent chat and select a skill:
+
+```
+/create-lab
+/create-demo
+/verify-content
+/agnosticv-catalog-builder
+```
+
+### Method 2: Natural Language
+
+The agent will automatically apply relevant skills based on context:
 
 **Showroom:**
-- "create lab" → Generates workshop module
-- "create demo" → Generates demo content
-- "verify content" → Validates quality
+- "Help me create a workshop lab module"
+- "Generate demo content for AAP"
+- "Verify this content for quality"
 
 **AgnosticV:**
-- "create agv catalog" → Creates catalog item
-- "validate agv" → Validates configuration
+- "Create an AgnosticV catalog item"
+- "Validate this catalog configuration"
+
+---
+
+## How It Works
+
+Cursor 2.4+ implements the **Agent Skills open standard** (agentskills.io):
+
+1. **Auto-discovery**: Skills are automatically loaded from:
+   - `~/.cursor/skills/` (user-level, global)
+   - `.cursor/skills/` (project-level, optional)
+
+2. **Agent decides**: The agent sees available skills and determines when they're relevant
+
+3. **Progressive loading**: Skills load resources on demand to keep context efficient
+
+---
+
+## Updating Skills
+
+Run the update script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+```
+
+Or manually download and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh -o /tmp/rhdp-update.sh
+bash /tmp/rhdp-update.sh
+```
+
+Restart Cursor after updating.
 
 ---
 
 ## Troubleshooting
 
-**Skills don't work?**
-1. Check `.cursor/rules/` exists: `ls -la .cursor/rules/`
-2. Restart Cursor completely
-3. Reinstall if needed
+### Skills don't appear in settings
 
-**New project?**
+1. Check installation:
+   ```bash
+   ls -la ~/.cursor/skills/
+   ```
+
+2. Verify SKILL.md files exist:
+   ```bash
+   cat ~/.cursor/skills/create-lab/SKILL.md
+   ```
+
+3. Restart Cursor completely (Quit and reopen)
+
+### Skills don't trigger automatically
+
+- Use explicit invocation: Type `/skill-name`
+- Check Cursor version is 2.4+
+- Verify skill frontmatter has proper `name` and `description` fields
+
+### Need fresh install
+
 ```bash
-cp -r /previous/project/.cursor/rules .cursor/
+# Remove existing skills
+rm -rf ~/.cursor/skills
+rm -rf ~/.cursor/docs
+
+# Reinstall
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
 ```
 
 ---
 
-## Better Alternative
+## Platform Comparison
 
-Use **Claude Code** for native support:
-- No workarounds needed
-- Use `/skill-name` commands
-- More stable
+| Feature | Claude Code | Cursor 2.4+ |
+|---------|-------------|-------------|
+| Agent Skills Standard | ✅ Supported | ✅ Supported |
+| Auto-discovery | ✅ `~/.claude/skills/` | ✅ `~/.cursor/skills/` |
+| Skill invocation | `/skill-name` | `/skill-name` |
+| Natural language | ✅ Agent decides | ✅ Agent decides |
+| Installation | One command | One command |
 
-[Claude Code setup →](claude-code.html)
+**Both platforms fully support RHDP skills.** Choose based on your preferred IDE.
 
 ---
 
-**Need more details?** [Full Cursor documentation on GitHub →](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/cursor-rules/README.md)
+## Additional Resources
 
-[← Back to Home](../index.html)
+- **Agent Skills Standard**: [agentskills.io](https://agentskills.io)
+- **Cursor Documentation**: [cursor.com/docs](https://cursor.com/docs)
+- **RHDP Skills GitHub**: [github.com/rhpds/rhdp-skills-marketplace](https://github.com/rhpds/rhdp-skills-marketplace)
+
+---
+
+[← Back to Setup](index.html) | [Home](../index.html)

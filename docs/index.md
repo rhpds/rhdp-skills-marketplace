@@ -22,7 +22,7 @@ The installer will guide you through platform and namespace selection.
 
 **Using Claude Code or VS Code with Claude extension?** Skills work natively with `/skill-name` commands.
 
-**Using Cursor?** [See Cursor setup guide →](setup/cursor.html) *(experimental - still testing, may not work reliably)*
+**Using Cursor 2.4+?** [See Cursor setup guide →](setup/cursor.html) - Full support via the Agent Skills open standard
 
 ---
 
@@ -107,7 +107,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-- **Version:** v1.6.1
+- **Version:** v1.7.0
 
 ---
 

@@ -52,7 +52,7 @@ while [[ $# -gt 0 ]]; do
       echo ""
       echo "  --platform <name>    Specify platform"
       echo "                       claude - Claude Code (CLI) or VS Code with Claude extension"
-      echo "                       cursor - Cursor IDE (experimental)"
+      echo "                       cursor - Cursor IDE (2.4+)"
       echo ""
       echo "  --dry-run            Show what would be installed without making changes"
       echo "  --help               Show this help message"
@@ -95,8 +95,8 @@ detect_platform() {
 
   print_msg "$BLUE" "Which AI coding assistant are you using?"
   echo ""
-  echo "  1) Claude Code or VS Code with Claude extension (Recommended - Native support)"
-  echo "  2) Cursor (Experimental - Still testing, may not work reliably)"
+  echo "  1) Claude Code or VS Code with Claude extension"
+  echo "  2) Cursor 2.4+"
   echo ""
   read -p "Enter your choice [1-2]: " choice < /dev/tty
 
@@ -415,24 +415,34 @@ save_version() {
   echo "$version|$NAMESPACE|$PLATFORM|$timestamp" > "$version_file"
 }
 
-# Install Cursor rules to current directory
+# Install Cursor rules to current directory (optional for Cursor 2.4+)
 install_cursor_rules() {
   local repo_dir=$1
 
-  # Only install rules for Cursor platform
+  # Only offer for Cursor platform
   if [[ "$PLATFORM" != "cursor" ]]; then
     return
   fi
 
-  print_msg "$BLUE" "Installing Cursor rules to current directory..."
+  # Skip in dry-run mode
+  if [[ "$DRY_RUN" == true ]]; then
+    return
+  fi
+
+  # Cursor 2.4+ doesn't need project-level rules, but offer as optional
+  print_msg "$BLUE" "Cursor 2.4+ auto-discovers skills from ~/.cursor/skills/"
+  echo "Project-level rules (.cursor/rules/) are optional."
+  echo ""
+  read -p "Install project-level rules to current directory? [y/N] " install_rules < /dev/tty
+
+  if [[ ! "$install_rules" =~ ^[Yy] ]]; then
+    print_msg "$BLUE" "Skipping project-level rules installation"
+    echo ""
+    return
+  fi
 
   local cursor_rules_src="$repo_dir/cursor-rules/.cursor/rules"
   local cursor_rules_dest=".cursor/rules"
-
-  if [[ "$DRY_RUN" == true ]]; then
-    print_msg "$YELLOW" "[DRY RUN] Would copy $cursor_rules_src to $cursor_rules_dest"
-    return
-  fi
 
   # Check if .cursor/rules already exists
   if [[ -d "$cursor_rules_dest" ]]; then
@@ -492,30 +502,24 @@ show_success() {
     echo "  2. Try running a skill, e.g., /create-lab"
     echo "  3. Check for updates periodically with update.sh"
   else
-    print_msg "$YELLOW" "  ⚠️  Cursor Users - Important!"
-    echo ""
-    echo "  Agent Skills in Cursor are experimental and we're still testing."
-    echo "  Skills may not work reliably. Claude Code is the recommended platform."
+    print_msg "$CYAN" "  Cursor 2.4+ Users:"
     echo ""
     echo "  ✓ Skills installed to: ~/.cursor/skills/"
     echo "  ✓ Docs installed to: ~/.cursor/docs/"
-    echo "  ✓ Rules installed to: .cursor/rules/ (current directory)"
     echo ""
-    echo "  To use skills in Cursor stable/Enterprise:"
-    echo "  1. Restart Cursor in this directory"
+    echo "  To use skills in Cursor:"
+    echo "  1. Restart Cursor to load the new skills"
     echo ""
-    echo "  2. Ask naturally using trigger phrases:"
-    echo "     - 'create lab' (triggers create-lab skill)"
-    echo "     - 'create demo' (triggers create-demo skill)"
-    echo "     - 'validate agv' (triggers agnosticv-validator skill)"
+    echo "  2. View skills in Cursor Settings:"
+    echo "     Cmd+Shift+J (Mac) or Ctrl+Shift+J (Windows/Linux)"
+    echo "     Navigate to: Rules > Agent Decides section"
     echo ""
-    echo "  3. For other projects, copy .cursor/rules:"
-    echo "     cp -r .cursor/rules /path/to/other/project/.cursor/"
+    echo "  3. Use skills in Agent chat:"
+    echo "     Type / and search for skill name, e.g., /create-lab"
+    echo "     Or mention naturally: 'help me create a lab module'"
     echo ""
-    echo "  See: cursor-rules/README.md for full documentation"
-    echo ""
-    echo "  Alternative: Try Nightly channel (Settings > Beta > Update Channel)"
-    echo "  See: https://forum.cursor.com/t/support-for-claude-skills/148267"
+    echo "  Note: Cursor 2.4+ supports the Agent Skills open standard"
+    echo "  Learn more: https://agentskills.io"
   fi
 
   echo ""
@@ -556,7 +560,7 @@ main() {
 
   save_version "$repo_dir"
 
-  # Install Cursor rules to current directory (Cursor only)
+  # Optionally install Cursor project-level rules (Cursor 2.4+ only)
   install_cursor_rules "$repo_dir"
 
   # Cleanup

@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.0] - 2026-01-28
+
+### Changed - Full Cursor 2.4+ Support via Agent Skills Standard
+
+**Cursor Platform Updates:**
+- Removed "experimental" warnings from all documentation
+- Updated to reflect Cursor 2.4+ native support for Agent Skills open standard
+- Changed install.sh prompt from "Experimental" to "Cursor 2.4+"
+- Updated success messages to reflect native auto-discovery from `~/.cursor/skills/`
+- Made project-level `.cursor/rules/` installation optional (auto-discovery is primary method)
+
+**Documentation Updates:**
+- Completely rewrote `docs/setup/cursor.md` for Cursor 2.4+ support
+  - Added prerequisites (Cursor 2.4.0+)
+  - Added verification instructions (Cmd+Shift+J → Rules → Agent Decides)
+  - Added "How It Works" section explaining Agent Skills standard
+  - Added platform comparison table (Claude Code vs Cursor 2.4+)
+  - Removed experimental warnings and workarounds
+- Updated `docs/index.md` to remove experimental notice
+- Updated `docs/setup/index.md` to show Cursor 2.4+ as fully supported
+- Updated main `README.md`:
+  - Changed platform list to include "Cursor 2.4+" without experimental notice
+  - Rewrote Cursor section with native support instructions
+  - Added Agent Skills standard references with link to agentskills.io
+  - Removed experimental warnings and "still testing" notices
+
+**Install Script Updates (install.sh):**
+- Line 55: Changed help text from "cursor - Cursor IDE (experimental)" to "cursor - Cursor IDE (2.4+)"
+- Line 99: Changed prompt from "2) Cursor (Experimental - Still testing)" to "2) Cursor 2.4+"
+- Lines 495-518: Completely rewrote Cursor success message:
+  - Removed experimental warnings
+  - Added native Agent Skills support messaging
+  - Updated instructions to use Cmd+Shift+J settings view
+  - Added reference to agentskills.io open standard
+  - Removed workaround instructions
+- Lines 418-454: Updated Cursor rules installation to be optional
+  - Added explanation that Cursor 2.4+ auto-discovers from `~/.cursor/skills/`
+  - Made project-level rules optional with user prompt
+  - Clarified that auto-discovery is the primary method
+
+**Agent Skills Standard:**
+- All platforms (Claude Code, VS Code with Claude, Cursor 2.4+) now support the Agent Skills open standard
+- Skills are auto-discovered from standard directories (`~/.claude/skills/` or `~/.cursor/skills/`)
+- Progressive loading keeps context efficient
+- Skills work with both `/skill-name` explicit invocation and natural language
+
+**Impact:**
+- Cursor users no longer see experimental warnings
+- Clear instructions for Cursor 2.4+ users
+- Both platforms have equal status and support
+- Documentation reflects production-ready Cursor support
+
+**Files Updated:**
+- install.sh (4 sections: help text, prompts, success messages, rules installation)
+- docs/setup/cursor.md (complete rewrite for 2.4+ support)
+- docs/index.md (removed experimental notice)
+- docs/setup/index.md (updated platform card)
+- README.md (updated Cursor section and platform support notice)
+- VERSION (bumped to v1.7.0)
+
+### Focus
+This release brings Cursor support to production-ready status with native Agent Skills standard support in Cursor 2.4+. No more experimental warnings or workarounds - both Claude Code and Cursor 2.4+ are first-class supported platforms.
+
 ## [v1.6.1] - 2026-01-23
 
 ### Fixed - Install and Update Scripts Simplified
@@ -501,7 +564,12 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.5.6...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.0...HEAD
+[v1.7.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.0
+[v1.6.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.6.1
+[v1.6.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.6.0
+[v1.5.8]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.8
+[v1.5.7]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.7
 [v1.5.6]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.6
 [v1.5.5]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.5
 [v1.5.4]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.5.4

@@ -25,8 +25,8 @@ Quick start for installing RHDP Skills Marketplace.
   </div>
 
   <div class="card">
-    <h3>🧪 Cursor (Experimental)</h3>
-    <p>Still testing - may not work reliably</p>
+    <h3>✨ Cursor 2.4+</h3>
+    <p>Agent Skills standard support</p>
     <a href="cursor.html">Cursor Setup →</a>
   </div>
 </div>
@@ -81,11 +81,12 @@ For RHDP validation roles.
 ls ~/.claude/skills/
 ```
 
-**Cursor:**
+**Cursor 2.4+:**
 ```bash
 ls ~/.cursor/skills/
-ls .cursor/rules/
 ```
+
+Skills are auto-discovered from these directories.
 
 ---
 
