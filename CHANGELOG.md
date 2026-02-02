@@ -7,6 +7,128 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.0] - 2026-02-03
+
+### Added - Namespace Prefixes & Governance
+
+**Namespace Prefixes in Skill Names:**
+- All skills now include explicit namespace prefixes for clarity
+- Skills appear in `/help` and `/skills` listings with namespace
+- Examples: `/showroom:create-lab`, `/agnosticv:catalog-builder`, `/health:deployment-validator`
+
+**Before (v2.2.0):**
+```
+/create-lab
+/create-demo
+/catalog-builder
+```
+
+**After (v2.3.0):**
+```
+/showroom:create-lab
+/showroom:create-demo
+/agnosticv:catalog-builder
+```
+
+**Benefits:**
+- Clear plugin ownership visible in command listings
+- No confusion when multiple plugins installed
+- Explicit about which plugin provides each skill
+- Better organization in large skill libraries
+
+**CODEOWNERS Governance:**
+- Added `.github/CODEOWNERS` file for plugin ownership
+- All plugins require approval from: @prakhar1985, @tonykay, or @stencell
+- Enforces review requirements when branch protection enabled
+- Specific ownership can be refined per plugin later
+
+**Files Added:**
+- `.github/CODEOWNERS` - Plugin ownership configuration
+
+**Updated Files:**
+- All `SKILL.md` files across all plugins:
+  - Showroom: `name: create-lab` → `name: showroom:create-lab`
+  - AgnosticV: `name: catalog-builder` → `name: agnosticv:catalog-builder`
+  - Health: `name: deployment-validator` → `name: health:deployment-validator`
+
+### Changed - Plugin Structure (from v2.2.0)
+
+**Restructured from 7 Individual Plugins to 3 Multi-Skill Plugins:**
+
+**Before (v2.2.0):**
+```
+.claude-plugin/marketplace.json:
+  - showroom-create-lab
+  - showroom-create-demo
+  - showroom-blog-generate
+  - showroom-verify-content
+  - agnosticv-catalog-builder
+  - agnosticv-validator
+  - health-deployment-validator
+```
+
+**After (v2.3.0):**
+```
+.claude-plugin/marketplace.json:
+  - showroom (contains 4 skills)
+  - agnosticv (contains 2 skills)
+  - health (contains 1 skill)
+```
+
+**Directory Structure:**
+- Removed `plugins/` directory (40 files)
+- Created root-level plugin directories:
+  - `showroom/` with `.claude-plugin/plugin.json` and `skills/` subdirectory
+  - `agnosticv/` with `.claude-plugin/plugin.json` and `skills/` subdirectory
+  - `health/` with `.claude-plugin/plugin.json` and `skills/` subdirectory
+
+**Installation:**
+```bash
+# Install entire plugin (gets all skills)
+/plugin install showroom@rhdp-marketplace
+# Now have: /showroom:create-lab, /showroom:create-demo, /showroom:blog-generate, /showroom:verify-content
+```
+
+### Added - Comprehensive Documentation
+
+**Migration Guide (docs/setup/migration.md):**
+- Step-by-step migration from file-based to plugin-based installation
+- Directory structure comparison (before/after)
+- Skill name changes table
+- Update workflow documentation
+- Rollback instructions
+
+**Plugin Scopes Documentation (docs/setup/index.md):**
+- User-scoped vs project-scoped plugins explained
+- Storage location documentation with directory trees
+- Team collaboration setup examples
+- Complete installation paths for both scopes
+
+**Troubleshooting Guide (docs/reference/troubleshooting.md):**
+- Plugin installation issues
+- Marketplace cache problems
+- Namespace prefix errors
+- SSH vs HTTPS cloning
+- Migration issues from v2.0.x-v2.2.x
+- Complete cleanup procedures
+
+**Interactive Update Commands Documented:**
+- Clarified that `/plugin marketplace update` is interactive (press 'u' to update)
+- Clarified that `/plugin update <plugin>` is interactive (navigate to "Update now", press Enter)
+- Updated all documentation to reflect actual UI workflow
+
+### Fixed - Documentation Accuracy
+
+**Update Command Workflow:**
+- Documented interactive nature of update commands
+- Added step-by-step UI navigation instructions
+- Clarified that updates are not one-command operations
+
+**SSH vs HTTPS:**
+- Documented both installation methods
+- Added guidance on when to use each method
+- Explained SSH key requirement for shorthand format
+
 ## [v2.1.0] - 2026-02-03
 
 ### Added - Virtual CI Creation
