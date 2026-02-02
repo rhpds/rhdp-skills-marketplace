@@ -1,0 +1,42 @@
+# RHDP Skills Marketplace - Code Owners
+#
+# Each plugin has designated owners who must approve changes.
+# Changes to a plugin directory require approval from at least one owner.
+#
+# Format: path/to/directory @github-username @github-username
+#
+# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for marketplace configuration
+/.claude-plugin/ @prakhar1985 @tonykay @stencell
+
+# Showroom Plugin - Workshop and demo authoring
+/showroom/ @prakhar1985 @tonykay @stencell
+/docs/skills/create-lab.md @prakhar1985 @tonykay @stencell
+/docs/skills/create-demo.md @prakhar1985 @tonykay @stencell
+/docs/skills/blog-generate.md @prakhar1985 @tonykay @stencell
+/docs/skills/verify-content.md @prakhar1985 @tonykay @stencell
+/docs/setup/showroom.md @prakhar1985 @tonykay @stencell
+
+# AgnosticV Plugin - Infrastructure automation
+/agnosticv/ @prakhar1985 @tonykay @stencell
+/docs/skills/agnosticv-catalog-builder.md @prakhar1985 @tonykay @stencell
+/docs/skills/agnosticv-validator.md @prakhar1985 @tonykay @stencell
+/docs/setup/agnosticv.md @prakhar1985 @tonykay @stencell
+
+# Health Plugin - Deployment validation
+/health/ @prakhar1985 @tonykay @stencell
+/docs/skills/deployment-health-checker.md @prakhar1985 @tonykay @stencell
+
+# GitOps Plugin (when added)
+# /gitops/ @gitops-owner1 @gitops-owner2
+
+# Global documentation (requires any maintainer approval)
+/docs/index.md @prakhar1985 @tonykay @stencell
+/docs/reference/ @prakhar1985 @tonykay @stencell
+/docs/setup/index.md @prakhar1985 @tonykay @stencell
+/README.md @prakhar1985 @tonykay @stencell
+/MARKETPLACE.md @prakhar1985 @tonykay @stencell
+
+# GitHub workflows and CI/CD (requires admin approval)
+/.github/ @prakhar1985 @tonykay @stencell
