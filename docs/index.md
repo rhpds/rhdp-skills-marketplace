@@ -125,4 +125,3 @@ Keep your plugins current:
 ## License
 
 Apache License 2.0 | [View on GitHub](https://github.com/rhpds/rhdp-skills-marketplace)
-test
