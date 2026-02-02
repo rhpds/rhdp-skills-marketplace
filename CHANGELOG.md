@@ -7,6 +7,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.1] - 2026-02-02
+
+### Fixed - AgnosticV Catalog Builder Mode 2 Improvements
+
+**User Feedback Addressed:**
+- "It asks lot of questions, like if I give showroom why it is asking for summary again"
+- "Product detection was little bit wrong"
+- "Sometimes you do not read all the modules"
+
+**Mode 2 (Description Only) Enhancements:**
+
+**Smart Content Extraction:**
+- Now reads ALL module files, not just index.adoc
+- Combines content from entire workshop for comprehensive analysis
+- Extracts overview from index.adoc automatically
+- Shows all extracted data before asking for confirmation
+
+**Before:**
+```
+Q: Brief overview (2-3 sentences, starting with product name):
+Overview: [user has to type even though it's in Showroom]
+```
+
+**After:**
+```
+I've read ALL 5 modules and extracted the following:
+
+Overview (from index.adoc):
+[Automatically extracted content]
+
+Q: Is this overview accurate? [Y to use as-is / N to provide custom]:
+```
+
+**Improved Product Detection:**
+- OLD: grep for generic keywords (OpenShift, Ansible, AAP)
+- NEW: grep for full Red Hat product names with versions
+  - Red Hat OpenShift AI, Virtualization, GitOps, Pipelines, Data Foundation
+  - Ansible Automation Platform, Ansible AI
+  - Red Hat Enterprise Linux / RHEL 9
+  - Red Hat Advanced Cluster Security, Quay, Service Mesh
+  - Kubernetes version detection added
+
+**Comprehensive Module Reading:**
+- Reads ALL .adoc files: `cat pages/*.adoc`
+- Extracts from combined content, not individual files
+- Shows all module titles with filenames for verification
+- Detects products/versions/topics across entire workshop
+
+**What Gets Extracted from ALL Modules:**
+- Module titles and structure
+- Red Hat product names
+- Version numbers (OpenShift 4.14, AAP 2.5, etc.)
+- Technical topics (GitOps, CI/CD, Operators, Helm, etc.)
+- Learning objectives
+
+**User Experience:**
+- Less repetitive questions
+- More intelligent extraction
+- Shows comprehensive data before asking
+- Only asks for custom input if user says "No"
+- Transparent about what modules were analyzed
+
+**Files Updated:**
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md (Mode 2 workflow, lines 1092-1252)
+- Step 2: Read ALL modules and combine content
+- Step 3: Show comprehensive extracted data with Y/N confirmation
+
+### Focus
+This patch release significantly improves Mode 2 (Description Only) by reading all workshop modules instead of just the overview, using smarter product detection, and reducing repetitive questions by extracting content from Showroom automatically.
+
 ## [v1.7.0] - 2026-01-28
 
 ### Changed - Full Cursor 2.4+ Support via Agent Skills Standard
@@ -572,7 +642,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.1...HEAD
+[v1.7.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.1
 [v1.7.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.0
 [v1.6.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.6.1
 [v1.6.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.6.0
