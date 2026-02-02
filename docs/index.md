@@ -11,6 +11,8 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
 ## Quick Start
 
+### Installation
+
 Add the RHDP marketplace to Claude Code:
 
 ```bash
@@ -34,9 +36,24 @@ Then install the plugins you need:
 /plugin install health@rhdp-marketplace
 ```
 
+**Restart Claude Code** after installation to load the new skills.
+
 **Benefits:** Standard installation (like dnf/brew), automatic updates, version management
 
-[See complete plugin list →](../MARKETPLACE.html)
+### Understanding Plugin Scopes
+
+Plugins can be installed at different scopes:
+
+- **User-scoped** (default): Available in all your Claude Code sessions across all projects
+  - Installed with: `/plugin install showroom@rhdp-marketplace`
+  - Stored in: `~/.claude/plugins/`
+
+- **Project-scoped**: Only available in a specific project directory
+  - Enable by adding to `.claude/settings.json` in your project
+  - Useful for team-shared configurations
+  - See [Team Setup Guide](setup/index.html#project-scoped-plugins)
+
+[See complete plugin list →](../MARKETPLACE.html) | [Migration from file-based installation →](setup/migration.html)
 
 ---
 
@@ -122,7 +139,7 @@ Keep your plugins current:
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-- **Version:** v2.2.0
+- **Version:** v2.3.0
 
 ---
 

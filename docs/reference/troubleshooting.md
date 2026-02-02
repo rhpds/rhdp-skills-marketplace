@@ -9,6 +9,204 @@ Common issues and solutions for RHDP Skills Marketplace.
 
 ---
 
+## Plugin-Based Installation Issues
+
+### Marketplace Shows "(no content)"
+
+**Symptom:** After adding marketplace, plugin list shows "(no content)"
+
+**Causes:**
+1. Old cached marketplace data
+2. Plugin structure mismatch
+
+**Solution:**
+
+```bash
+# Remove and re-add marketplace
+/plugin marketplace remove rhdp-marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+
+# Or force refresh
+/plugin marketplace update
+```
+
+### Skills Don't Show Namespace Prefix
+
+**Symptom:** Skills listed as `/create-lab` instead of `/showroom:create-lab`
+
+**Cause:** Old plugin version installed
+
+**Solution:**
+
+```bash
+# Update marketplace
+/plugin marketplace update
+
+# Update plugins
+/plugin update showroom@rhdp-marketplace
+/plugin update agnosticv@rhdp-marketplace
+
+# Restart Claude Code
+# Exit completely and restart
+```
+
+### SSH Clone Fails (Permission Denied)
+
+**Symptom:** `Permission denied (publickey)` when adding marketplace
+
+**Cause:** Using SSH format without SSH keys configured
+
+**Solution:**
+
+Use HTTPS instead:
+
+```bash
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+```
+
+### Skills Not Available After Installation
+
+**Symptom:** Installed plugin but skills don't appear in `/help` or `/skills`
+
+**Cause:** Claude Code needs restart to load new plugins
+
+**Solution:**
+
+1. Exit Claude Code completely (not just close window)
+2. Restart Claude Code
+3. Verify: `/skills`
+
+### Unknown skill: showroom:create-demo
+
+**Symptom:** Error message when trying to use `/showroom:create-demo`
+
+**Causes:**
+1. Plugin not installed
+2. Old plugin version (without namespace support)
+3. Claude Code not restarted after installation
+
+**Solution:**
+
+```bash
+# Check installed plugins
+/plugin list
+
+# If not installed
+/plugin install showroom@rhdp-marketplace
+
+# If installed, update it
+/plugin update showroom@rhdp-marketplace
+
+# Restart Claude Code
+# Exit and restart
+```
+
+### Plugins Installed But Old Skills Still Appear
+
+**Symptom:** Both old `/create-lab` and new `/showroom:create-lab` appear
+
+**Cause:** Old file-based installation not removed
+
+**Solution:**
+
+```bash
+# Remove old file-based skills
+rm -rf ~/.claude/skills/create-lab
+rm -rf ~/.claude/skills/create-demo
+rm -rf ~/.claude/skills/blog-generate
+rm -rf ~/.claude/skills/verify-content
+rm -rf ~/.claude/skills/agnosticv-catalog-builder
+rm -rf ~/.claude/skills/agnosticv-validator
+rm -rf ~/.claude/skills/deployment-health-checker
+
+# Restart Claude Code
+```
+
+---
+
+## Migration Issues
+
+### All Skills Deleted After Clean Install
+
+**Symptom:** Removed old plugins but new ones don't work
+
+**Cause:** Forgot to reinstall marketplace plugins
+
+**Solution:**
+
+```bash
+# Add marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+
+# Install plugins
+/plugin install showroom@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
+/plugin install health@rhdp-marketplace
+
+# Restart Claude Code
+```
+
+### Want to Rollback to File-Based Installation
+
+**Symptom:** Plugin system not working, need old installation
+
+**Solution:**
+
+See [Migration Guide - Rollback](../setup/migration.html#rollback-if-needed)
+
+---
+
+## Plugin Update Issues
+
+### Update Shows No New Version Available
+
+**Symptom:** `/plugin marketplace update` says no updates but you know there's a newer version
+
+**Solution:**
+
+```bash
+# Force remove and re-add marketplace
+/plugin marketplace remove rhdp-marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+
+# Reinstall plugins
+/plugin install showroom@rhdp-marketplace --force
+```
+
+### Plugin Cache Corrupted
+
+**Symptom:** Plugins behaving strangely or skills missing
+
+**Solution:**
+
+```bash
+# Completely remove plugins
+/plugin uninstall showroom@rhdp-marketplace
+/plugin uninstall agnosticv@rhdp-marketplace
+/plugin uninstall health@rhdp-marketplace
+
+# Remove marketplace
+/plugin marketplace remove rhdp-marketplace
+
+# Clear cache manually
+rm -rf ~/.claude/plugins/cache/*
+rm -rf ~/.claude/plugins/marketplaces/*
+
+# Reinstall fresh
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+/plugin install showroom@rhdp-marketplace
+
+# Restart Claude Code
+```
+
+---
+
+## File-Based Installation Issues (Legacy)
+
+<div class="warning">
+  <strong>Note:</strong> File-based installation is deprecated. Please use <a href="../setup/migration.html">plugin-based installation</a>.
+</div>
+
 ## Installation Issues
 
 ### Git Not Installed
