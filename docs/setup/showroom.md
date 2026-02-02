@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Included Skills
 
-### /create-lab
+### /showroom:create-lab
 
 Generate workshop lab modules with Red Hat Showroom structure.
 
@@ -42,7 +42,7 @@ Generate workshop lab modules with Red Hat Showroom structure.
 
 [View detailed documentation →](../skills/create-lab.html)
 
-### /create-demo
+### /showroom:create-demo
 
 Generate presenter-led demo content.
 
@@ -54,7 +54,7 @@ Generate presenter-led demo content.
 
 [View detailed documentation →](../skills/create-demo.html)
 
-### /verify-content
+### /showroom:verify-content
 
 AI-powered quality validation for workshop and demo content.
 
@@ -98,7 +98,7 @@ Transform completed lab/demo content into blog posts.
 ## Typical Workflow
 
 ```
-1. /create-lab or /create-demo
+1. /showroom:create-lab or /create-demo
    ↓
 2. Review and edit generated content
    ↓
@@ -106,7 +106,7 @@ Transform completed lab/demo content into blog posts.
    ↓
 4. Fix any issues identified
    ↓
-5. /blog-generate (optional)
+5. /showroom:blog-generate (optional)
    ↓
 6. Publish to Showroom and/or blog
 ```
@@ -119,7 +119,7 @@ Transform completed lab/demo content into blog posts.
 
 ```
 In Claude Code or Cursor:
-/create-lab
+/showroom:create-lab
 
 Answer prompts:
 - Lab name: "CI/CD with OpenShift Pipelines"
@@ -145,7 +145,7 @@ content/modules/ROOT/
 ### Step 3: Verify Quality
 
 ```
-/verify-content
+/showroom:verify-content
 
 Reviews:
 ✓ AsciiDoc syntax
@@ -157,7 +157,7 @@ Reviews:
 ### Step 4: Generate Blog
 
 ```
-/blog-generate
+/showroom:blog-generate
 
 Creates:
 - Blog post from workshop content
@@ -223,8 +223,8 @@ Defined in `partials/_attributes.adoc`
 ### Using Skills
 
 1. **Be specific with prompts** - More detail = better output
-2. **Iterate on content** - Run /create-lab multiple times if needed
-3. **Verify early** - Run /verify-content before extensive edits
+2. **Iterate on content** - Run /showroom:create-lab multiple times if needed
+3. **Verify early** - Run /showroom:verify-content before extensive edits
 4. **Leverage examples** - Ask skills for similar examples
 
 ---
@@ -233,7 +233,7 @@ Defined in `partials/_attributes.adoc`
 
 ### Skill Not Found
 
-**Problem:** `/create-lab` not recognized
+**Problem:** `/showroom:create-lab` not recognized
 
 **Solution:**
 1. Restart your editor
@@ -245,7 +245,7 @@ Defined in `partials/_attributes.adoc`
 **Problem:** Content doesn't meet quality standards
 
 **Solution:**
-1. Run `/verify-content` to identify specific issues
+1. Run `/showroom:verify-content` to identify specific issues
 2. Edit content based on suggestions
 3. Re-verify after changes
 

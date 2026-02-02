@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /create-lab
+title: /showroom:create-lab
 ---
 
-# /create-lab
+# /showroom:create-lab
 
 Create hands-on workshop content where customers follow along step-by-step.
 
@@ -11,12 +11,12 @@ Create hands-on workshop content where customers follow along step-by-step.
 
 ## 🤔 Is This The Right Skill?
 
-**Use `/create-lab` if:**
+**Use `/showroom:create-lab` if:**
 - ✅ Customers will DO things hands-on (click buttons, run commands)
 - ✅ You want Know → Do → Check structure (teach, practice, verify)
 - ✅ Multiple participants learning together
 
-**Use `/create-demo` instead if:**
+**Use `/showroom:create-demo` instead if:**
 - ❌ YOU present and customers watch (like a PowerPoint)
 - ❌ One-directional presentation
 
@@ -52,7 +52,7 @@ The skill generates:
 ## Quick Start
 
 1. Open Claude Code (or VS Code with Claude extension)
-2. Type `/create-lab`
+2. Type `/showroom:create-lab`
 3. Answer the AI's questions:
    - Workshop title
    - Abstract (2-3 sentences)
@@ -84,7 +84,7 @@ content/modules/ROOT/
 ### 1. Create Module Structure
 
 ```
-/create-lab
+/showroom:create-lab
 → Enter workshop details
 → Skill generates module files
 ```
@@ -92,14 +92,14 @@ content/modules/ROOT/
 ### 2. Verify Content
 
 ```
-/verify-content
+/showroom:verify-content
 → Check quality and standards
 ```
 
 ### 3. Generate Blog Post (Optional)
 
 ```
-/blog-generate
+/showroom:blog-generate
 → Transform to blog format
 ```
 
@@ -148,10 +148,10 @@ Each module follows **Know → Do → Check** pattern:
 
 ## Related Skills
 
-- `/verify-content` - Validate generated content
-- `/create-demo` - Create presenter-led demos instead
-- `/blog-generate` - Convert to blog post format
+- `/showroom:verify-content` - Validate generated content
+- `/showroom:create-demo` - Create presenter-led demos instead
+- `/showroom:blog-generate` - Convert to blog post format
 
 ---
 
-[← Back to Skills](../index.html) | [Next: /verify-content →](verify-content.html)
+[← Back to Skills](../index.html) | [Next: /showroom:verify-content →](verify-content.html)

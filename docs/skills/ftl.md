@@ -100,7 +100,7 @@ Solvers automatically complete workshop modules:
 ### 1. Create Workshop Content
 
 ```
-/create-lab
+/showroom:create-lab
 → Generate workshop modules
 → Define clear success criteria
 ```
@@ -292,9 +292,9 @@ This enables:
 
 ## Related Skills
 
-- `/create-lab` - Create workshop content first
-- `/deployment-health-checker` - Create deployment validators
-- `/verify-content` - Validate workshop quality
+- `/showroom:create-lab` - Create workshop content first
+- `/health:deployment-validator` - Create deployment validators
+- `/showroom:verify-content` - Validate workshop quality
 
 ---
 

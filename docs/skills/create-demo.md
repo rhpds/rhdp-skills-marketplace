@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /create-demo
+title: /showroom:create-demo
 ---
 
-# /create-demo
+# /showroom:create-demo
 
 Create presenter-led demo content where YOU present and customers watch.
 
@@ -11,12 +11,12 @@ Create presenter-led demo content where YOU present and customers watch.
 
 ## 🤔 Is This The Right Skill?
 
-**Use `/create-demo` if:**
+**Use `/showroom:create-demo` if:**
 - ✅ YOU present while customers watch (like presenting PowerPoint)
 - ✅ You want Know → Show structure (explain, then demonstrate)
 - ✅ One presenter showing features
 
-**Use `/create-lab` instead if:**
+**Use `/showroom:create-lab` instead if:**
 - ❌ Customers do hands-on activities (click buttons, run commands)
 - ❌ Multiple participants following step-by-step instructions
 
@@ -53,7 +53,7 @@ The skill generates:
 ## Quick Start
 
 1. Open Claude Code (or VS Code with Claude extension)
-2. Type `/create-demo`
+2. Type `/showroom:create-demo`
 3. Answer the AI's questions:
    - Demo title
    - Description (2-3 sentences)
@@ -85,7 +85,7 @@ content/modules/ROOT/
 ### 1. Create Demo Structure
 
 ```
-/create-demo
+/showroom:create-demo
 → Enter demo details
 → Skill generates section files
 ```
@@ -93,14 +93,14 @@ content/modules/ROOT/
 ### 2. Verify Content
 
 ```
-/verify-content
+/showroom:verify-content
 → Check quality and standards
 ```
 
 ### 3. Generate Blog Post (Optional)
 
 ```
-/blog-generate
+/showroom:blog-generate
 → Transform to blog format
 ```
 
@@ -144,17 +144,17 @@ Each section follows **Know → Show** pattern:
 - Verify you're in the correct directory
 
 **Demo vs Lab confusion?**
-- Use `/create-demo` for presenter-led content (Know/Show)
-- Use `/create-lab` for hands-on workshops (Know/Do/Check)
+- Use `/showroom:create-demo` for presenter-led content (Know/Show)
+- Use `/showroom:create-lab` for hands-on workshops (Know/Do/Check)
 
 ---
 
 ## Related Skills
 
-- `/verify-content` - Validate generated content
-- `/create-lab` - Create hands-on workshops instead
-- `/blog-generate` - Convert to blog post format
+- `/showroom:verify-content` - Validate generated content
+- `/showroom:create-lab` - Create hands-on workshops instead
+- `/showroom:blog-generate` - Convert to blog post format
 
 ---
 
-[← Back to Skills](index.html) | [Next: /verify-content →](verify-content.html)
+[← Back to Skills](index.html) | [Next: /showroom:verify-content →](verify-content.html)

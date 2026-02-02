@@ -32,7 +32,7 @@ Common issues and solutions for RHDP Skills Marketplace.
 
 ### Skills Don't Show Namespace Prefix
 
-**Symptom:** Skills listed as `/create-lab` instead of `/showroom:create-lab`
+**Symptom:** Skills listed as `/showroom:create-lab` instead of `/showroom:create-lab`
 
 **Cause:** Old plugin version installed
 
@@ -103,7 +103,7 @@ Use HTTPS instead:
 
 ### Plugins Installed But Old Skills Still Appear
 
-**Symptom:** Both old `/create-lab` and new `/showroom:create-lab` appear
+**Symptom:** Both old `/showroom:create-lab` and new `/showroom:create-lab` appear
 
 **Cause:** Old file-based installation not removed
 
@@ -264,7 +264,7 @@ cd rhdp-skills-marketplace
 
 ### Skill Not Found After Installation
 
-**Symptom:** `/create-lab` not recognized in editor
+**Symptom:** `/showroom:create-lab` not recognized in editor
 
 **Solution:**
 
@@ -285,7 +285,7 @@ cd rhdp-skills-marketplace
 
 ### Wrong Namespace Installed
 
-**Symptom:** `/agnosticv-catalog-builder` not found but `/create-lab` works
+**Symptom:** `/agnosticv:catalog-builder` not found but `/showroom:create-lab` works
 
 **Solution:**
 
@@ -367,7 +367,7 @@ include::partial$_attributes.adoc[]
 1. Fix errors first (blocking issues)
 2. Address warnings (best practices)
 3. Review suggestions (optional improvements)
-4. Re-run `/verify-content` after each batch of fixes
+4. Re-run `/showroom:verify-content` after each batch of fixes
 
 ### blog-generate Produces Poor Quality
 
@@ -377,8 +377,8 @@ include::partial$_attributes.adoc[]
 
 1. Ensure workshop content is complete and high-quality
 2. Review Know/Show structure in lab modules
-3. Run `/verify-content` on lab first
-4. Try `/blog-generate` again after improving lab content
+3. Run `/showroom:verify-content` on lab first
+4. Try `/showroom:blog-generate` again after improving lab content
 
 ---
 

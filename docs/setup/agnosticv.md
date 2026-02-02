@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Included Skills
 
-### /agnosticv-catalog-builder
+### /agnosticv:catalog-builder
 
 Create or update AgnosticV catalog files (unified skill).
 
@@ -47,7 +47,7 @@ Create or update AgnosticV catalog files (unified skill).
 
 [View detailed documentation →](../skills/agnosticv-catalog-builder.html)
 
-### /agnosticv-validator
+### /agnosticv:validator
 
 Validate AgnosticV configurations against best practices and deployment requirements.
 
@@ -137,7 +137,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 5. Deploy via GitOps (Argo CD)
    ↓
 
-6. /create-lab with UserInfo variables
+6. /showroom:create-lab with UserInfo variables
    ↓ Generate workshop content using deployed resources
 ```
 
@@ -149,7 +149,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 In Claude Code or Cursor:
-/agnosticv-catalog-builder
+/agnosticv:catalog-builder
 
 Choose mode: 1 (Full Catalog)
 Git workflow: Pulls main, creates branch automatically
@@ -178,7 +178,7 @@ ls -la
 ### Step 3: Push and Create PR
 
 ```bash
-# /agnosticv-catalog-builder already committed to branch
+# /agnosticv:catalog-builder already committed to branch
 git push origin your-branch-name
 gh pr create --fill
 ```
@@ -193,7 +193,7 @@ gh pr create --fill
 ### Step 5: Validate (if issues)
 
 ```
-/agnosticv-validator
+/agnosticv:validator
 
 Checks:
 ✓ UUID format
@@ -274,7 +274,7 @@ After deploying a catalog, extract variables for workshop content:
 After extracting UserInfo, use in content creation:
 
 ```
-/create-lab
+/showroom:create-lab
 
 At Step 2.5, select:
 Option 3: "I have UserInfo variables from a deployed catalog"
@@ -291,7 +291,7 @@ Paste UserInfo JSON or variables
 1. **Search first** - Check for similar existing catalogs
 2. **Use references** - Base on proven templates
 3. **Test early** - Deploy to Integration before PR
-4. **Validate always** - Run /agnosticv-validator before PR
+4. **Validate always** - Run /agnosticv:validator before PR
 5. **Document changes** - Clear commit messages
 
 ### Workload Selection
@@ -314,7 +314,7 @@ Paste UserInfo JSON or variables
 
 ### Repository Not Found
 
-**Problem:** `/agnosticv-catalog-builder` can't find AgnosticV repo
+**Problem:** `/agnosticv:catalog-builder` can't find AgnosticV repo
 
 **Solution:**
 ```bash
@@ -345,7 +345,7 @@ uuidgen
 
 ### Validation Fails
 
-**Problem:** /agnosticv-validator reports errors
+**Problem:** /agnosticv:validator reports errors
 
 **Solution:**
 1. Read error messages carefully
@@ -378,7 +378,7 @@ uuidgen
 1. Click **Details** tab
 2. Click **Advanced settings**
 3. Copy all UserInfo variables
-4. Use in `/create-lab` or `/create-demo`
+4. Use in `/showroom:create-lab` or `/showroom:create-demo`
 
 ---
 

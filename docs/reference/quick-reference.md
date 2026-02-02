@@ -43,7 +43,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 3. Review generated content
 4. /verify-content
 5. Fix any issues
-6. /blog-generate (optional)
+6. /showroom:blog-generate (optional)
 7. Publish
 ```
 

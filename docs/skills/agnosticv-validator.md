@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /agnosticv-validator
+title: /agnosticv:validator
 ---
 
-# /agnosticv-validator
+# /agnosticv:validator
 
 Validate AgnosticV catalog configurations and best practices before creating pull request.
 
@@ -35,7 +35,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 
 ### What You'll Need
 
-- Catalog files generated (typically from `/agnosticv-catalog-builder`)
+- Catalog files generated (typically from `/agnosticv:catalog-builder`)
 - Current directory set to agnosticv repository
 - Git branch for your changes
 
@@ -44,7 +44,7 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 ## Quick Start
 
 1. Navigate to AgnosticV repository
-2. Run `/agnosticv-validator`
+2. Run `/agnosticv:validator`
 3. Review validation results
 4. Fix any issues found
 5. Create pull request when clean
@@ -153,14 +153,14 @@ The validator performs 17 comprehensive checks across your catalog:
 ### 1. Generate Catalog
 
 ```
-/agnosticv-catalog-builder
+/agnosticv:catalog-builder
 → Create catalog files
 ```
 
 ### 2. Validate Configuration
 
 ```
-/agnosticv-validator
+/agnosticv:validator
 → Check for issues
 → Get validation report
 ```
@@ -177,7 +177,7 @@ The validator performs 17 comprehensive checks across your catalog:
 ### 4. Re-validate
 
 ```
-/agnosticv-validator
+/agnosticv:validator
 → Confirm all issues resolved
 ```
 
@@ -284,9 +284,9 @@ workloads:
 
 ## Related Skills
 
-- `/agnosticv-catalog-builder` - Create/update catalog (unified skill)
-- `/create-lab` - Create workshop content
+- `/agnosticv:catalog-builder` - Create/update catalog (unified skill)
+- `/showroom:create-lab` - Create workshop content
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agnosticv-catalog-builder →](agnosticv-catalog-builder.html)
+[← Back to Skills](index.html) | [Next: /agnosticv:catalog-builder →](agnosticv-catalog-builder.html)

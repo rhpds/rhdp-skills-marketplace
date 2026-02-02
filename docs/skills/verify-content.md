@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /verify-content
+title: /showroom:verify-content
 ---
 
-# /verify-content
+# /showroom:verify-content
 
 Validate Showroom workshop or demo content for quality and Red Hat standards compliance.
 
@@ -36,7 +36,7 @@ Validate Showroom workshop or demo content for quality and Red Hat standards com
 ## Quick Start
 
 1. Navigate to your workshop repository
-2. Run `/verify-content`
+2. Run `/showroom:verify-content`
 3. Review validation results
 4. Fix any issues found
 
@@ -79,7 +79,7 @@ Validate Showroom workshop or demo content for quality and Red Hat standards com
 ### 2. Run Verification
 
 ```
-/verify-content
+/showroom:verify-content
 → Get quality report
 → See list of issues
 ```
@@ -95,7 +95,7 @@ Review each issue and update content:
 ### 4. Re-verify
 
 ```
-/verify-content
+/showroom:verify-content
 → Confirm all issues resolved
 ```
 
@@ -143,10 +143,10 @@ Review each issue and update content:
 
 ## Related Skills
 
-- `/create-lab` - Generate workshop content
-- `/create-demo` - Generate demo content
-- `/blog-generate` - Convert to blog format
+- `/showroom:create-lab` - Generate workshop content
+- `/showroom:create-demo` - Generate demo content
+- `/showroom:blog-generate` - Convert to blog format
 
 ---
 
-[← Back to Skills](index.html) | [Next: /blog-generate →](blog-generate.html)
+[← Back to Skills](index.html) | [Next: /showroom:blog-generate →](blog-generate.html)

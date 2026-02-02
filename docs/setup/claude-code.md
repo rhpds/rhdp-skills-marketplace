@@ -33,17 +33,17 @@ Restart Claude Code or VS Code after installation.
 Skills work natively with `/` commands:
 
 **Showroom:**
-- `/create-lab` - Generate workshop module
-- `/create-demo` - Generate demo content
-- `/verify-content` - Validate quality
-- `/blog-generate` - Create blog post
+- `/showroom:create-lab` - Generate workshop module
+- `/showroom:create-demo` - Generate demo content
+- `/showroom:verify-content` - Validate quality
+- `/showroom:blog-generate` - Create blog post
 
 **AgnosticV:**
-- `/agnosticv-catalog-builder` - Create/update catalog items (unified)
-- `/agnosticv-validator` - Validate configuration
+- `/agnosticv:catalog-builder` - Create/update catalog items (unified)
+- `/agnosticv:validator` - Validate configuration
 
 **Health:**
-- `/deployment-health-checker` - Create validation role
+- `/health:deployment-validator` - Create validation role
 
 ---
 

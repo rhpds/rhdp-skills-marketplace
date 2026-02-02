@@ -62,9 +62,9 @@ The installer will:
 1. Open Agent chat
 2. Type `/` to see available skills
 3. Search for installed skills:
-   - `/create-lab`
-   - `/create-demo`
-   - `/verify-content`
+   - `/showroom:create-lab`
+   - `/showroom:create-demo`
+   - `/showroom:verify-content`
    - etc.
 
 ---
@@ -76,10 +76,10 @@ The installer will:
 Type `/` in Agent chat and select a skill:
 
 ```
-/create-lab
-/create-demo
-/verify-content
-/agnosticv-catalog-builder
+/showroom:create-lab
+/showroom:create-demo
+/showroom:verify-content
+/agnosticv:catalog-builder
 ```
 
 ### Method 2: Natural Language

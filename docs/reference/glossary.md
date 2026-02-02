@@ -12,9 +12,9 @@ Common terms used in RHDP Skills Marketplace, explained in plain language.
 ## General Terms
 
 ### Agent Skills
-AI-powered helpers that run inside Claude Code (a text editor). You type a command like `/create-demo` and the AI generates content for you.
+AI-powered helpers that run inside Claude Code (a text editor). You type a command like `/showroom:create-demo` and the AI generates content for you.
 
-**Example:** `/create-lab` is a skill that creates workshop content.
+**Example:** `/showroom:create-lab` is a skill that creates workshop content.
 
 ### Claude Code
 An AI-powered text editor made by Anthropic. Think of it like Microsoft Word, but for creating technical content with AI help.
@@ -33,7 +33,7 @@ A grouping of related skills. Think of it like folders:
 **Why it matters:** You only install the namespace you need (most people want "showroom").
 
 ### Skill
-A command you run in Claude Code that uses AI to help you. Skills start with `/` like `/create-demo`.
+A command you run in Claude Code that uses AI to help you. Skills start with `/` like `/showroom:create-demo`.
 
 **Think of it as:** A specialized AI assistant for specific tasks.
 
@@ -50,7 +50,7 @@ A text format for writing documentation (like Microsoft Word's ".docx" but simpl
 ### Demo
 Content where **you present** and customers watch. Like a PowerPoint presentation but interactive.
 
-**Use `/create-demo` for this.**
+**Use `/showroom:create-demo` for this.**
 
 ### Know/Do/Check Structure
 A teaching pattern used in workshops:
@@ -61,7 +61,7 @@ A teaching pattern used in workshops:
 ### Lab (or Workshop)
 Content where **customers follow along** hands-on. They click buttons, run commands, etc.
 
-**Use `/create-lab` for this.**
+**Use `/showroom:create-lab` for this.**
 
 ### Module
 One section of a workshop or demo. Like a chapter in a book.
@@ -86,7 +86,7 @@ A pre-made starting point. Instead of creating everything from scratch, you copy
 Red Hat Demo Platform's system for deploying workshop infrastructure (servers, databases, etc.).
 
 **Who uses this:** RHDP internal team
-**Skills:** `/agnosticv-catalog-builder`, `/agnosticv-validator`
+**Skills:** `/agnosticv:catalog-builder`, `/agnosticv:validator`
 
 ### Bastion
 A "jump server" - a computer you connect to first before accessing other systems.

@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /blog-generate
+title: /showroom:blog-generate
 ---
 
-# /blog-generate
+# /showroom:blog-generate
 
 Transform Red Hat Showroom workshop content into Red Hat Developer blog post format.
 
@@ -47,7 +47,7 @@ Transform Red Hat Showroom workshop content into Red Hat Developer blog post for
 ## Quick Start
 
 1. Navigate to your workshop repository
-2. Run `/blog-generate`
+2. Run `/showroom:blog-generate`
 3. Answer blog-specific questions
 4. Review generated blog post
 5. Submit to Red Hat Developer blog team
@@ -71,17 +71,17 @@ blog/
 ### 1. Create and Verify Workshop
 
 ```
-/create-lab
+/showroom:create-lab
 → Generate workshop content
 
-/verify-content
+/showroom:verify-content
 → Ensure quality
 ```
 
 ### 2. Generate Blog Post
 
 ```
-/blog-generate
+/showroom:blog-generate
 → Transform to blog format
 → Add narrative flow
 → Include call-to-action
@@ -147,9 +147,9 @@ blog/
 
 ## Related Skills
 
-- `/create-lab` - Create workshop first
-- `/verify-content` - Verify before generating blog
-- `/create-demo` - Can also be transformed to blog
+- `/showroom:create-lab` - Create workshop first
+- `/showroom:verify-content` - Verify before generating blog
+- `/showroom:create-demo` - Can also be transformed to blog
 
 ---
 
@@ -161,4 +161,4 @@ blog/
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agnosticv-catalog-builder →](agnosticv-catalog-builder.html)
+[← Back to Skills](index.html) | [Next: /agnosticv:catalog-builder →](agnosticv-catalog-builder.html)

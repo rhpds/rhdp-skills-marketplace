@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /agnosticv-catalog-builder
+title: /agnosticv:catalog-builder
 ---
 
-# /agnosticv-catalog-builder
+# /agnosticv:catalog-builder
 
 Create or update AgnosticV catalog files for RHDP deployments (unified skill).
 
@@ -26,7 +26,7 @@ Create or update AgnosticV catalog files for RHDP deployments (unified skill).
    - You should be able to create pull requests
 
 3. **For Full Catalog - Have your workshop content ready:**
-   - Workshop lab content (from `/create-lab`)
+   - Workshop lab content (from `/showroom:create-lab`)
    - Infrastructure requirements (CNV, AWS, etc.)
    - Workload list (OpenShift AI, AAP, etc.)
 
@@ -57,7 +57,7 @@ Depending on what you're creating:
 ## Quick Start
 
 1. Navigate to AgnosticV repository
-2. Run `/agnosticv-catalog-builder`
+2. Run `/agnosticv:catalog-builder`
 3. Choose mode: Full Catalog / Description Only / Info Template
 4. Answer guided questions
 5. Review generated files
@@ -439,7 +439,7 @@ Expected Answer: LB1688
 ### Workflow 1: Create Full Catalog from Scratch
 
 ```
-/agnosticv-catalog-builder
+/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
 → Git: Pull main, create branch (no feature/ prefix)
 → Search similar catalogs
@@ -450,7 +450,7 @@ Expected Answer: LB1688
 
 Then validate and create PR:
 ```
-/agnosticv-validator
+/agnosticv:validator
 → Check configuration
 
 git push origin your-branch
@@ -460,7 +460,7 @@ gh pr create --fill
 ### Workflow 2: Update Description After Content Changes
 
 ```
-/agnosticv-catalog-builder
+/agnosticv:catalog-builder
 → Mode: 2 (Description Only)
 → Point to Showroom repo
 → Auto-extracts modules and technologies
@@ -471,7 +471,7 @@ gh pr create --fill
 ### Workflow 3: Add Info Template for User Data
 
 ```
-/agnosticv-catalog-builder
+/agnosticv:catalog-builder
 → Mode: 3 (Info Template)
 → Specify data keys from workload
 → Generates template with placeholders
@@ -676,7 +676,7 @@ From `agd_v2/agentic-ai-openshift/info-message-template.adoc`:
 
 - **Start with product name** - Description overview must start with product, not "This workshop"
 - **Use real examples** - Reference existing catalogs for patterns
-- **Validate before PR** - Always run `/agnosticv-validator`
+- **Validate before PR** - Always run `/agnosticv:validator`
 - **Test in dev first** - Use dev.yaml for testing
 - **No feature/ prefix** - Branch names should be descriptive without feature/
 - **Convert lists to strings** - For info templates: `{{ my_list | join(', ') }}`
@@ -713,8 +713,8 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 
 ## Related Skills
 
-- `/agnosticv-validator` - Validate catalog before PR
-- `/create-lab` - Create Showroom workshop first
+- `/agnosticv:validator` - Validate catalog before PR
+- `/showroom:create-lab` - Create Showroom workshop first
 - `/ftl` - Create automated graders/solvers
 
 ---
@@ -723,12 +723,12 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 
 If you used `/agv-generator` or `/generate-agv-description`:
 
-**Old:** `/agv-generator` → **New:** `/agnosticv-catalog-builder` (Mode 1: Full Catalog)
+**Old:** `/agv-generator` → **New:** `/agnosticv:catalog-builder` (Mode 1: Full Catalog)
 
-**Old:** `/generate-agv-description` → **New:** `/agnosticv-catalog-builder` (Mode 2: Description Only)
+**Old:** `/generate-agv-description` → **New:** `/agnosticv:catalog-builder` (Mode 2: Description Only)
 
 All functionality consolidated into one unified skill with improved workflow.
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agnosticv-validator →](agnosticv-validator.html)
+[← Back to Skills](index.html) | [Next: /agnosticv:validator →](agnosticv-validator.html)

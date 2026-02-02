@@ -1,9 +1,9 @@
 ---
 layout: default
-title: /deployment-health-checker
+title: /health:deployment-validator
 ---
 
-# /deployment-health-checker
+# /health:deployment-validator
 
 Create Ansible validation roles for post-deployment health checks and verification.
 
@@ -45,7 +45,7 @@ Create Ansible validation roles for post-deployment health checks and verificati
 ## Quick Start
 
 1. Navigate to AgnosticD repository
-2. Run `/deployment-health-checker`
+2. Run `/health:deployment-validator`
 3. Answer validation questions
 4. Review generated role
 5. Test validation role
@@ -129,8 +129,8 @@ Verify pods, deployments, routes:
 
 ## Related Skills
 
-- `/agnosticv-catalog-builder` - Create catalog with validation enabled
-- `/agnosticv-validator` - Validate catalog configuration
+- `/agnosticv:catalog-builder` - Create catalog with validation enabled
+- `/agnosticv:validator` - Validate catalog configuration
 
 ---
 
