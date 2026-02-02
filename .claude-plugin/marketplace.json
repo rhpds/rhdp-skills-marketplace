@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Official Red Hat Demo Platform (RHDP) skills marketplace for creating workshops, demos, and infrastructure automation",
-    "version": "2.0.2"
+    "version": "2.1.0"
   },
   "plugins": [
     {
       "name": "agnosticv-catalog-builder",
       "source": "./plugins/agnosticv-catalog-builder",
-      "description": "Create or update AgnosticV catalog files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)",
-      "version": "2.1.0",
+      "description": "Create or update AgnosticV catalog files, including Virtual CIs in published/ folder",
+      "version": "2.2.0",
       "author": {
         "name": "RHDP Team"
       },

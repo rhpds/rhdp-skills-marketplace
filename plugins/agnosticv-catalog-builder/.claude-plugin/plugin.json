@@ -1,5 +1,5 @@
 {
   "name": "agnosticv-catalog-builder",
-  "description": "Create or update AgnosticV catalog files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)",
-  "version": "2.1.0"
+  "description": "Create or update AgnosticV catalog files, including Virtual CIs in published/ folder",
+  "version": "2.2.0"
 }

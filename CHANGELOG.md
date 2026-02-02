@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.1.0] - 2026-02-03
+
+### Added - Virtual CI Creation
+
+**New MODE 4** in agnosticv-catalog-builder: Create Virtual CIs
+
+Virtual CIs allow users to order catalog items without specifying provider (CNV, AWS, etc.). The Virtual CI in `published/` folder delegates to base components in provider-specific folders.
+
+**Usage:**
+```bash
+/agnosticv-catalog-builder
+# Choose option 4: Create Virtual CI
+```
+
+**Features:**
+- Create Virtual CI from existing base component (e.g., `openshift_cnv/kafka-workshop-cnv`)
+- Auto-strips provider suffix to derive Virtual CI name (e.g., `kafka-workshop`)
+- Uniqueness validation across entire AgnosticV repository
+- Bulk processing: Handle multiple base components in one run
+- Multi-component support: Add multiple providers to one Virtual CI
+- Validates `primaryBU` field for reporting compliance
+- Auto-updates base component with dev restriction
+- Copies all template files (description.adoc, info-message-template.adoc, etc.)
+
+**Virtual CI Structure:**
+```
+published/kafka-workshop/
+  common.yaml     # Virtual CI with __meta__.components pointing to base
+  dev.yaml        # Empty - inherits from component
+  prod.yaml       # Empty - inherits from component
+  description.adoc  # Copied from base component
+```
+
+**Base Component Updates:**
+- Adds dev restriction include to common.yaml
+- Adds warning to description.adoc directing users to Virtual CI
+
+**Version:** agnosticv-catalog-builder updated from v2.1.0 → v2.2.0
+
+### Fixed - Plugin Directory Structure (from v2.0.2)
+
+**Problem:** Plugin installation failed with "(no content)"
+
+**Root Cause:** SKILL.md files were directly in `skills/` instead of `skills/skill-name/` subdirectory
+
+**Solution:** Reorganized all plugins:
+- `plugins/*/skills/SKILL.md` → `plugins/*/skills/*/SKILL.md`
+
+All 7 plugins fixed:
+- agnosticv-catalog-builder
+- agnosticv-validator
+- showroom-create-lab
+- showroom-create-demo
+- showroom-blog-generate
+- showroom-verify-content
+- health-deployment-validator
+
+Plugins now install correctly.
+
 ## [v2.0.2] - 2026-02-03
 
 ### Fixed - Plugin Directory Structure
