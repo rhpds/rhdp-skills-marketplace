@@ -1,5 +1,5 @@
 ---
-name: validator
+name: agnosticv:validator
 description: Validate AgnosticV catalog configurations against best practices and deployment requirements
 ---
 

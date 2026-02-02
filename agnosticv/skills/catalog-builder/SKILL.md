@@ -1,5 +1,5 @@
 ---
-name: catalog-builder
+name: agnosticv:catalog-builder
 description: Create or update AgnosticV catalog files (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
 ---
 
