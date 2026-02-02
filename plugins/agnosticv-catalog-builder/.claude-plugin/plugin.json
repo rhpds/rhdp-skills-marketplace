@@ -1,5 +1,0 @@
-{
-  "name": "agnosticv-catalog-builder",
-  "description": "Create or update AgnosticV catalog files, including Virtual CIs in published/ folder",
-  "version": "2.2.0"
-}
