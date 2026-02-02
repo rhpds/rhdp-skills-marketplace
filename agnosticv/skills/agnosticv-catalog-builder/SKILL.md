@@ -877,7 +877,7 @@ NOTE: <Add warnings AFTER overview if needed: GPU availability, beta/alpha relea
 
 == Lab/Demo Guide
 
-* link:<github-pages-url>[Guide^]
+You can find the guide at link:<github-pages-url>[this link^].
 
 == Featured Technology and Products
 
@@ -891,9 +891,13 @@ NOTE: <Add warnings AFTER overview if needed: GPU availability, beta/alpha relea
 
 == Detailed Overview
 
-<Generate from analyzing Showroom - list each module with 2-3 bullets of details max>
-
 === <Module 1 Title>
+
+. <Step 1> (use numbered lists for ordered/sequential steps)
+. <Step 2>
+. <Step 3 - optional>
+
+OR (for descriptive/unordered content):
 
 * <Detail 1>
 * <Detail 2>
@@ -942,7 +946,7 @@ NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode avail
 
 == Demo Guide
 
-* link:https://rhpds.github.io/showroom-vllm-playground[Guide^]
+You can find the guide at link:https://rhpds.github.io/showroom-vllm-playground[this link^].
 
 == Featured Technology and Products
 
@@ -954,27 +958,27 @@ NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode avail
 
 === Introduction to vLLM Playground
 
-* Overview of vLLM architecture and container-based deployment
-* ACME Corp use case: modernizing customer support with AI
-* Deploy first vLLM server instance
+. Overview of vLLM architecture and container-based deployment
+. ACME Corp use case: modernizing customer support with AI
+. Deploy first vLLM server instance
 
 === Structured Outputs Configuration
 
-* Configure JSON schema validation for reliable outputs
-* Integrate with downstream systems using structured data
-* Test output consistency across multiple requests
+. Configure JSON schema validation for reliable outputs
+. Integrate with downstream systems using structured data
+. Test output consistency across multiple requests
 
 === Tool Calling and MCP Integration
 
-* Implement function calling to extend AI capabilities
-* Enable Model Context Protocol for agentic workflows
-* Build human-in-the-loop approval system
+. Implement function calling to extend AI capabilities
+. Enable Model Context Protocol for agentic workflows
+. Build human-in-the-loop approval system
 
 === Performance Benchmarking
 
-* Run load tests against vLLM deployments
-* Compare CPU vs GPU performance metrics
-* Validate production readiness criteria
+. Run load tests against vLLM deployments
+. Compare CPU vs GPU performance metrics
+. Validate production readiness criteria
 
 == Authors
 
@@ -1004,7 +1008,7 @@ Ansible Automation Platform integrates with Red Hat OpenShift AI to build intell
 
 == Lab Guide
 
-* link:https://rhpds.github.io/ansible-ai-workshop[Guide^]
+You can find the guide at link:https://rhpds.github.io/ansible-ai-workshop[this link^].
 
 == Featured Technology and Products
 
@@ -1016,27 +1020,27 @@ Ansible Automation Platform integrates with Red Hat OpenShift AI to build intell
 
 === Introduction to AI-Driven Automation
 
-* Overview of OpenShift AI and Ansible integration architecture
-* Deploy OpenShift AI environment and verify components
-* Configure Ansible Automation Platform connection
+. Overview of OpenShift AI and Ansible integration architecture
+. Deploy OpenShift AI environment and verify components
+. Configure Ansible Automation Platform connection
 
 === Building Infrastructure Decision Models
 
-* Create machine learning model for capacity prediction
-* Train model using historical infrastructure metrics
-* Deploy model to OpenShift AI serving runtime
+. Create machine learning model for capacity prediction
+. Train model using historical infrastructure metrics
+. Deploy model to OpenShift AI serving runtime
 
 === Implementing Intelligent Playbooks
 
-* Build Ansible playbooks that query AI models for decisions
-* Implement automated remediation based on ML predictions
-* Test self-healing workflows with simulated failures
+. Build Ansible playbooks that query AI models for decisions
+. Implement automated remediation based on ML predictions
+. Test self-healing workflows with simulated failures
 
 === Monitoring and Optimization
 
-* Configure monitoring for AI-driven automation
-* Analyze automation decisions and model accuracy
-* Optimize playbooks based on performance metrics
+. Configure monitoring for AI-driven automation
+. Analyze automation decisions and model accuracy
+. Optimize playbooks based on performance metrics
 
 == Authors
 
@@ -1063,9 +1067,9 @@ For problems with provisioning or environment stability:
 **Key Guidelines:**
 - Brief overview: 3-4 sentences max - what it shows, intended use, NO catalog name
 - Warnings AFTER overview (GPU, beta/alpha, etc.)
-- Lab/Demo Guide: link to Showroom
+- Lab/Demo Guide: Prose with embedded link, NOT a bullet list (e.g., "You can find the guide at link:url[this link^].")
 - Featured Products: max 3-4, only what matters, major versions only
-- Detailed Overview: from Showroom, each module with 2-3 bullets max
+- Detailed Overview: NO blank line after heading (avoid empty section), use numbered lists (.) for ordered/sequential steps
 - Authors: from __meta__.owners in common.yaml
 - Support: Content first (Slack + author tag OR email), then Environment (RHDP ticket + forum-demo-redhat-com)
 

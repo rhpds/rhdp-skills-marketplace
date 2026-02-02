@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.8.2] - 2026-02-02
+
+### Improved - description.adoc Formatting Refinements
+
+**User Feedback:** Nate Stephany provided feedback on v1.8.0 description.adoc structure
+
+**Problems Identified:**
+
+1. **Lab Guide section** - Single bullet item for guide link looks awkward
+2. **Detailed Overview structure** - Empty heading section with no content before subsections
+3. **Ordered steps** - Module steps should use numbered lists instead of bullets
+
+**Solutions Applied:**
+
+1. **Lab/Demo Guide formatting:**
+   - Changed from: `* link:url[Guide^]`
+   - Changed to: `You can find the guide at link:url[this link^].`
+   - Rationale: Single-item bullet lists are unnecessary; prose with embedded link reads better
+
+2. **Detailed Overview structure:**
+   - Removed blank line after `== Detailed Overview` heading
+   - Subsections (`=== Module Title`) now immediately follow without empty paragraph
+   - Rationale: Prevents empty heading section in rendered HTML
+
+3. **Numbered lists for ordered steps:**
+   - Module steps that are sequential now use numbered lists (`.`) instead of bullets (`*`)
+   - Example: "Getting Started" module with ordered steps uses `. Step 1`, `. Step 2`, etc.
+   - Rationale: Better conveys the sequential nature of workshop/demo steps
+
+**Updated Files:**
+- `agnosticv/skills/agnosticv-catalog-builder/SKILL.md`
+  - Template section (lines ~869-935)
+  - Demo example (lines ~937-999)
+  - Workshop example (lines ~1001-1061)
+  - Key Guidelines section
+
+**Template Updates:**
+
+Before (v1.8.0):
+```asciidoc
+== Lab/Demo Guide
+
+* link:<url>[Guide^]
+
+== Detailed Overview
+
+=== Getting Started
+
+* Step 1
+* Step 2
+```
+
+After (v1.8.2):
+```asciidoc
+== Lab/Demo Guide
+
+You can find the guide at link:<url>[this link^].
+
+== Detailed Overview
+
+=== Getting Started
+
+. Step 1
+. Step 2
+```
+
+**Benefits:**
+- Cleaner rendering in catalog UI (no empty sections)
+- Better readability with prose instead of single-item bullets
+- Numbered lists properly convey step sequences
+- Improved HTML structure from AsciiDoc conversion
+
 ## [v1.8.1] - 2026-02-02
 
 ### Fixed - Improved Pod Readiness Check Pattern
