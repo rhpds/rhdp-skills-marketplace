@@ -7,6 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.3] - 2026-02-02
+
+### Changed - Updated description.adoc Template to Match Best Practices
+
+**User Feedback:** "agd-v2.vllm-playground-aws.dev this is a good example of description"
+
+**New Template Based on vllm-playground Example:**
+
+Analyzed the vllm-playground catalog description.adoc and updated the skill template to match its excellent structure.
+
+**Key Improvements:**
+
+**Structure Changes:**
+- OLD: = Title → Overview → Guide → Products → Agenda → Authors
+- NEW: (No title - catalog system generates it) → Overview → Business Outcomes → Demo Options/Lab Duration → Environment → Products → Resources
+- Removed title line (= Display Name) - the catalog system auto-generates this from common.yaml
+
+**New Sections:**
+1. **Business Outcomes** - What users achieve (business value, not just topics)
+2. **Demo Options** - Time-based options for demos (15-20 min, 30-45 min, 60 min)
+3. **Lab Duration** - Self-paced vs instructor-led timing for workshops
+4. **Environment** - Specific versions and requirements (not mixed with products)
+5. **Resources** - Links to guide, repository, documentation
+
+**Writing Guidelines:**
+- Start with product name, NOT "This workshop" or "This demo"
+- Include business context (ACME Corp, real-world scenarios)
+- Business Outcomes = what users achieve, not just learning objectives
+- Separate demos (Demo Options) from workshops (Lab Duration)
+- Specific version numbers in Environment section
+- Use external link markers (^) for resources
+
+**Example Output (Demo):**
+```
+= VLLM Playground
+
+vLLM Playground is a management interface for deploying and managing vLLM inference servers...
+
+This demo uses ACME Corporation customer scenario...
+
+== Business Outcomes
+* Deploy and manage vLLM servers using containers
+* Configure structured outputs for reliable system integration
+...
+
+== Demo Options
+* *15-20 min* - Executive brief (deployment + business value)
+* *30-45 min* - Technical demo (structured outputs + tool calling)
+...
+```
+
+**Example Output (Workshop):**
+```
+= Ansible Automation Platform with OpenShift AI
+
+Ansible Automation Platform integrates with Red Hat OpenShift AI...
+
+== Business Outcomes
+* Integrate Ansible Automation Platform with OpenShift AI
+* Build AI models for infrastructure decision-making
+...
+
+== Lab Duration
+* *Self-paced*: 90 minutes
+* *Instructor-led*: 2-3 hours
+```
+
+**Files Updated:**
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md (Step 10.3 template)
+- Added two complete examples (demo and workshop)
+- Added key guidelines section
+
+### Focus
+This release improves description.adoc quality by using the proven vllm-playground format, which better communicates business value and provides flexible demo/workshop timing options.
+
 ## [v1.7.2] - 2026-02-02
 
 ### Added - Mode 2 Manual Entry Fallback
@@ -700,7 +775,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.2...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.3...HEAD
+[v1.7.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.3
 [v1.7.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.2
 [v1.7.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.1
 [v1.7.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.0

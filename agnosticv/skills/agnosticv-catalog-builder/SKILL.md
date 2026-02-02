@@ -866,37 +866,141 @@ find "$temp_dir/content/modules/ROOT/pages" -name "*.adoc" | sort
 grep "^= " "$temp_dir/content/modules/ROOT/pages"/*.adoc
 ```
 
-**Generate description.adoc:**
+**Generate description.adoc (using vllm-playground format):**
 ```asciidoc
-= <Display Name>
+<Product/Service Name> <brief-description-of-what-it-is>. <Key features or capabilities>.
 
-== Overview
+<Optional: Real-world business scenario or use case context>.
 
-<Product Name> provides... (2-3 sentences starting with product, NOT "This workshop")
+== Business Outcomes
 
-NOTE: Add any warnings here (GPU requirements, etc.)
+* <What users will achieve/learn - business value>
+* <Deploy/configure/implement specific capability>
+* <Enable specific workflow or integration>
+* <Validate/test specific aspect>
 
-== Guide
+== Demo Options
 
-link:<github-pages-url>[Open Guide^,role=params-link]
+_For Demos only - remove this section for workshops_
 
-== Featured Products and Technologies
+* *15-20 min* - Executive brief (<focus areas>)
+* *30-45 min* - Technical demo (<focus areas>)
+* *60 min* - Full deep dive (<all modules with advanced topics>)
 
-* Product Name Version
-* Another Product Version
+== Lab Duration
 
-== Agenda
+_For Workshops only - remove this section for demos_
 
-* Module 1: <title>
-* Module 2: <title>
-* Module 3: <title>
+* *Self-paced*: 60-90 minutes
+* *Instructor-led*: 2-3 hours
 
-== Authors
+== Environment
 
-* <Author Name> - mailto:<email>[<email>] - <slack-handle>
+* <Product Name> <Version>
+* <Related Technology> <Version>
+* <Any special requirements>
 
-For questions or feedback, reach out in Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+NOTE: <Add warnings here if needed: GPU requirements, high memory, etc.>
+
+== Products
+
+* <Red Hat Product Name>
+* <Red Hat Product Name> <Version>
+* <Related Technology>
+* <Related Technology>
+
+== Resources
+
+* link:<github-pages-url>[Workshop/Demo Guide^]
+* link:<showroom-repo-url>[Content Repository^]
+* link:<product-docs-url>[Product Documentation^]
 ```
+
+**Example (Demo):**
+```asciidoc
+vLLM Playground is a management interface for deploying and managing vLLM inference servers using containers. It simplifies model serving with features like structured outputs, tool calling, MCP integration, and performance benchmarking.
+
+This demo uses ACME Corporation customer scenario to show how vLLM and Red Hat AI Inference Server (RHAIIS) modernize AI-powered customer support infrastructure.
+
+== Business Outcomes
+
+* Deploy and manage vLLM servers using containers
+* Configure structured outputs for reliable system integration
+* Implement tool calling to extend AI capabilities
+* Enable agentic workflows with human-in-the-loop approval
+* Validate production readiness with performance benchmarks
+
+== Demo Options
+
+* *15-20 min* - Executive brief (deployment + business value)
+* *30-45 min* - Technical demo (structured outputs + tool calling)
+* *60 min* - Full deep dive (all 5 modules with MCP and benchmarking)
+
+== Environment
+
+* RHEL 10 (CPU or GPU)
+* vLLM Playground v0.1.1
+
+== Products
+
+* Red Hat AI
+* Red Hat Enterprise Linux 10
+* vLLM Playground
+* vLLM (inference engine)
+* Podman
+
+== Resources
+
+* link:https://github.com/rhpds/showroom-vllm-playground[Demo Guide^]
+* link:https://github.com/micytao/vllm-playground[vLLM Playground Repository^]
+* link:https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai[Red Hat OpenShift AI^]
+```
+
+**Example (Workshop):**
+```asciidoc
+Ansible Automation Platform integrates with Red Hat OpenShift AI to enable intelligent automation workflows. Combine the power of AI-driven decision making with Ansible's proven automation capabilities.
+
+This workshop demonstrates how to build AI-assisted automation that adapts to changing infrastructure conditions.
+
+== Business Outcomes
+
+* Integrate Ansible Automation Platform with OpenShift AI
+* Build AI models for infrastructure decision-making
+* Deploy intelligent automation workflows
+* Monitor and optimize AI-driven automation
+
+== Lab Duration
+
+* *Self-paced*: 90 minutes
+* *Instructor-led*: 2-3 hours
+
+== Environment
+
+* Red Hat OpenShift Container Platform 4.14
+* Red Hat Ansible Automation Platform 2.5
+* Red Hat OpenShift AI 2.8
+
+== Products
+
+* Red Hat Ansible Automation Platform
+* Red Hat OpenShift AI
+* Red Hat OpenShift Container Platform
+* Red Hat Enterprise Linux 9
+
+== Resources
+
+* link:https://rhpds.github.io/ansible-ai-workshop[Workshop Guide^]
+* link:https://github.com/rhpds/ansible-ai-workshop-showroom[Content Repository^]
+* link:https://www.redhat.com/en/technologies/management/ansible[Ansible Documentation^]
+```
+
+**Key Guidelines:**
+- Start with product name, not "This workshop/demo"
+- Use business context (ACME Corp, real scenarios)
+- Business Outcomes = what users achieve, not just topics
+- Demo Options for presenter-led, Lab Duration for hands-on
+- Specific version numbers in Environment section
+- Resources with external link markers (^)
 
 #### 10.4: Generate info-message-template.adoc
 
