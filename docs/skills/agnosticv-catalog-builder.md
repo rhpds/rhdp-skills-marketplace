@@ -298,32 +298,100 @@ Expected Answer: 2
 **Step 3: Showroom Path**
 ```
 Q: Path or URL to your Showroom repository?
+   (Press Enter to use current directory)
 
 Expected Answer: ~/work/code/showroom/my-workshop
 ```
 
-**Step 4: Catalog Directory**
-```
-Q: Where is the AgnosticV catalog directory?
-   Example: ~/work/code/agnosticv/agd_v2/my-catalog
+**Step 4: Showroom Found or Not?**
 
-Expected Answer: ~/work/code/agnosticv/agd_v2/your-catalog-slug
+**If Showroom content found:**
+```
+✓ Found Showroom content
+
+📖 Analyzing all module content...
+✓ Reading ALL modules (not just index.adoc)
+✓ Extracting overview from index.adoc
+✓ Detecting Red Hat products across all modules
+✓ Extracting version numbers
+✓ Identifying technical topics
 ```
 
-**Step 5: Brief Overview (Optional)**
+**If NO Showroom content found:**
 ```
-Q: Brief overview (2-3 sentences starting with product name)?
-   Or press enter to auto-generate from Showroom
+✗ No Showroom content found
 
-Expected Answer: (enter text or press enter to auto-generate)
+Options:
+1. Enter description details manually (I'll ask you questions)
+2. Create Showroom content first and come back
+3. Exit and use Mode 1 (Full Catalog) instead
+
+Your choice [1/2/3]:
+```
+
+**Step 5a: Manual Entry (if no Showroom)**
+```
+Q: Brief overview (3-4 sentences):
+   - What is this showing/doing?
+   - What is the intended use?
+   - Do NOT mention catalog name
+
+Q: Warnings? (GPU, beta/alpha, high memory)
+   [optional]
+
+Q: Lab/Demo Guide URL:
+   Link to Showroom or repo
+
+Q: Featured Products (max 3-4 with versions):
+   Only what matters
+
+Q: How many modules/chapters?
+   [number]
+
+For each module:
+Q: Module title:
+Q: Module details (2-3 bullets max):
+   [enter bullets, press Enter twice when done]
+
+Q: Authors:
+   [from __meta__.owners or manual]
+
+Q: Content support Slack channel:
+Q: Author Slack handle:
+Q: Author email [optional]:
+```
+
+**Step 5b: Review Extracted Content (if Showroom found)**
+```
+📝 Description Content Review
+
+I've read ALL X modules and extracted:
+
+Overview (from index.adoc):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[extracted overview]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Products Detected (from all modules):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Red Hat OpenShift AI
+- Ansible Automation Platform 2.5
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: Is this overview accurate? [Y to use / N to provide custom]:
+Q: Are detected products correct? [Y to use / N to customize]:
 ```
 
 **Step 6: File Generation**
 ```
-✓ Reading Showroom content...
-✓ Extracting modules...
-✓ Identifying technologies...
-✓ Generating description.adoc...
+✓ Generating description.adoc (RHDP structure)...
+  - Brief overview (3-4 sentences max)
+  - Warnings (if any)
+  - Lab/Demo Guide link
+  - Featured Products (max 3-4)
+  - Detailed Overview (each module + 2-3 bullets)
+  - Authors (from __meta__.owners)
+  - Support (Content + Environment)
 ✓ Auto-committed to branch
 ```
 
@@ -441,13 +509,33 @@ num_users: 1
 
 ### Mode 2: Description Only
 
-Extracts from Showroom:
-- Module titles for agenda
-- Technologies mentioned
-- Git author from config
-- GitHub Pages URL from remote
+**v1.8.0: Now follows official RHDP structure**
 
-Generates clean AsciiDoc following RHDP standards.
+**With Showroom:**
+- Reads ALL modules (not just index.adoc)
+- Extracts overview from index.adoc
+- Detects Red Hat products across all modules
+- Extracts version numbers
+- Identifies technical topics
+- Shows extracted data for review before generating
+
+**Without Showroom:**
+- Asks all questions needed for RHDP structure
+- Brief overview (3-4 sentences)
+- Warnings (optional)
+- Guide link
+- Featured products (max 3-4)
+- Module details (title + 2-3 bullets per module)
+- Authors and support information
+
+Generates description.adoc with RHDP official structure:
+1. Brief Overview (3-4 sentences max)
+2. Warnings (optional, after overview)
+3. Lab/Demo Guide (link to Showroom)
+4. Featured Technology and Products (max 3-4)
+5. Detailed Overview (each module + 2-3 bullets)
+6. Authors (from __meta__.owners)
+7. Support (Content + Environment)
 
 ### Mode 3: Info Template
 
@@ -470,30 +558,71 @@ Template uses: `{api_url}` and `{api_key}`
 
 ### Example description.adoc
 
+**v1.8.0: RHDP Official Structure**
+
 From `agd_v2/vllm-playground-aws/description.adoc`:
 
 ```asciidoc
-= VLLM Playground
+vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs, tool calling, and MCP integration. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs, and implement agentic workflows with performance benchmarking.
 
-vLLM Playground is a management interface for deploying and managing vLLM inference servers using containers.
+NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
 
-== Business Outcomes
+== Demo Guide
 
-* Deploy and manage vLLM servers using containers
-* Configure structured outputs for reliable system integration
-* Implement tool calling to extend AI capabilities
+* link:https://rhpds.github.io/showroom-vllm-playground[Guide^]
 
-== Demo Options
+== Featured Technology and Products
 
-* **15-20 min** - Executive brief
-* **30-45 min** - Technical demo
-* **60 min** - Full deep dive
-
-== Products
-
-* Red Hat AI
 * Red Hat Enterprise Linux 10
-* vLLM Playground
+* vLLM Playground 0.1.1
+* Red Hat AI
+
+== Detailed Overview
+
+=== Introduction to vLLM Playground
+
+* Overview of vLLM architecture and container-based deployment
+* ACME Corp use case: modernizing customer support with AI
+* Deploy first vLLM server instance
+
+=== Structured Outputs Configuration
+
+* Configure JSON schema validation for reliable outputs
+* Integrate with downstream systems using structured data
+* Test output consistency across multiple requests
+
+=== Tool Calling and MCP Integration
+
+* Implement function calling to extend AI capabilities
+* Enable Model Context Protocol for agentic workflows
+* Build human-in-the-loop approval system
+
+=== Performance Benchmarking
+
+* Run load tests against vLLM deployments
+* Compare CPU vs GPU performance metrics
+* Validate production readiness criteria
+
+== Authors
+
+* Michael Tao
+* Jane Developer
+
+== Support
+
+=== Content Support
+
+For help with instructions or functionality:
+
+* Slack: #vllm-playground-demo - tag @michael-tao
+* Email: mtao@redhat.com
+
+=== Environment Support
+
+For problems with provisioning or environment stability:
+
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 ### Example info-message-template.adoc

@@ -183,21 +183,53 @@ requirements_content:
       version: ">=1.0.0"
 ```
 
-### description.adoc
+### description.adoc (v1.8.0+ RHDP Structure)
 
 ```asciidoc
-= Catalog Display Name
+Brief overview (3-4 sentences max). Start with product name, not catalog name.
+Explain what this shows and intended use.
 
-Abstract starting with product name...
+NOTE: Warnings after overview (GPU required, beta/alpha features, etc.)
 
-== Showroom Guide
+== Lab/Demo Guide
 
-link:<showroom-url>[Access workshop guide]
+* link:<showroom-url>[Guide^]
 
-== Featured Technology
+== Featured Technology and Products
 
-* OpenShift {ocp_version}
+* Red Hat OpenShift {ocp_version}
 * Technology {version}
+* Product Name {version}
+
+== Detailed Overview
+
+=== Module 1 Title
+
+* Key learning point 1
+* Key learning point 2
+* Key learning point 3
+
+=== Module 2 Title
+
+* Key learning point 1
+* Key learning point 2
+
+== Authors
+
+* Author Name 1
+* Author Name 2
+
+== Support
+
+=== Content Support
+
+* Slack: #channel-name - tag @author
+* Email: author@redhat.com
+
+=== Environment Support
+
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 ---
