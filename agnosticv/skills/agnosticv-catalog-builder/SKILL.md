@@ -1091,7 +1091,7 @@ fi
 
 ### Step 2: Extract Content from Showroom
 
-**Smart extraction from Showroom:**
+**Read ALL modules and extract comprehensive information:**
 ```bash
 # Get ALL modules (ensure we don't miss any)
 modules=$(find "$path/content/modules/ROOT/pages" -type f -name "*.adoc" \
@@ -1103,46 +1103,51 @@ modules=$(find "$path/content/modules/ROOT/pages" -type f -name "*.adoc" \
 module_count=$(echo "$modules" | grep -c "\.adoc$")
 
 # Extract and display all module titles
-echo "📚 Found $module_count modules:"
+echo "📚 Reading $module_count modules:"
+module_titles=()
 while IFS= read -r module; do
   if [[ -f "$module" ]]; then
     title=$(grep "^= " "$module" | head -1 | sed 's/^= //')
     echo "  * $title ($(basename "$module"))"
+    module_titles+=("$title")
   fi
 done <<< "$modules"
 
-# Extract overview/summary from index.adoc or overview page
+# Read ALL modules for comprehensive content extraction
+echo ""
+echo "📖 Analyzing all module content..."
+
+# Combine all module content (excluding index/nav)
+all_content=$(cat "$path/content/modules/ROOT/pages"/*.adoc 2>/dev/null | grep -v "^include::" | grep -v "^::")
+
+# Extract overview from index.adoc first
 if [[ -f "$path/content/modules/ROOT/pages/index.adoc" ]]; then
-  overview_source="$path/content/modules/ROOT/pages/index.adoc"
-elif [[ -f "$path/content/modules/ROOT/pages/01-overview.adoc" ]]; then
-  overview_source="$path/content/modules/ROOT/pages/01-overview.adoc"
-elif [[ -f "$path/content/modules/ROOT/pages/workshop-overview.adoc" ]]; then
-  overview_source="$path/content/modules/ROOT/pages/workshop-overview.adoc"
-else
-  # Fallback to first module
-  overview_source=$(echo "$modules" | head -1)
+  index_overview=$(awk '
+    /^= / { in_content=1; next }
+    in_content && /^:/ { next }
+    in_content && /^$/ { next }
+    in_content && /^[A-Z]/ {
+      print;
+      for(i=1; i<=3; i++) {
+        getline;
+        if ($0 != "") print;
+      }
+      exit
+    }
+  ' "$path/content/modules/ROOT/pages/index.adoc" 2>/dev/null)
 fi
 
-# Extract first paragraph after title (skip attributes, skip empty lines)
-extracted_overview=$(awk '
-  /^= / { in_content=1; next }
-  in_content && /^:/ { next }
-  in_content && /^$/ { next }
-  in_content && /^[A-Z]/ {
-    print;
-    getline;
-    if ($0 != "") print;
-    getline;
-    if ($0 != "") print;
-    exit
-  }
-' "$overview_source" 2>/dev/null | sed 's/\.$//')
+# Extract key learning objectives from all modules
+learning_objectives=$(echo "$all_content" | grep -E "learn|understand|configure|deploy|create|build|integrate|automate" | grep -v "^#" | head -10)
 
-# Detect Red Hat product names (proper names, not keywords)
-detected_products=$(grep -hoE '(Red Hat )?OpenShift (Container Platform|Virtualization|AI|GitOps|Pipelines|Data Foundation)?|Ansible Automation Platform|(Red Hat )?Ansible( AI)?|Red Hat Enterprise Linux|RHEL [0-9.]+|Red Hat Device Edge|Red Hat Insights|Advanced Cluster Management|ACM|Red Hat Quay|Red Hat OpenShift Service Mesh|Red Hat AMQ|Red Hat Integration|Red Hat build of Keycloak' "$path/content/modules/ROOT/pages"/*.adoc 2>/dev/null | sort -u | head -10)
+# Detect Red Hat product names across ALL modules
+detected_products=$(echo "$all_content" | grep -hoE '(Red Hat )?OpenShift (Container Platform|Virtualization|AI|GitOps|Pipelines|Data Foundation)?|Ansible Automation Platform|(Red Hat )?Ansible( AI)?|Red Hat Enterprise Linux|RHEL [0-9.]+|Red Hat Device Edge|Red Hat Insights|Advanced Cluster Management|ACM|Red Hat Quay|Red Hat OpenShift Service Mesh|Red Hat AMQ|Red Hat Integration|Red Hat build of Keycloak|Red Hat OpenShift Data Foundation|Red Hat Advanced Cluster Security' 2>/dev/null | sort -u | head -15)
 
-# Extract version numbers mentioned
-version_info=$(grep -hoE '(OpenShift|Ansible|RHEL|AAP) [0-9]+\.[0-9]+|version [0-9]+\.[0-9]+' "$path/content/modules/ROOT/pages"/*.adoc 2>/dev/null | sort -u | head -5)
+# Extract version numbers mentioned across ALL modules
+version_info=$(echo "$all_content" | grep -hoE '(OpenShift|Ansible|RHEL|AAP|Kubernetes) [0-9]+\.[0-9]+|version [0-9]+\.[0-9]+' 2>/dev/null | sort -u | head -8)
+
+# Detect key technical topics across ALL modules
+technical_topics=$(echo "$all_content" | grep -hoE 'GitOps|CI/CD|Kubernetes|Operators|Helm|Service Mesh|Serverless|Tekton|ArgoCD|Prometheus|Grafana|Storage|Networking|Security|Multi-cluster' 2>/dev/null | sort -u | head -10)
 
 # Get git author
 author=$(git -C "$path" config user.name 2>/dev/null || echo "Unknown")
@@ -1156,60 +1161,95 @@ else
 fi
 
 echo ""
-echo "📊 Extracted from Showroom:"
-echo "  ✓ Modules: $module_count"
+echo "📊 Extracted from ALL modules:"
+echo "  ✓ Modules analyzed: $module_count"
+echo "  ✓ Module titles:"
+for title in "${module_titles[@]}"; do
+  echo "    - $title"
+done
 echo "  ✓ Author: $author"
 echo "  ✓ GitHub Pages: $github_pages_url"
-echo "  ✓ Overview extracted from: $(basename $overview_source)"
-echo "  ✓ Products detected: $(echo "$detected_products" | tr '\n' ', ' | sed 's/, $//')"
+echo "  ✓ Red Hat Products detected:"
+echo "$detected_products" | while read product; do
+  [[ -n "$product" ]] && echo "    - $product"
+done
 if [[ -n "$version_info" ]]; then
-  echo "  ✓ Versions found: $(echo "$version_info" | tr '\n' ', ' | sed 's/, $//')"
+  echo "  ✓ Versions found:"
+  echo "$version_info" | while read version; do
+    [[ -n "$version" ]] && echo "    - $version"
+  done
+fi
+if [[ -n "$technical_topics" ]]; then
+  echo "  ✓ Technical topics:"
+  echo "$technical_topics" | while read topic; do
+    [[ -n "$topic" ]] && echo "    - $topic"
+  done
 fi
 ```
 
 ### Step 3: Generate Description
 
-**Review and optionally edit extracted content:**
+**Review comprehensive extracted content from ALL modules:**
 ```
 📝 Description Content Review
 
-I've extracted the following from your Showroom content:
+I've read ALL $module_count modules and extracted the following:
 
-Overview (from $(basename $overview_source)):
+Module Structure:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-$extracted_overview
+${module_titles[@]}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Products/Technologies Detected:
+Overview (from index.adoc):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$index_overview
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Red Hat Products Detected (from all modules):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 $detected_products
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Versions Found (from all modules):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 $version_info
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Q: Is this overview accurate? [Y to use as-is / N to provide custom]:
+Technical Topics (from all modules):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$technical_topics
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: Is the extracted overview accurate? [Y to use as-is / N to provide custom]:
 
 If N:
 Q: Provide a brief overview (2-3 sentences, starting with product name):
+   Base it on the module titles and content above.
 
 Custom overview:
 
-Q: Are the detected products/technologies correct? [Y to use / N to provide custom]:
+Q: Are the detected products/technologies/versions correct? [Y to use / N to customize]:
 
 If N:
 Q: Featured technologies (comma-separated with versions):
    Example: OpenShift 4.14, Ansible Automation Platform 2.5, Red Hat Enterprise Linux 9
 
+   Detected: $detected_products $version_info
+
 Custom technologies:
 
 Q: Any warnings or special requirements? (optional)
    Examples: "Requires GPU nodes", "High memory usage", "Network-intensive"
+   Based on: $technical_topics
 
 Warnings [optional]:
 ```
 
 **IMPORTANT:**
+- ALL modules have been read and analyzed, not just index.adoc
 - If user says Yes to extracted content, use it directly. Don't ask again!
-- Display ALL modules found so user can verify nothing was missed
+- Show comprehensive data from all modules so user can make informed decisions
+- Module titles, products, versions, and topics are extracted from the entire workshop content
 
 **Generate and write description.adoc** (same format as Mode 1, Step 10.3)
 
