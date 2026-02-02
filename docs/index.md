@@ -57,6 +57,23 @@ Plugins can be installed at different scopes:
 
 ---
 
+## 🎓 Create Your Own Skills & Plugins
+
+**Want to build custom skills for your team or contribute to the marketplace?**
+
+Our hands-on workshop teaches you how to create Claude Code skills and plugins from scratch:
+
+- 📖 Learn from real RHDP skills (showroom, agnosticv)
+- 🛠️ Build a complete skill step-by-step
+- 📦 Package skills into distributable plugins
+- 🚀 Publish to your own marketplace or contribute to RHDP
+
+**[Start the Workshop →](contributing/create-your-own-skill.html)**
+
+**Time:** 60-90 minutes | **Level:** Beginner-friendly
+
+---
+
 ## What's Included?
 
 **New to these terms?** [Check the Glossary →](reference/glossary.html)
