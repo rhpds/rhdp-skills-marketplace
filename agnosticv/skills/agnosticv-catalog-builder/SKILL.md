@@ -12,8 +12,8 @@ model: sonnet
 
 **Name:** AgnosticV Catalog Builder
 **Description:** Create or update AgnosticV catalog files for RHDP deployments
-**Version:** 2.0.1
-**Last Updated:** 2026-01-22
+**Version:** 2.1.0
+**Last Updated:** 2026-02-03
 
 ---
 
@@ -76,67 +76,122 @@ What would you like to create or update?
 Your choice [1-3]:
 ```
 
-### Ask for AgnosticV Repository Path
+### Detect or Ask for AgnosticV Repository Path
 
+**CRITICAL: Check configuration files FIRST before asking user**
+
+```bash
+# Step 1: Check for configured AgV path in user's CLAUDE.md files
+agv_path=""
+
+# Check ~/CLAUDE.md
+if [[ -f ~/CLAUDE.md ]]; then
+  agv_path=$(grep -iE "(agv|agnosticv).*(path|repo|directory)" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+fi
+
+# Check ~/.claude/*.md if not found
+if [[ -z "$agv_path" ]]; then
+  for file in ~/.claude/*.md; do
+    [[ -f "$file" ]] && agv_path=$(grep -iE "(agv|agnosticv).*(path|repo|directory)" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+    [[ -n "$agv_path" ]] && break
+  done
+fi
+
+# Expand tilde if present
+[[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
+```
+
+**If path found in config:**
+```
+✓ Using AgV path from CLAUDE.md: ~/devel/git/agnosticv
+
+Q: Is this path correct? [Y/n]
+```
+
+**If path NOT found or user says No:**
 ```
 Q: What is your AgnosticV repository directory path?
 
 Example paths:
 - ~/work/code/agnosticv/
+- ~/devel/git/agnosticv/
 - ~/projects/agnosticv/
 
 Your AgV path: [Enter full path]
 ```
 
-**Validate path exists:**
+**Validate path exists (don't assume internal structure):**
 ```bash
-ls -la /path/to/agnosticv/agd_v2/
+# Just check directory exists - don't assume agd_v2/ or any structure
+if [[ -d "$agv_path" ]]; then
+  echo "✓ Directory exists: $agv_path"
+else
+  echo "✗ Directory not found: $agv_path"
+  echo "Please check the path and try again."
+  exit 1
+fi
+
+# Check if it looks like an AgV repo (optional validation)
+if [[ -d "$agv_path/.git" ]]; then
+  echo "✓ Git repository detected"
+else
+  echo "⚠️  Not a git repository - are you sure this is correct?"
+fi
 ```
 
-### Git Workflow Setup (REQUIRED FOR ALL MODES)
+### Git Workflow Setup (OPTIONAL)
 
-**IMPORTANT:** Always pull latest and create a new branch.
+**IMPORTANT: Respect user's current branch - don't force git operations**
 
-```
-🔧 Git Workflow Setup
-
-Before we start, let's ensure you're working on a clean branch.
-
-I'll do the following:
-1. Pull latest changes from main
-2. Create a new feature branch for your catalog
-
-Branch naming: Use descriptive names WITHOUT 'feature/' prefix
-  Good: add-ansible-ai-workshop
-  Good: update-ocp-pipelines-description
-  Bad: feature/add-workshop
-```
-
-**Execute git workflow:**
 ```bash
-cd /path/to/agnosticv
+cd "$agv_path"
 
 # Check current branch
-current_branch=$(git rev-parse --abbrev-ref HEAD)
+current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 
-# If not on main, warn user
+echo "📍 Current branch: $current_branch"
+echo ""
+```
+
+**Ask if user wants git workflow help:**
+```
+Q: Would you like help with git workflow (checkout main, pull latest, create new branch)? [y/N]
+
+Note: If you're already on your working branch, you can skip this.
+```
+
+**If user says NO (default):**
+```
+✓ Using current branch: $current_branch
+
+I'll work with your current branch and won't make any git changes.
+```
+
+**If user says YES:**
+```bash
+# Only execute if user explicitly wants git workflow help
+
+# If not on main, offer to switch
 if [[ "$current_branch" != "main" ]]; then
   echo "⚠️  You're currently on branch: $current_branch"
-  echo "We need to switch to main first."
-  read -p "Switch to main and pull latest? [Y/n] " confirm
+  read -p "Switch to main first? [Y/n] " confirm
   if [[ ! "$confirm" =~ ^[Nn] ]]; then
     git checkout main
+    current_branch="main"
   fi
 fi
 
-# Pull latest
-echo "📥 Pulling latest changes from main..."
-git pull origin main
+# If on main, offer to pull
+if [[ "$current_branch" == "main" ]]; then
+  echo "📥 Pulling latest changes from main..."
+  git pull origin main
+fi
 
 # Ask for branch name
 echo ""
-echo "Q: What should we name your branch?"
+echo "Q: What should we name your new branch?"
 echo "   (Use format: add-<catalog-name> or update-<catalog-name>-description)"
+echo "   (WITHOUT 'feature/' prefix)"
 read -p "Branch name: " branch_name
 
 # Validate branch name doesn't have feature/
@@ -1168,12 +1223,55 @@ link:{openshift_cluster_console_url}/showroom[Open Guide^]
 Questions? [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
 ```
 
-### Step 11: Write Files
+### Step 11: Determine Catalog Directory Path
+
+```
+📂 Catalog Directory Path
+
+Q: Where should I create the catalog directory?
+
+Options:
+1. AgV standard location (agd_v2/<directory-name>)
+2. Custom path within AgV repo
+3. Specify full custom path
+
+Choice [1-3]:
+```
+
+**Based on choice:**
+
+1. **Standard location:**
+   ```bash
+   catalog_path="$AGV_PATH/agd_v2/$directory_name"
+   ```
+
+2. **Custom path within AgV:**
+   ```
+   Q: Enter relative path from AgV root:
+      Example: catalogs/<directory-name>
+
+   Relative path:
+   ```
+   ```bash
+   catalog_path="$AGV_PATH/$relative_path"
+   ```
+
+3. **Full custom path:**
+   ```
+   Q: Enter full path:
+
+   Full path:
+   ```
+   ```bash
+   catalog_path="$custom_path"
+   ```
+
+### Step 12: Write Files
 
 ```
 💾 Writing Files
 
-Creating catalog directory: agd_v2/<directory-name>/
+Creating catalog directory: $catalog_path
 
 Writing:
   ✓ common.yaml
@@ -1184,55 +1282,60 @@ Writing:
 
 **Execute:**
 ```bash
-mkdir -p "$AGV_PATH/agd_v2/$directory_name"
+mkdir -p "$catalog_path"
 
 # Write all four files
-cat > "$AGV_PATH/agd_v2/$directory_name/common.yaml" <<'EOF'
+cat > "$catalog_path/common.yaml" <<'EOF'
 <generated-content>
 EOF
 
-cat > "$AGV_PATH/agd_v2/$directory_name/dev.yaml" <<'EOF'
+cat > "$catalog_path/dev.yaml" <<'EOF'
 <generated-content>
 EOF
 
-cat > "$AGV_PATH/agd_v2/$directory_name/description.adoc" <<'EOF'
+cat > "$catalog_path/description.adoc" <<'EOF'
 <generated-content>
 EOF
 
-cat > "$AGV_PATH/agd_v2/$directory_name/info-message-template.adoc" <<'EOF'
+cat > "$catalog_path/info-message-template.adoc" <<'EOF'
 <generated-content>
 EOF
 ```
 
-### Step 12: Git Commit (Optional)
+### Step 13: Git Commit (Optional)
 
 ```
 🚀 Ready to Commit
 
-Files created in: agd_v2/<directory-name>/
+Files created in: $catalog_path
 
 Q: Commit these changes? [Y/n]
 ```
 
 **If YES:**
 ```bash
+# Get relative path from AgV root for commit message
+rel_path="${catalog_path#$AGV_PATH/}"
+
 cd "$AGV_PATH"
 
-git add "agd_v2/$directory_name/"
+git add "$rel_path/"
 
 git commit -m "Add $directory_name catalog
 
 - Category: $category
 - Infrastructure: $cloud_provider ($sandbox_architecture)
 - Workloads: $num_workloads selected
-- UUID: $asset_uuid"
+- UUID: $asset_uuid
+- Path: $rel_path"
 
-echo "✓ Committed to branch: $branch_name"
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+echo "✓ Committed to branch: $current_branch"
 echo ""
 echo "Next steps:"
-echo "  1. Test locally: agnosticv_cli dev.yaml"
+echo "  1. Test locally: cd $rel_path && agnosticv_cli dev.yaml"
 echo "  2. Run validator: /agnosticv-validator"
-echo "  3. Create PR: gh pr create --fill"
+echo "  3. Create PR: git push origin $current_branch && gh pr create --fill"
 ```
 
 ---
@@ -1681,15 +1784,26 @@ Choice [1/2]:
 
 **If option 1:**
 ```bash
-# Look for existing catalog in AgV
-catalog_dirs=$(find "$AGV_PATH/agd_v2" -type f -name "common.yaml" -exec dirname {} \;)
+# Look for existing catalog in AgV (don't assume agd_v2/ structure)
+catalog_dirs=$(find "$AGV_PATH" -type f -name "common.yaml" -not -path "*/\.*" -exec dirname {} \; 2>/dev/null)
 
 # Match by name similarity
 echo "Found catalogs:"
-echo "$catalog_dirs"
+echo "$catalog_dirs" | while read dir; do
+  # Show relative path from AGV_PATH
+  rel_path="${dir#$AGV_PATH/}"
+  echo "  - $rel_path"
+done
 
 echo ""
-echo "Q: Which catalog? (or 'none' for custom path)"
+echo "Q: Which catalog directory? (enter relative path, or 'none' for custom path)"
+echo "   Example: agd_v2/my-catalog or catalogs/demo-catalog"
+read -p "Catalog path: " catalog_path
+
+if [[ "$catalog_path" == "none" ]]; then
+  echo "Q: Enter full path to catalog directory:"
+  read -p "Custom path: " catalog_path
+fi
 ```
 
 **Write file and optionally commit** (same as Mode 1, Step 12)
@@ -2234,6 +2348,7 @@ After using this skill, you should have:
 
 ## Version History
 
+- **2.1.0** (2026-02-03) - UX improvements: respect CLAUDE.md config, optional git workflow, no agd_v2/ assumption
 - **2.0.0** (2026-01-22) - Unified skill combining agv-generator and generate-agv-description
 - **1.0.0** (2026-01-15) - Initial separate skills (deprecated)
 

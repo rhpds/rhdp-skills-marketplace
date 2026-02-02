@@ -7,6 +7,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.9.0] - 2026-02-03
+
+### Changed - AgnosticV Catalog Builder UX Improvements
+
+**User Feedback:** Nate Stephany identified UX friction with agnosticv-catalog-builder skill
+
+**Problems Identified:**
+
+1. **Asks for AgV path every time** - Even when configured in CLAUDE.md
+2. **Forces git workflow** - Marked as "REQUIRED", switches branches without asking
+3. **Assumes agd_v2/ structure** - Hardcoded path assumptions break non-standard repos
+4. **Too much searching** - Greps for paths instead of asking directly
+
+**Solutions Applied:**
+
+#### 1. Auto-Detect AgV Path from Configuration Files
+
+The skill now checks for configured AgV path BEFORE asking:
+
+**Search order:**
+1. `~/CLAUDE.md` - User's global configuration
+2. `~/.claude/*.md` - Claude config directory
+
+**Detection logic:**
+```bash
+grep -iE "(agv|agnosticv).*(path|repo|directory)" ~/CLAUDE.md
+```
+
+**User experience:**
+```
+✓ Using AgV path from CLAUDE.md: ~/devel/git/agnosticv
+Q: Is this path correct? [Y/n]
+```
+
+Only prompts for path if not found in config files.
+
+#### 2. Git Workflow is Now OPTIONAL (Not REQUIRED)
+
+**Before (v1.8.x):**
+- Always pulls main
+- Always creates new branch
+- Forces checkout operations
+
+**After (v1.9.0):**
+```
+📍 Current branch: my-working-branch
+
+Q: Would you like help with git workflow? [y/N]
+Note: If you're already on your working branch, you can skip this.
+```
+
+**Default behavior:** Respects current branch, makes NO git changes
+
+**If user says Yes:** Offers git workflow assistance (checkout main, pull, create branch)
+
+#### 3. Removed agd_v2/ Path Assumptions
+
+**Before (v1.8.x):**
+```bash
+ls -la /path/to/agnosticv/agd_v2/  # Hardcoded assumption
+catalog_dirs=$(find "$AGV_PATH/agd_v2" -type f -name "common.yaml")
+mkdir -p "$AGV_PATH/agd_v2/$directory_name"
+```
+
+**After (v1.9.0):**
+```bash
+# Just validate directory exists - no structure assumptions
+test -d "$agv_path"
+
+# Search entire AgV repo
+catalog_dirs=$(find "$AGV_PATH" -type f -name "common.yaml")
+
+# Ask user for catalog location
+Q: Where should I create the catalog directory?
+   1. AgV standard location (agd_v2/<name>)
+   2. Custom path within AgV repo
+   3. Specify full custom path
+```
+
+Supports any repository structure (agd_v2/, catalogs/, custom/, etc.)
+
+#### 4. Direct Questions Instead of Excessive Searching
+
+**Before:** Skill would grep/search multiple times trying to find paths
+
+**After:** Ask user directly for specific paths when needed
+
+**Updated Files:**
+- `agnosticv/skills/agnosticv-catalog-builder/SKILL.md`
+  - Step 0: Auto-detect AgV path from CLAUDE.md (lines ~79-130)
+  - Git workflow: Optional with default NO (lines ~132-190)
+  - Step 11: Configurable catalog path (no agd_v2/ assumption)
+  - Step 4 (Mode 2): Search entire AgV repo, not just agd_v2/
+  - Version updated to 2.1.0
+
+**Benefits:**
+- ✅ Respects user configuration (CLAUDE.md)
+- ✅ No unexpected git operations
+- ✅ Works with any AgV repo structure
+- ✅ Less annoying prompts for configured values
+- ✅ Users retain control of git workflow
+
 ## [v1.8.2] - 2026-02-02
 
 ### Improved - description.adoc Formatting Refinements
