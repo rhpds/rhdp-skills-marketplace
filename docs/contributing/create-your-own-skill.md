@@ -11,21 +11,47 @@ Learn how to create custom skills and plugins for Claude Code by building a real
 
 ## Workshop Overview
 
-**What you'll learn:**
-- Understand skill and plugin architecture
-- Learn from existing RHDP skills
-- Create a skill from scratch
-- Package skill into a plugin
-- Test and validate your work
-- Publish to marketplace
+**What you'll build:** A working Claude Code skill that automates your daily tasks
 
-**Time:** 60-90 minutes
+**What you'll learn:**
+1. How skills work by exploring real RHDP skills
+2. Create your own skill following our patterns
+3. Package it as a plugin
+4. Share it with your team or contribute to RHDP marketplace
+
+**Time:** 60-90 minutes self-paced
 
 **Prerequisites:**
-- Basic markdown knowledge
-- Understanding of YAML frontmatter
-- Claude Code or VS Code with Claude installed
+- Claude Code CLI or VS Code with Claude extension
+- Basic markdown knowledge (headings, code blocks, lists)
 - Git installed
+
+**Official Resources:**
+- 📚 [Claude Code Documentation](https://code.claude.com/docs) - Complete reference
+- 🏛️ [Agent Skills Standard](https://agentskills.io) - Open standard for AI agent skills
+- 🧑‍💻 [RHDP Marketplace GitHub](https://github.com/rhpds/rhdp-skills-marketplace) - Source code
+
+---
+
+## Your Learning Path
+
+**Beginner** (never created a skill):
+1. Start with Module 1 (Understanding)
+2. Do Module 2 exercises (Learn from RHDP skills)
+3. Complete Module 3 (Create your first skill)
+4. Try Module 4 (Package as plugin)
+
+**Intermediate** (created skills before):
+1. Skim Module 1
+2. Jump to Module 5 (Testing)
+3. Explore Module 6 (Advanced features)
+4. Review Module 8 (Best practices)
+
+**Advanced** (contributing to RHDP):
+1. Review Module 7 (Publishing)
+2. Study Module 8 (Patterns)
+3. Check Module 9 (Real-world examples)
+4. See [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) for contribution rules
 
 ---
 
@@ -76,15 +102,54 @@ my-plugin/
 
 ---
 
-## Module 2: Learning from Existing Skills
+## Module 2: Learning from Real RHDP Skills
 
-Let's analyze real skills from the RHDP marketplace to understand patterns.
+Let's explore actual skills from the RHDP marketplace. Clone the repository and open the skills to follow along.
+
+### 🔧 Hands-On Setup
+
+```bash
+# Clone the RHDP marketplace
+git clone https://github.com/rhpds/rhdp-skills-marketplace
+cd rhdp-skills-marketplace
+
+# Open in your editor
+code .  # VS Code
+# or just browse on GitHub
+```
+
+**📚 Official Documentation:** See [Skills Reference Guide](https://code.claude.com/docs/en/skills) for core concepts.
+
+### 🚀 Try It Now: Test an Existing Skill
+
+Before creating your own, let's run a real RHDP skill:
+
+```bash
+# Install the showroom plugin (if not already)
+/plugin install showroom@rhdp-marketplace
+
+# Restart Claude Code
+# exit and restart
+
+# Try the blog-generate skill
+/showroom:blog-generate
+```
+
+**What to observe:**
+1. How Claude asks questions
+2. How it detects your environment
+3. How it shows progress through steps
+4. How it generates output
+
+This is what YOUR skill will do!
 
 ### Exercise 1: Explore a Simple Skill
 
-**Look at:** `showroom/skills/verify-content/SKILL.md`
+**🎯 Open this file:** `showroom/skills/blog-generate/SKILL.md`
 
-**Key patterns to observe:**
+This skill converts workshop content to blog posts. It's a great example of a focused, single-purpose skill.
+
+**👀 What to observe:**
 
 1. **Clear frontmatter:**
 ```yaml
@@ -115,11 +180,13 @@ Options:
 - Uses bash commands Claude can execute
 - Provides decision logic
 
-### Exercise 2: Analyze a Complex Skill
+### Exercise 2: Analyze a Multi-Step Workflow Skill
 
-**Look at:** `agnosticv/skills/catalog-builder/SKILL.md`
+**🎯 Open this file:** `agnosticv/skills/catalog-builder/SKILL.md`
 
-**Observe:**
+This is our most complex skill - it creates entire AgnosticV catalog structures. Let's see how it handles complexity.
+
+**👀 What to observe:**
 
 1. **Multi-mode operation:**
 ```markdown
@@ -1186,7 +1253,42 @@ Get list of users.
 
 ## Module 10: Testing Your Learning
 
-### Capstone Exercise
+### Capstone Exercise Options
+
+Choose based on your use case:
+
+#### Option A: RHDP Team - Showroom Enhancement Skill
+
+**Create a "Workshop Metrics" skill that:**
+
+Requirements:
+1. Analyzes Showroom workshop modules
+2. Counts learning objectives, steps, code blocks
+3. Estimates completion time based on content
+4. Generates a metrics report (JSON or markdown)
+5. Suggests improvements (too long, too short, missing objectives)
+
+**Why:** Helps workshop authors optimize content length and structure.
+
+**Files to analyze:**
+- `content/modules/*/pages/*.adoc` (Showroom structure)
+- Count code blocks, lists, exercises
+- Estimate reading + hands-on time
+
+#### Option B: RHDP Team - AgnosticV Helper Skill
+
+**Create a "Catalog Validator Plus" skill that:**
+
+Requirements:
+1. Extends `/agnosticv:validator` with additional checks
+2. Validates naming conventions (no spaces, lowercase)
+3. Checks for required metadata fields
+4. Verifies deployer versions are current
+5. Suggests catalog improvements
+
+**Why:** Additional quality checks before PR submission.
+
+#### Option C: General - License Generator Skill
 
 **Create a "License Generator" skill that:**
 
@@ -1227,18 +1329,41 @@ When ready, consider:
 
 ## Resources
 
-**Official Documentation:**
-- [Agent Skills Standard](https://agentskills.io)
-- [Claude Code Documentation](https://code.claude.com/docs)
+### Official Claude Code Documentation
 
-**RHDP Marketplace Examples:**
-- [Showroom Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/showroom)
-- [AgnosticV Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/agnosticv)
-- [Health Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/health)
+**Core Concepts:**
+- 📖 [Skills Overview](https://code.claude.com/docs/en/skills) - What skills are and how they work
+- 🔧 [Plugin System](https://code.claude.com/docs/en/plugins) - Plugin architecture and installation
+- 🏛️ [Agent Skills Standard](https://agentskills.io) - Open standard specification
+- 💬 [MCP Integration](https://code.claude.com/docs/en/mcp) - Model Context Protocol for advanced features
 
-**Community:**
+**Advanced Topics:**
+- 🎯 [Skill Frontmatter](https://code.claude.com/docs/en/skills/frontmatter) - Metadata options
+- 🔄 [Context Management](https://code.claude.com/docs/en/skills/context) - Fork vs inherit
+- 🤖 [Model Selection](https://code.claude.com/docs/en/skills/models) - Choosing sonnet/opus/haiku
+
+### RHDP Marketplace
+
+**Example Plugins:**
+- [Showroom Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/showroom) - Workshop/demo creation (4 skills)
+- [AgnosticV Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/agnosticv) - Infrastructure automation (2 skills)
+- [Health Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/health) - Deployment validation (1 skill)
+
+**Documentation:**
+- [RHDP Skills Docs](https://rhpds.github.io/rhdp-skills-marketplace) - Complete documentation site
+- [Setup Guides](https://rhpds.github.io/rhdp-skills-marketplace/setup/) - Installation and configuration
+- [Migration Guide](https://rhpds.github.io/rhdp-skills-marketplace/setup/migration.html) - From file-based to plugins
+
+### Community
+
+**Get Help:**
 - GitHub Issues: [rhdp-skills-marketplace/issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+
+**Contribute:**
+- See [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) for plugin ownership
+- All contributions require code owner approval
+- Submit PRs to add new skills or improve existing ones
 
 ---
 
