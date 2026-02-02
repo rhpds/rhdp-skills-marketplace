@@ -7,6 +7,134 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.8.0] - 2026-02-02
+
+### Changed - description.adoc Template Restructured to RHDP Standards
+
+**User Provided:** Official RHDP structure guidelines for description.adoc
+
+**Major Template Restructure:**
+
+Replaced previous template with official RHDP structure that focuses on brevity, content support, and proper product focus.
+
+**New Required Structure:**
+
+1. **Brief Overview (3-4 sentences max)**
+   - What is this showing or doing?
+   - What is the intended use?
+   - NO catalog name or generic info - straight to the point
+   - Example: "vLLM Playground demonstrates deploying and managing vLLM inference servers..."
+
+2. **Warnings (optional, AFTER overview)**
+   - GPU availability, beta/alpha release, high memory
+   - Placed after overview so they don't waste space on UI tile
+
+3. **Lab/Demo Guide**
+   - Link to rendered Showroom (almost always)
+   - If no Showroom, link to repo or document
+
+4. **Featured Technology and Products**
+   - List ONLY products that matter (max 3-4, can exceed for complex assets)
+   - Include major versions extracted from AgnosticV
+   - Do NOT list every product (e.g., skip "OpenShift Pipelines" unless it's the focus)
+
+5. **Detailed Overview**
+   - Generate from analyzing Showroom
+   - List each module with 2-3 bullets of details MAX per module
+   - Subsections for each module title
+
+6. **Authors**
+   - Retrieve all names from `__meta__.owners` in common.yaml
+   - Simple bulleted list
+
+7. **Support (Two-part structure)**
+   - **Content Support** (first): Where to get help with instructions/functionality
+     - Slack channel + tag author OR email
+   - **Environment Support** (second): For provisioning/stability issues
+     - RHDP ticket link + #forum-demo-redhat-com Slack channel
+
+**Key Differences from v1.7.x:**
+
+| Aspect | v1.7.x | v1.8.0 |
+|--------|--------|--------|
+| Overview | Product-first with business outcomes section | Brief 3-4 sentences, what/why, no fluff |
+| Warnings | In Environment section | After overview (better UI tile placement) |
+| Products | Comprehensive list | Max 3-4, only what matters |
+| Module Details | Module titles only | Each module + 2-3 detail bullets |
+| Support | Generic resources | Content support (Slack/email) + Environment support (RHDP/Slack) |
+| Authors | Manually entered | Extract from __meta__.owners |
+
+**Example Output:**
+
+```asciidoc
+vLLM Playground demonstrates deploying and managing vLLM inference servers using containers...
+This demo uses ACME Corporation customer support scenario...
+Learners deploy vLLM servers, configure structured outputs, and implement agentic workflows...
+
+NOTE: GPU-enabled nodes recommended for optimal performance.
+
+== Lab Guide
+* link:...[Guide^]
+
+== Featured Technology and Products
+* Red Hat Enterprise Linux 10
+* vLLM Playground 0.1.1
+* Red Hat AI
+
+== Detailed Overview
+
+=== Introduction to vLLM Playground
+* Overview of vLLM architecture and container-based deployment
+* ACME Corp use case: modernizing customer support with AI
+* Deploy first vLLM server instance
+
+== Authors
+* Michael Tao
+* Jane Developer
+
+== Support
+
+=== Content Support
+* Slack: #vllm-playground-demo - tag @michael-tao
+
+=== Environment Support
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: #forum-demo-redhat-com
+```
+
+**Manual Entry Enhancement (Step 1a):**
+
+When Showroom is not available, Mode 2 now asks ALL questions needed for the RHDP structure:
+
+1. Brief overview (3-4 sentences with examples)
+2. Warnings (optional)
+3. Guide link (Showroom or repo)
+4. Featured products (max 3-4 with versions)
+5. Module details (for each module: title + 2-3 bullets)
+6. Authors (from __meta__.owners or manual)
+7. Support info (content Slack + author tag/email)
+
+This ensures description.adoc quality whether content comes from Showroom extraction or manual entry.
+
+**Benefits:**
+- UI tiles show relevant content (not wasted on warnings/generic info)
+- Clear support paths for content vs environment issues
+- Focus on products that matter (not exhaustive lists)
+- Module details help users understand what they'll do
+- Authors from source of truth (__meta__.owners)
+- Manual entry produces same quality as Showroom extraction
+
+**Files Updated:**
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md (Steps 1a, 10.3 complete rewrite)
+- Updated template structure to match RHDP standards
+- Updated both demo and workshop examples
+- Updated manual entry to ask ALL structure questions
+- Updated key guidelines section
+- VERSION (bumped to v1.8.0 - significant structure change)
+
+### Focus
+This major release aligns description.adoc generation with official RHDP standards, improving UI tile display, support routing, and content clarity.
+
 ## [v1.7.3] - 2026-02-02
 
 ### Changed - Updated description.adoc Template to Match Best Practices
@@ -775,7 +903,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.3...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.8.0...HEAD
+[v1.8.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.8.0
 [v1.7.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.3
 [v1.7.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.2
 [v1.7.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.1

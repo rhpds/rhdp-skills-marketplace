@@ -866,141 +866,208 @@ find "$temp_dir/content/modules/ROOT/pages" -name "*.adoc" | sort
 grep "^= " "$temp_dir/content/modules/ROOT/pages"/*.adoc
 ```
 
-**Generate description.adoc (using vllm-playground format):**
+**Generate description.adoc (following RHDP structure):**
 ```asciidoc
-<Product/Service Name> <brief-description-of-what-it-is>. <Key features or capabilities>.
+<Brief overview: 3-4 sentences max>
+<Sentence 1: What is this thing showing or doing?>
+<Sentence 2-3: What is the intended use? Real-world scenario or business context>
+<Do NOT mention the catalog name or generic info - get straight to the point>
 
-<Optional: Real-world business scenario or use case context>.
+NOTE: <Add warnings AFTER overview if needed: GPU availability, beta/alpha release, high memory, etc.>
 
-== Business Outcomes
+== Lab/Demo Guide
 
-* <What users will achieve/learn - business value>
-* <Deploy/configure/implement specific capability>
-* <Enable specific workflow or integration>
-* <Validate/test specific aspect>
+* link:<github-pages-url>[Guide^]
 
-== Demo Options
+== Featured Technology and Products
 
-_For Demos only - remove this section for workshops_
+<List ONLY the products that matter or are the focus - max 3-4 unless complex>
+<Include major versions extracted from AgnosticV>
+<Do NOT list every product - e.g., skip "OpenShift Pipelines" unless it's the focus>
 
-* *15-20 min* - Executive brief (<focus areas>)
-* *30-45 min* - Technical demo (<focus areas>)
-* *60 min* - Full deep dive (<all modules with advanced topics>)
+* <Red Hat Product Name> <Major Version>
+* <Red Hat Product Name> <Major Version>
+* <Related Technology> <Major Version>
 
-== Lab Duration
+== Detailed Overview
 
-_For Workshops only - remove this section for demos_
+<Generate from analyzing Showroom - list each module with 2-3 bullets of details max>
 
-* *Self-paced*: 60-90 minutes
-* *Instructor-led*: 2-3 hours
+=== <Module 1 Title>
 
-== Environment
+* <Detail 1>
+* <Detail 2>
+* <Detail 3 - optional>
 
-* <Product Name> <Version>
-* <Related Technology> <Version>
-* <Any special requirements>
+=== <Module 2 Title>
 
-NOTE: <Add warnings here if needed: GPU requirements, high memory, etc.>
+* <Detail 1>
+* <Detail 2>
 
-== Products
+=== <Module 3 Title>
 
-* <Red Hat Product Name>
-* <Red Hat Product Name> <Version>
-* <Related Technology>
-* <Related Technology>
+* <Detail 1>
+* <Detail 2>
+* <Detail 3 - optional>
 
-== Resources
+== Authors
 
-* link:<github-pages-url>[Workshop/Demo Guide^]
-* link:<showroom-repo-url>[Content Repository^]
-* link:<product-docs-url>[Product Documentation^]
+<Retrieve all names from __meta__.owners in common.yaml>
+
+* <Author Name>
+* <Author Name>
+
+== Support
+
+=== Content Support
+
+For help with instructions or functionality:
+
+* Slack: <#channel-name> - tag <@author-slack-handle>
+* Email: <author-email>
+
+=== Environment Support
+
+For problems with provisioning or environment stability:
+
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 **Example (Demo):**
 ```asciidoc
-vLLM Playground is a management interface for deploying and managing vLLM inference servers using containers. It simplifies model serving with features like structured outputs, tool calling, MCP integration, and performance benchmarking.
+vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs, tool calling, and MCP integration. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs for system integration, and implement agentic workflows with performance benchmarking.
 
-This demo uses ACME Corporation customer scenario to show how vLLM and Red Hat AI Inference Server (RHAIIS) modernize AI-powered customer support infrastructure.
+NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
 
-== Business Outcomes
+== Demo Guide
 
-* Deploy and manage vLLM servers using containers
-* Configure structured outputs for reliable system integration
-* Implement tool calling to extend AI capabilities
-* Enable agentic workflows with human-in-the-loop approval
-* Validate production readiness with performance benchmarks
+* link:https://rhpds.github.io/showroom-vllm-playground[Guide^]
 
-== Demo Options
+== Featured Technology and Products
 
-* *15-20 min* - Executive brief (deployment + business value)
-* *30-45 min* - Technical demo (structured outputs + tool calling)
-* *60 min* - Full deep dive (all 5 modules with MCP and benchmarking)
-
-== Environment
-
-* RHEL 10 (CPU or GPU)
-* vLLM Playground v0.1.1
-
-== Products
-
-* Red Hat AI
 * Red Hat Enterprise Linux 10
-* vLLM Playground
-* vLLM (inference engine)
-* Podman
+* vLLM Playground 0.1.1
+* Red Hat AI
 
-== Resources
+== Detailed Overview
 
-* link:https://github.com/rhpds/showroom-vllm-playground[Demo Guide^]
-* link:https://github.com/micytao/vllm-playground[vLLM Playground Repository^]
-* link:https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai[Red Hat OpenShift AI^]
+=== Introduction to vLLM Playground
+
+* Overview of vLLM architecture and container-based deployment
+* ACME Corp use case: modernizing customer support with AI
+* Deploy first vLLM server instance
+
+=== Structured Outputs Configuration
+
+* Configure JSON schema validation for reliable outputs
+* Integrate with downstream systems using structured data
+* Test output consistency across multiple requests
+
+=== Tool Calling and MCP Integration
+
+* Implement function calling to extend AI capabilities
+* Enable Model Context Protocol for agentic workflows
+* Build human-in-the-loop approval system
+
+=== Performance Benchmarking
+
+* Run load tests against vLLM deployments
+* Compare CPU vs GPU performance metrics
+* Validate production readiness criteria
+
+== Authors
+
+* Michael Tao
+* Jane Developer
+
+== Support
+
+=== Content Support
+
+For help with instructions or functionality:
+
+* Slack: #vllm-playground-demo - tag @michael-tao
+* Email: mtao@redhat.com
+
+=== Environment Support
+
+For problems with provisioning or environment stability:
+
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 **Example (Workshop):**
 ```asciidoc
-Ansible Automation Platform integrates with Red Hat OpenShift AI to enable intelligent automation workflows. Combine the power of AI-driven decision making with Ansible's proven automation capabilities.
+Ansible Automation Platform integrates with Red Hat OpenShift AI to build intelligent automation workflows that adapt to infrastructure conditions. Learners deploy AI models for infrastructure decision-making, create automated remediation playbooks powered by machine learning, and implement predictive maintenance workflows. This hands-on lab demonstrates combining Ansible's proven automation with AI-driven insights for self-healing infrastructure.
 
-This workshop demonstrates how to build AI-assisted automation that adapts to changing infrastructure conditions.
+== Lab Guide
 
-== Business Outcomes
+* link:https://rhpds.github.io/ansible-ai-workshop[Guide^]
 
-* Integrate Ansible Automation Platform with OpenShift AI
-* Build AI models for infrastructure decision-making
-* Deploy intelligent automation workflows
-* Monitor and optimize AI-driven automation
+== Featured Technology and Products
 
-== Lab Duration
-
-* *Self-paced*: 90 minutes
-* *Instructor-led*: 2-3 hours
-
-== Environment
-
-* Red Hat OpenShift Container Platform 4.14
 * Red Hat Ansible Automation Platform 2.5
 * Red Hat OpenShift AI 2.8
+* Red Hat OpenShift Container Platform 4.14
 
-== Products
+== Detailed Overview
 
-* Red Hat Ansible Automation Platform
-* Red Hat OpenShift AI
-* Red Hat OpenShift Container Platform
-* Red Hat Enterprise Linux 9
+=== Introduction to AI-Driven Automation
 
-== Resources
+* Overview of OpenShift AI and Ansible integration architecture
+* Deploy OpenShift AI environment and verify components
+* Configure Ansible Automation Platform connection
 
-* link:https://rhpds.github.io/ansible-ai-workshop[Workshop Guide^]
-* link:https://github.com/rhpds/ansible-ai-workshop-showroom[Content Repository^]
-* link:https://www.redhat.com/en/technologies/management/ansible[Ansible Documentation^]
+=== Building Infrastructure Decision Models
+
+* Create machine learning model for capacity prediction
+* Train model using historical infrastructure metrics
+* Deploy model to OpenShift AI serving runtime
+
+=== Implementing Intelligent Playbooks
+
+* Build Ansible playbooks that query AI models for decisions
+* Implement automated remediation based on ML predictions
+* Test self-healing workflows with simulated failures
+
+=== Monitoring and Optimization
+
+* Configure monitoring for AI-driven automation
+* Analyze automation decisions and model accuracy
+* Optimize playbooks based on performance metrics
+
+== Authors
+
+* Sarah Automation
+* Alex ML Engineer
+
+== Support
+
+=== Content Support
+
+For help with instructions or functionality:
+
+* Slack: #ansible-ai-lab - tag @sarah-automation
+* Email: sautomation@redhat.com
+
+=== Environment Support
+
+For problems with provisioning or environment stability:
+
+* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
+* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 **Key Guidelines:**
-- Start with product name, not "This workshop/demo"
-- Use business context (ACME Corp, real scenarios)
-- Business Outcomes = what users achieve, not just topics
-- Demo Options for presenter-led, Lab Duration for hands-on
-- Specific version numbers in Environment section
-- Resources with external link markers (^)
+- Brief overview: 3-4 sentences max - what it shows, intended use, NO catalog name
+- Warnings AFTER overview (GPU, beta/alpha, etc.)
+- Lab/Demo Guide: link to Showroom
+- Featured Products: max 3-4, only what matters, major versions only
+- Detailed Overview: from Showroom, each module with 2-3 bullets max
+- Authors: from __meta__.owners in common.yaml
+- Support: Content first (Slack + author tag OR email), then Environment (RHDP ticket + forum-demo-redhat-com)
 
 #### 10.4: Generate info-message-template.adoc
 
@@ -1243,76 +1310,136 @@ Re-run this skill and select Mode 1 at the beginning.
 **Only run this step if HAS_SHOWROOM=false and user chose manual entry**
 
 ```
-📝 Manual Description Entry
+📝 Manual Description Entry (RHDP Structure)
 
-Since you don't have Showroom content, I'll ask for the details directly.
+Since you don't have Showroom content, I'll ask for all the details needed for description.adoc.
+```
 
-Q: Catalog display name:
-   Example: Ansible Automation Platform with OpenShift AI
+**1. Brief Overview (3-4 sentences max):**
+```
+Q: Brief overview (3-4 sentences):
+   - Sentence 1: What is this showing or doing?
+   - Sentence 2-3: What is the intended use? Business context?
+   - Sentence 4: What do learners do/deploy?
+   - Do NOT mention catalog name or generic info
 
-Display name:
-
-Q: Brief overview (2-3 sentences, starting with product name):
-   This describes what the workshop/demo is about.
+   Example: "vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs and tool calling. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs, and implement agentic workflows with performance benchmarking."
 
 Overview:
-
-Q: Featured Red Hat products/technologies (comma-separated with versions):
-   Example: OpenShift 4.14, Ansible Automation Platform 2.5, Red Hat Enterprise Linux 9
-
-Technologies:
-
-Q: Module/chapter titles (one per line, press Enter twice when done):
-   Example:
-     Introduction to OpenShift AI
-     Setting up the Environment
-     Building Models
-     [blank line to finish]
-
-Module titles:
 ```
 
-**Capture multi-line input for modules:**
+**2. Warnings (optional):**
+```
+Q: Any warnings or special requirements? (optional)
+   Examples: "GPU-enabled nodes recommended for optimal performance"
+             "Beta release - features subject to change"
+             "High memory usage - 32GB RAM minimum"
+
+Warnings [press Enter to skip]:
+```
+
+**3. Guide Link:**
+```
+Q: Lab/Demo Guide URL:
+   - Link to rendered Showroom (preferred)
+   - Or link to repo/document if no Showroom yet
+
+   Example: https://rhpds.github.io/my-workshop-showroom
+
+Guide URL:
+```
+
+**4. Featured Products (max 3-4):**
+```
+Q: Featured Technology and Products (max 3-4, ONLY what matters):
+   List the products that are the FOCUS of this asset with major versions.
+   Do NOT list every product - only what matters.
+
+   Example: "Red Hat Enterprise Linux 10, vLLM Playground 0.1.1, Red Hat AI"
+
+Products [comma-separated with versions]:
+```
+
+**5. Module Details:**
+```
+Q: How many modules/chapters are in this lab/demo?
+
+Module count:
+```
+
+**For each module, ask:**
 ```bash
-echo "Enter module titles (press Enter twice to finish):"
-modules=()
+for ((i=1; i<=module_count; i++)); do
+  echo ""
+  echo "=== Module $i Details ==="
+  echo ""
+  echo "Q: Module $i title:"
+  read module_title
+
+  echo ""
+  echo "Q: Module $i details (2-3 bullets max, what do learners do?):"
+  echo "   Enter bullets one per line, press Enter twice when done"
+  echo ""
+
+  bullets=()
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && break
+    bullets+=("$line")
+  done
+
+  # Store module data
+  module_data["$i"]="$module_title|${bullets[*]}"
+done
+```
+
+**6. Authors:**
+```
+Q: Lab/Demo authors (from __meta__.owners or manual entry):
+   If this catalog has a common.yaml, I'll extract from __meta__.owners.
+   Otherwise, enter author names (one per line, press Enter twice when done):
+
+Authors:
+```
+
+**Capture authors:**
+```bash
+authors=()
 while IFS= read -r line; do
   [[ -z "$line" ]] && break
-  modules+=("$line")
+  authors+=("$line")
 done
-
-module_count=${#modules[@]}
-echo "✓ Captured $module_count modules"
 ```
 
-**Ask for optional details:**
+**7. Support Information:**
 ```
-Q: Workshop author name (optional):
-   Default: $(git config user.name)
+Q: Content support Slack channel (where users get help with instructions):
+   Example: #my-lab-support
 
-Author [press Enter for default]:
+Content Slack channel:
 
-Q: GitHub Pages URL (optional):
-   Example: https://rhpds.github.io/my-workshop-showroom/
+Q: Author Slack handle (to tag for content questions):
+   Example: @john-smith
 
-GitHub Pages URL [optional]:
+Author Slack handle:
 
-Q: Any warnings or special requirements? (optional)
-   Examples: "Requires GPU nodes", "High memory usage", "Network-intensive"
+Q: Author email (alternative to Slack):
+   Example: jsmith@redhat.com
 
-Warnings [optional]:
+Author email [optional]:
 ```
 
 **Set variables for Step 3:**
 ```bash
 # For manual entry, set these variables
-index_overview="$overview_input"
-detected_products="$technologies_input"
-module_titles=("${modules[@]}")
-author="${author_input:-$(git config user.name)}"
-github_pages_url="$github_url_input"
-version_info=""  # No automatic version detection
-technical_topics=""  # No automatic topic detection
+brief_overview="$overview_input"
+warnings="$warnings_input"
+guide_url="$guide_url_input"
+featured_products="$products_input"
+module_details=("${module_data[@]}")
+authors=("${authors[@]}")
+content_slack_channel="$content_slack_input"
+author_slack_handle="$author_slack_handle_input"
+author_email="$author_email_input"
 
 # Skip Step 2 (extraction) and go directly to Step 3 (generate)
 ```
