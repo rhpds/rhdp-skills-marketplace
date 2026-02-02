@@ -7,6 +7,10 @@ Official Red Hat Demo Platform (RHDP) Claude Code marketplace for creating works
 ### Add the Marketplace
 
 ```bash
+# Short form (requires SSH keys)
+/plugin marketplace add rhpds/rhdp-skills-marketplace
+
+# HTTPS (works without SSH keys)
 /plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
