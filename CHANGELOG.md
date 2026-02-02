@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.2] - 2026-02-03
+
+### Fixed - Plugin Directory Structure
+
+**Problem:** Plugin installation failed silently with "(no content)"
+
+When users tried to install plugins:
+```bash
+/plugin install showroom-create-lab@rhdp-marketplace
+⎿ (no content)  # ❌ Installation failed
+```
+
+**Root Cause:** SKILL.md files were in the wrong location
+
+**Incorrect structure:**
+```
+plugins/showroom-create-lab/
+  skills/
+    SKILL.md  ← Wrong location
+```
+
+**Correct structure:**
+```
+plugins/showroom-create-lab/
+  skills/
+    showroom-create-lab/
+      SKILL.md  ← Correct location
+```
+
+Claude Code expects skills to be in a subdirectory within `skills/` that matches the skill name.
+
+**Solution:** Reorganized all plugin directories to proper structure
+
+**Fixed plugins:**
+- agnosticv-catalog-builder
+- agnosticv-validator
+- showroom-create-lab
+- showroom-create-demo
+- showroom-blog-generate
+- showroom-verify-content
+- health-deployment-validator
+
+**Now works:**
+```bash
+/plugin install showroom-create-lab@rhdp-marketplace
+✓ Installed successfully
+/showroom-create-lab
+✓ Skill launches
+```
+
 ## [v2.0.1] - 2026-02-03
 
 ### Fixed - Skill Names Match Plugin Names
