@@ -28,13 +28,7 @@ navigation:
 
 # Plugins
 plugins:
-  - jekyll-relative-links
   - jekyll-seo-tag
-
-# Build settings
-relative_links:
-  enabled: true
-  collections: true
 
 include:
   - README.md
