@@ -1,5 +1,5 @@
 ---
-name: verify-content
+name: showroom-verify-content
 description: Run comprehensive quality verification on workshop or demo content using Red Hat standards and validation agents.
 ---
 

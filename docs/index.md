@@ -40,10 +40,10 @@ Then install the plugins you need:
 
 ### 🎓 Showroom (Most Users)
 
-- **[/create-lab](skills/create-lab.html)** - Generate workshop lab modules
-- **[/create-demo](skills/create-demo.html)** - Generate presenter-led demos
-- **[/verify-content](skills/verify-content.html)** - Quality validation
-- **[/blog-generate](skills/blog-generate.html)** - Transform to blog posts
+- **[/showroom-create-lab](skills/create-lab.html)** - Generate workshop lab modules
+- **[/showroom-create-demo](skills/create-demo.html)** - Generate presenter-led demos
+- **[/showroom-verify-content](skills/verify-content.html)** - Quality validation
+- **[/showroom-blog-generate](skills/blog-generate.html)** - Transform to blog posts
 
 [View all Showroom skills →](skills/index.html#showroom-skills-content-creation)
 
@@ -56,7 +56,7 @@ Then install the plugins you need:
 
 ### 🏥 Health (RHDP Team or Advanced Users)
 
-- **[/deployment-health-checker](skills/deployment-health-checker.html)** - Create validation roles
+- **[/health-deployment-validator](skills/deployment-health-checker.html)** - Create validation roles
 
 [Learn more →](../health/README.html)
 

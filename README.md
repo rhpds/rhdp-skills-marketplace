@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.0.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.0.1-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -16,8 +16,8 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 ## 🎯 I Want To...
 
 **Create a customer demo or workshop?** → You want **Showroom** skills
-- `/create-demo` - Build a presenter-led demo (you present, customers watch)
-- `/create-lab` - Build a hands-on workshop (customers follow along step-by-step)
+- `/showroom-create-demo` - Build a presenter-led demo (you present, customers watch)
+- `/showroom-create-lab` - Build a hands-on workshop (customers follow along step-by-step)
 
 **What you need:**
 1. Claude Code (CLI) or VS Code with Claude extension

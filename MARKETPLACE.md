@@ -106,7 +106,7 @@ This updates all installed plugins to their latest versions.
 /plugin install showroom-create-lab@rhdp-marketplace
 
 # Use the skill
-/create-lab
+/showroom-create-lab
 ```
 
 ### Build an AgnosticV Catalog
@@ -126,7 +126,7 @@ This updates all installed plugins to their latest versions.
 /plugin install showroom-verify-content@rhdp-marketplace
 
 # Use the skill
-/verify-content
+/showroom-verify-content
 ```
 
 ---

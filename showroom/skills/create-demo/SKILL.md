@@ -1,5 +1,5 @@
 ---
-name: create-demo
+name: showroom-create-demo
 description: Guide you through creating a Red Hat Showroom demo module using the Know/Show structure for presenter-led demonstrations.
 ---
 

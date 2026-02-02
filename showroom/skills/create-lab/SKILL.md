@@ -1,5 +1,5 @@
 ---
-name: create-lab
+name: showroom-create-lab
 description: Guide you through creating a single Red Hat Showroom workshop module from reference materials (URLs, files, docs, or text) with business storytelling and proper AsciiDoc formatting.
 ---
 

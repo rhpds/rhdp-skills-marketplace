@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.1] - 2026-02-03
+
+### Fixed - Skill Names Match Plugin Names
+
+**Problem:** Skill names in SKILL.md files didn't match plugin names with namespaces
+
+When users installed plugins and tried to use skills:
+```bash
+/plugin install showroom-create-lab@rhdp-marketplace
+/create-lab  # ❌ Unknown skill: create-lab
+```
+
+The plugin was named `showroom-create-lab` but the skill inside was still `create-lab`.
+
+**Solution:** Updated all skill `name:` fields in frontmatter to match plugin names
+
+**Updated Skill Names:**
+
+Showroom namespace:
+- `create-lab` → `showroom-create-lab`
+- `create-demo` → `showroom-create-demo`
+- `blog-generate` → `showroom-blog-generate`
+- `verify-content` → `showroom-verify-content`
+
+Health namespace:
+- `deployment-health-checker` → `health-deployment-validator`
+
+AgnosticV namespace (already correct):
+- `agnosticv-catalog-builder` ✓
+- `agnosticv-validator` ✓
+
+**Now users can use:**
+```bash
+/showroom-create-lab
+/showroom-create-demo
+/agnosticv-catalog-builder
+/health-deployment-validator
+```
+
+**Updated Files:**
+- All `plugins/*/skills/SKILL.md` files
+- All source `showroom/skills/*/SKILL.md` files
+- `health/skills/deployment-health-checker/SKILL.md`
+
 ## [v2.0.0] - 2026-02-03
 
 ### Changed - Marketplace Structure (Breaking Change)
