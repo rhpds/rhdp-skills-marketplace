@@ -44,13 +44,33 @@ Plugins can be installed at different scopes, affecting where they're available 
 
 **Storage location:**
 ```
-~/.claude/plugins/cache/rhdp-marketplace/showroom/
+~/.claude/plugins/
+├── cache/
+│   └── rhdp-marketplace/
+│       └── showroom/
+│           └── 1.0.0/
+│               ├── .claude-plugin/
+│               │   └── plugin.json
+│               └── skills/
+│                   ├── create-lab/
+│                   │   └── SKILL.md
+│                   ├── create-demo/
+│                   │   └── SKILL.md
+│                   ├── blog-generate/
+│                   │   └── SKILL.md
+│                   └── verify-content/
+│                       └── SKILL.md
+├── marketplaces/
+│   └── rhdp-marketplace/
+│       └── (cloned marketplace repository)
+└── installed_plugins.json  # Registry of installed plugins
 ```
 
 **Benefits:**
 - ✅ Available everywhere
 - ✅ Install once, use in all projects
 - ✅ Easy personal workflow
+- ✅ Automatic updates with `/plugin update`
 
 **Best for:**
 - Personal use
@@ -92,11 +112,33 @@ git push
 
 3. Team members will be prompted to install when they open the project.
 
+**Storage location:**
+
+Plugins are still installed in the user's home directory, but the configuration is in the project:
+
+```
+your-project/
+└── .claude/
+    └── settings.json  # Version controlled, shared with team
+
+~/.claude/plugins/
+└── cache/
+    └── rhdp-marketplace/
+        └── showroom/1.0.0/...  # Actual plugin files
+```
+
+**How it works:**
+- Configuration file (`.claude/settings.json`) lives in your project → shared via Git
+- Plugin files themselves are cached in `~/.claude/plugins/` → not committed to Git
+- When team members open the project, Claude Code sees the config and prompts to install
+- Everyone gets the same plugins, but files are stored locally
+
 **Benefits:**
 - ✅ Team shares same plugin versions
 - ✅ Consistent development environment
 - ✅ Version controlled configuration
 - ✅ Auto-suggested on project open
+- ✅ No large plugin files in Git repository
 
 **Best for:**
 - Team projects
@@ -112,6 +154,90 @@ git push
 | **Sharing** | Manual | Automatic via Git |
 | **Updates** | Manual per user | Coordinated by team |
 | **Configuration** | `~/.claude/settings.json` | `.claude/settings.json` |
+
+---
+
+## Where Are Skills Stored?
+
+Understanding where plugins and skills are stored helps with troubleshooting and managing your installation.
+
+### Complete Directory Structure
+
+```
+~/.claude/
+├── plugins/
+│   ├── cache/                           # Installed plugin files
+│   │   └── rhdp-marketplace/
+│   │       ├── agnosticv/
+│   │       │   └── 2.2.0/
+│   │       │       ├── .claude-plugin/
+│   │       │       │   └── plugin.json
+│   │       │       └── skills/
+│   │       │           ├── catalog-builder/
+│   │       │           │   └── SKILL.md
+│   │       │           └── validator/
+│   │       │               └── SKILL.md
+│   │       ├── showroom/
+│   │       │   └── 1.0.0/
+│   │       │       └── skills/
+│   │       │           ├── create-lab/SKILL.md
+│   │       │           ├── create-demo/SKILL.md
+│   │       │           ├── blog-generate/SKILL.md
+│   │       │           └── verify-content/SKILL.md
+│   │       └── health/
+│   │           └── 1.0.0/
+│   │               └── skills/
+│   │                   └── deployment-validator/SKILL.md
+│   │
+│   ├── marketplaces/                    # Cloned marketplace repositories
+│   │   └── rhdp-marketplace/
+│   │       ├── .claude-plugin/
+│   │       │   └── marketplace.json
+│   │       ├── agnosticv/
+│   │       ├── showroom/
+│   │       └── health/
+│   │
+│   ├── installed_plugins.json           # Registry of installed plugins
+│   └── known_marketplaces.json          # Registry of added marketplaces
+│
+├── settings.json                        # User-level configuration
+└── projects/                            # Per-project metadata
+```
+
+### Key Directories Explained
+
+| Directory | Purpose | Version Controlled? |
+|-----------|---------|---------------------|
+| `~/.claude/plugins/cache/` | Installed plugin files (actual skills) | No - user local |
+| `~/.claude/plugins/marketplaces/` | Cloned marketplace repositories | No - user local |
+| `~/.claude/plugins/installed_plugins.json` | Registry of what's installed | No - user local |
+| `~/.claude/settings.json` | User-level plugin configuration | No - user local |
+| `your-project/.claude/settings.json` | Project-level plugin config | Yes - team shared |
+
+### File-Based Installation (Old)
+
+For comparison, the old file-based installation looked like this:
+
+```
+~/.claude/
+├── skills/                              # Old location
+│   ├── create-lab/
+│   │   └── SKILL.md
+│   ├── create-demo/
+│   │   └── SKILL.md
+│   └── agnosticv-catalog-builder/
+│       └── SKILL.md
+└── docs/                                # Old documentation
+    └── ...
+```
+
+**Key differences:**
+- Old: Skills directly in `~/.claude/skills/`
+- New: Skills in `~/.claude/plugins/cache/marketplace-name/plugin-name/version/`
+- Old: No version management
+- New: Versioned (can have multiple versions installed)
+- Old: Manual updates
+- New: Automatic updates with `/plugin update`
 
 ---
 

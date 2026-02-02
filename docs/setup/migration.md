@@ -126,10 +126,60 @@ Skills now include namespace prefixes to show which plugin provides them:
 
 ### Directory Structure
 
-| Old Location                          | New Location                                |
-|---------------------------------------|---------------------------------------------|
-| `~/.claude/skills/create-lab/`        | Managed by plugin system (auto-updated)     |
-| `~/.claude/docs/`                     | Managed by plugin system (auto-updated)     |
+**Old file-based installation:**
+```
+~/.claude/
+├── skills/
+│   ├── create-lab/
+│   │   └── SKILL.md
+│   ├── create-demo/
+│   │   └── SKILL.md
+│   ├── agnosticv-catalog-builder/
+│   │   └── SKILL.md
+│   └── ...
+├── docs/
+│   └── (documentation files)
+└── skills/.rhdp-marketplace-version
+```
+
+**New plugin-based installation:**
+```
+~/.claude/
+└── plugins/
+    ├── cache/
+    │   └── rhdp-marketplace/
+    │       ├── showroom/
+    │       │   └── 1.0.0/
+    │       │       └── skills/
+    │       │           ├── create-lab/SKILL.md
+    │       │           ├── create-demo/SKILL.md
+    │       │           ├── blog-generate/SKILL.md
+    │       │           └── verify-content/SKILL.md
+    │       ├── agnosticv/
+    │       │   └── 2.2.0/
+    │       │       └── skills/
+    │       │           ├── catalog-builder/SKILL.md
+    │       │           └── validator/SKILL.md
+    │       └── health/
+    │           └── 1.0.0/
+    │               └── skills/
+    │                   └── deployment-validator/SKILL.md
+    ├── marketplaces/
+    │   └── rhdp-marketplace/
+    │       └── (full marketplace repo)
+    ├── installed_plugins.json
+    └── known_marketplaces.json
+```
+
+**Key Differences:**
+
+| Aspect | Old Location | New Location |
+|--------|-------------|--------------|
+| **Skills** | `~/.claude/skills/create-lab/` | `~/.claude/plugins/cache/rhdp-marketplace/showroom/1.0.0/skills/create-lab/` |
+| **Documentation** | `~/.claude/docs/` | Embedded in plugin directories |
+| **Version tracking** | `.rhdp-marketplace-version` | Built into plugin system with versioned directories |
+| **Updates** | Manual (run update.sh) | Automatic (`/plugin update`) |
+| **Management** | Manual file copies | Plugin system |
 
 ---
 
