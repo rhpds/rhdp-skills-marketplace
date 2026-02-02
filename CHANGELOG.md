@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.8.1] - 2026-02-02
+
+### Fixed - Improved Pod Readiness Check Pattern
+
+**User Implemented:** Fixed pod readiness check in MCP workloads validation role
+
+**Problem:**
+The previous implementation used an invalid Jinja2 filter chain with `select('length')` which doesn't exist as a test, causing validation to fail with error: "No test named 'length' in select() filter"
+
+**Solution:**
+Replaced complex nested filter chains with a simpler, more reliable loop-based approach:
+
+1. Initialize `_pods_ready` counter to 0
+2. Loop through Running pods
+3. Increment counter for each pod with Ready condition status=True
+
+This pattern is more readable and reliable than complex nested filter chains.
+
+**Updated Files:**
+- `health/skills/deployment-health-checker/SKILL.md` - Updated both Pattern 1 (Per-User Components) and Pattern 2 (Shared Components) to use loop-based pod readiness checks
+- Added documentation in "Key Principles" section explaining why to use loops instead of complex filter chains
+
+**Real-World Implementation:**
+This fix was tested and validated in `~/work/code/mcp_workloads/roles/ocp4_workload_mcp_with_openshift_validation/` where all `check_single_*.yml` files were updated with the same pattern (commit 3311c35).
+
+**Benefits:**
+- More reliable validation (no Jinja2 filter errors)
+- More readable code (simple loop instead of complex chains)
+- Easier to debug when pod checks fail
+- Pattern now documented in deployment-health-checker skill for all future validation roles
+
 ## [v1.8.0] - 2026-02-02
 
 ### Changed - description.adoc Template Restructured to RHDP Standards

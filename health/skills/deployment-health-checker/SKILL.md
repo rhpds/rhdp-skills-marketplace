@@ -369,8 +369,8 @@ Use namespace auto-discovery:
   ignore_errors: true
   when: _namespace != ''
 
-# Count by name pattern
-- name: Count pods by name pattern
+# Count running pods by name pattern
+- name: Count {component} running pods by name pattern
   ansible.builtin.set_fact:
     _pods_running: >-
       {{
@@ -381,6 +381,25 @@ Use namespace auto-discovery:
         if (_namespace != '' and _pods is defined and not _pods.skipped | default(false))
         else 0
       }}
+
+# Initialize ready pod count
+- name: Initialize ready pod count
+  ansible.builtin.set_fact:
+    _pods_ready: 0
+
+# Count ready pods (loop instead of complex filter chain)
+- name: Count ready pods for {component}
+  ansible.builtin.set_fact:
+    _pods_ready: "{{ _pods_ready | int + 1 }}"
+  loop: "{{ _pods.resources | default([]) | selectattr('metadata.name', 'search', '{name_pattern}') | selectattr('status.phase', 'equalto', 'Running') | list }}"
+  when:
+    - _namespace != ''
+    - _pods is defined
+    - not _pods.skipped | default(false)
+    - item.status.conditions is defined
+    - item.status.conditions | selectattr('type', 'equalto', 'Ready') | selectattr('status', 'equalto', 'True') | list | length > 0
+  loop_control:
+    label: "{{ item.metadata.name }}"
 ```
 
 **Pattern 2: Shared Components (Keycloak, Operators)**
@@ -396,8 +415,8 @@ Direct namespace reference:
   register: _pods
   ignore_errors: true
 
-# Count by name pattern
-- name: Count {component} pods by name pattern
+# Count running pods by name pattern
+- name: Count {component} running pods by name pattern
   ansible.builtin.set_fact:
     _component_pods_running: >-
       {{
@@ -406,6 +425,24 @@ Direct namespace reference:
         selectattr('status.phase', 'equalto', 'Running') |
         list | length | int
       }}
+
+# Initialize ready pod count
+- name: Initialize ready pod count for {component}
+  ansible.builtin.set_fact:
+    _component_pods_ready: 0
+
+# Count ready pods (loop instead of complex filter chain)
+- name: Count ready pods for {component}
+  ansible.builtin.set_fact:
+    _component_pods_ready: "{{ _component_pods_ready | int + 1 }}"
+  loop: "{{ _pods.resources | default([]) | selectattr('metadata.name', 'search', '{pattern}') | selectattr('status.phase', 'equalto', 'Running') | list }}"
+  when:
+    - _pods is defined
+    - not _pods.skipped | default(false)
+    - item.status.conditions is defined
+    - item.status.conditions | selectattr('type', 'equalto', 'Ready') | selectattr('status', 'equalto', 'True') | list | length > 0
+  loop_control:
+    label: "{{ item.metadata.name }}"
 ```
 
 **Pattern 3: Route Checks**
@@ -437,6 +474,11 @@ Get all routes (no name filter):
 - No `| int` needed in comparisons (already integers)
 - Always handle missing namespaces gracefully (`when: _namespace != ''`)
 - No label selectors - use name pattern matching
+- **Pod readiness checks:** Use loop-based approach instead of complex filter chains
+  - Initialize counter to 0
+  - Loop through Running pods
+  - Increment for each pod with Ready condition status=True
+  - This avoids invalid Jinja2 filter chains like `select('length')` which don't exist as tests
 - All validation results stored in consistent format
 
 ### Step 3.7: Generate generate_report.yml
