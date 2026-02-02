@@ -40,10 +40,10 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 Add the RHDP marketplace to Claude Code:
 
 ```bash
-# Short form (requires SSH keys)
+# If you have SSH keys configured (shorter)
 /plugin marketplace add rhpds/rhdp-skills-marketplace
 
-# HTTPS (works without SSH keys)
+# If you don't have SSH configured (use this)
 /plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
