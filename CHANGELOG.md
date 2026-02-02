@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed - Full Cursor 2.4+ Support via Agent Skills Standard
 
+**Installation Paths:**
+- **Claude Code / VS Code with Claude**: Skills installed to `~/.claude/skills/`, docs to `~/.claude/docs/`
+- **Cursor 2.4+**: Skills installed to `~/.cursor/skills/`, docs to `~/.cursor/docs/`
+- Both platforms support auto-discovery from these standard directories
+- Optional: Showroom namespace also installs templates to `~/.claude/templates/`, prompts to `~/.claude/prompts/`, and agents to `~/.claude/agents/`
+
 **Cursor Platform Updates:**
 - Removed "experimental" warnings from all documentation
 - Updated to reflect Cursor 2.4+ native support for Agent Skills open standard
@@ -49,7 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Agent Skills Standard:**
 - All platforms (Claude Code, VS Code with Claude, Cursor 2.4+) now support the Agent Skills open standard
-- Skills are auto-discovered from standard directories (`~/.claude/skills/` or `~/.cursor/skills/`)
+- Skills are auto-discovered from standard directories:
+  - **Claude Code / VS Code with Claude**: `~/.claude/skills/` and `~/.claude/docs/`
+  - **Cursor 2.4+**: `~/.cursor/skills/` and `~/.cursor/docs/`
 - Progressive loading keeps context efficient
 - Skills work with both `/skill-name` explicit invocation and natural language
 
