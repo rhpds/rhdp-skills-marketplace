@@ -1089,54 +1089,127 @@ else
 fi
 ```
 
-### Step 2: Extract Content
+### Step 2: Extract Content from Showroom
 
-**Auto-extract:**
+**Smart extraction from Showroom:**
 ```bash
-# Get modules
-modules=$(find "$path/content/modules/ROOT/pages" -name "*.adoc" -not -name "index.adoc" | sort)
+# Get ALL modules (ensure we don't miss any)
+modules=$(find "$path/content/modules/ROOT/pages" -type f -name "*.adoc" \
+  -not -name "index.adoc" \
+  -not -name "*nav.adoc" \
+  -not -name "workshop-overview.adoc" | sort)
 
-# Extract titles
-while read module; do
-  title=$(grep "^= " "$module" | head -1 | sed 's/^= //')
-  echo "* $title"
+# Count modules
+module_count=$(echo "$modules" | grep -c "\.adoc$")
+
+# Extract and display all module titles
+echo "📚 Found $module_count modules:"
+while IFS= read -r module; do
+  if [[ -f "$module" ]]; then
+    title=$(grep "^= " "$module" | head -1 | sed 's/^= //')
+    echo "  * $title ($(basename "$module"))"
+  fi
 done <<< "$modules"
 
-# Detect technologies
-grep -h "OpenShift\|Ansible\|AAP\|GitOps" "$path/content/modules/ROOT/pages"/*.adoc | head -5
+# Extract overview/summary from index.adoc or overview page
+if [[ -f "$path/content/modules/ROOT/pages/index.adoc" ]]; then
+  overview_source="$path/content/modules/ROOT/pages/index.adoc"
+elif [[ -f "$path/content/modules/ROOT/pages/01-overview.adoc" ]]; then
+  overview_source="$path/content/modules/ROOT/pages/01-overview.adoc"
+elif [[ -f "$path/content/modules/ROOT/pages/workshop-overview.adoc" ]]; then
+  overview_source="$path/content/modules/ROOT/pages/workshop-overview.adoc"
+else
+  # Fallback to first module
+  overview_source=$(echo "$modules" | head -1)
+fi
+
+# Extract first paragraph after title (skip attributes, skip empty lines)
+extracted_overview=$(awk '
+  /^= / { in_content=1; next }
+  in_content && /^:/ { next }
+  in_content && /^$/ { next }
+  in_content && /^[A-Z]/ {
+    print;
+    getline;
+    if ($0 != "") print;
+    getline;
+    if ($0 != "") print;
+    exit
+  }
+' "$overview_source" 2>/dev/null | sed 's/\.$//')
+
+# Detect Red Hat product names (proper names, not keywords)
+detected_products=$(grep -hoE '(Red Hat )?OpenShift (Container Platform|Virtualization|AI|GitOps|Pipelines|Data Foundation)?|Ansible Automation Platform|(Red Hat )?Ansible( AI)?|Red Hat Enterprise Linux|RHEL [0-9.]+|Red Hat Device Edge|Red Hat Insights|Advanced Cluster Management|ACM|Red Hat Quay|Red Hat OpenShift Service Mesh|Red Hat AMQ|Red Hat Integration|Red Hat build of Keycloak' "$path/content/modules/ROOT/pages"/*.adoc 2>/dev/null | sort -u | head -10)
+
+# Extract version numbers mentioned
+version_info=$(grep -hoE '(OpenShift|Ansible|RHEL|AAP) [0-9]+\.[0-9]+|version [0-9]+\.[0-9]+' "$path/content/modules/ROOT/pages"/*.adoc 2>/dev/null | sort -u | head -5)
 
 # Get git author
-author=$(git config user.name)
+author=$(git -C "$path" config user.name 2>/dev/null || echo "Unknown")
 
 # Get GitHub Pages URL from remote
-remote=$(git -C "$path" remote get-url origin)
-github_pages_url=$(echo "$remote" | sed 's|git@github.com:|https://|' | sed 's|\.git$|/|' | sed 's|github.com/|rhpds.github.io/|')
+remote=$(git -C "$path" remote get-url origin 2>/dev/null)
+if [[ -n "$remote" ]]; then
+  github_pages_url=$(echo "$remote" | sed 's|git@github.com:|https://|' | sed 's|\.git$|/|' | sed 's|github.com/|rhpds.github.io/|')
+else
+  github_pages_url=""
+fi
+
+echo ""
+echo "📊 Extracted from Showroom:"
+echo "  ✓ Modules: $module_count"
+echo "  ✓ Author: $author"
+echo "  ✓ GitHub Pages: $github_pages_url"
+echo "  ✓ Overview extracted from: $(basename $overview_source)"
+echo "  ✓ Products detected: $(echo "$detected_products" | tr '\n' ', ' | sed 's/, $//')"
+if [[ -n "$version_info" ]]; then
+  echo "  ✓ Versions found: $(echo "$version_info" | tr '\n' ', ' | sed 's/, $//')"
+fi
 ```
 
 ### Step 3: Generate Description
 
-**Ask for missing details:**
+**Review and optionally edit extracted content:**
 ```
-📝 Description Details
+📝 Description Content Review
 
-Auto-extracted:
-  ✓ Modules: <count> found
-  ✓ Author: <git-name>
-  ✓ Guide URL: <github-pages-url>
+I've extracted the following from your Showroom content:
 
-Q: Brief overview (2-3 sentences, starting with product name):
+Overview (from $(basename $overview_source)):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$extracted_overview
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Overview:
+Products/Technologies Detected:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$detected_products
+$version_info
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+Q: Is this overview accurate? [Y to use as-is / N to provide custom]:
+
+If N:
+Q: Provide a brief overview (2-3 sentences, starting with product name):
+
+Custom overview:
+
+Q: Are the detected products/technologies correct? [Y to use / N to provide custom]:
+
+If N:
 Q: Featured technologies (comma-separated with versions):
-   Suggested: <detected-technologies>
+   Example: OpenShift 4.14, Ansible Automation Platform 2.5, Red Hat Enterprise Linux 9
 
-Technologies:
+Custom technologies:
 
-Q: Any warnings? (GPU, resources, etc.) [optional]
+Q: Any warnings or special requirements? (optional)
+   Examples: "Requires GPU nodes", "High memory usage", "Network-intensive"
 
-Warnings:
+Warnings [optional]:
 ```
+
+**IMPORTANT:**
+- If user says Yes to extracted content, use it directly. Don't ask again!
+- Display ALL modules found so user can verify nothing was missed
 
 **Generate and write description.adoc** (same format as Mode 1, Step 10.3)
 
