@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v1.8.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.0.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -35,19 +35,35 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 
 ## Quick Start
 
-### Installation
+### Installation (Marketplace Method - Recommended)
 
-Download and run the installer:
+Add the RHDP marketplace to Claude Code:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
-bash /tmp/rhdp-install.sh
+/plugin marketplace add rhpds/rhdp-skills-marketplace
 ```
 
-The installer will:
-1. Ask which platform you're using (Claude Code or Cursor)
-2. Ask which namespace to install (showroom, agnosticv, or all)
-3. Backup your existing skills
+Then install the plugins you need:
+
+```bash
+# For workshop/demo creation
+/plugin install showroom-create-lab@rhdp-marketplace
+/plugin install showroom-create-demo@rhdp-marketplace
+
+# For AgnosticV catalogs (RHDP internal)
+/plugin install agnosticv-catalog-builder@rhdp-marketplace
+
+# For content verification
+/plugin install showroom-verify-content@rhdp-marketplace
+```
+
+**Benefits:**
+- ✅ Standard installation (like dnf/brew)
+- ✅ Automatic updates with `/plugin marketplace update`
+- ✅ Version management and rollback
+- ✅ Clean uninstall
+
+See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 4. Install the selected skills
 
 ### For Content Creators (External Developers)

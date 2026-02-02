@@ -7,6 +7,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.0] - 2026-02-03
+
+### Changed - Marketplace Structure (Breaking Change)
+
+**Major Migration:** Converted from custom file-based installation to standard Claude Code marketplace format
+
+**The Problem with Custom Installation:**
+- Manual file copying to `~/.claude/skills/`
+- Custom installer scripts (install.sh, update.sh)
+- No standard update mechanism
+- Like using `tar xzf` instead of `dnf install`
+
+**The Marketplace Solution:**
+- Standard Claude Code plugin format
+- Install with `/plugin marketplace add rhpds/rhdp-skills-marketplace`
+- Update with `/plugin marketplace update`
+- Like using dnf/brew/apt - industry standard
+
+**Structure Changes:**
+
+Created `.claude-plugin/marketplace.json` catalog:
+```json
+{
+  "name": "rhdp-marketplace",
+  "plugins": [
+    {"name": "agnosticv-catalog-builder", "version": "2.1.0"},
+    {"name": "showroom-create-lab", "version": "1.0.0"},
+    ...
+  ]
+}
+```
+
+Reorganized into `plugins/` directory:
+```
+plugins/
+├── agnosticv-catalog-builder/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/agnosticv-catalog-builder/SKILL.md
+├── showroom-create-lab/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/create-lab/SKILL.md
+└── [...]
+```
+
+**Plugin Naming with Namespaces:**
+- `agnosticv-catalog-builder` - AgnosticV namespace
+- `agnosticv-validator` - AgnosticV namespace
+- `showroom-create-lab` - Showroom namespace
+- `showroom-create-demo` - Showroom namespace
+- `showroom-blog-generate` - Showroom namespace
+- `showroom-verify-content` - Showroom namespace
+- `health-deployment-validator` - Health namespace (renamed from deployment-health-checker)
+
+**Migration Path:**
+
+Old (file-based):
+```bash
+curl -fsSL https://raw.githubusercontent.com/.../install.sh | bash
+```
+
+New (marketplace):
+```bash
+/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin install agnosticv-catalog-builder@rhdp-marketplace
+```
+
+**Removed Files:**
+- `install.sh` - Replaced by marketplace installation
+- `update.sh` - Replaced by `/plugin marketplace update`
+
+**Updated Documentation:**
+- `MARKETPLACE.md` - Complete marketplace usage guide
+- `README.md` - Updated to marketplace installation
+- `docs/index.md` - Updated GitHub Pages with marketplace instructions
+
+**Benefits:**
+- ✅ Standard installation (like dnf/brew)
+- ✅ Automatic updates
+- ✅ Version management and rollback
+- ✅ Clear dependency management
+- ✅ Consistent UX across all plugins
+- ✅ No manual file copying
+- ✅ Professional distribution channel
+
+**Breaking Change Note:**
+Users with file-based installations need to migrate to marketplace. See MARKETPLACE.md for migration guide.
+
 ## [v1.9.0] - 2026-02-03
 
 ### Changed - AgnosticV Catalog Builder UX Improvements

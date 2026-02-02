@@ -1,0 +1,5 @@
+{
+  "name": "showroom-create-lab",
+  "description": "Guide you through creating a single Red Hat Showroom workshop module from reference materials with business storytelling and proper AsciiDoc formatting",
+  "version": "1.0.0"
+}

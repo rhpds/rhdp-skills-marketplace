@@ -11,26 +11,18 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
 ## Quick Start
 
-Add the RHDP marketplace to Claude Code:
+Download and run the installer:
 
 ```bash
-/plugin marketplace add rhpds/rhdp-skills-marketplace
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
+bash /tmp/rhdp-install.sh
 ```
 
-Then install the plugins you need:
+The installer will guide you through platform and namespace selection.
 
-```bash
-# For workshop/demo creation
-/plugin install showroom-create-lab@rhdp-marketplace
-/plugin install showroom-create-demo@rhdp-marketplace
+**Using Claude Code or VS Code with Claude extension?** Skills work natively with `/skill-name` commands.
 
-# For AgnosticV catalogs (RHDP internal)
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
-```
-
-**Benefits:** Standard installation (like dnf/brew), automatic updates, version management
-
-[See complete plugin list →](../MARKETPLACE.html)
+**Using Cursor 2.4+?** [See Cursor setup guide →](setup/cursor.html) - Full support via the Agent Skills open standard
 
 ---
 
