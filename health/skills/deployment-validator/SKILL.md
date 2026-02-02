@@ -1,5 +1,5 @@
 ---
-name: health-deployment-validator
+name: deployment-validator
 description: Create validation roles for RHDP deployment health checks and post-deployment validation
 ---
 

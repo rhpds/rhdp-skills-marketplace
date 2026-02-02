@@ -2,98 +2,49 @@
   "name": "rhdp-marketplace",
   "owner": {
     "name": "Red Hat Demo Platform Team",
-    "email": "rhdp-dev@redhat.com"
+    "email": "prakhar@redhat.com"
   },
   "metadata": {
     "description": "Official Red Hat Demo Platform (RHDP) skills marketplace for creating workshops, demos, and infrastructure automation",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "plugins": [
     {
-      "name": "agnosticv-catalog-builder",
-      "source": "./plugins/agnosticv-catalog-builder",
-      "description": "Create or update AgnosticV catalog files, including Virtual CIs in published/ folder",
+      "name": "agnosticv",
+      "source": "./agnosticv",
+      "description": "AgnosticV catalog builder and validator for RHDP infrastructure automation",
       "version": "2.2.0",
       "author": {
-        "name": "RHDP Team"
+        "name": "RHDP Team",
+        "email": "prakhar@redhat.com"
       },
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
       "license": "Apache-2.0",
-      "tags": ["agnosticv", "catalog", "infrastructure", "workshop", "demo"]
+      "tags": ["agnosticv", "catalog", "infrastructure", "workshop", "demo", "validation"]
     },
     {
-      "name": "agnosticv-validator",
-      "source": "./plugins/agnosticv-validator",
-      "description": "Validate AgnosticV catalog configurations against best practices and deployment requirements",
+      "name": "showroom",
+      "source": "./showroom",
+      "description": "Red Hat Showroom workshop and demo authoring, verification, and content transformation",
       "version": "1.0.0",
       "author": {
-        "name": "RHDP Team"
+        "name": "RHDP Team",
+        "email": "prakhar@redhat.com"
       },
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
       "license": "Apache-2.0",
-      "tags": ["agnosticv", "validation", "catalog"]
+      "tags": ["showroom", "workshop", "lab", "demo", "asciidoc", "content-creation", "validation", "blog"]
     },
     {
-      "name": "showroom-create-lab",
-      "source": "./plugins/showroom-create-lab",
-      "description": "Guide you through creating a single Red Hat Showroom workshop module from reference materials with business storytelling and proper AsciiDoc formatting",
+      "name": "health",
+      "source": "./health",
+      "description": "RHDP deployment health checks and post-deployment validation",
       "version": "1.0.0",
       "author": {
-        "name": "RHDP Team"
-      },
-      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
-      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
-      "license": "Apache-2.0",
-      "tags": ["showroom", "workshop", "lab", "asciidoc", "content-creation"]
-    },
-    {
-      "name": "showroom-create-demo",
-      "source": "./plugins/showroom-create-demo",
-      "description": "Guide you through creating a Red Hat Showroom demo module using the Know/Show structure for presenter-led demonstrations",
-      "version": "1.0.0",
-      "author": {
-        "name": "RHDP Team"
-      },
-      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
-      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
-      "license": "Apache-2.0",
-      "tags": ["showroom", "demo", "presentation", "asciidoc", "content-creation"]
-    },
-    {
-      "name": "showroom-blog-generate",
-      "source": "./plugins/showroom-blog-generate",
-      "description": "Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms",
-      "version": "1.0.0",
-      "author": {
-        "name": "RHDP Team"
-      },
-      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
-      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
-      "license": "Apache-2.0",
-      "tags": ["showroom", "blog", "content", "marketing"]
-    },
-    {
-      "name": "showroom-verify-content",
-      "source": "./plugins/showroom-verify-content",
-      "description": "Run comprehensive quality verification on workshop or demo content using Red Hat standards and validation agents",
-      "version": "1.0.0",
-      "author": {
-        "name": "RHDP Team"
-      },
-      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
-      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
-      "license": "Apache-2.0",
-      "tags": ["showroom", "validation", "quality", "content"]
-    },
-    {
-      "name": "health-deployment-validator",
-      "source": "./plugins/health-deployment-validator",
-      "description": "Create validation roles for RHDP deployment health checks and post-deployment validation",
-      "version": "1.0.0",
-      "author": {
-        "name": "RHDP Team"
+        "name": "RHDP Team",
+        "email": "prakhar@redhat.com"
       },
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",

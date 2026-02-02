@@ -1,5 +1,5 @@
 ---
-name: showroom-blog-generate
+name: blog-generate
 description: Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms.
 ---
 

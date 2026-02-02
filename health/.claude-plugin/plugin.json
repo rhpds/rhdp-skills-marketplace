@@ -1,0 +1,9 @@
+{
+  "name": "health",
+  "version": "1.0.0",
+  "description": "RHDP deployment health checks and post-deployment validation",
+  "author": {
+    "name": "RHDP Team",
+    "email": "prakhar@redhat.com"
+  }
+}

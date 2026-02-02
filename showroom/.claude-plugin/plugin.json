@@ -1,0 +1,9 @@
+{
+  "name": "showroom",
+  "version": "1.0.0",
+  "description": "Red Hat Showroom workshop and demo authoring, verification, and content transformation",
+  "author": {
+    "name": "RHDP Team",
+    "email": "prakhar@redhat.com"
+  }
+}
