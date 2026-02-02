@@ -1083,13 +1083,139 @@ Path:
 ```bash
 if [[ -d "$path/content/modules/ROOT/pages" ]]; then
   echo "✓ Found Showroom content"
+  HAS_SHOWROOM=true
 else
   echo "✗ No Showroom content found at: $path/content/modules/ROOT/pages"
-  exit 1
+  HAS_SHOWROOM=false
 fi
 ```
 
+**If no Showroom found, offer manual entry:**
+```
+⚠️  No Showroom Content Found
+
+Mode 2 works best when you have Showroom content to extract from.
+
+Options:
+1. Enter description details manually (I'll ask you questions)
+2. Create Showroom content first and come back
+3. Exit and use Mode 1 (Full Catalog) instead
+
+Your choice [1/2/3]:
+```
+
+**If option 2 (Create Showroom first):**
+```
+📚 Create Showroom Content First
+
+Use the /create-lab or /create-demo skills to generate Showroom content:
+
+For workshops:
+  /create-lab
+
+For demos:
+  /create-demo
+
+Once you have Showroom content, run this skill again with Mode 2.
+
+⏸️  Exiting - Create Showroom content first.
+```
+
+**If option 3 (Use Mode 1):**
+```
+ℹ️  Mode 1 (Full Catalog) creates everything including description.adoc
+
+Re-run this skill and select Mode 1 at the beginning.
+
+⏸️  Exiting
+```
+
+**If option 1 (Manual entry), continue to Step 1a**
+
+---
+
+### Step 1a: Manual Entry (When No Showroom)
+
+**Only run this step if HAS_SHOWROOM=false and user chose manual entry**
+
+```
+📝 Manual Description Entry
+
+Since you don't have Showroom content, I'll ask for the details directly.
+
+Q: Catalog display name:
+   Example: Ansible Automation Platform with OpenShift AI
+
+Display name:
+
+Q: Brief overview (2-3 sentences, starting with product name):
+   This describes what the workshop/demo is about.
+
+Overview:
+
+Q: Featured Red Hat products/technologies (comma-separated with versions):
+   Example: OpenShift 4.14, Ansible Automation Platform 2.5, Red Hat Enterprise Linux 9
+
+Technologies:
+
+Q: Module/chapter titles (one per line, press Enter twice when done):
+   Example:
+     Introduction to OpenShift AI
+     Setting up the Environment
+     Building Models
+     [blank line to finish]
+
+Module titles:
+```
+
+**Capture multi-line input for modules:**
+```bash
+echo "Enter module titles (press Enter twice to finish):"
+modules=()
+while IFS= read -r line; do
+  [[ -z "$line" ]] && break
+  modules+=("$line")
+done
+
+module_count=${#modules[@]}
+echo "✓ Captured $module_count modules"
+```
+
+**Ask for optional details:**
+```
+Q: Workshop author name (optional):
+   Default: $(git config user.name)
+
+Author [press Enter for default]:
+
+Q: GitHub Pages URL (optional):
+   Example: https://rhpds.github.io/my-workshop-showroom/
+
+GitHub Pages URL [optional]:
+
+Q: Any warnings or special requirements? (optional)
+   Examples: "Requires GPU nodes", "High memory usage", "Network-intensive"
+
+Warnings [optional]:
+```
+
+**Set variables for Step 3:**
+```bash
+# For manual entry, set these variables
+index_overview="$overview_input"
+detected_products="$technologies_input"
+module_titles=("${modules[@]}")
+author="${author_input:-$(git config user.name)}"
+github_pages_url="$github_url_input"
+version_info=""  # No automatic version detection
+technical_topics=""  # No automatic topic detection
+
+# Skip Step 2 (extraction) and go directly to Step 3 (generate)
+```
+
 ### Step 2: Extract Content from Showroom
+
+**Only run this step if HAS_SHOWROOM=true (skip if manual entry)**
 
 **Read ALL modules and extract comprehensive information:**
 ```bash
@@ -1189,6 +1315,8 @@ fi
 
 ### Step 3: Generate Description
 
+**If HAS_SHOWROOM=true (extracted from Showroom):**
+
 **Review comprehensive extracted content from ALL modules:**
 ```
 📝 Description Content Review
@@ -1250,6 +1378,56 @@ Warnings [optional]:
 - If user says Yes to extracted content, use it directly. Don't ask again!
 - Show comprehensive data from all modules so user can make informed decisions
 - Module titles, products, versions, and topics are extracted from the entire workshop content
+
+---
+
+**If HAS_SHOWROOM=false (manual entry):**
+
+**Review manually entered content:**
+```
+📝 Description Content Review
+
+You entered the following information:
+
+Display Name:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$display_name
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Overview:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$index_overview
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Technologies:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$detected_products
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Modules ($module_count):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${module_titles[@]}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Author: $author
+GitHub Pages: ${github_pages_url:-"Not provided"}
+Warnings: ${warnings:-"None"}
+
+Q: Is this information correct? [Y to proceed / N to edit]:
+
+If N, allow editing:
+  Q: What would you like to edit?
+     1. Overview
+     2. Technologies
+     3. Modules
+     4. All of the above
+
+  Choice [1-4]:
+```
+
+**After confirmation, proceed to generate description.adoc**
+
+---
 
 **Generate and write description.adoc** (same format as Mode 1, Step 10.3)
 

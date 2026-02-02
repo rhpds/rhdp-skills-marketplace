@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.7.2] - 2026-02-02
+
+### Added - Mode 2 Manual Entry Fallback
+
+**User Request:** "Add fallback if showroom is not given"
+
+**New Feature: Manual Entry Option for Mode 2**
+
+When Showroom content is not available, Mode 2 now offers three choices:
+
+**Step 1 Enhancement:**
+- OLD: Exit with error if no Showroom found
+- NEW: Offer 3 options when Showroom not found:
+  1. Enter description details manually
+  2. Create Showroom content first and come back
+  3. Exit and use Mode 1 (Full Catalog) instead
+
+**New Step 1a: Manual Entry Flow**
+
+When user chooses manual entry, the skill asks for:
+- Catalog display name
+- Brief overview (2-3 sentences)
+- Featured Red Hat products/technologies with versions
+- Module/chapter titles (multi-line input)
+- Optional: Author name (defaults to git config)
+- Optional: GitHub Pages URL
+- Optional: Warnings or special requirements
+
+**Review and Confirmation:**
+Shows all manually entered data for review before generating description.adoc
+
+**Workflow:**
+```
+If Showroom found:
+  → Step 2: Extract from ALL modules (v1.7.1 behavior)
+  → Step 3: Review and confirm
+
+If NO Showroom:
+  → Step 1a: Manual entry
+  → Step 3: Review manually entered data and confirm
+  → Both paths converge at description.adoc generation
+```
+
+**Benefits:**
+- Mode 2 works without Showroom content
+- Users can create description.adoc before workshop content exists
+- Supports early catalog planning
+- Still validates and shows all data before generating
+
+**Files Updated:**
+- agnosticv/skills/agnosticv-catalog-builder/SKILL.md (Step 1, 1a, 2, 3 modified)
+- Added HAS_SHOWROOM variable to track source
+- Step 2 now conditional (only runs if Showroom exists)
+- Step 3 handles both extraction and manual entry
+
+### Focus
+This patch adds flexibility to Mode 2 by supporting manual entry when Showroom content is not available, while maintaining the smart extraction workflow when Showroom exists.
+
 ## [v1.7.1] - 2026-02-02
 
 ### Fixed - AgnosticV Catalog Builder Mode 2 Improvements
@@ -642,7 +700,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.7.2...HEAD
+[v1.7.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.2
 [v1.7.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.1
 [v1.7.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.0
 [v1.6.1]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.6.1
