@@ -269,7 +269,7 @@ Expected Answer: 1
    cd ~/work/code/agnosticv/agd_v2/your-catalog-slug/
 
 2. Validate configuration:
-   /agnosticv-validator
+   /agnosticv:validator
 
 3. Push to remote:
    git push origin add-your-catalog-name
