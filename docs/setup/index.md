@@ -357,14 +357,22 @@ You should see skills with namespace prefixes like:
 Keep your plugins current:
 
 ```bash
-# Update marketplace catalog
+# Step 1: Update marketplace catalog
 /plugin marketplace update
+# Interactive UI: select marketplace and press 'u' to update
 
-# Update specific plugins
+# Step 2: Update plugins
 /plugin update showroom@rhdp-marketplace
+# Interactive UI: navigate to "Update now" and press Enter
+
+# Repeat for other plugins
 /plugin update agnosticv@rhdp-marketplace
 /plugin update health@rhdp-marketplace
 ```
+
+**Note:** Both commands are interactive:
+- Marketplace update: Select marketplace, press `u`
+- Plugin update: Navigate to "Update now", press `Enter`
 
 **Restart Claude Code** after updates to load new versions.
 

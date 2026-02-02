@@ -128,10 +128,15 @@ Plugins can be installed at different scopes:
 Keep your plugins current:
 
 ```bash
+# Update marketplace (interactive: press 'u')
 /plugin marketplace update
+
+# Update plugins (interactive: select "Update now" and press Enter)
 /plugin update showroom@rhdp-marketplace
 /plugin update agnosticv@rhdp-marketplace
 ```
+
+Both commands open interactive UIs. Restart Claude Code after updates.
 
 ---
 

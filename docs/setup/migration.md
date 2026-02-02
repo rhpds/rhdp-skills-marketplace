@@ -185,25 +185,31 @@ Skills now include namespace prefixes to show which plugin provides them:
 
 ## Updating Plugins
 
-### Check for Updates
+### Step 1: Update Marketplace
 
 ```bash
 /plugin marketplace update
 ```
 
-### Update Specific Plugin
+This opens an interactive UI:
+1. Select the marketplace
+2. Press `u` to update it
+3. Press `Esc` to go back
+
+This refreshes the marketplace cache with the latest plugin versions.
+
+### Step 2: Update Plugins
 
 ```bash
 /plugin update showroom@rhdp-marketplace
 ```
 
-### Update All Plugins
+This opens an interactive UI:
+1. Navigate with `ctrl+p` or arrow keys
+2. Select "Update now" and press `Enter`
+3. Press `Esc` to go back
 
-```bash
-/plugin update showroom@rhdp-marketplace
-/plugin update agnosticv@rhdp-marketplace
-/plugin update health@rhdp-marketplace
-```
+**Note:** Both commands are interactive - you must use the UI to perform updates.
 
 After updating, **restart Claude Code** to load the new versions.
 
