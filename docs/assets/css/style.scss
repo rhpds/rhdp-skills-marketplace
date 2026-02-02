@@ -1,0 +1,251 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* RHDP Brand Colors */
+$rhdp-red: #EE0000;
+$rhdp-dark-red: #CC0000;
+$rhdp-black: #000000;
+$rhdp-dark-gray: #1a1a1a;
+$rhdp-light-gray: #f5f5f5;
+$rhdp-white: #ffffff;
+
+/* Header with RHDP Branding */
+.page-header {
+  background: linear-gradient(120deg, $rhdp-black, $rhdp-dark-gray, $rhdp-red);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  padding: 3rem 1rem;
+
+  /* Add RHDP logo */
+  &::before {
+    content: "";
+    display: block;
+    width: 200px;
+    height: 60px;
+    margin: 0 auto 1.5rem auto;
+    background-image: url('/rhdp-skills-marketplace/assets/images/rhdp-logo-white.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.project-name {
+  color: $rhdp-white;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.project-tagline {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
+/* Buttons with Red Hat style */
+.btn {
+  background-color: $rhdp-red;
+  background-image: none;
+  border: 2px solid $rhdp-white;
+  color: $rhdp-white;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $rhdp-dark-red;
+    border-color: $rhdp-white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Links with RHDP red */
+.main-content {
+  a {
+    color: $rhdp-red;
+
+    &:hover {
+      color: $rhdp-dark-red;
+      text-decoration: underline;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: $rhdp-black;
+    font-weight: 600;
+
+    code {
+      background-color: $rhdp-light-gray;
+      color: $rhdp-red;
+    }
+  }
+}
+
+/* Code blocks with RHDP theme */
+.main-content {
+  pre {
+    background-color: $rhdp-dark-gray;
+    border: 1px solid $rhdp-red;
+
+    code {
+      background-color: transparent;
+      color: #f8f8f2;
+    }
+  }
+
+  code {
+    background-color: $rhdp-light-gray;
+    color: $rhdp-dark-red;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+}
+
+/* Cards/Sections with subtle RHDP accent */
+.card {
+  border-left: 4px solid $rhdp-red;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: $rhdp-light-gray;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(238, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  h3 {
+    color: $rhdp-red;
+    margin-top: 0;
+  }
+}
+
+/* Grid layout for cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* Blockquotes with RHDP style */
+.main-content blockquote {
+  border-left: 4px solid $rhdp-red;
+  background-color: $rhdp-light-gray;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+
+  p {
+    margin: 0.5rem 0;
+  }
+
+  code {
+    background-color: $rhdp-white;
+  }
+}
+
+/* Tables with RHDP theme */
+.main-content table {
+  border: 1px solid $rhdp-red;
+
+  th {
+    background-color: $rhdp-red;
+    color: $rhdp-white;
+    font-weight: 600;
+  }
+
+  tr {
+    &:nth-child(even) {
+      background-color: $rhdp-light-gray;
+    }
+
+    &:hover {
+      background-color: rgba(238, 0, 0, 0.05);
+    }
+  }
+}
+
+/* Footer styling */
+.site-footer {
+  border-top: 3px solid $rhdp-red;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  color: #666;
+
+  .footer-content {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .footer-logo {
+    margin-bottom: 1rem;
+  }
+
+  .footer-info {
+    p {
+      margin: 0.5rem 0;
+    }
+  }
+
+  a {
+    color: $rhdp-red;
+    text-decoration: none;
+
+    &:hover {
+      color: $rhdp-dark-red;
+      text-decoration: underline;
+    }
+  }
+
+  .site-footer-credits {
+    display: block;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #999;
+  }
+}
+
+/* Badges/Labels */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  color: $rhdp-white;
+  background-color: $rhdp-red;
+  border-radius: 3px;
+  margin: 0 0.25rem;
+}
+
+/* Success/Info/Warning colors with Red Hat palette */
+.success {
+  color: #3e8635;
+}
+
+.info {
+  color: $rhdp-red;
+}
+
+.warning {
+  color: #f0ab00;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .page-header::before {
+    width: 150px;
+    height: 45px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
