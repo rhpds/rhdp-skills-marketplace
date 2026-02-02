@@ -17,18 +17,14 @@ This adds the RHDP marketplace to your Claude Code installation. You only need t
 Once the marketplace is added, install the plugins you need:
 
 ```bash
-# AgnosticV plugins
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
-/plugin install agnosticv-validator@rhdp-marketplace
+# AgnosticV plugin (catalog builder + validator)
+/plugin install agnosticv@rhdp-marketplace
 
-# Showroom plugins
-/plugin install showroom-create-lab@rhdp-marketplace
-/plugin install showroom-create-demo@rhdp-marketplace
-/plugin install showroom-blog-generate@rhdp-marketplace
-/plugin install showroom-verify-content@rhdp-marketplace
+# Showroom plugin (create-lab, create-demo, blog-generate, verify-content)
+/plugin install showroom@rhdp-marketplace
 
-# Health/Validation plugins
-/plugin install health-deployment-validator@rhdp-marketplace
+# Health plugin (deployment validator)
+/plugin install health@rhdp-marketplace
 ```
 
 ### Update Plugins
@@ -45,55 +41,61 @@ This updates all installed plugins to their latest versions.
 
 ## Available Plugins
 
-### AgnosticV Namespace
+### AgnosticV Plugin (v2.2.0)
 
-**agnosticv-catalog-builder** (v2.1.0)
-- Create or update AgnosticV catalog files
-- Generates: common.yaml, dev.yaml, description.adoc, info-message-template.adoc
-- Auto-detects configuration from CLAUDE.md
-- Optional git workflow assistance
-- Tags: `agnosticv`, `catalog`, `infrastructure`, `workshop`, `demo`
+**Plugin:** `agnosticv@rhdp-marketplace`
 
-**agnosticv-validator** (v1.0.0)
-- Validate AgnosticV catalog configurations
-- Best practices checks
-- Deployment requirement validation
-- Tags: `agnosticv`, `validation`, `catalog`
+**Skills:**
+- `/agnosticv:catalog-builder` - Create or update AgnosticV catalog files & Virtual CIs
+  - Generates: common.yaml, dev.yaml, description.adoc, info-message-template.adoc
+  - Auto-detects configuration from CLAUDE.md
+  - Create Virtual CIs in published/ folder
+  - Optional git workflow assistance
 
-### Showroom Namespace
+- `/agnosticv:validator` - Validate AgnosticV catalog configurations
+  - Best practices checks
+  - Deployment requirement validation
 
-**showroom-create-lab** (v1.0.0)
-- Create Red Hat Showroom workshop modules
-- Business storytelling framework
-- Proper AsciiDoc formatting
-- Reference materials integration
-- Tags: `showroom`, `workshop`, `lab`, `asciidoc`, `content-creation`
+**Tags:** `agnosticv`, `catalog`, `infrastructure`, `workshop`, `demo`, `validation`
 
-**showroom-create-demo** (v1.0.0)
-- Create Red Hat Showroom demo modules
-- Know/Show structure for presenters
-- Presenter-led demonstration flow
-- Tags: `showroom`, `demo`, `presentation`, `asciidoc`, `content-creation`
+---
 
-**showroom-blog-generate** (v1.0.0)
-- Transform Showroom content into blog posts
-- Red Hat Developer blog format
-- Marketing platform integration
-- Tags: `showroom`, `blog`, `content`, `marketing`
+### Showroom Plugin (v1.0.0)
 
-**showroom-verify-content** (v1.0.0)
-- Comprehensive quality verification
-- Red Hat standards validation
-- Multi-agent verification system
-- Tags: `showroom`, `validation`, `quality`, `content`
+**Plugin:** `showroom@rhdp-marketplace`
 
-### Health Namespace
+**Skills:**
+- `/showroom:create-lab` - Create Red Hat Showroom workshop modules
+  - Business storytelling framework
+  - Proper AsciiDoc formatting
+  - Reference materials integration
 
-**health-deployment-validator** (v1.0.0)
-- Create deployment health check validation roles
-- Post-deployment validation
-- Ansible-based health checks
-- Tags: `ansible`, `validation`, `health-check`, `deployment`
+- `/showroom:create-demo` - Create Red Hat Showroom demo modules
+  - Know/Show structure for presenters
+  - Presenter-led demonstration flow
+
+- `/showroom:blog-generate` - Transform Showroom content into blog posts
+  - Red Hat Developer blog format
+  - Marketing platform integration
+
+- `/showroom:verify-content` - Comprehensive quality verification
+  - Red Hat standards validation
+  - Multi-agent verification system
+
+**Tags:** `showroom`, `workshop`, `lab`, `demo`, `asciidoc`, `content-creation`, `validation`, `blog`
+
+---
+
+### Health Plugin (v1.0.0)
+
+**Plugin:** `health@rhdp-marketplace`
+
+**Skills:**
+- `/health:deployment-validator` - Create deployment health check validation roles
+  - Post-deployment validation
+  - Ansible-based health checks
+
+**Tags:** `ansible`, `validation`, `health-check`, `deployment`
 
 ---
 
@@ -102,31 +104,31 @@ This updates all installed plugins to their latest versions.
 ### Create a Workshop
 
 ```bash
-# Install the lab creation plugin
-/plugin install showroom-create-lab@rhdp-marketplace
+# Install the showroom plugin
+/plugin install showroom@rhdp-marketplace
 
-# Use the skill
-/showroom-create-lab
+# Use the create-lab skill
+/showroom:create-lab
 ```
 
 ### Build an AgnosticV Catalog
 
 ```bash
-# Install catalog builder
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
+# Install agnosticv plugin
+/plugin install agnosticv@rhdp-marketplace
 
-# Use the skill
-/agnosticv-catalog-builder
+# Use the catalog-builder skill
+/agnosticv:catalog-builder
 ```
 
 ### Verify Workshop Content
 
 ```bash
-# Install content verification
-/plugin install showroom-verify-content@rhdp-marketplace
+# Install showroom plugin (if not already installed)
+/plugin install showroom@rhdp-marketplace
 
-# Use the skill
-/showroom-verify-content
+# Use the verify-content skill
+/showroom:verify-content
 ```
 
 ---
@@ -136,7 +138,7 @@ This updates all installed plugins to their latest versions.
 ### Old Way (Manual)
 ```bash
 # Copy files manually
-cp -r ~/work/code/rhdp-skills-marketplace/agnosticv/skills/agnosticv-catalog-builder ~/.claude/skills/
+cp -r ~/work/code/rhdp-skills-marketplace/agnosticv/skills/catalog-builder ~/.claude/skills/
 
 # Check for updates manually
 # Re-copy files when updates available
@@ -145,7 +147,7 @@ cp -r ~/work/code/rhdp-skills-marketplace/agnosticv/skills/agnosticv-catalog-bui
 ### New Way (Marketplace)
 ```bash
 # Install once
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
 
 # Update automatically
 /plugin marketplace update

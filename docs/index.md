@@ -21,11 +21,13 @@ Then install the plugins you need:
 
 ```bash
 # For workshop/demo creation
-/plugin install showroom-create-lab@rhdp-marketplace
-/plugin install showroom-create-demo@rhdp-marketplace
+/plugin install showroom@rhdp-marketplace
 
 # For AgnosticV catalogs (RHDP internal)
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
+
+# For deployment health checks (RHDP internal)
+/plugin install health@rhdp-marketplace
 ```
 
 **Benefits:** Standard installation (like dnf/brew), automatic updates, version management
@@ -40,23 +42,23 @@ Then install the plugins you need:
 
 ### 🎓 Showroom (Most Users)
 
-- **[/showroom-create-lab](skills/create-lab.html)** - Generate workshop lab modules
-- **[/showroom-create-demo](skills/create-demo.html)** - Generate presenter-led demos
-- **[/showroom-verify-content](skills/verify-content.html)** - Quality validation
-- **[/showroom-blog-generate](skills/blog-generate.html)** - Transform to blog posts
+- **[/showroom:create-lab](skills/create-lab.html)** - Generate workshop lab modules
+- **[/showroom:create-demo](skills/create-demo.html)** - Generate presenter-led demos
+- **[/showroom:verify-content](skills/verify-content.html)** - Quality validation
+- **[/showroom:blog-generate](skills/blog-generate.html)** - Transform to blog posts
 
 [View all Showroom skills →](skills/index.html#showroom-skills-content-creation)
 
 ### ⚙️ AgnosticV (RHDP Team or Advanced Users)
 
-- **[/agnosticv-catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs
-- **[/agnosticv-validator](skills/agnosticv-validator.html)** - Validate configurations
+- **[/agnosticv:catalog-builder](skills/agnosticv-catalog-builder.html)** - Create/update catalogs & Virtual CIs
+- **[/agnosticv:validator](skills/agnosticv-validator.html)** - Validate configurations
 
 [Learn more →](setup/agnosticv.html)
 
 ### 🏥 Health (RHDP Team or Advanced Users)
 
-- **[/health-deployment-validator](skills/deployment-health-checker.html)** - Create validation roles
+- **[/health:deployment-validator](skills/deployment-health-checker.html)** - Create validation roles
 
 [Learn more →](../health/README.html)
 
@@ -102,11 +104,12 @@ Then install the plugins you need:
 
 ## Updates
 
-Keep your skills current:
+Keep your plugins current:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh -o /tmp/rhdp-update.sh
-bash /tmp/rhdp-update.sh
+/plugin marketplace update
+/plugin update showroom@rhdp-marketplace
+/plugin update agnosticv@rhdp-marketplace
 ```
 
 ---
@@ -115,7 +118,7 @@ bash /tmp/rhdp-update.sh
 
 - **GitHub:** [Issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
 - **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-- **Version:** v1.8.0
+- **Version:** v2.2.0
 
 ---
 

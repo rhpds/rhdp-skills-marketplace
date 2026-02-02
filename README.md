@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.0.1-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.2.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -16,8 +16,8 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 ## 🎯 I Want To...
 
 **Create a customer demo or workshop?** → You want **Showroom** skills
-- `/showroom-create-demo` - Build a presenter-led demo (you present, customers watch)
-- `/showroom-create-lab` - Build a hands-on workshop (customers follow along step-by-step)
+- `/showroom:create-demo` - Build a presenter-led demo (you present, customers watch)
+- `/showroom:create-lab` - Build a hands-on workshop (customers follow along step-by-step)
 
 **What you need:**
 1. Claude Code (CLI) or VS Code with Claude extension
@@ -47,14 +47,13 @@ Then install the plugins you need:
 
 ```bash
 # For workshop/demo creation
-/plugin install showroom-create-lab@rhdp-marketplace
-/plugin install showroom-create-demo@rhdp-marketplace
+/plugin install showroom@rhdp-marketplace
 
 # For AgnosticV catalogs (RHDP internal)
-/plugin install agnosticv-catalog-builder@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
 
-# For content verification
-/plugin install showroom-verify-content@rhdp-marketplace
+# For deployment health checks (RHDP internal)
+/plugin install health@rhdp-marketplace
 ```
 
 **Benefits:**
@@ -64,47 +63,21 @@ Then install the plugins you need:
 - ✅ Clean uninstall
 
 See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
-4. Install the selected skills
 
-### For Content Creators (External Developers)
+### Available Plugins
 
-Install the **showroom** namespace for creating Red Hat Showroom workshop labs and demos:
+**Showroom Plugin** (`showroom@rhdp-marketplace`) - Workshop and demo creation:
+- `/showroom:create-lab` - Generate workshop lab modules
+- `/showroom:create-demo` - Generate presenter-led demo content
+- `/showroom:verify-content` - AI-powered quality validation
+- `/showroom:blog-generate` - Transform content into blog posts
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
-bash /tmp/rhdp-install.sh
-# When prompted:
-# 1. Select your platform (Claude Code or Cursor)
-# 2. Select namespace: 1 (showroom)
-```
+**AgnosticV Plugin** (`agnosticv@rhdp-marketplace`) - RHDP infrastructure automation:
+- `/agnosticv:catalog-builder` - Create/update AgnosticV catalog items & Virtual CIs
+- `/agnosticv:validator` - Validate catalog configurations
 
-**Available Skills:**
-- `/create-lab` - Generate workshop lab modules with Know/Show structure
-- `/create-demo` - Generate presenter-led demo content
-- `/verify-content` - AI-powered quality validation
-- `/blog-generate` - Transform content into blog posts
-
-### For RHDP Internal/Advanced Users
-
-Install additional namespaces for AgnosticV provisioning, validation, and health checks:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
-bash /tmp/rhdp-install.sh
-# When prompted:
-# 1. Select your platform (Claude Code or Cursor)
-# 2. Select namespace:
-#    - 2 (agnosticv) - Catalog provisioning
-#    - 3 (health) - Post-deployment validation
-#    - 4 (all) - All namespaces
-```
-
-**AgnosticV Skills:**
-- `/agnosticv-catalog-builder` - Create/update AgnosticV catalog items (unified skill with 3 modes)
-- `/agnosticv-validator` - Validate catalog configurations
-
-**Health Skills:**
-- `/deployment-health-checker` - Create Ansible validation roles
+**Health Plugin** (`health@rhdp-marketplace`) - Deployment validation:
+- `/health:deployment-validator` - Create Ansible validation roles
 
 ---
 
