@@ -14,7 +14,7 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 Add the RHDP marketplace to Claude Code:
 
 ```bash
-/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
 Then install the plugins you need:

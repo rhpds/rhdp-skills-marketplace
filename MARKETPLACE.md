@@ -7,7 +7,7 @@ Official Red Hat Demo Platform (RHDP) Claude Code marketplace for creating works
 ### Add the Marketplace
 
 ```bash
-/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
 This adds the RHDP marketplace to your Claude Code installation. You only need to do this once.

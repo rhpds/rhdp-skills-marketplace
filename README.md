@@ -40,7 +40,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 Add the RHDP marketplace to Claude Code:
 
 ```bash
-/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
 Then install the plugins you need:
