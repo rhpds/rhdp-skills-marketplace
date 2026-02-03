@@ -79,133 +79,68 @@ What would you like to create or update?
 Your choice [1-4]:
 ```
 
-### Detect or Ask for AgnosticV Repository Path
+### Get AgnosticV Repository Path
 
-**CRITICAL: Check configuration files FIRST before asking user**
+**Option C: Read from claude.md if present, otherwise ask**
 
 ```bash
-# Step 1: Check for configured AgV path in user's CLAUDE.md files
+# Check ~/CLAUDE.md for AgV path
 agv_path=""
-
-# Check ~/CLAUDE.md
 if [[ -f ~/CLAUDE.md ]]; then
-  agv_path=$(grep -iE "(agv|agnosticv).*(path|repo|directory)" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+  agv_path=$(grep -E "agnosticv.*:" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+  [[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
 fi
+```
 
-# Check ~/.claude/*.md if not found
-if [[ -z "$agv_path" ]]; then
-  for file in ~/.claude/*.md; do
-    [[ -f "$file" ]] && agv_path=$(grep -iE "(agv|agnosticv).*(path|repo|directory)" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
-    [[ -n "$agv_path" ]] && break
-  done
-fi
+**If found in CLAUDE.md:**
+```
+✓ Found AgV path in ~/CLAUDE.md: ~/devel/git/agnosticv
 
+Proceeding with this path.
+```
+
+**If NOT found, ask:**
+```
+📂 AgnosticV Repository
+
+Q: What is your AgnosticV repository directory path?
+   (e.g., ~/work/code/agnosticv or ~/devel/git/agnosticv)
+
+Your path:
+```
+
+**Validate path exists:**
+```bash
 # Expand tilde if present
 [[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
-```
 
-**If path found in config:**
-```
-✓ Using AgV path from CLAUDE.md: ~/devel/git/agnosticv
-
-Q: Is this path correct? [Y/n]
-```
-
-**If path NOT found or user says No:**
-```
-Q: What is your AgnosticV repository directory path?
-
-Example paths:
-- ~/work/code/agnosticv/
-- ~/devel/git/agnosticv/
-- ~/projects/agnosticv/
-
-Your AgV path: [Enter full path]
-```
-
-**Validate path exists (don't assume internal structure):**
-```bash
-# Just check directory exists - don't assume agd_v2/ or any structure
-if [[ -d "$agv_path" ]]; then
-  echo "✓ Directory exists: $agv_path"
-else
+# Check directory exists
+if [[ ! -d "$agv_path" ]]; then
   echo "✗ Directory not found: $agv_path"
-  echo "Please check the path and try again."
   exit 1
 fi
 
-# Check if it looks like an AgV repo (optional validation)
-if [[ -d "$agv_path/.git" ]]; then
-  echo "✓ Git repository detected"
-else
-  echo "⚠️  Not a git repository - are you sure this is correct?"
+# Check if it's a git repo (warning only)
+if [[ ! -d "$agv_path/.git" ]]; then
+  echo "⚠️  Warning: Not a git repository"
 fi
+
+echo "✓ Using: $agv_path"
 ```
 
-### Git Workflow Setup (OPTIONAL)
+### Show Current Git Branch
 
-**IMPORTANT: Respect user's current branch - don't force git operations**
+**Don't manage git - user handles their own branches**
 
 ```bash
 cd "$agv_path"
 
-# Check current branch
+# Just show current branch - don't offer to change it
 current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 
 echo "📍 Current branch: $current_branch"
 echo ""
-```
-
-**Ask if user wants git workflow help:**
-```
-Q: Would you like help with git workflow (checkout main, pull latest, create new branch)? [y/N]
-
-Note: If you're already on your working branch, you can skip this.
-```
-
-**If user says NO (default):**
-```
-✓ Using current branch: $current_branch
-
-I'll work with your current branch and won't make any git changes.
-```
-
-**If user says YES:**
-```bash
-# Only execute if user explicitly wants git workflow help
-
-# If not on main, offer to switch
-if [[ "$current_branch" != "main" ]]; then
-  echo "⚠️  You're currently on branch: $current_branch"
-  read -p "Switch to main first? [Y/n] " confirm
-  if [[ ! "$confirm" =~ ^[Nn] ]]; then
-    git checkout main
-    current_branch="main"
-  fi
-fi
-
-# If on main, offer to pull
-if [[ "$current_branch" == "main" ]]; then
-  echo "📥 Pulling latest changes from main..."
-  git pull origin main
-fi
-
-# Ask for branch name
-echo ""
-echo "Q: What should we name your new branch?"
-echo "   (Use format: add-<catalog-name> or update-<catalog-name>-description)"
-echo "   (WITHOUT 'feature/' prefix)"
-read -p "Branch name: " branch_name
-
-# Validate branch name doesn't have feature/
-if [[ "$branch_name" =~ ^feature/ ]]; then
-  echo "⚠️  Remove 'feature/' prefix. Just use: ${branch_name#feature/}"
-  read -p "Branch name (without feature/): " branch_name
-fi
-
-# Create branch
-echo "🌿 Creating branch: $branch_name"
-git checkout -b "$branch_name"
+echo "I'll work with your current branch."
 ```
 
 ---
@@ -231,7 +166,7 @@ Keywords:
 
 **Search logic:**
 ```bash
-cd $AGV_PATH/agd_v2
+cd $AGV_PATH
 
 # Search by keywords in:
 # - Directory names
@@ -305,7 +240,7 @@ echo "Generated: $new_uuid"
 echo "Checking for collisions..."
 
 # Search all common.yaml files
-grep -r "asset_uuid: $new_uuid" $AGV_PATH/agd_v2/
+grep -r "asset_uuid: $new_uuid" $AGV_PATH/ --exclude-dir=.git
 
 if [[ $? -eq 0 ]]; then
   echo "⚠️  Collision detected! Regenerating..."
@@ -554,11 +489,13 @@ Q: Brief description (1-2 sentences):
 Description:
 ```
 
-**Validate directory doesn't exist:**
+**Validate directory doesn't exist across entire repo:**
 ```bash
-if [[ -d "$AGV_PATH/agd_v2/$short_name" ]]; then
-  echo "⚠️  Directory already exists: $short_name"
+# Check if directory name exists anywhere in AgV repo
+if find "$AGV_PATH" -maxdepth 2 -type d -name "$short_name" 2>/dev/null | grep -q .; then
+  echo "⚠️  Directory '$short_name' already exists in AgnosticV repo"
   echo "Choose a different name."
+  exit 1
 fi
 ```
 
@@ -1220,43 +1157,32 @@ Questions? [#forum-demo-developers](https://redhat.enterprise.slack.com/archives
 ```
 📂 Catalog Directory Path
 
-Q: Where should I create the catalog directory?
+Q: Which subdirectory should I create the catalog in?
 
-Options:
-1. AgV standard location (agd_v2/<directory-name>)
-2. Custom path within AgV repo
-3. Specify full custom path
+Common options:
+- agd_v2 (standard catalogs)
+- openshift_cnv (CNV-based catalogs)
+- sandboxes-gpte (sandbox catalogs)
+- published (Virtual CIs)
+- custom path
 
-Choice [1-3]:
+Enter subdirectory (e.g., agd_v2):
 ```
 
-**Based on choice:**
+**Build the path:**
+```bash
+# User enters subdirectory (e.g., "agd_v2")
+catalog_path="$AGV_PATH/$subdirectory/$directory_name"
+```
 
-1. **Standard location:**
-   ```bash
-   catalog_path="$AGV_PATH/agd_v2/$directory_name"
-   ```
-
-2. **Custom path within AgV:**
-   ```
-   Q: Enter relative path from AgV root:
-      Example: catalogs/<directory-name>
-
-   Relative path:
-   ```
-   ```bash
-   catalog_path="$AGV_PATH/$relative_path"
-   ```
-
-3. **Full custom path:**
-   ```
-   Q: Enter full path:
-
-   Full path:
-   ```
-   ```bash
-   catalog_path="$custom_path"
-   ```
+**Validate doesn't exist:**
+```bash
+if [[ -d "$catalog_path" ]]; then
+  echo "⚠️  Directory already exists: $catalog_path"
+  echo "Choose a different name or location."
+  exit 1
+fi
+```
 
 ### Step 12: Write Files
 
