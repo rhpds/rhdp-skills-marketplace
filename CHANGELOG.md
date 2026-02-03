@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.3] - 2026-02-03
+
+### Fixed - AgnosticV Catalog Builder UX Improvements
+
+**Based on user feedback from Nate Stephany**
+
+**Path Detection (Option C):**
+- Now reads AgnosticV path from `~/CLAUDE.md` automatically if present
+- Only asks for path if not found in CLAUDE.md
+- Removed complex grep searches through multiple config files
+- Simpler, more direct workflow
+
+**Removed agd_v2 Hardcoding:**
+- Removed all assumptions about `agd_v2/` directory structure
+- Now searches entire AgnosticV repository (not just agd_v2)
+- Asks which subdirectory to use (agd_v2, openshift_cnv, published, etc.)
+- Validates uniqueness across entire repo, not just one directory
+- Fixed catalog search to work across all directories
+- Fixed UUID collision check to search entire repo
+
+**Git Workflow Simplified:**
+- Removed complex git workflow management (checkout, pull, branch creation)
+- Now shows current branch and asks: "Use this branch or create new one?"
+- Simple choice: 1) Use current branch, 2) Create new branch
+- No forced git operations or unwanted branch switching
+- User controls their own git workflow
+
+**Description.adoc Format Updates:**
+- Updated to match Nate's production standards from PR #24879
+- Changed from `NOTE:` to `[IMPORTANT]` blocks
+- Updated Lab Guide section format
+- Updated Detailed Overview to use `**` (double asterisk) bullets
+- Simplified Support section format
+- Authors section: names only, no emails
+- Added real production examples (RHADS, AAP, OCP troubleshooting)
+
+**Virtual CI Creation (prod.yaml):**
+- Added base component prod.yaml creation with scm_ref pinning
+- Asks for version tag (e.g., demyst-1.0.1) for production stability
+- Handles existing prod.yaml conflicts
+- Optional step (can skip if not ready)
+
+**Files Updated:**
+- `agnosticv/skills/catalog-builder/SKILL.md` - Complete UX overhaul
+- `docs/reference/quick-reference.md` - Updated description.adoc format
+- Reduced complexity by 100+ lines
+
 ## [v2.3.2] - 2026-02-03
 
 ### Changed - Navigation Simplification & Documentation Updates
