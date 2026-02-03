@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.5] - 2026-02-03
+
+### Changed - Documentation Updates
+
+**Installation Command Improvements:**
+- All documentation now shows both SSH and HTTPS installation options
+- SSH option (`rhpds/rhdp-skills-marketplace`) shown first for users with GitHub SSH keys configured
+- HTTPS option (`https://github.com/rhpds/rhdp-skills-marketplace`) as fallback for users without SSH
+- Clear guidance on which method to use based on SSH configuration
+
+**Files Updated:**
+- `docs/index.md` - Quick Install section
+- `docs/reference/quick-reference.md` - Installation Commands section
+- `docs/setup/index.md` - Quick Install section
+- `docs/reference/troubleshooting.md` - Migration solution sections
+
+**Benefits:**
+- Users can choose the method that works for their setup
+- Clearer installation instructions for all user scenarios
+- Reduces SSH-related installation errors
+
 ## [v2.3.4] - 2026-02-03
 
 ### Added - Multi-Location Configuration File Support

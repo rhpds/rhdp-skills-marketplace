@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.3.4-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.3.5-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 

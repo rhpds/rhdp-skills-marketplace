@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Official Red Hat Demo Platform (RHDP) skills marketplace for creating workshops, demos, and infrastructure automation",
-    "version": "2.3.4"
+    "version": "2.3.5"
   },
   "plugins": [
     {
