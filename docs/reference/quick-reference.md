@@ -12,7 +12,11 @@ Common commands and workflows for RHDP Skills Marketplace.
 ## Installation Commands
 
 ```bash
-# Add marketplace
+# Add marketplace (choose one)
+# If you have SSH keys configured for GitHub
+/plugin marketplace add rhpds/rhdp-skills-marketplace
+
+# If SSH not configured, use HTTPS
 /plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 
 # Install plugins
