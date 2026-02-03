@@ -3,9 +3,9 @@ layout: default
 title: Migration Guide
 ---
 
-# Migration Guide: File-Based to Plugin-Based Installation
+# Migration Guide: install.sh → Plugin Marketplace
 
-This guide helps you migrate from the old file-based installation (copying files to `~/.claude/skills/`) to the new plugin-based marketplace system.
+This guide helps you migrate from the old `install.sh` script to the new plugin-based marketplace system.
 
 ---
 

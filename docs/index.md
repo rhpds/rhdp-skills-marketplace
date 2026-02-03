@@ -21,7 +21,7 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 
 <div class="tile">
   <h3>🔄 Migration Guide</h3>
-  <p>Upgrading from v2.2.0 or file-based installation?</p>
+  <p>Used install.sh script? Migrate to plugin-based marketplace.</p>
   <a href="setup/migration.html" class="tile-link">Migration Steps →</a>
 </div>
 
