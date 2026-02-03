@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.2] - 2026-02-03
+
+### Changed - Navigation Simplification & Documentation Updates
+
+**Homepage Simplification:**
+- Reduced tiles from 8 to 4 for cleaner navigation
+- Removed Browse Skills tile (redundant with tabbed section below)
+- Removed Documentation tile (Quick Install section covers essentials)
+- Final tiles: Quick Start, Migration Guide, Create Your Own Skills, Get Support
+
+**Tabbed Skills Interface:**
+- Consolidated 3 skill tiles into single tabbed section
+- Tab interface at bottom of homepage with skill counts
+- 📝 Showroom (4 skills), ⚙️ AgnosticV (2 skills), 🏥 Health (1 skill)
+- Clean organization with smooth tab switching
+
+**Quick Reference Modernization:**
+- Replaced all install.sh commands with plugin marketplace commands
+- Updated all skill names with namespace prefixes (`/showroom:create-lab`, `/agnosticv:catalog-builder`)
+- Fixed file locations to reflect plugin structure (`~/.claude/plugins/installed/`)
+- Modernized verification commands (`/plugin list` instead of `ls ~/.claude/skills/`)
+- Updated troubleshooting with plugin-based workflows
+
+**Files Updated:**
+- `docs/index.md` - Simplified tile layout, tabbed skills
+- `docs/reference/quick-reference.md` - Complete plugin marketplace update
+- `VERSION` - Updated to v2.3.2
+- `README.md` - Version badge updated
+- `.claude-plugin/marketplace.json` - Version updated
+
 ## [v2.3.1] - 2026-02-03
 
 ### Changed - Homepage Redesign & UX Improvements
