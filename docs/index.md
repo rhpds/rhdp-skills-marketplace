@@ -123,41 +123,115 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 
 ---
 
-## Showroom Skills {#showroom-skills}
+## Available Skills
 
-**For workshop and demo creators** - Content creation and validation skills.
+<div class="tabs">
+  <div class="tab-buttons">
+    <button class="tab-button active" onclick="openTab(event, 'showroom')">📝 Showroom (4)</button>
+    <button class="tab-button" onclick="openTab(event, 'agnosticv')">⚙️ AgnosticV (2)</button>
+    <button class="tab-button" onclick="openTab(event, 'health')">🏥 Health (1)</button>
+  </div>
 
-| Skill | Description |
-|-------|-------------|
-| **[/showroom:create-lab](skills/create-lab.html)** | Generate workshop lab modules with Know/Show structure |
-| **[/showroom:create-demo](skills/create-demo.html)** | Create presenter-led demo content |
-| **[/showroom:verify-content](skills/verify-content.html)** | Quality validation and standards compliance |
-| **[/showroom:blog-generate](skills/blog-generate.html)** | Transform workshops into blog posts |
+  <div id="showroom" class="tab-content active">
+    <h3>Showroom Skills</h3>
+    <p><strong>For workshop and demo creators</strong> - Content creation and validation skills.</p>
 
-[View detailed Showroom documentation →](setup/showroom.html)
+    <table>
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><a href="skills/create-lab.html">/showroom:create-lab</a></strong></td>
+          <td>Generate workshop lab modules with Know/Show structure</td>
+        </tr>
+        <tr>
+          <td><strong><a href="skills/create-demo.html">/showroom:create-demo</a></strong></td>
+          <td>Create presenter-led demo content</td>
+        </tr>
+        <tr>
+          <td><strong><a href="skills/verify-content.html">/showroom:verify-content</a></strong></td>
+          <td>Quality validation and standards compliance</td>
+        </tr>
+        <tr>
+          <td><strong><a href="skills/blog-generate.html">/showroom:blog-generate</a></strong></td>
+          <td>Transform workshops into blog posts</td>
+        </tr>
+      </tbody>
+    </table>
 
----
+    <p><a href="setup/showroom.html">View detailed Showroom documentation →</a></p>
+  </div>
 
-## AgnosticV Skills {#agnosticv-skills}
+  <div id="agnosticv" class="tab-content">
+    <h3>AgnosticV Skills</h3>
+    <p><strong>For RHDP infrastructure team</strong> - Catalog automation and validation.</p>
 
-**For RHDP infrastructure team** - Catalog automation and validation.
+    <table>
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><a href="skills/agnosticv-catalog-builder.html">/agnosticv:catalog-builder</a></strong></td>
+          <td>Create/update AgnosticV catalogs and Virtual CIs</td>
+        </tr>
+        <tr>
+          <td><strong><a href="skills/agnosticv-validator.html">/agnosticv:validator</a></strong></td>
+          <td>Validate catalog configurations</td>
+        </tr>
+      </tbody>
+    </table>
 
-| Skill | Description |
-|-------|-------------|
-| **[/agnosticv:catalog-builder](skills/agnosticv-catalog-builder.html)** | Create/update AgnosticV catalogs and Virtual CIs |
-| **[/agnosticv:validator](skills/agnosticv-validator.html)** | Validate catalog configurations |
+    <p><a href="setup/agnosticv.html">View detailed AgnosticV documentation →</a></p>
+  </div>
 
-[View detailed AgnosticV documentation →](setup/agnosticv.html)
+  <div id="health" class="tab-content">
+    <h3>Health Skills</h3>
+    <p><strong>For deployment validation</strong> - Automated health checks and testing.</p>
 
----
+    <table>
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><a href="skills/deployment-health-checker.html">/health:deployment-validator</a></strong></td>
+          <td>Create Ansible validation roles for deployments</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-## Health Skills {#health-skills}
+<script>
+function openTab(evt, tabName) {
+  // Hide all tab contents
+  var tabContents = document.getElementsByClassName("tab-content");
+  for (var i = 0; i < tabContents.length; i++) {
+    tabContents[i].classList.remove("active");
+  }
 
-**For deployment validation** - Automated health checks and testing.
+  // Remove active class from all buttons
+  var tabButtons = document.getElementsByClassName("tab-button");
+  for (var i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
 
-| Skill | Description |
-|-------|-------------|
-| **[/health:deployment-validator](skills/deployment-health-checker.html)** | Create Ansible validation roles for deployments |
+  // Show the selected tab
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
+</script>
 
 ---
 
