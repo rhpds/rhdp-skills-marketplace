@@ -924,24 +924,28 @@ find "$temp_dir/content/modules/ROOT/pages" -name "*.adoc" | sort
 grep "^= " "$temp_dir/content/modules/ROOT/pages"/*.adoc
 ```
 
-**Generate description.adoc (following RHDP structure):**
+**Generate description.adoc (following RHDP structure - Nate's format):**
 ```asciidoc
 <Brief overview: 3-4 sentences max>
-<Sentence 1: What is this thing showing or doing?>
+<Sentence 1: Start with product/technology name - what is this thing showing or doing?>
 <Sentence 2-3: What is the intended use? Real-world scenario or business context>
 <Do NOT mention the catalog name or generic info - get straight to the point>
 
-NOTE: <Add warnings AFTER overview if needed: GPU availability, beta/alpha release, high memory, etc.>
+[IMPORTANT]
+====
+<Add warnings AFTER overview if needed: GPU availability, beta/alpha release, limited support, high memory, etc.>
+<For RH1 labs: "This Red Hat One lab is being released as-is with little change from the version delivered in person at the event. There is limited support for these labs and only those with regular usage will be retained in the RHDP catalog. A 30 day advance notice will be posted for any labs that get scheduled for removal.">
+====
 
-== Lab/Demo Guide
+== Lab Guide
 
-You can find the guide at link:<github-pages-url>[this link^].
+You can find a preview version of the link:<github-pages-url>[lab guide^] here.
 
 == Featured Technology and Products
 
-<List ONLY the products that matter or are the focus - max 3-4 unless complex>
+<List ONLY the products that matter or are the focus - max 6-7 for complex labs>
 <Include major versions extracted from AgnosticV>
-<Do NOT list every product - e.g., skip "OpenShift Pipelines" unless it's the focus>
+<List all significant products - e.g., for RHADS include RHTAS, RHTPA, RHACS, etc.>
 
 * <Red Hat Product Name> <Major Version>
 * <Red Hat Product Name> <Major Version>
@@ -951,60 +955,50 @@ You can find the guide at link:<github-pages-url>[this link^].
 
 === <Module 1 Title>
 
-. <Step 1> (use numbered lists for ordered/sequential steps)
-. <Step 2>
-. <Step 3 - optional>
-
-OR (for descriptive/unordered content):
-
-* <Detail 1>
-* <Detail 2>
-* <Detail 3 - optional>
+** <Key learning point 1>
+** <Key learning point 2>
+** <Key learning point 3>
 
 === <Module 2 Title>
 
-* <Detail 1>
-* <Detail 2>
+** <Key learning point 1>
+** <Key learning point 2>
+** <Key learning point 3>
 
 === <Module 3 Title>
 
-* <Detail 1>
-* <Detail 2>
-* <Detail 3 - optional>
+** <Key learning point 1>
+** <Key learning point 2>
 
 == Authors
 
-<Retrieve all names from __meta__.owners in common.yaml>
+<Retrieve all names from __meta__.owners in common.yaml - names only, NO emails>
 
 * <Author Name>
 * <Author Name>
 
 == Support
 
-=== Content Support
-
-For help with instructions or functionality:
-
-* Slack: <#channel-name> - tag <@author-slack-handle>
-* Email: <author-email>
-
-=== Environment Support
+For help with instructions or functionality, contact lab authors.
 
 For problems with provisioning or environment stability:
 
-* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
-* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 **Example (Demo):**
 ```asciidoc
 vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs, tool calling, and MCP integration. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs for system integration, and implement agentic workflows with performance benchmarking.
 
-NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
+[IMPORTANT]
+====
+GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
+====
 
-== Demo Guide
+== Lab Guide
 
-You can find the guide at link:https://rhpds.github.io/showroom-vllm-playground[this link^].
+You can find a preview version of the link:https://rhpds.github.io/showroom-vllm-playground[lab guide^] here.
 
 == Featured Technology and Products
 
@@ -1016,27 +1010,27 @@ You can find the guide at link:https://rhpds.github.io/showroom-vllm-playground[
 
 === Introduction to vLLM Playground
 
-. Overview of vLLM architecture and container-based deployment
-. ACME Corp use case: modernizing customer support with AI
-. Deploy first vLLM server instance
+** Overview of vLLM architecture and container-based deployment
+** ACME Corp use case: modernizing customer support with AI
+** Deploy first vLLM server instance
 
 === Structured Outputs Configuration
 
-. Configure JSON schema validation for reliable outputs
-. Integrate with downstream systems using structured data
-. Test output consistency across multiple requests
+** Configure JSON schema validation for reliable outputs
+** Integrate with downstream systems using structured data
+** Test output consistency across multiple requests
 
 === Tool Calling and MCP Integration
 
-. Implement function calling to extend AI capabilities
-. Enable Model Context Protocol for agentic workflows
-. Build human-in-the-loop approval system
+** Implement function calling to extend AI capabilities
+** Enable Model Context Protocol for agentic workflows
+** Build human-in-the-loop approval system
 
 === Performance Benchmarking
 
-. Run load tests against vLLM deployments
-. Compare CPU vs GPU performance metrics
-. Validate production readiness criteria
+** Run load tests against vLLM deployments
+** Compare CPU vs GPU performance metrics
+** Validate production readiness criteria
 
 == Authors
 
@@ -1045,91 +1039,86 @@ You can find the guide at link:https://rhpds.github.io/showroom-vllm-playground[
 
 == Support
 
-=== Content Support
-
-For help with instructions or functionality:
-
-* Slack: #vllm-playground-demo - tag @michael-tao
-* Email: mtao@redhat.com
-
-=== Environment Support
+For help with instructions or functionality, contact lab authors.
 
 For problems with provisioning or environment stability:
 
-* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
-* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
-**Example (Workshop):**
+**Example (Workshop - Real from Nate's PR):**
 ```asciidoc
-Ansible Automation Platform integrates with Red Hat OpenShift AI to build intelligent automation workflows that adapt to infrastructure conditions. Learners deploy AI models for infrastructure decision-making, create automated remediation playbooks powered by machine learning, and implement predictive maintenance workflows. This hands-on lab demonstrates combining Ansible's proven automation with AI-driven insights for self-healing infrastructure.
+Red Hat Advanced Developer Suite (RHADS) scales platform engineering teams to increase developer productivity and reduce software supply chain risk in hybrid and multicloud environments. This hands-on workshop goes deep into the architecture and implementation of RHADS, built for solutions architects, consultants, and technical sellers. Learners deploy and configure core RHADS components, explore real-world integration patterns, and see how RHADS improves developer experience while strengthening software supply chain security.
+
+[IMPORTANT]
+====
+This Red Hat One lab is being released as-is with little change from the version delivered in person at the event.
+There is limited support for these labs and only those with regular usage will be retained in the RHDP catalog.
+A 30 day advance notice will be posted for any labs that get scheduled for removal.
+====
 
 == Lab Guide
 
-You can find the guide at link:https://rhpds.github.io/ansible-ai-workshop[this link^].
+You can find a preview version of the link:https://rhpds.github.io/build-secured-dev-workflows-showroom[lab guide^] here.
 
 == Featured Technology and Products
 
-* Red Hat Ansible Automation Platform 2.5
-* Red Hat OpenShift AI 2.8
-* Red Hat OpenShift Container Platform 4.14
+* Red Hat Advanced Developer Suite (RHADS)
+* Red Hat Trusted Artifact Signer (RHTAS)
+* Red Hat Trusted Profile Analyzer (RHTPA)
+* Red Hat Developer Hub (RHDH)
+* Red Hat Advanced Cluster Security (RHACS)
+* Red Hat OpenShift Pipelines
+* Jenkins
 
 == Detailed Overview
 
-=== Introduction to AI-Driven Automation
+* *Module 1: Establish Software Composition Trust with SBOMs*
+** Configure identity and access management using Red Hat Build of Keycloak (RHBK)
+** Deploy Red Hat Trusted Profile Analyzer (RHTPA) using an operator
+** Ingest SBOMs and analyze software composition to gain visibility into vulnerabilities
 
-. Overview of OpenShift AI and Ansible integration architecture
-. Deploy OpenShift AI environment and verify components
-. Configure Ansible Automation Platform connection
+* *Sign and Verify All Artifacts With RHTAS*
+** Deploy Red Hat Trusted Artifact Signer (RHTAS) for cryptographic signing and verification
+** Integrate RHTAS with Tekton Chains to automate keyless artifact signing
+** Establish immutable provenance tracking with Fulcio, Rekor, and Trillian
 
-=== Building Infrastructure Decision Models
+* *Developer Workflow Without Developer Friction*
+** Configure Red Hat Developer Hub (RHDH) with SSO authentication and dynamic plugins
+** Set up catalog auto-discovery using GitOps and Configuration as Code
+** Enable OIDC-based commit signing with GitSign and Red Hat DevSpaces
 
-. Create machine learning model for capacity prediction
-. Train model using historical infrastructure metrics
-. Deploy model to OpenShift AI serving runtime
-
-=== Implementing Intelligent Playbooks
-
-. Build Ansible playbooks that query AI models for decisions
-. Implement automated remediation based on ML predictions
-. Test self-healing workflows with simulated failures
-
-=== Monitoring and Optimization
-
-. Configure monitoring for AI-driven automation
-. Analyze automation decisions and model accuracy
-. Optimize playbooks based on performance metrics
+* *Enforce Policy and Promote Safely*
+** Configure Red Hat Advanced Cluster Security (RHACS) integration with Quay for image scanning
+** Execute end-to-end trusted software supply chain pipelines
+** Enforce Enterprise Contract (EC) policies and promote only verified, compliant images
 
 == Authors
 
-* Sarah Automation
-* Alex ML Engineer
+* Tyrell Reddy
+* Prakhar Srivastava
+* Ramy El Essawy
 
 == Support
 
-=== Content Support
-
-For help with instructions or functionality:
-
-* Slack: #ansible-ai-lab - tag @sarah-automation
-* Email: sautomation@redhat.com
-
-=== Environment Support
+For help with instructions or functionality, contact lab authors.
 
 For problems with provisioning or environment stability:
 
-* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
-* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
-**Key Guidelines:**
-- Brief overview: 3-4 sentences max - what it shows, intended use, NO catalog name
-- Warnings AFTER overview (GPU, beta/alpha, etc.)
-- Lab/Demo Guide: Prose with embedded link, NOT a bullet list (e.g., "You can find the guide at link:url[this link^].")
-- Featured Products: max 3-4, only what matters, major versions only
-- Detailed Overview: NO blank line after heading (avoid empty section), use numbered lists (.) for ordered/sequential steps
-- Authors: from __meta__.owners in common.yaml
-- Support: Content first (Slack + author tag OR email), then Environment (RHDP ticket + forum-demo-redhat-com)
+**Key Guidelines (Nate's Format):**
+- Brief overview: 3-4 sentences max - start with product name, what it shows, intended use, NO catalog name
+- Warnings AFTER overview using `[IMPORTANT]` blocks (GPU, beta/alpha, limited support, etc.)
+- Lab Guide section: "You can find a preview version of the link:url[lab guide^] here."
+- Featured Products: 6-7 max for complex labs, include all significant products with major versions
+- Detailed Overview: Use `**` (double asterisks) for sub-bullets under module titles, NOT numbered lists
+- Module titles can use `*` for top-level bullets (like `* *Module 1: Title*`)
+- Authors: names only from __meta__.owners in common.yaml - NO emails
+- Support: Simple format - "For help with instructions or functionality, contact lab authors." then "For problems with provisioning or environment stability:" with RHDP ticket + Slack links
 
 #### 10.4: Generate info-message-template.adoc
 

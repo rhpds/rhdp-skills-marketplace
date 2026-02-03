@@ -177,36 +177,37 @@ requirements_content:
       version: ">=1.0.0"
 ```
 
-### description.adoc (v1.8.0+ RHDP Structure)
+### description.adoc (v1.8.0+ RHDP Structure - Nate's Format)
 
 ```asciidoc
 Brief overview (3-4 sentences max). Start with product name, not catalog name.
 Explain what this shows and intended use.
 
-NOTE: Warnings after overview (GPU required, beta/alpha features, etc.)
+[IMPORTANT]
+====
+Warnings after overview (GPU required, beta/alpha features, limited support, etc.)
+====
 
-== Lab/Demo Guide
+== Lab Guide
 
-* link:<showroom-url>[Guide^]
+You can find a preview version of the link:<showroom-url>[lab guide^] here.
 
 == Featured Technology and Products
 
-* Red Hat OpenShift {ocp_version}
+* Red Hat OpenShift Container Platform {ocp_version}
 * Technology {version}
 * Product Name {version}
 
 == Detailed Overview
 
-=== Module 1 Title
+* *Module 1 Title*
+** Key learning point 1
+** Key learning point 2
+** Key learning point 3
 
-* Key learning point 1
-* Key learning point 2
-* Key learning point 3
-
-=== Module 2 Title
-
-* Key learning point 1
-* Key learning point 2
+* *Module 2 Title*
+** Key learning point 1
+** Key learning point 2
 
 == Authors
 
@@ -215,15 +216,12 @@ NOTE: Warnings after overview (GPU required, beta/alpha features, etc.)
 
 == Support
 
-=== Content Support
+For help with instructions or functionality, contact lab authors.
 
-* Slack: #channel-name - tag @author
-* Email: author@redhat.com
+For problems with provisioning or environment stability:
 
-=== Environment Support
-
-* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
-* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
 ```
 
 ---
