@@ -11,6 +11,22 @@ AI-powered skills for Red Hat Demo Platform content creation and provisioning.
 
 ## Quick Start
 
+### 🔄 Upgrading from v2.2.0 or Earlier?
+
+**If you used the old file-based installation (`install.sh`) or have skills in `~/.claude/skills/`:**
+
+You need to migrate to the new plugin-based system. It's simple and takes 5 minutes.
+
+**[Migration Guide: File-Based → Plugin-Based →](setup/migration.html)**
+
+Shows you exactly how to:
+- Remove old installation
+- Install marketplace plugins
+- Update to namespace prefixes (`/showroom:create-lab` format)
+- Troubleshoot common issues
+
+---
+
 ### Installation
 
 Add the RHDP marketplace to Claude Code:
@@ -53,7 +69,7 @@ Plugins can be installed at different scopes:
   - Useful for team-shared configurations
   - See [Team Setup Guide](setup/index.html#project-scoped-plugins)
 
-[See complete plugin list →](../MARKETPLACE.html) | [Migration from file-based installation →](setup/migration.html)
+[See complete plugin list →](../MARKETPLACE.html)
 
 ---
 
