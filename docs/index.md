@@ -225,11 +225,19 @@ function openTab(evt, tabName) {
 
 ## Quick Install
 
-```bash
-# Add marketplace
-/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+**Add marketplace (choose one):**
 
-# Install plugins
+```bash
+# If you have SSH keys configured for GitHub (shorter)
+/plugin marketplace add rhpds/rhdp-skills-marketplace
+
+# If SSH not configured, use HTTPS
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+```
+
+**Install plugins:**
+
+```bash
 /plugin install showroom@rhdp-marketplace
 /plugin install agnosticv@rhdp-marketplace
 /plugin install health@rhdp-marketplace
