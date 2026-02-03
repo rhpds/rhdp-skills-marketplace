@@ -1,9 +1,134 @@
 ---
 layout: default
-title: Create Your Own Skill & Plugin
+title: Create Your Own Skills
 ---
 
-# Workshop: Create Your Own Claude Code Skill & Plugin
+# Create Your Own Skills & Plugins
+
+Learn to use Claude effectively to create custom skills for your workflows.
+
+---
+
+## 🎓 Interactive Workshop (Recommended)
+
+**Multi-module hands-on workshop teaching effective Claude prompting:**
+
+[**Start the Workshop →**](workshop/index.html)
+
+**What you'll learn:**
+- Module 1: What are skills and how they work (10 min)
+- Module 2: Use Claude to analyze existing RHDP skills (15 min)
+- **Module 3: Use Claude to create your first skill (30 min)** ← Most important!
+- Module 4: Use Claude to package as plugin (15 min)
+- Module 5: Testing and publishing (20 min)
+
+---
+
+## Quick Start: Create a Skill Right Now
+
+**Don't want the full workshop? Here's how to create a skill in 5 minutes:**
+
+### Step 1: Describe Your Workflow
+
+Think about what you want to automate:
+- Deployment process?
+- File generation?
+- Validation workflow?
+
+### Step 2: Prompt Claude
+
+**Copy this template and fill in your details:**
+
+```
+I want to create a Claude Code skill that [does what].
+
+Current manual process:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+The skill should:
+- [Feature 1]
+- [Feature 2]
+- [Feature 3]
+
+Can you read agnosticv/skills/catalog-builder/SKILL.md
+and create a similar skill for my workflow?
+
+Use the same patterns for:
+- Step-by-step workflow
+- Asking user questions
+- File operations
+- Error handling
+```
+
+### Step 3: Iterate with Claude
+
+```
+Can you add:
+- Validation for [prerequisite]
+- Error handling for [edge case]
+- Progress indicators
+```
+
+### Step 4: Test
+
+```
+Can you copy this skill to ~/.claude/skills/ for testing?
+```
+
+**That's it!** You have a working skill.
+
+---
+
+## Effective Prompting Patterns
+
+### Pattern 1: Convert Shell Script → Skill
+
+```
+I have this shell script:
+[paste script]
+
+Create a Claude Code skill that automates this.
+Use patterns from agnosticv:catalog-builder.
+```
+
+### Pattern 2: Convert GitOps Workflow → Skill
+
+```
+I manage GitOps repos with this structure:
+apps/
+  myapp/
+    base/
+    overlays/
+
+Create a skill that generates new applications.
+Reference showroom:create-lab for file generation patterns.
+```
+
+### Pattern 3: Convert Ansible Workload → Skill
+
+```
+I have Ansible workloads in roles/.
+Create a skill that scaffolds new workloads.
+Use agnosticv:catalog-builder as a template.
+```
+
+### Pattern 4: Extend Existing Skill
+
+```
+Read showroom/skills/blog-generate/SKILL.md
+
+Create similar skill but for [my use case].
+Keep: workflow structure
+Change: [specific differences]
+```
+
+---
+
+## Full Workshop: Create Your Own Claude Code Skill & Plugin
+
+**For the complete learning experience, take the workshop:**
 
 Learn how to create custom skills and plugins for Claude Code by building a real example step-by-step.
 
@@ -1807,3 +1932,24 @@ Claude: [Creates plugin metadata]
 ---
 
 Happy skill building with Claude! 🚀
+
+[**Go to Workshop →**](workshop/index.html)
+
+The workshop covers everything in depth with real examples, effective prompting techniques, and hands-on exercises.
+
+---
+
+## Resources
+
+**Official Documentation:**
+- [Claude Code Skills Guide](https://code.claude.com/docs/en/skills)
+- [Agent Skills Standard](https://agentskills.io)
+- [Plugin System](https://code.claude.com/docs/en/plugins)
+
+**Example Skills to Learn From:**
+- [showroom/skills/](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/showroom/skills) - Content creation
+- [agnosticv/skills/](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/agnosticv/skills) - Infrastructure automation
+
+**Community:**
+- Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+- GitHub: [Submit questions](https://github.com/rhpds/rhdp-skills-marketplace/issues)
