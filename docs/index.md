@@ -17,6 +17,9 @@ title: Home
   <div class="section-header">
     <h2>Choose Your Platform</h2>
     <p>Select your IDE to get started with RHDP skills</p>
+    <p style="font-size: 0.875rem; color: #586069; margin-top: 0.5rem;">
+      <strong>Note:</strong> Also works with VS Code using the Claude extension (same installation as Claude Code)
+    </p>
   </div>
 
   <div class="platform-grid">
@@ -37,15 +40,6 @@ title: Home
       <div class="platform-meta">
         <span class="badge badge-new">New: v2.4.0</span>
         <span class="badge">Workaround</span>
-      </div>
-    </a>
-
-    <a href="{{ '/setup/vscode.html' | relative_url }}" class="platform-card">
-      <div class="platform-icon">📝</div>
-      <h3>VS Code with Claude</h3>
-      <p>Use Claude extension with native Agent Skills support</p>
-      <div class="platform-meta">
-        <span class="badge">Claude Extension</span>
       </div>
     </a>
   </div>
@@ -73,15 +67,6 @@ title: Home
       <p>Install script (workaround)</p>
       <pre><code>curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash</code></pre>
       <a href="{{ '/setup/cursor.html' | relative_url }}">Full guide →</a>
-    </div>
-
-    <div class="category-card">
-      <div class="category-icon">📦</div>
-      <h3>VS Code</h3>
-      <p>Same as Claude Code</p>
-      <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace
-/plugin install showroom@rhdp-marketplace</code></pre>
-      <a href="{{ '/setup/vscode.html' | relative_url }}">Full guide →</a>
     </div>
   </div>
 </div>
