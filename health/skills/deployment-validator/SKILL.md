@@ -24,20 +24,101 @@ This skill helps you:
 
 **IMPORTANT**: User prefers to SSH to bastion and run commands manually. You provide the commands, they run them and share output.
 
+## Configuration Detection
+
+### Get Repository Paths from Configuration
+
+**Check configuration files for repository paths:**
+
+Checks these locations in order:
+1. `~/CLAUDE.md`
+2. `~/claude/*.md`
+3. `~/.claude/*.md`
+
+```bash
+# Check configuration files for paths (multiple locations)
+base_path=""
+agv_path=""
+
+# Check ~/CLAUDE.md first
+if [[ -f ~/CLAUDE.md ]]; then
+  base_path=$(grep -E "base_path.*:" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+  agv_path=$(grep -E "agnosticv.*:" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+fi
+
+# Check ~/claude/*.md if not found
+if [[ -z "$base_path" ]] || [[ -z "$agv_path" ]]; then
+  for file in ~/claude/*.md; do
+    if [[ -f "$file" ]]; then
+      [[ -z "$base_path" ]] && base_path=$(grep -E "base_path.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+      [[ -z "$agv_path" ]] && agv_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+      [[ -n "$base_path" ]] && [[ -n "$agv_path" ]] && break
+    fi
+  done
+fi
+
+# Check ~/.claude/*.md if still not found
+if [[ -z "$base_path" ]] || [[ -z "$agv_path" ]]; then
+  for file in ~/.claude/*.md; do
+    if [[ -f "$file" ]]; then
+      [[ -z "$base_path" ]] && base_path=$(grep -E "base_path.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+      [[ -z "$agv_path" ]] && agv_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+      [[ -n "$base_path" ]] && [[ -n "$agv_path" ]] && break
+    fi
+  done
+fi
+
+# Expand tilde if present
+[[ "$base_path" =~ ^~ ]] && base_path="${base_path/#\~/$HOME}"
+[[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
+```
+
+**If found in configuration:**
+```
+✓ Found base path: [path from configuration]
+✓ Found AgV path: [path from configuration]
+```
+
+**Configuration file example:**
+```markdown
+# Repository paths
+base_path: ~/work/code
+agnosticv: ~/work/code/agnosticv
+```
+
+---
+
 ## Phase 1: Initial Setup
 
 ### Step 1.1: Get Local Clone Path
 
-Ask first question:
+**If configuration found, use it automatically:**
+```
+✓ Using paths from configuration:
+  Base path: [base_path from config]
+  AgV path: [agv_path from config]
+```
+
+**If NOT found in configuration, ask:**
 ```
 I'll help you create a validation role. Where are your repositories cloned locally?
 
-Base path: (default: ~/work/code/)
+Base path: (e.g., ~/work/code/ or ~/devel/)
 ```
 
-Use Glob tool to verify:
-- `{base_path}/agnosticv` exists
-- If doesn't exist, ask for exact AgnosticV path
+**Verify paths exist:**
+```bash
+# Use Glob tool to verify paths exist
+if [[ -d "$base_path/agnosticv" ]]; then
+  agv_path="$base_path/agnosticv"
+  echo "✓ Found AgV at: $agv_path"
+elif [[ -d "$agv_path" ]]; then
+  echo "✓ Using AgV path: $agv_path"
+else
+  echo "❌ AgnosticV not found"
+  echo "Please provide exact AgnosticV path:"
+fi
+```
 
 ### Step 1.2: Get Workshop Information
 

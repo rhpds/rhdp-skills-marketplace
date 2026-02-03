@@ -56,6 +56,55 @@ Step 5: Offer Follow-up Actions
 
 ---
 
+## Configuration Detection
+
+### Get AgnosticV Repository Path (For Full Repo Validation)
+
+**Check configuration files for AgV repository path:**
+
+Checks these locations in order:
+1. `~/CLAUDE.md`
+2. `~/claude/*.md`
+3. `~/.claude/*.md`
+
+```bash
+# Check configuration files for AgV path (multiple locations)
+agv_repo_path=""
+
+# Check ~/CLAUDE.md first
+if [[ -f ~/CLAUDE.md ]]; then
+  agv_repo_path=$(grep -E "agnosticv.*:" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
+fi
+
+# Check ~/claude/*.md if not found
+if [[ -z "$agv_repo_path" ]]; then
+  for file in ~/claude/*.md; do
+    [[ -f "$file" ]] && agv_repo_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+    [[ -n "$agv_repo_path" ]] && break
+  done
+fi
+
+# Check ~/.claude/*.md if still not found
+if [[ -z "$agv_repo_path" ]]; then
+  for file in ~/.claude/*.md; do
+    [[ -f "$file" ]] && agv_repo_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+    [[ -n "$agv_repo_path" ]] && break
+  done
+fi
+
+# Expand tilde if present
+[[ "$agv_repo_path" =~ ^~ ]] && agv_repo_path="${agv_repo_path/#\~/$HOME}"
+```
+
+**If found in configuration:**
+```
+✓ Found AgV repository path: [path from configuration]
+```
+
+**If NOT found, will ask when needed for full repository validation.**
+
+---
+
 ## Step 1: Smart Path Detection (FIRST)
 
 ### Auto-detect Catalog Location

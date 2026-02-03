@@ -35,7 +35,7 @@ Use `/agnosticv-catalog-builder` when you need to:
 
 **Prerequisites:**
 - RHDP account with AgnosticV repository access
-- AgnosticV repository cloned locally (`~/work/code/agnosticv`)
+- AgnosticV repository cloned locally (e.g., `~/work/code/agnosticv` or `~/devel/git/agnosticv`)
 - Git configured with SSH access to GitHub
 - For description generation: Showroom content in `content/modules/ROOT/pages/`
 
@@ -81,20 +81,45 @@ Your choice [1-4]:
 
 ### Get AgnosticV Repository Path
 
-**Option C: Read from claude.md if present, otherwise ask**
+**Option C: Read from configuration files if present, otherwise ask**
+
+Checks these locations in order:
+1. `~/CLAUDE.md`
+2. `~/claude/*.md`
+3. `~/.claude/*.md`
 
 ```bash
-# Check ~/CLAUDE.md for AgV path
+# Check configuration files for AgV path (multiple locations)
 agv_path=""
+
+# Check ~/CLAUDE.md first
 if [[ -f ~/CLAUDE.md ]]; then
   agv_path=$(grep -E "agnosticv.*:" ~/CLAUDE.md | grep -oE '(~|/)[^ ]+' | head -1)
-  [[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
 fi
+
+# Check ~/claude/*.md if not found
+if [[ -z "$agv_path" ]]; then
+  for file in ~/claude/*.md; do
+    [[ -f "$file" ]] && agv_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+    [[ -n "$agv_path" ]] && break
+  done
+fi
+
+# Check ~/.claude/*.md if still not found
+if [[ -z "$agv_path" ]]; then
+  for file in ~/.claude/*.md; do
+    [[ -f "$file" ]] && agv_path=$(grep -E "agnosticv.*:" "$file" | grep -oE '(~|/)[^ ]+' | head -1)
+    [[ -n "$agv_path" ]] && break
+  done
+fi
+
+# Expand tilde if present
+[[ "$agv_path" =~ ^~ ]] && agv_path="${agv_path/#\~/$HOME}"
 ```
 
-**If found in CLAUDE.md:**
+**If found in configuration:**
 ```
-✓ Found AgV path in ~/CLAUDE.md: ~/devel/git/agnosticv
+✓ Found AgV path in configuration: [path from configuration]
 
 Proceeding with this path.
 ```
@@ -1833,7 +1858,7 @@ Path(s):
 
 For each base component path:
 
-1. Path is relative to `$AGV_PATH` (detected from CLAUDE.md or ~/devel/git/agnosticv)
+1. Path is relative to `$AGV_PATH` (detected from configuration files or user input)
 2. Read `<base-component-path>/common.yaml`
 3. If file doesn't exist, report error and skip (or stop if single component)
 
@@ -2294,7 +2319,7 @@ What would you like to create or update?
 
 Your choice [1-3]: 1
 
-Q: AgnosticV repository path: ~/work/code/agnosticv
+Q: AgnosticV repository path: [your_agv_path]
 
 🔧 Git Workflow Setup
 
@@ -2369,7 +2394,7 @@ User: /agnosticv-catalog-builder
 What would you like to create or update?
 Your choice [1-3]: 2
 
-Q: AgnosticV repository path: ~/work/code/agnosticv
+Q: AgnosticV repository path: [your_agv_path]
 
 🔧 Git Workflow Setup
 Current branch: update-ocp-pipelines
@@ -2412,12 +2437,12 @@ User: /agnosticv-catalog-builder
 
 Your choice [1-3]: 3
 
-Q: AgnosticV repository path: ~/work/code/agnosticv
+Q: AgnosticV repository path: [your_agv_path]
 
 🔧 Git Workflow Setup
 Q: Branch name: add-litellm-info-message
 
-📂 Catalog: ~/work/code/agnosticv/agd_v2/litellm-virtual-keys/
+📂 Catalog: [your_agv_path]/agd_v2/litellm-virtual-keys/
 
 📧 Info Message Template
 
