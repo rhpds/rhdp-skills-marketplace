@@ -9,6 +9,7 @@ title: Home
   <p>AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
   <div class="hero-actions">
     <a href="#platforms" class="btn btn-primary">Get Started</a>
+    <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" class="btn btn-secondary">Create Your Own Skill</a>
     <a href="https://github.com/rhpds/rhdp-skills-marketplace" class="btn btn-secondary">View on GitHub</a>
   </div>
 </div>
@@ -114,6 +115,18 @@ title: Home
   </div>
 </div>
 
+<div class="section" style="background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%); padding: 3rem 2rem; border-radius: 12px; margin: 2rem 0;">
+  <div class="section-header" style="text-align: center;">
+    <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">🎓 Create Your Own Skill</h2>
+    <p style="color: rgba(255,255,255,0.9); font-size: 1.125rem; max-width: 600px; margin: 0 auto 2rem;">
+      Learn to build custom AI skills for your workflows with Claude's help. Step-by-step workshop included.
+    </p>
+    <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" style="display: inline-block; background: white; color: #EE0000; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.125rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+      Start Workshop →
+    </a>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-header">
     <h2>Need Help?</h2>
@@ -134,13 +147,6 @@ title: Home
       <p>Complete guides and references</p>
       <a href="{{ '/reference/quick-reference.html' | relative_url }}">Quick reference →</a><br>
       <a href="{{ '/reference/troubleshooting.html' | relative_url }}">Troubleshooting →</a>
-    </div>
-
-    <div class="category-card">
-      <div class="category-icon">🎓</div>
-      <h3>Create Your Own</h3>
-      <p>Build custom skills for your workflows</p>
-      <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}">Start workshop →</a>
     </div>
   </div>
 </div>
