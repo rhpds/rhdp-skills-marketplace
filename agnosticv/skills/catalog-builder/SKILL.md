@@ -1851,6 +1851,14 @@ Data keys:
 
 Create a Virtual CI in the `published/` folder based on an existing base component.
 
+**What this mode does:**
+- Creates Virtual CI in `published/<name>/` with common.yaml, dev.yaml, prod.yaml, description.adoc
+- Copies description.adoc and templates from base component
+- Adds dev restriction (`#include /includes/access-restriction-devs-only.yaml`) to base component
+- Adds warning to base component's description.adoc
+- Creates/updates base component's prod.yaml with scm_ref version (for production stability)
+- Ensures `reportingLabels.primaryBU` is set on both Virtual CI and base component
+
 **Bulk usage:** The user may provide multiple base component paths. Process each one sequentially.
 
 ### Step 1: Get Base Component Path
@@ -2081,6 +2089,44 @@ Order the parent CI instead, which can be found link:https://catalog.demo.redhat
 
 Replace `<virtual-ci-name>` with actual Virtual CI folder name.
 
+#### 8c: Create/Update prod.yaml with scm_ref version
+
+**IMPORTANT:** For production stability, base components should pin `scm_ref` to a specific version.
+
+**Ask user:**
+```
+📌 Production Version Pinning
+
+Q: What scm_ref version should be used for production?
+   (e.g., demyst-1.0.1, ocp-adv-1.0.0, build-secure-dev-0.0.1)
+
+   Enter version tag (or press Enter to skip):
+```
+
+**If user provides version:**
+
+Create or update `<base-component-path>/prod.yaml`:
+
+```yaml
+---
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  deployer:
+    scm_ref: <user-provided-version>
+```
+
+**If prod.yaml already exists:**
+- Read existing file
+- Check if `__meta__.deployer.scm_ref` exists
+- If exists and different, ask: "prod.yaml already has scm_ref: <existing>. Replace with <new-version>? [Y/n]"
+- Update only the scm_ref value, preserve other settings
+
+**If user skips:**
+- No prod.yaml created/updated
+- Continue to next step
+
 ### Step 9: Handle Multiple Components
 
 If adding to existing Virtual CI (multi-component):
@@ -2103,7 +2149,8 @@ After creating files:
 4. Verify `description.adoc` copied to Virtual CI
 5. Verify dev restriction added to base component's `common.yaml`
 6. Verify warning added to base component's `description.adoc`
-7. Report what was created
+7. Verify prod.yaml created/updated in base component (if version was provided)
+8. Report what was created
 
 ### Output Format
 
@@ -2118,6 +2165,7 @@ Created Virtual CI: published/<name>
   - Base component updated:
     - Added dev restriction to common.yaml
     - Added warning to description.adoc
+    - Created/Updated prod.yaml with scm_ref: <version> (if provided)
 ```
 
 ### Error Handling
