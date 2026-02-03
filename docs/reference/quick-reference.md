@@ -12,23 +12,21 @@ Common commands and workflows for RHDP Skills Marketplace.
 ## Installation Commands
 
 ```bash
-# Interactive installation
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+# Add marketplace
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 
-# Install showroom namespace for Claude Code
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | \
-  bash -s -- --platform claude --namespace showroom
+# Install plugins
+/plugin install showroom@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
+/plugin install health@rhdp-marketplace
 
-# Install all namespaces for Cursor
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | \
-  bash -s -- --platform cursor --namespace all
+# Update marketplace (interactive: select marketplace, press 'u')
+/plugin marketplace update
 
-# Dry run (test without installing)
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | \
-  bash -s -- --dry-run
-
-# Check for updates
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+# Update plugins (interactive: navigate to "Update now", press Enter)
+/plugin update showroom@rhdp-marketplace
+/plugin update agnosticv@rhdp-marketplace
+/plugin update health@rhdp-marketplace
 ```
 
 ---
@@ -38,10 +36,10 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 ### Creating a Workshop Lab
 
 ```
-1. /create-lab
+1. /showroom:create-lab
 2. Answer prompts (name, abstract, technologies, module count)
 3. Review generated content
-4. /verify-content
+4. /showroom:verify-content
 5. Fix any issues
 6. /showroom:blog-generate (optional)
 7. Publish
@@ -50,10 +48,10 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 ### Creating a Demo
 
 ```
-1. /create-demo
+1. /showroom:create-demo
 2. Answer prompts (name, abstract, technologies)
 3. Review generated content
-4. /verify-content
+4. /showroom:verify-content
 5. Present or publish
 ```
 
@@ -65,7 +63,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. cd ~/work/code/agnosticv
-2. /agnosticv-catalog-builder
+2. /agnosticv:catalog-builder
 3. Choose mode: 1 (Full Catalog)
 4. Git workflow runs automatically (pulls main, creates branch)
 5. Answer prompts (name, infrastructure, workloads)
@@ -79,7 +77,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. cd ~/work/code/agnosticv/<directory>/<catalog-name>
-2. /agnosticv-validator
+2. /agnosticv:validator
 3. Review validation report
 4. Fix errors and warnings
 5. Re-validate
@@ -89,7 +87,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ```
 1. Have Showroom content ready
-2. /agnosticv-catalog-builder
+2. /agnosticv:catalog-builder
 3. Choose mode: 2 (Description Only)
 4. Provide Showroom repo URL or local path
 5. Review generated description.adoc
@@ -100,30 +98,26 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 ## Common File Locations
 
-### Claude Code
+### Claude Code / VS Code with Claude
 
 ```
 ~/.claude/
-├── skills/               # Installed skills
-│   ├── create-lab/
-│   ├── create-demo/
-│   ├── verify-content/
-│   ├── blog-generate/
-│   ├── agnosticv-catalog-builder/
-│   ├── agnosticv-validator/
-│   ├── deployment-health-checker/
-│   └── ftl/
-└── docs/                # Skill documentation
-    ├── SKILL-COMMON-RULES.md
-    └── AGV-COMMON-RULES.md
+├── plugins/             # Installed plugins
+│   ├── installed/
+│   │   ├── showroom@rhdp-marketplace/
+│   │   ├── agnosticv@rhdp-marketplace/
+│   │   └── health@rhdp-marketplace/
+│   └── marketplaces/
+│       └── rhdp-marketplace/
+└── skills/              # Legacy skills (if migrating)
 ```
 
 ### Cursor
 
 ```
 ~/.cursor/
-├── skills/              # Installed skills
-└── docs/                # Skill documentation
+├── plugins/             # Installed plugins
+└── skills/              # Legacy skills
 ```
 
 ### AgnosticV Repository
@@ -277,13 +271,11 @@ git branch -d <catalog-name>
 ## Verification Commands
 
 ```bash
-# Check installed skills
-ls ~/.claude/skills/        # Claude Code
-ls ~/.cursor/skills/        # Cursor
+# Check installed plugins
+/plugin list
 
-# Check version
-cat ~/.claude/skills/.rhdp-marketplace-version
-cat ~/.cursor/skills/.rhdp-marketplace-version
+# Check marketplace
+/plugin marketplace list
 
 # Check AgnosticV repo
 cd ~/work/code/agnosticv && git status
@@ -302,17 +294,23 @@ npm run dev
 ### Skills Not Showing
 
 ```bash
-# Restart editor
+# Restart Claude Code
 # Then verify installation:
-ls ~/.claude/skills/
+/plugin list
 ```
 
-### Wrong Platform Installed
+### Need to Reinstall
 
 ```bash
-# Reinstall with correct platform
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | \
-  bash -s -- --platform <claude|cursor> --namespace <namespace>
+# Uninstall plugins
+/plugin uninstall showroom@rhdp-marketplace
+/plugin uninstall agnosticv@rhdp-marketplace
+/plugin uninstall health@rhdp-marketplace
+
+# Reinstall
+/plugin install showroom@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
+/plugin install health@rhdp-marketplace
 ```
 
 ### AgnosticV Repo Not Found

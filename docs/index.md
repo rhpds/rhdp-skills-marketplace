@@ -32,18 +32,6 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 </div>
 
 <div class="tile">
-  <h3>🎯 Browse Skills</h3>
-  <p>Explore 7 skills across Showroom, AgnosticV, and Health categories.</p>
-  <a href="#available-skills" class="tile-link">View All Skills →</a>
-</div>
-
-<div class="tile">
-  <h3>📚 Documentation</h3>
-  <p>Guides, references, and troubleshooting.</p>
-  <a href="reference/quick-reference.html" class="tile-link">Browse Docs →</a>
-</div>
-
-<div class="tile">
   <h3>💬 Get Support</h3>
   <p>Questions? Join our community or open an issue.</p>
   <a href="#support" class="tile-link">Get Help →</a>
