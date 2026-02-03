@@ -944,20 +944,17 @@ You can find a preview version of the link:<github-pages-url>[lab guide^] here.
 
 == Detailed Overview
 
-=== <Module 1 Title>
-
+* *<Module 1 Title>*
 ** <Key learning point 1>
 ** <Key learning point 2>
 ** <Key learning point 3>
 
-=== <Module 2 Title>
-
+* *<Module 2 Title>*
 ** <Key learning point 1>
 ** <Key learning point 2>
 ** <Key learning point 3>
 
-=== <Module 3 Title>
-
+* *<Module 3 Title>*
 ** <Key learning point 1>
 ** <Key learning point 2>
 
@@ -999,26 +996,22 @@ You can find a preview version of the link:https://rhpds.github.io/showroom-vllm
 
 == Detailed Overview
 
-=== Introduction to vLLM Playground
-
+* *Introduction to vLLM Playground*
 ** Overview of vLLM architecture and container-based deployment
 ** ACME Corp use case: modernizing customer support with AI
 ** Deploy first vLLM server instance
 
-=== Structured Outputs Configuration
-
+* *Structured Outputs Configuration*
 ** Configure JSON schema validation for reliable outputs
 ** Integrate with downstream systems using structured data
 ** Test output consistency across multiple requests
 
-=== Tool Calling and MCP Integration
-
+* *Tool Calling and MCP Integration*
 ** Implement function calling to extend AI capabilities
 ** Enable Model Context Protocol for agentic workflows
 ** Build human-in-the-loop approval system
 
-=== Performance Benchmarking
-
+* *Performance Benchmarking*
 ** Run load tests against vLLM deployments
 ** Compare CPU vs GPU performance metrics
 ** Validate production readiness criteria
