@@ -1,257 +1,177 @@
 ---
-layout: default
+layout: home
 title: Home
 ---
 
-# Welcome to RHDP Skills Marketplace
-
-AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.
-
-**Install once, automate forever.** Browse skills below or create your own.
-
----
-
-<div class="tiles-container">
-
-<div class="tile">
-  <h3>🚀 Quick Start</h3>
-  <p>New to the marketplace? Get up and running in 5 minutes.</p>
-  <a href="setup/index.html" class="tile-link">Install & Setup →</a>
+<div class="hero">
+  <div class="hero-badge">New v2.4.0</div>
+  <h1>RHDP Skills Marketplace</h1>
+  <p>AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
+  <div class="hero-actions">
+    <a href="#platforms" class="btn btn-primary">Get Started</a>
+    <a href="https://github.com/rhpds/rhdp-skills-marketplace" class="btn btn-secondary">View on GitHub</a>
+  </div>
 </div>
 
-<div class="tile">
-  <h3>🔄 Migration Guide</h3>
-  <p>Used install.sh script? Migrate to plugin-based marketplace.</p>
-  <a href="setup/migration.html" class="tile-link">Migration Steps →</a>
+<div class="section" id="platforms">
+  <div class="section-header">
+    <h2>Choose Your Platform</h2>
+    <p>Select your IDE to get started with RHDP skills</p>
+  </div>
+
+  <div class="platform-grid">
+    <a href="{{ '/setup/claude-code.html' | relative_url }}" class="platform-card">
+      <div class="platform-icon">🚀</div>
+      <h3>Claude Code</h3>
+      <p>Native plugin marketplace with automatic updates and version management</p>
+      <div class="platform-meta">
+        <span class="badge badge-recommended">Recommended</span>
+        <span class="badge">Plugin System</span>
+      </div>
+    </a>
+
+    <a href="{{ '/setup/cursor.html' | relative_url }}" class="platform-card">
+      <div class="platform-icon">⚡</div>
+      <h3>Cursor</h3>
+      <p>Install via npx skills - fast, standard, and works with Agent Skills 2.4+</p>
+      <div class="platform-meta">
+        <span class="badge badge-new">New: npx support</span>
+        <span class="badge">Version 2.4+</span>
+      </div>
+    </a>
+
+    <a href="{{ '/setup/vscode.html' | relative_url }}" class="platform-card">
+      <div class="platform-icon">📝</div>
+      <h3>VS Code with Claude</h3>
+      <p>Use Claude extension with native Agent Skills support</p>
+      <div class="platform-meta">
+        <span class="badge">Claude Extension</span>
+      </div>
+    </a>
+  </div>
 </div>
 
-<div class="tile">
-  <h3>🎓 Create Your Own Skills</h3>
-  <p>Build custom skills for your workflows with Claude's help.</p>
-  <a href="contributing/create-your-own-skill.html" class="tile-link">Start Workshop →</a>
+<div class="section" id="quick-install">
+  <div class="section-header">
+    <h2>Quick Install</h2>
+    <p>Get started in 30 seconds</p>
+  </div>
+
+  <div class="category-grid">
+    <div class="category-card">
+      <div class="category-icon">🔌</div>
+      <h3>Claude Code</h3>
+      <p>Plugin marketplace installation</p>
+      <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin install showroom@rhdp-marketplace</code></pre>
+      <a href="{{ '/setup/claude-code.html' | relative_url }}">Full guide →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">⚡</div>
+      <h3>Cursor</h3>
+      <p>npx skills installation</p>
+      <pre><code>npx skills add rhpds/rhdp-skills-marketplace</code></pre>
+      <a href="{{ '/setup/cursor.html' | relative_url }}">Full guide →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">📦</div>
+      <h3>VS Code</h3>
+      <p>Same as Claude Code</p>
+      <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin install showroom@rhdp-marketplace</code></pre>
+      <a href="{{ '/setup/vscode.html' | relative_url }}">Full guide →</a>
+    </div>
+  </div>
 </div>
 
-<div class="tile">
-  <h3>💬 Get Support</h3>
-  <p>Questions? Join our community or open an issue.</p>
-  <a href="#support" class="tile-link">Get Help →</a>
+<div class="section" id="skills">
+  <div class="section-header">
+    <h2>Available Skills</h2>
+    <p>7 skills across 3 categories</p>
+  </div>
+
+  <div class="category-grid">
+    <div class="category-card">
+      <div class="category-icon">📝</div>
+      <h3>Showroom (4 skills)</h3>
+      <p>Workshop and demo creation</p>
+      <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
+        <li>create-lab - Generate workshop modules</li>
+        <li>create-demo - Presenter-led demos</li>
+        <li>verify-content - Quality validation</li>
+        <li>blog-generate - Transform to blog posts</li>
+      </ul>
+      <a href="{{ '/skills/create-lab.html' | relative_url }}">Learn more →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">⚙️</div>
+      <h3>AgnosticV (2 skills)</h3>
+      <p>Catalog automation (RHDP internal)</p>
+      <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
+        <li>catalog-builder - Create/update catalogs</li>
+        <li>validator - Validate configurations</li>
+      </ul>
+      <a href="{{ '/skills/agnosticv-catalog-builder.html' | relative_url }}">Learn more →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🏥</div>
+      <h3>Health (1 skill)</h3>
+      <p>Deployment validation (RHDP internal)</p>
+      <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
+        <li>deployment-validator - Create Ansible validation roles</li>
+      </ul>
+      <a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Learn more →</a>
+    </div>
+  </div>
 </div>
 
+<div class="section">
+  <div class="section-header">
+    <h2>Need Help?</h2>
+  </div>
+
+  <div class="category-grid">
+    <div class="category-card">
+      <div class="category-icon">🔄</div>
+      <h3>Migration Guides</h3>
+      <p>Upgrading from older versions</p>
+      <a href="{{ '/setup/migration.html' | relative_url }}">Claude Code migration →</a><br>
+      <a href="{{ '/setup/cursor-migration.html' | relative_url }}">Cursor migration →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">📚</div>
+      <h3>Documentation</h3>
+      <p>Complete guides and references</p>
+      <a href="{{ '/reference/quick-reference.html' | relative_url }}">Quick reference →</a><br>
+      <a href="{{ '/reference/troubleshooting.html' | relative_url }}">Troubleshooting →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🎓</div>
+      <h3>Create Your Own</h3>
+      <p>Build custom skills for your workflows</p>
+      <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}">Start workshop →</a>
+    </div>
+  </div>
 </div>
 
 <style>
-.tiles-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
+pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1rem 0;
 }
 
-.tile {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.tile:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(238, 0, 0, 0.1);
-  border-color: #EE0000;
-}
-
-.tile h3 {
-  margin-top: 0;
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
   color: #24292e;
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.tile p {
-  color: #586069;
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.tile-link {
-  display: inline-block;
-  color: #EE0000;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.2s ease;
-}
-
-.tile-link:hover {
-  border-bottom-color: #EE0000;
-}
-
-@media (max-width: 768px) {
-  .tiles-container {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
-
----
-
-## Available Skills {#available-skills}
-
-<div class="tabs">
-  <div class="tab-buttons">
-    <button class="tab-button active" onclick="openTab(event, 'showroom')">📝 Showroom (4)</button>
-    <button class="tab-button" onclick="openTab(event, 'agnosticv')">⚙️ AgnosticV (2)</button>
-    <button class="tab-button" onclick="openTab(event, 'health')">🏥 Health (1)</button>
-  </div>
-
-  <div id="showroom" class="tab-content active">
-    <h3>Showroom Skills</h3>
-    <p><strong>For workshop and demo creators</strong> - Content creation and validation skills.</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Skill</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong><a href="skills/create-lab.html">/showroom:create-lab</a></strong></td>
-          <td>Generate workshop lab modules with Know/Show structure</td>
-        </tr>
-        <tr>
-          <td><strong><a href="skills/create-demo.html">/showroom:create-demo</a></strong></td>
-          <td>Create presenter-led demo content</td>
-        </tr>
-        <tr>
-          <td><strong><a href="skills/verify-content.html">/showroom:verify-content</a></strong></td>
-          <td>Quality validation and standards compliance</td>
-        </tr>
-        <tr>
-          <td><strong><a href="skills/blog-generate.html">/showroom:blog-generate</a></strong></td>
-          <td>Transform workshops into blog posts</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p><a href="setup/showroom.html">View detailed Showroom documentation →</a></p>
-  </div>
-
-  <div id="agnosticv" class="tab-content">
-    <h3>AgnosticV Skills</h3>
-    <p><strong>For RHDP infrastructure team</strong> - Catalog automation and validation.</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Skill</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong><a href="skills/agnosticv-catalog-builder.html">/agnosticv:catalog-builder</a></strong></td>
-          <td>Create/update AgnosticV catalogs and Virtual CIs</td>
-        </tr>
-        <tr>
-          <td><strong><a href="skills/agnosticv-validator.html">/agnosticv:validator</a></strong></td>
-          <td>Validate catalog configurations</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p><a href="setup/agnosticv.html">View detailed AgnosticV documentation →</a></p>
-  </div>
-
-  <div id="health" class="tab-content">
-    <h3>Health Skills</h3>
-    <p><strong>For deployment validation</strong> - Automated health checks and testing.</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Skill</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong><a href="skills/deployment-health-checker.html">/health:deployment-validator</a></strong></td>
-          <td>Create Ansible validation roles for deployments</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script>
-function openTab(evt, tabName) {
-  // Hide all tab contents
-  var tabContents = document.getElementsByClassName("tab-content");
-  for (var i = 0; i < tabContents.length; i++) {
-    tabContents[i].classList.remove("active");
-  }
-
-  // Remove active class from all buttons
-  var tabButtons = document.getElementsByClassName("tab-button");
-  for (var i = 0; i < tabButtons.length; i++) {
-    tabButtons[i].classList.remove("active");
-  }
-
-  // Show the selected tab
-  document.getElementById(tabName).classList.add("active");
-  evt.currentTarget.classList.add("active");
-}
-</script>
-
----
-
-## Support {#support}
-
-**Need help?**
-
-- **GitHub Issues:** [Report bugs or request features](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) - Community support
-- **Documentation:** [Quick Reference](reference/quick-reference.html) | [Troubleshooting](reference/troubleshooting.html) | [Glossary](reference/glossary.html)
-
-**Version:** v2.3.5 | **License:** Apache 2.0 | **Platform:** Claude Code, VS Code with Claude, Cursor 2.4+
-
----
-
-## Quick Install
-
-**Add marketplace (choose one):**
-
-```bash
-# If you have SSH keys configured for GitHub (shorter)
-/plugin marketplace add rhpds/rhdp-skills-marketplace
-
-# If SSH not configured, use HTTPS
-/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
-```
-
-**Install plugins:**
-
-```bash
-/plugin install showroom@rhdp-marketplace
-/plugin install agnosticv@rhdp-marketplace
-/plugin install health@rhdp-marketplace
-```
-
-**Then restart Claude Code to load the new skills.**
-
-**To update later:**
-```bash
-/plugin marketplace update
-# Interactive: select marketplace, press 'u'
-
-/plugin update showroom@rhdp-marketplace
-# Interactive: navigate to "Update now", press Enter
-```
-
-[Complete installation and update guide →](setup/index.html)
