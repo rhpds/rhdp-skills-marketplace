@@ -1,0 +1,1 @@
+../../showroom/skills/verify-content/SKILL.md

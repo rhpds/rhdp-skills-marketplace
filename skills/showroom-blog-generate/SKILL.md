@@ -1,0 +1,1 @@
+../../showroom/skills/blog-generate/SKILL.md

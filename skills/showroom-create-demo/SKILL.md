@@ -1,0 +1,1 @@
+../../showroom/skills/create-demo/SKILL.md

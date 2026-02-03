@@ -1,0 +1,1 @@
+../../agnosticv/skills/validator/SKILL.md

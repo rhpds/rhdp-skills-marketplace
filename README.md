@@ -271,30 +271,33 @@ Skills are installed to:
 
 **✅ Fully Supported:** Cursor 2.4+ implements the [Agent Skills open standard](https://agentskills.io).
 
-**Installation:**
+**Installation (npx skills):**
 
 ```bash
-bash install.sh --platform cursor --namespace all
+npx skills add rhpds/rhdp-skills-marketplace
+# Interactive: Select which skills to install
+```
+
+**Or install specific skills:**
+
+```bash
+npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-lab
+npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-catalog-builder
 ```
 
 Skills are installed to:
 - Skills: `~/.cursor/skills/`
-- Docs: `~/.cursor/docs/`
 
 **How to use:**
 
 1. **Explicit invocation:** Type `/skill-name` in Agent chat
-   - `/create-lab`
-   - `/create-demo`
-   - `/agnosticv-catalog-builder`
+   - `/showroom:create-lab`
+   - `/showroom:create-demo`
+   - `/agnosticv:catalog-builder`
 
 2. **Natural language:** The agent will apply relevant skills automatically
    - "Help me create a workshop lab"
    - "Generate demo content"
-
-**Verify installation:**
-
-Open Cursor Settings (`Cmd+Shift+J` or `Ctrl+Shift+J`) → Rules → Agent Decides section
 
 **Requirements:** Cursor version 2.4.0 or later
 
@@ -304,49 +307,51 @@ Open Cursor Settings (`Cmd+Shift+J` or `Ctrl+Shift+J`) → Rules → Agent Decid
 
 ```
 rhdp-skills-marketplace/
-├── install.sh              # Platform-agnostic installer
-├── update.sh               # Version checker and updater
-├── VERSION                 # Current version (v1.2.1)
+├── .claude-plugin/         # Claude Code plugin marketplace
+│   └── marketplace.json
+│
+├── skills/                 # Flat structure for npx skills (Cursor)
+│   ├── showroom-create-lab/
+│   │   └── SKILL.md (symlink)
+│   ├── showroom-create-demo/
+│   │   └── SKILL.md (symlink)
+│   ├── agnosticv-catalog-builder/
+│   │   └── SKILL.md (symlink)
+│   └── ... (7 total)
+│
+├── showroom/               # Plugin structure (Claude Code)
+│   ├── .claude-plugin/plugin.json
+│   ├── README.md
+│   ├── skills/
+│   │   ├── create-lab/SKILL.md
+│   │   ├── create-demo/SKILL.md
+│   │   ├── verify-content/SKILL.md
+│   │   └── blog-generate/SKILL.md
+│   └── docs/
+│
+├── agnosticv/              # Plugin structure (Claude Code)
+│   ├── .claude-plugin/plugin.json
+│   ├── README.md
+│   ├── skills/
+│   │   ├── catalog-builder/SKILL.md
+│   │   └── validator/SKILL.md
+│   └── docs/
+│
+├── health/                 # Plugin structure (Claude Code)
+│   ├── .claude-plugin/plugin.json
+│   ├── README.md
+│   ├── skills/
+│   │   └── deployment-validator/SKILL.md
+│   └── docs/
+│
+├── VERSION                 # Current version
 ├── CHANGELOG.md            # Version history
-│
-├── showroom/               # Public namespace
-│   ├── README.md
-│   ├── skills/
-│   │   ├── create-lab/
-│   │   ├── create-demo/
-│   │   ├── verify-content/
-│   │   └── blog-generate/
-│   └── docs/
-│       └── SKILL-COMMON-RULES.md
-│
-├── agnosticv/              # Internal/Advanced namespace
-│   ├── README.md
-│   ├── skills/
-│   │   ├── agnosticv-catalog-builder/
-│   │   └── agnosticv-validator/
-│   └── docs/
-│       ├── AGV-COMMON-RULES.md
-│       ├── workload-mappings.md
-│       └── infrastructure-guide.md
-│
-├── health/                 # Internal/Advanced namespace
-│   ├── README.md
-│   ├── skills/
-│   │   └── deployment-health-checker/
-│   └── docs/
-│
-├── automation/             # Internal/Advanced namespace
-│   ├── README.md
-│   ├── skills/
-│   │   ├── ftl/ (future)
-│   │   ├── automation/ (future)
-│   │   └── field-automation-builder/ (future)
-│   └── docs/
-│
-└── examples/
-    ├── showroom-lab-example/
-    └── agv-catalog-example/
+└── docs/                   # GitHub Pages documentation
 ```
+
+**Dual Installation Support:**
+- **Claude Code:** Plugin marketplace (`/plugin marketplace add`)
+- **Cursor:** npx skills (`npx skills add`)
 
 ---
 

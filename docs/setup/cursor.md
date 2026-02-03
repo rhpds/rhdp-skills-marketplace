@@ -7,7 +7,7 @@ title: Cursor Setup
 
 > **✅ Cursor 2.4+ Supported**
 >
-> Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io). RHDP skills work natively in Cursor with auto-discovery from `~/.cursor/skills/`.
+> Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io). RHDP skills work natively in Cursor using npx skills.
 
 ---
 
@@ -26,165 +26,118 @@ If you're on an older version, update Cursor first.
 
 ## Installation
 
+### Install All Skills (Interactive)
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh -o /tmp/rhdp-install.sh
-bash /tmp/rhdp-install.sh
+npx skills add rhpds/rhdp-skills-marketplace
 ```
 
-When prompted:
-1. Select **2 (Cursor 2.4+)**
-2. Choose your namespace:
-   - **showroom** - Create demos/workshops (most users)
-   - **agnosticv** - RHDP catalog work (internal)
-   - **health** - Deployment validation (internal)
-   - **all** - Install everything
+The interactive prompt will show all available skills:
+- **showroom-create-lab** - Generate workshop lab modules
+- **showroom-create-demo** - Create presenter-led demos
+- **showroom-blog-generate** - Transform to blog posts
+- **showroom-verify-content** - Quality validation
+- **agnosticv-catalog-builder** - Create/update catalogs
+- **agnosticv-validator** - Validate configurations
+- **health-deployment-validator** - Create validation roles
 
-The installer will:
-- ✅ Install skills to `~/.cursor/skills/`
-- ✅ Install documentation to `~/.cursor/docs/`
-- ✅ Create version tracking file
+Select which skills to install.
+
+### Install Specific Skills
+
+```bash
+# Workshop and demo creation
+npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-lab
+npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-demo
+
+# AgnosticV catalog work (RHDP internal)
+npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-catalog-builder
+npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-validator
+
+# Deployment validation (RHDP internal)
+npx skills add rhpds/rhdp-skills-marketplace/skills/health-deployment-validator
+```
+
+Skills are installed to:
+- `~/.cursor/skills/`
 
 **Restart Cursor** after installation to load the new skills.
 
 ---
 
-## Verify Installation
-
-### Option 1: View in Settings
-
-1. Open Cursor Settings: `Cmd+Shift+J` (Mac) or `Ctrl+Shift+J` (Windows/Linux)
-2. Navigate to **Rules**
-3. Look in the **"Agent Decides"** section
-4. You should see your installed skills listed
-
-### Option 2: Use in Chat
-
-1. Open Agent chat
-2. Type `/` to see available skills
-3. Search for installed skills:
-   - `/showroom:create-lab`
-   - `/showroom:create-demo`
-   - `/showroom:verify-content`
-   - etc.
-
----
-
 ## Usage
 
-### Method 1: Explicit Invocation
+### Explicit Invocation
 
-Type `/` in Agent chat and select a skill:
+Type `/skill-name` in Cursor Agent chat:
 
 ```
 /showroom:create-lab
 /showroom:create-demo
-/showroom:verify-content
 /agnosticv:catalog-builder
 ```
 
-### Method 2: Natural Language
+### Natural Language
 
-The agent will automatically apply relevant skills based on context:
+The agent will apply relevant skills automatically:
 
-**Showroom:**
-- "Help me create a workshop lab module"
-- "Generate demo content for AAP"
-- "Verify this content for quality"
-
-**AgnosticV:**
-- "Create an AgnosticV catalog item"
-- "Validate this catalog configuration"
+```
+Help me create a workshop lab
+Generate demo content for my presentation
+Create an AgnosticV catalog
+```
 
 ---
 
-## How It Works
+## Verification
 
-Cursor 2.4+ implements the **Agent Skills open standard** (agentskills.io):
+After installation and restart, verify skills are loaded:
 
-1. **Auto-discovery**: Skills are automatically loaded from:
-   - `~/.cursor/skills/` (user-level, global)
-   - `.cursor/skills/` (project-level, optional)
-
-2. **Agent decides**: The agent sees available skills and determines when they're relevant
-
-3. **Progressive loading**: Skills load resources on demand to keep context efficient
+1. Open Cursor Agent chat (Cmd+L or Ctrl+L)
+2. Type `/` to see available skills
+3. You should see RHDP skills listed with their namespaces
 
 ---
 
 ## Updating Skills
 
-Run the update script:
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh | bash
+# Update all skills
+npx skills update
+
+# Or remove and reinstall
+npx skills remove rhpds/rhdp-skills-marketplace
+npx skills add rhpds/rhdp-skills-marketplace
 ```
-
-Or manually download and run:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update.sh -o /tmp/rhdp-update.sh
-bash /tmp/rhdp-update.sh
-```
-
-Restart Cursor after updating.
 
 ---
 
 ## Troubleshooting
 
-### Skills don't appear in settings
+### Skills Not Showing After Installation
 
-1. Check installation:
-   ```bash
-   ls -la ~/.cursor/skills/
-   ```
+1. **Restart Cursor completely** (quit and reopen)
+2. Verify installation: `ls ~/.cursor/skills/`
+3. Check Cursor version is 2.4.0+
 
-2. Verify SKILL.md files exist:
-   ```bash
-   cat ~/.cursor/skills/create-lab/SKILL.md
-   ```
+### Permission Denied
 
-3. Restart Cursor completely (Quit and reopen)
-
-### Skills don't trigger automatically
-
-- Use explicit invocation: Type `/skill-name`
-- Check Cursor version is 2.4+
-- Verify skill frontmatter has proper `name` and `description` fields
-
-### Need fresh install
-
+Make sure you have write permissions:
 ```bash
-# Remove existing skills
-rm -rf ~/.cursor/skills
-rm -rf ~/.cursor/docs
-
-# Reinstall
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
+ls -la ~/.cursor/
 ```
 
----
+### Skills Not Working
 
-## Platform Comparison
-
-| Feature | Claude Code | Cursor 2.4+ |
-|---------|-------------|-------------|
-| Agent Skills Standard | ✅ Supported | ✅ Supported |
-| Auto-discovery | ✅ `~/.claude/skills/` | ✅ `~/.cursor/skills/` |
-| Skill invocation | `/skill-name` | `/skill-name` |
-| Natural language | ✅ Agent decides | ✅ Agent decides |
-| Installation | One command | One command |
-
-**Both platforms fully support RHDP skills.** Choose based on your preferred IDE.
+1. Check Cursor version (must be 2.4+)
+2. Verify skills are in `~/.cursor/skills/`
+3. Restart Cursor
+4. Try explicit invocation with `/skill-name`
 
 ---
 
 ## Additional Resources
 
-- **Agent Skills Standard**: [agentskills.io](https://agentskills.io)
-- **Cursor Documentation**: [cursor.com/docs](https://cursor.com/docs)
-- **RHDP Skills GitHub**: [github.com/rhpds/rhdp-skills-marketplace](https://github.com/rhpds/rhdp-skills-marketplace)
-
----
-
-[← Back to Setup](index.html) | [Home](../index.html)
+- [Vercel Skills CLI](https://github.com/vercel-labs/skills)
+- [Agent Skills Standard](https://agentskills.io)
+- [RHDP Skills Documentation](https://rhpds.github.io/rhdp-skills-marketplace)

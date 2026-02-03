@@ -1,0 +1,1 @@
+../../agnosticv/skills/catalog-builder/SKILL.md

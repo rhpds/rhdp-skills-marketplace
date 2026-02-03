@@ -1,0 +1,1 @@
+../../showroom/skills/create-lab/SKILL.md
