@@ -183,8 +183,17 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 /plugin install showroom@rhdp-marketplace
 /plugin install agnosticv@rhdp-marketplace
 /plugin install health@rhdp-marketplace
-
-# Restart Claude Code
 ```
 
-[Complete installation guide →](setup/index.html)
+**Then restart Claude Code to load the new skills.**
+
+**To update later:**
+```bash
+/plugin marketplace update
+# Interactive: select marketplace, press 'u'
+
+/plugin update showroom@rhdp-marketplace
+# Interactive: navigate to "Update now", press Enter
+```
+
+[Complete installation and update guide →](setup/index.html)
