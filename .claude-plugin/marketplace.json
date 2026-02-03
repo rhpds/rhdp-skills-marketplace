@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Official Red Hat Demo Platform (RHDP) skills marketplace for creating workshops, demos, and infrastructure automation",
-    "version": "2.3.3"
+    "version": "2.3.4"
   },
   "plugins": [
     {
       "name": "agnosticv",
       "source": "./agnosticv",
       "description": "AgnosticV catalog builder and validator for RHDP infrastructure automation",
-      "version": "2.2.0",
+      "version": "2.2.1",
       "author": {
         "name": "RHDP Team",
         "email": "prakhar@redhat.com"
@@ -41,7 +41,7 @@
       "name": "health",
       "source": "./health",
       "description": "RHDP deployment health checks and post-deployment validation",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "RHDP Team",
         "email": "prakhar@redhat.com"

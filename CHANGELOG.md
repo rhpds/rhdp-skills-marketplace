@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.4] - 2026-02-03
+
+### Added - Multi-Location Configuration File Support
+
+**Configuration Detection Improvements:**
+- All skills now check multiple configuration file locations in order:
+  1. `~/CLAUDE.md` (checked first)
+  2. `~/claude/*.md` (checked second)
+  3. `~/.claude/*.md` (checked third)
+- Transparent configuration detection - users don't need to know implementation details
+- Skills automatically find configuration without asking
+
+**Skills Updated:**
+- **agnosticv/catalog-builder** - Multi-location config checking for AgnosticV repository path
+- **agnosticv/validator** - Multi-location config checking for AgnosticV repository path
+- **health/deployment-validator** - Multi-location config checking for base_path and agnosticv path
+
+**Removed Hardcoded Paths:**
+- Changed all hardcoded example paths to generic placeholders
+- Updated `~/devel/git/agnosticv` examples to `[path from configuration]`
+- Updated `~/work/code/agnosticv` examples to `[your_agv_path]`
+- Made prerequisites show multiple path examples instead of single hardcoded path
+
+**Benefits:**
+- Users can store configuration in their preferred location
+- No assumptions about specific user paths
+- Consistent configuration experience across all marketplace skills
+- Zero prompts if configuration file exists
+
+**Plugin Version Updates:**
+- agnosticv plugin: 2.2.0 → 2.2.1
+- health plugin: 1.0.0 → 1.0.1
+
 ## [v2.3.3] - 2026-02-03
 
 ### Fixed - AgnosticV Catalog Builder UX Improvements

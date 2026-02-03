@@ -219,7 +219,7 @@ function openTab(evt, tabName) {
 - **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) - Community support
 - **Documentation:** [Quick Reference](reference/quick-reference.html) | [Troubleshooting](reference/troubleshooting.html) | [Glossary](reference/glossary.html)
 
-**Version:** v2.3.3 | **License:** Apache 2.0 | **Platform:** Claude Code, VS Code with Claude, Cursor 2.4+
+**Version:** v2.3.4 | **License:** Apache 2.0 | **Platform:** Claude Code, VS Code with Claude, Cursor 2.4+
 
 ---
 
