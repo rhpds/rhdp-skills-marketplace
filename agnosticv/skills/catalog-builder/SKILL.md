@@ -128,19 +128,48 @@ fi
 echo "✓ Using: $agv_path"
 ```
 
-### Show Current Git Branch
-
-**Don't manage git - user handles their own branches**
+### Git Branch Selection
 
 ```bash
 cd "$agv_path"
 
-# Just show current branch - don't offer to change it
+# Show current branch
 current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+```
 
-echo "📍 Current branch: $current_branch"
-echo ""
-echo "I'll work with your current branch."
+**Ask about branch:**
+```
+📍 I see you are working on branch: $current_branch
+
+Q: Do you want to use this branch or should I create a new one?
+
+1. Use current branch: $current_branch
+2. Create new branch
+
+Choice [1/2]:
+```
+
+**If user chooses 1 (Use current branch):**
+```
+✓ Using your current branch: $current_branch
+```
+
+**If user chooses 2 (Create new branch):**
+```
+Q: New branch name (e.g., add-my-catalog or update-description):
+   (no 'feature/' prefix needed)
+
+Branch name:
+```
+
+```bash
+# Strip feature/ prefix if user added it
+branch_name="${branch_name#feature/}"
+
+# Create and switch to new branch
+git checkout -b "$branch_name"
+
+echo "✓ Created and switched to branch: $branch_name"
 ```
 
 ---
