@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.3.1] - 2026-02-03
+
+### Changed - Homepage Redesign & UX Improvements
+
+**Modern Tile-Based Homepage:**
+- Redesigned index page with 8 visual navigation tiles
+- Clean hero section: "Welcome to RHDP Skills Marketplace"
+- Responsive grid layout (mobile-friendly)
+- Hover effects with Red Hat brand colors (#EE0000)
+- Smooth animations and transitions
+
+**Tile Navigation:**
+- 🚀 Quick Start
+- 🔄 Migration Guide (install.sh → plugin marketplace)
+- 🎓 Create Your Own Skills (workshop)
+- 📝 Showroom Skills (4 skills)
+- ⚙️ AgnosticV Skills (2 skills)
+- 🏥 Health Skills (1 skill)
+- 📚 Documentation
+- 💬 Get Support
+
+**Code Block Visibility:**
+- Added custom CSS for better readability
+- Dark theme (#1e1e1e) with light text (#d4d4d4)
+- VS Code-style syntax highlighting:
+  - Comments: green, Strings: orange
+  - Keywords: blue, Functions: yellow
+  - Numbers: light green
+- Eliminated red-on-black visibility issues
+
+**Migration Messaging:**
+- Changed from "v2.2.0" to "install.sh" references
+- Users recognize the script name, not version numbers
+- Clearer migration path messaging
+- Tile: "Used install.sh script? Migrate to plugin-based marketplace"
+
+**Quick Install Section:**
+- Added accurate interactive update commands
+- `/plugin marketplace update` - Interactive: press 'u'
+- `/plugin update` - Interactive: navigate to "Update now", press Enter
+- Clear restart requirements
+
+**Files Added:**
+- `docs/assets/css/custom.css` - Custom styles for entire site
+- `docs/_includes/head-custom.html` - Loads custom CSS
+
+**Files Updated:**
+- `docs/index.md` - Complete redesign with tiles
+- `docs/setup/migration.md` - Updated title and messaging
+
+### Fixed
+
+- Code block text visibility (was red on black, now proper dark theme)
+- Migration guide prominence (now visible at top of homepage)
+- Update command accuracy (documented interactive UI workflow)
+
+---
+
 ## [v2.3.0] - 2026-02-03
 
 ### Added - Namespace Prefixes & Governance
