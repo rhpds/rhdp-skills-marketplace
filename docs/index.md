@@ -32,21 +32,9 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 </div>
 
 <div class="tile">
-  <h3>📝 Showroom Skills</h3>
-  <p>Create workshops, demos, and content for Red Hat Showroom.</p>
-  <a href="#showroom-skills" class="tile-link">4 Skills Available →</a>
-</div>
-
-<div class="tile">
-  <h3>⚙️ AgnosticV Skills</h3>
-  <p>Automate infrastructure catalogs and validation (RHDP internal).</p>
-  <a href="#agnosticv-skills" class="tile-link">2 Skills Available →</a>
-</div>
-
-<div class="tile">
-  <h3>🏥 Health Skills</h3>
-  <p>Deployment validation and health checks.</p>
-  <a href="#health-skills" class="tile-link">1 Skill Available →</a>
+  <h3>🎯 Browse Skills</h3>
+  <p>Explore 7 skills across Showroom, AgnosticV, and Health categories.</p>
+  <a href="#available-skills" class="tile-link">View All Skills →</a>
 </div>
 
 <div class="tile">
@@ -123,7 +111,7 @@ AI-powered skills for creating workshops, demos, and automating Red Hat Demo Pla
 
 ---
 
-## Available Skills
+## Available Skills {#available-skills}
 
 <div class="tabs">
   <div class="tab-buttons">
@@ -243,7 +231,7 @@ function openTab(evt, tabName) {
 - **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX) - Community support
 - **Documentation:** [Quick Reference](reference/quick-reference.html) | [Troubleshooting](reference/troubleshooting.html) | [Glossary](reference/glossary.html)
 
-**Version:** v2.3.0 | **License:** Apache 2.0 | **Platform:** Claude Code, VS Code with Claude, Cursor 2.4+
+**Version:** v2.3.1 | **License:** Apache 2.0 | **Platform:** Claude Code, VS Code with Claude, Cursor 2.4+
 
 ---
 
