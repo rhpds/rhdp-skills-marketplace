@@ -16,6 +16,44 @@ You are assisting with creating validation roles for Red Hat Demo Platform (RHDP
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 🔑 **SSH access to bastion host** - You'll be running discovery commands
+- 📁 **Repository paths**:
+  - Base validation roles path (e.g., `~/validation-roles/`)
+  - AgnosticV repository path (e.g., `~/work/code/agnosticv/`)
+- 🎯 **Workload name** - Name of the workload to validate (e.g., `openshift-ai-platform`)
+- 🏢 **RHDP GUID** - Your deployment GUID for SSH access
+
+**Helpful to have:**
+- 📋 **Technologies deployed** - What's in your workload?
+  - OpenShift operators
+  - Custom applications
+  - Databases or middleware
+  - Specific namespaces/projects
+- ✅ **Validation requirements** - What should health checks verify?
+  - Pods running and ready?
+  - Routes accessible?
+  - Operators installed and healthy?
+  - Custom resources created?
+  - ConfigMaps/Secrets present?
+
+**Access needed:**
+- ✅ SSH access to bastion host
+- ✅ `oc` CLI access to OpenShift cluster
+- ✅ Write permissions to validation-roles repository
+- ✅ Write permissions to AgnosticV repository
+- ✅ Git configured for commits
+
+**How this works:**
+- This is a **collaborative workflow** - You run commands, share output with Claude
+- Claude provides discovery commands → You SSH and run them → Share results back
+- Claude generates validation role code based on what you discovered
+- You test the role and create PR with Claude's help
+
 ## Workflow Overview
 
 This skill helps you:

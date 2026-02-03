@@ -16,6 +16,34 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 📁 **Path to content directory** - Where your workshop/demo modules are located
+  - Example: `content/modules/ROOT/pages/`
+- 📝 **Content type** - Know if it's a workshop (hands-on) or demo (presenter-led)
+
+**Helpful to have:**
+- ✅ **Completed modules** - Verification works best on finished content
+- 📋 **Specific concerns** - Any areas you want extra validation on?
+- 🎯 **Target audience** - Who will use this content? (Affects technical depth checks)
+
+**Access needed:**
+- ✅ Read permissions to the Showroom repository directory
+- ✅ Verification prompts available in:
+  - `.claude/prompts/` (repo-specific prompts), or
+  - `~/.claude/prompts/` (global prompts), or
+  - RHDP marketplace default prompts
+
+**What gets checked:**
+- Technical accuracy
+- Accessibility compliance (A11y standards)
+- Red Hat style guide compliance
+- Workshop structure (modules, navigation, learning objectives)
+- AsciiDoc formatting and syntax
+
 ## When to Use
 
 **Use this skill when you want to**:

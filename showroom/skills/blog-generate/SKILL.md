@@ -11,6 +11,38 @@ Transform completed Red Hat Showroom lab modules or demo content into blog posts
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 📄 **Source module paths** - File paths to completed workshop/demo modules
+  - Example: `content/modules/ROOT/pages/03-module-01-intro.adoc`
+  - Can use multiple modules for one blog post
+- 🎯 **Target platform** - Where will this be published?
+  - Red Hat Developer blog
+  - Internal blogs (Source, Memo, The Stack)
+  - Medium, dev.to, Hashnode
+  - Marketing/announcement format
+
+**Helpful to have:**
+- 📝 **Blog type decision** - What format?
+  - Technical tutorial ("How to...")
+  - Product announcement ("Introducing...")
+  - Thought leadership ("Why...")
+  - Case study/success story
+  - Quick start guide
+- 📏 **Target word count** - How long? (500-800 / 1000-1500 / 2000+)
+- 🎨 **Technical depth** - Audience level
+  - Highly technical (code-heavy, for developers)
+  - Moderately technical (balanced, for technical managers)
+  - Marketing-focused (business benefits, light on code)
+- 🔗 **Showroom link** - URL to live Showroom for "Try it yourself" CTA
+
+**Access needed:**
+- ✅ Read permissions to source modules
+- ✅ Write permissions for blog output location
+
 ## When to Use
 
 **Use this skill when you want to**:

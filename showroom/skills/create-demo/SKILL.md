@@ -16,6 +16,28 @@ Guide you through creating a Red Hat Showroom demo module using the Know/Show st
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 📁 **Target directory path** - Where to create modules (default: `content/modules/ROOT/pages/`)
+- 📚 **Demo materials** - At least one of:
+  - Product documentation or feature descriptions
+  - URLs to technical guides or demos
+  - Text describing what to demonstrate
+- 🎯 **Demo objective** - What should the presenter show?
+
+**Helpful to have:**
+- 🏢 **Customer scenario** - Business context (e.g., "Financial services company needs...")
+- 💼 **Value proposition** - Why does this matter to customers? What problem does it solve?
+- ⏱️ **Target duration** - How long is the demo? (e.g., 10 min, 20 min)
+- 👥 **Audience** - Who is watching? (Technical managers, developers, executives)
+- 📝 **Previous modules** - If continuing existing demo, which module comes before this one
+
+**Access needed:**
+- ✅ Write permissions to the Showroom repository directory
+
 ## When to Use
 
 **Use this skill when you want to**:

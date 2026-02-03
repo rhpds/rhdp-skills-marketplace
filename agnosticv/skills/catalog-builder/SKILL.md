@@ -50,6 +50,47 @@ Unified skill for creating and updating AgnosticV catalog configurations. Handle
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Choose your mode first:**
+1. **Full Catalog** - Creating complete new catalog
+2. **Description Only** - Just updating description.adoc
+3. **Info Message Template** - Creating info-message-template.adoc
+4. **Virtual CI** - Creating published/ Virtual CI
+
+**For Full Catalog mode:**
+- 📁 **AgnosticV repo path** - Where your local AgnosticV repository is (e.g., `~/work/code/agnosticv`)
+- 🏢 **Catalog details**:
+  - Display name (appears in RHDP UI)
+  - Short name (directory name, lowercase with hyphens)
+  - Brief description (1-2 sentences)
+  - Category (workshop, demo, integration, etc.)
+- 🔧 **Infrastructure choices**:
+  - Cloud provider (AWS, Azure, OpenShift CNV, None)
+  - Sandbox architecture (single-node, multi-node)
+  - Workloads needed (which ocp4_workload_* roles)
+- 🔗 **Showroom URL** (optional) - Link to your workshop/demo repository
+
+**For Description Only mode:**
+- 📁 **Showroom path or URL** - Where your workshop content is
+- 📁 **Catalog directory path** - Where to save description.adoc
+- 📋 **Module content** - Completed Showroom modules to extract from
+
+**For Info Message Template:**
+- 📁 **Catalog path** - Path to existing AgV catalog
+- 📊 **User data keys** - List of data your workload shares via agnosticd_user_info
+
+**For Virtual CI:**
+- 📁 **Base component path** - Existing component to create Virtual CI from
+- 🏷️ **Naming** - Virtual CI folder name (must be unique)
+
+**Access needed:**
+- ✅ Write permissions to AgnosticV repository
+- ✅ Git configured with SSH access to GitHub
+- ✅ RHDP account with AgnosticV repository access
+
 ---
 
 ## When to Use This Skill

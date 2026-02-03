@@ -16,6 +16,27 @@ Guide you through creating a single Red Hat Showroom workshop module from refere
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 📁 **Target directory path** - Where to create modules (default: `content/modules/ROOT/pages/`)
+- 📚 **Reference materials** - At least one of:
+  - URLs to documentation, blogs, or guides
+  - Local files with technical content
+  - Text/notes describing what to build
+- 🎯 **Learning objective** - What should learners accomplish?
+
+**Helpful to have:**
+- 🏢 **Company/scenario context** - Business story for the lab (e.g., "ACME Corp needs...")
+- ⏱️ **Target duration** - How long should this module take? (e.g., 15 min, 30 min)
+- 👥 **Audience level** - Beginner, Intermediate, or Advanced
+- 📝 **Previous modules** - If continuing existing lab, know which module comes before this one
+
+**Access needed:**
+- ✅ Write permissions to the Showroom repository directory
+
 ## When to Use
 
 **Use this skill when you want to**:

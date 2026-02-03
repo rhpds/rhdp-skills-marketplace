@@ -25,6 +25,38 @@ Comprehensive validation of AgnosticV catalog configurations before deployment. 
 
 ![Workflow](workflow.svg)
 
+## What You'll Need Before Starting
+
+Have these ready before running this skill:
+
+**Required:**
+- 📁 **Path to catalog directory** - Location of the catalog you want to validate
+  - Example: `~/work/code/agnosticv/agd_v2/my-workshop`
+  - Example: `/path/to/agnosticv/catalogs/my-demo`
+  - Can be relative path if you're in the AgV repo
+
+**The catalog should have:**
+- ✅ **common.yaml** (minimum requirement)
+- 📋 Optional: dev.yaml, prod.yaml, description.adoc
+
+**Access needed:**
+- ✅ Read permissions to the catalog directory
+- ✅ Read permissions to AgnosticV repository
+
+**What gets validated:**
+- UUID format and uniqueness
+- YAML syntax (common.yaml, dev.yaml, prod.yaml)
+- Workload dependencies and availability
+- Category correctness and structure
+- Infrastructure recommendations
+- Best practices compliance
+- Asset metadata completeness
+
+**Good to know:**
+- Validation produces errors (must fix), warnings (should fix), and suggestions (nice to have)
+- Best run BEFORE creating a PR
+- Can run multiple times as you fix issues
+
 ---
 
 ## When to Use This Skill
