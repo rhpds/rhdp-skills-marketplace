@@ -105,6 +105,43 @@ Can you help me structure this as a skill?
 
 **Try it now in this workshop!** As you read through the modules, ask Claude to help you create your skill based on your existing work.
 
+### Want to Update an Existing Skill?
+
+**You can also use Claude to improve existing skills!**
+
+**Pattern: Update RHDP marketplace skill**
+```
+Read showroom/skills/create-lab/SKILL.md
+
+I want to add a new feature that [does X].
+Can you update the skill to include this in Step [N]?
+```
+
+**Pattern: Fix issues in your skill**
+```
+My skill in ~/.claude/skills/my-skill/SKILL.md has a problem:
+[describe the issue]
+
+Can you read it and fix the issue?
+```
+
+**Pattern: Add new capabilities**
+```
+Read agnosticv/skills/catalog-builder/SKILL.md
+
+I want to add similar functionality to my skill for [use case].
+Can you show me how to add [feature] following their pattern?
+```
+
+**Pattern: Refactor for better UX**
+```
+Read my skill and suggest improvements:
+- Better question flow
+- Clearer step descriptions
+- More robust error handling
+- Better examples
+```
+
 ### Effective Prompting Patterns
 
 **Pattern 1: Convert existing documentation**
@@ -1423,52 +1460,107 @@ Get list of users.
 
 Choose based on your use case:
 
-#### Option A: RHDP Team - Showroom Enhancement Skill
+#### Option A: Shell Script → Skill
 
-**Create a "Workshop Metrics" skill that:**
+**Convert your deployment script into a skill:**
 
-Requirements:
-1. Analyzes Showroom workshop modules
-2. Counts learning objectives, steps, code blocks
-3. Estimates completion time based on content
-4. Generates a metrics report (JSON or markdown)
-5. Suggests improvements (too long, too short, missing objectives)
+If you have a shell script that:
+- Deploys applications
+- Sets up environments
+- Runs maintenance tasks
 
-**Why:** Helps workshop authors optimize content length and structure.
+**Ask Claude:**
+```
+I have this shell script in deploy.sh that deploys applications to OpenShift.
+Can you convert it into a Claude Code skill that:
+1. Validates prerequisites (oc logged in, project exists)
+2. Asks for environment (dev/stage/prod)
+3. Runs deployment steps with progress
+4. Handles errors gracefully
+5. Shows deployment status
 
-**Files to analyze:**
-- `content/modules/*/pages/*.adoc` (Showroom structure)
-- Count code blocks, lists, exercises
-- Estimate reading + hands-on time
+Use RHDP patterns from agnosticv:catalog-builder for inspiration.
+```
 
-#### Option B: RHDP Team - AgnosticV Helper Skill
+#### Option B: GitOps Repository → Skill
 
-**Create a "Catalog Validator Plus" skill that:**
+**Create a skill that helps with GitOps workflows:**
 
-Requirements:
-1. Extends `/agnosticv:validator` with additional checks
-2. Validates naming conventions (no spaces, lowercase)
-3. Checks for required metadata fields
-4. Verifies deployer versions are current
-5. Suggests catalog improvements
+If you manage GitOps repositories with ArgoCD/FluxCD:
 
-**Why:** Additional quality checks before PR submission.
+**Ask Claude:**
+```
+I have a GitOps repository structure like:
+- apps/
+  - app1/
+    - base/
+    - overlays/
+      - dev/
+      - prod/
 
-#### Option C: General - License Generator Skill
+Create a skill that:
+1. Detects the GitOps structure
+2. Creates new application manifests
+3. Generates Kustomization files
+4. Validates YAML syntax
+5. Commits and pushes changes
 
-**Create a "License Generator" skill that:**
+Reference showroom:create-lab for the workflow pattern.
+```
 
-Requirements:
-1. Detects project language and dependencies
-2. Asks user which license to use (MIT, Apache, GPL, BSD)
-3. Generates LICENSE file with correct copyright year and name
-4. Adds license badge to README if it exists
-5. Updates package.json/setup.py with license field
+#### Option C: Ansible Workload → Skill
 
-**Bonus features:**
-- Detect if project is open source or proprietary
-- Suggest appropriate license based on dependencies
-- Check for license compatibility
+**Convert Ansible workload documentation into a skill:**
+
+If you have Ansible workloads for RHDP:
+
+**Ask Claude:**
+```
+I have an Ansible workload in roles/my_workload/ that:
+- Deploys OpenShift operators
+- Configures applications
+- Creates user accounts
+
+Create a skill that generates new workloads following this pattern:
+1. Creates role directory structure
+2. Generates tasks/main.yml
+3. Creates default variables
+4. Generates workload validation tasks
+5. Creates README documentation
+
+Use agnosticv:catalog-builder as a reference for file generation.
+```
+
+#### Option D: RHDP-Specific Skills
+
+**Create skills for common RHDP tasks:**
+
+**Workshop Metrics Analyzer:**
+```
+Analyzes Showroom workshops:
+- Counts modules, steps, code blocks
+- Estimates completion time
+- Suggests improvements
+- Generates metrics report
+```
+
+**Catalog Validator Plus:**
+```
+Extends agnosticv:validator with:
+- Naming convention checks
+- Metadata completeness
+- Version currency checks
+- Best practices validation
+```
+
+**AgnosticD Workload Generator:**
+```
+Creates new AgnosticD workloads:
+- Role scaffolding
+- Variable templates
+- Validation tasks
+- Documentation
+```
 
 ### Validation Checklist
 
@@ -1587,5 +1679,131 @@ Claude: [Creates plugin metadata]
 2. Ask Claude to help create a skill
 3. Test and iterate with Claude's help
 4. Package and share with your team
+
+---
+
+## Ideas for New RHDP Skills
+
+**Looking for inspiration? Here are skills that would be valuable for RHDP:**
+
+### Infrastructure & Deployment
+
+**1. GitOps Application Generator**
+- Detects GitOps repository structure (ArgoCD/FluxCD)
+- Creates new application manifests
+- Generates Kustomization overlays (dev/stage/prod)
+- Validates YAML and Helm charts
+- Commits with proper Git workflow
+
+**2. Ansible Workload Scaffolder**
+- Creates AgnosticD workload structure
+- Generates role templates (tasks, vars, defaults)
+- Creates workload validation tasks
+- Generates sample inventory
+- Adds workload documentation
+
+**3. OpenShift Migration Helper**
+- Analyzes existing OpenShift resources
+- Generates migration manifests
+- Creates backup/restore procedures
+- Validates compatibility (OCP 4.14 → 4.15)
+- Documents migration steps
+
+### Content & Documentation
+
+**4. Lab Dependencies Resolver**
+- Scans Showroom workshop for external dependencies
+- Checks if links are still valid
+- Verifies container images are available
+- Tests API endpoints mentioned in labs
+- Generates dependency report
+
+**5. Multi-Language Content Translator**
+- Detects workshop language
+- Uses translation API to convert content
+- Maintains AsciiDoc formatting
+- Preserves code blocks and commands
+- Generates localized versions (EN/ES/FR/DE/JP)
+
+**6. Workshop Accessibility Auditor**
+- Scans content for accessibility issues
+- Checks alt text for images
+- Validates heading structure
+- Ensures sufficient color contrast
+- Generates WCAG compliance report
+
+### Validation & Quality
+
+**7. Catalog Dependency Checker**
+- Reads AgnosticV catalog common.yaml
+- Checks if collections are available
+- Verifies deployer versions
+- Validates infrastructure requirements
+- Suggests updates for deprecated features
+
+**8. Integration Test Generator**
+- Analyzes workshop steps
+- Generates automated test scripts
+- Creates validation playbooks
+- Tests deployment workflows
+- Generates CI/CD pipeline configs
+
+**9. Cost Estimator**
+- Reads AgnosticV catalog infrastructure
+- Calculates AWS/Azure/GCP costs
+- Estimates runtime costs
+- Suggests cost optimizations
+- Generates budget reports
+
+### Automation & Workflows
+
+**10. Bulk Catalog Updater**
+- Updates multiple catalogs at once
+- Applies consistent changes (new deployer version)
+- Validates all catalogs after update
+- Creates PRs automatically
+- Tracks update status
+
+**11. Release Notes Generator**
+- Scans git commits since last release
+- Categorizes changes (features/fixes/breaking)
+- Generates CHANGELOG.md
+- Creates GitHub release draft
+- Includes contributor credits
+
+**12. Environment Provisioner**
+- Provisions RHDP environments via API
+- Polls for completion
+- Retrieves access credentials
+- Tests connectivity
+- Generates access instructions
+
+---
+
+## How to Propose New Skills
+
+**Have an idea? Here's how to get it added:**
+
+1. **Open GitHub Discussion**
+   - Go to [rhdp-skills-marketplace/discussions](https://github.com/rhpds/rhdp-skills-marketplace/discussions)
+   - Describe the use case
+   - Explain the workflow it automates
+
+2. **Prototype with Claude**
+   - Use Claude to create a basic version
+   - Test with your team
+   - Gather feedback
+
+3. **Submit to Marketplace**
+   - Create plugin structure
+   - Add documentation
+   - Submit PR (requires CODEOWNERS approval)
+
+4. **Join the Community**
+   - Share in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+   - Get feedback and iterate
+   - Help others build skills
+
+---
 
 Happy skill building with Claude! 🚀
