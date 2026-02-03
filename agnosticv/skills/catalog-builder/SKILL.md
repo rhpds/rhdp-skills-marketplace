@@ -1100,6 +1100,7 @@ For problems with provisioning or environment stability:
 - Lab Guide section: "You can find a preview version of the link:url[lab guide^] here."
 - Featured Products: 6-7 max for complex labs, include all significant products with major versions
 - Detailed Overview: Use `**` (double asterisks) for sub-bullets under module titles, NOT numbered lists
+- Do not create more than 3 sub-bullets for each module
 - Module titles can use `*` for top-level bullets (like `* *Module 1: Title*`)
 - Authors: names only from __meta__.owners in common.yaml - NO emails
 - Support: Simple format - "For help with instructions or functionality, contact lab authors." then "For problems with provisioning or environment stability:" with RHDP ticket + Slack links
