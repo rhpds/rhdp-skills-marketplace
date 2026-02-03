@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900">
+  <defs>
+    <style>
+      .input { fill: #0066CC; }
+      .process { fill: #00AA00; }
+      .output { fill: #FF8800; }
+      text { fill: white; font-family: Arial, sans-serif; font-size: 13px; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .title { font-size: 18px; font-weight: bold; fill: #333; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="30" text-anchor="middle" class="title">AgnosticV Catalog Builder Workflow</text>
+
+  <!-- Step 1: Questions/Inputs -->
+  <rect x="50" y="60" width="800" height="140" rx="5" class="input"/>
+  <text x="450" y="90" text-anchor="middle" font-weight="bold">INPUTS: What the Skill Asks For</text>
+  <text x="60" y="115" font-size="12">• Mode selection (Full Catalog, Description Only, Info Message Template, or Virtual CI)</text>
+  <text x="60" y="133" font-size="12">• AgnosticV repository path (auto-detected from config or asked)</text>
+  <text x="60" y="151" font-size="12">• For Full Catalog: Category, UUID, infrastructure type, authentication, workloads, Showroom repo</text>
+  <text x="60" y="169" font-size="12">• For Description: Showroom content path or manual entry</text>
+  <text x="60" y="187" font-size="12">• For Virtual CI: Base component path, naming, scm_ref version</text>
+
+  <!-- Arrow -->
+  <path d="M 450 200 L 450 230" class="arrow"/>
+
+  <!-- Step 2: Process -->
+  <rect x="50" y="230" width="800" height="360" rx="5" class="process"/>
+  <text x="450" y="260" text-anchor="middle" font-weight="bold">PROCESS: What the Skill Does</text>
+  <text x="60" y="285" font-size="12">Mode 1 - Full Catalog:</text>
+  <text x="70" y="303" font-size="12">1. Discovers similar catalogs for reference</text>
+  <text x="70" y="321" font-size="12">2. Generates unique UUID and validates no collisions</text>
+  <text x="70" y="339" font-size="12">3. Sets up infrastructure (CNV/SNO/AWS/CNV VMs)</text>
+  <text x="70" y="357" font-size="12">4. Configures authentication (htpasswd or Keycloak)</text>
+  <text x="70" y="375" font-size="12">5. Recommends workloads based on technology keywords</text>
+  <text x="70" y="393" font-size="12">6. Extracts description from Showroom content</text>
+  <text x="70" y="411" font-size="12">7. Creates branch in AgV repository</text>
+  <text x="60" y="433" font-size="12">Mode 2 - Description Only:</text>
+  <text x="70" y="451" font-size="12">1. Reads ALL Showroom modules for comprehensive content extraction</text>
+  <text x="70" y="469" font-size="12">2. Generates description.adoc following RHDP structure</text>
+  <text x="60" y="491" font-size="12">Mode 4 - Virtual CI:</text>
+  <text x="70" y="509" font-size="12">1. Copies base component files to published/ folder</text>
+  <text x="70" y="527" font-size="12">2. Updates base component with dev restriction and warning</text>
+  <text x="70" y="545" font-size="12">3. Creates/updates prod.yaml with scm_ref version</text>
+  <text x="70" y="563" font-size="12">4. Verifies reportingLabels.primaryBU is set</text>
+
+  <!-- Arrow -->
+  <path d="M 450 590 L 450 620" class="arrow"/>
+
+  <!-- Step 3: Outputs -->
+  <rect x="50" y="620" width="800" height="200" rx="5" class="output"/>
+  <text x="450" y="650" text-anchor="middle" font-weight="bold">OUTPUTS: What It Creates</text>
+  <text x="60" y="675" font-size="12">Mode 1 - Full Catalog outputs:</text>
+  <text x="80" y="693" font-size="12">✓ common.yaml - Main catalog configuration with UUID, workloads, infrastructure</text>
+  <text x="80" y="711" font-size="12">✓ dev.yaml - Development overrides</text>
+  <text x="80" y="729" font-size="12">✓ description.adoc - RHDP catalog description (3-4 sentence overview, featured products, modules)</text>
+  <text x="80" y="747" font-size="12">✓ info-message-template.adoc - User notification template with variables</text>
+  <text x="60" y="769" font-size="12">Mode 2 outputs: description.adoc only</text>
+  <text x="60" y="787" font-size="12">Mode 4 outputs: Virtual CI folder in published/ with common/dev/prod.yaml, description, templates</text>
+
+  <!-- Arrow -->
+  <path d="M 450 820 L 450 850" class="arrow"/>
+
+  <!-- Final Note -->
+  <rect x="50" y="850" width="800" height="40" rx="5" fill="#f0f0f0"/>
+  <text x="450" y="875" text-anchor="middle" fill="#333" font-size="12">All files validated, committed to branch, ready for /agnosticv-validator and PR creation</text>
+</svg>

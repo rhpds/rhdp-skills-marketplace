@@ -7,6 +7,10 @@ description: Transform completed Red Hat Showroom lab modules or demo content in
 
 Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## When to Use
 
 **Use this skill when you want to**:

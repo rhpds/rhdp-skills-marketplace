@@ -12,6 +12,10 @@ model: sonnet
 
 Guide you through creating a Red Hat Showroom demo module using the Know/Show structure for presenter-led demonstrations.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## When to Use
 
 **Use this skill when you want to**:

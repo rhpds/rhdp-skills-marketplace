@@ -12,6 +12,10 @@ model: sonnet
 
 Guide you through creating a single Red Hat Showroom workshop module from reference materials (URLs, files, docs, or text) with business storytelling and proper AsciiDoc formatting.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## When to Use
 
 **Use this skill when you want to**:

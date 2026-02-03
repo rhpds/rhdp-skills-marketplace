@@ -46,6 +46,10 @@ Just ask, use what they give you, move on. Users know their paths - trust them.
 
 Unified skill for creating and updating AgnosticV catalog configurations. Handles everything from full catalog creation to updating individual files like description.adoc or info-message-template.adoc.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ---
 
 ## When to Use This Skill

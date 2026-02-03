@@ -12,6 +12,10 @@ model: sonnet
 
 Verify workshop or demo content against Red Hat quality standards, style guidelines, technical accuracy, and accessibility requirements.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## When to Use
 
 **Use this skill when you want to**:

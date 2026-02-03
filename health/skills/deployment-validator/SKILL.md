@@ -12,6 +12,10 @@ model: sonnet
 
 You are assisting with creating validation roles for Red Hat Demo Platform (RHDP) workshops and demos. This skill follows a **collaborative pattern** where the user runs commands manually and shares output with you.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## Workflow Overview
 
 This skill helps you:

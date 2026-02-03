@@ -21,6 +21,10 @@ model: sonnet
 
 Comprehensive validation of AgnosticV catalog configurations before deployment. Checks UUID format, YAML syntax, workload dependencies, category correctness, and best practices to prevent deployment failures.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ---
 
 ## When to Use This Skill
