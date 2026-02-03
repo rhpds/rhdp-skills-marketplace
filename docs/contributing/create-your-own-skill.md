@@ -55,6 +55,89 @@ Learn how to create custom skills and plugins for Claude Code by building a real
 
 ---
 
+## 💡 Have Existing Documentation? Let Claude Help!
+
+**You don't have to start from scratch!**
+
+If you already have:
+- Step-by-step documentation
+- Runbooks or procedures
+- Shell scripts or automation
+- Team workflows
+
+**Claude can help you convert it into a skill.**
+
+### How to Get Help from Claude
+
+**Option 1: Paste your existing docs**
+
+```
+I have this documentation for [task]. Can you help me convert it into a Claude Code skill?
+
+[Paste your documentation here]
+```
+
+**Option 2: Point to your files**
+
+```
+I have a workflow in docs/deployment-process.md.
+Can you read it and help me create a skill that guides users through this process?
+```
+
+**Option 3: Start a conversation**
+
+```
+I want to create a skill that helps with [task].
+Here's what I currently do manually:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+Can you help me structure this as a skill?
+```
+
+**Claude will:**
+- ✅ Analyze your workflow
+- ✅ Suggest skill structure
+- ✅ Write the SKILL.md file
+- ✅ Add proper frontmatter and formatting
+- ✅ Create examples and templates
+
+**Try it now in this workshop!** As you read through the modules, ask Claude to help you create your skill based on your existing work.
+
+### Effective Prompting Patterns
+
+**Pattern 1: Convert existing documentation**
+```
+I have documentation for [task] in [file/URL].
+Convert it into a Claude Code skill using RHDP patterns from the marketplace.
+```
+
+**Pattern 2: Create from description**
+```
+Create a Claude Code skill that [does task].
+It should:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+Use patterns from showroom:blog-generate for inspiration.
+```
+
+**Pattern 3: Improve existing skill**
+```
+Read agnosticv/skills/catalog-builder/SKILL.md
+Create a similar skill for [my use case] but simplified for [specific need].
+```
+
+**Pattern 4: Debug and fix**
+```
+This skill fails at Step 3 with error [error message].
+Can you fix the bash command and add error handling?
+```
+
+---
+
 ## Module 1: Understanding Skills & Plugins
 
 ### What is a Skill?
@@ -227,22 +310,55 @@ __meta__:
 
 ---
 
-## Module 3: Hands-On - Create Your First Skill
+## Module 3: Hands-On - Use Claude to Create Your First Skill
 
-Let's create a practical skill: **README Generator**
+Let's use Claude to create a practical skill: **README Generator**
 
 This skill will help generate comprehensive README files for GitHub repositories.
 
-### Step 1: Create Directory Structure
+**Important:** You're not writing this by hand! You'll use Claude to help you.
+
+### Step 1: Set Up Your Workspace
 
 ```bash
 mkdir -p ~/my-skills/readme-generator/skills/readme-generator
 cd ~/my-skills/readme-generator
 ```
 
-### Step 2: Write the SKILL.md
+### Step 2: Ask Claude to Create the Skill
 
-Create `skills/readme-generator/SKILL.md`:
+**Copy this prompt to Claude Code:**
+
+```
+I want to create a Claude Code skill that generates README files for GitHub projects.
+
+The skill should:
+1. Detect the repository name and language
+2. Ask users for project details (description, features, installation method)
+3. Generate a professional README.md with proper sections
+4. Include badges, installation instructions, and usage examples
+
+Can you create a SKILL.md file for this in skills/readme-generator/SKILL.md?
+
+Use these patterns from RHDP skills:
+- Detect environment first (git repo, language)
+- Ask clear questions with examples
+- Use bash commands for file operations
+- Show output before writing files
+- Ask for user confirmation
+
+Format it with:
+- YAML frontmatter (name, description, version)
+- Context: fork
+- Step-by-step workflow
+- Examples and templates
+```
+
+**Claude will generate the SKILL.md file for you!**
+
+### What Claude Creates
+
+Claude will write something like this:
 
 ```markdown
 ---
@@ -305,20 +421,45 @@ Generate professional README.md files for GitHub repositories following best pra
 
 ### Step 2: Ask Key Questions
 
-**Ask user:**
+**Required information:**
 
-Q: **Project title** (use detected name as default)
-Q: **One-line description** (what does this project do?)
-Q: **Target audience** (developers, sysadmins, end users)
-Q: **Installation method** (npm, pip, go get, docker, manual)
-Q: **Main features** (list 3-5 key features)
-Q: **License** (MIT, Apache 2.0, GPL, Proprietary)
+1. **Project title**
+   - Use detected name as default
+   - Ask: "Project name? [detected-name]"
 
-**Optional questions:**
-Q: Include badges? [Y/n]
-Q: Include screenshots/demo? [Y/n]
-Q: Include contributing guidelines? [Y/n]
-Q: Include code of conduct? [Y/n]
+2. **One-line description**
+   - Ask: "What does this project do? (one sentence)"
+   - Example: "Generates professional README files for GitHub repositories"
+
+3. **Target audience**
+   - Ask: "Who is this for? (developers/sysadmins/end-users)"
+   - Multiple options: "developers, sysadmins, end users"
+
+4. **Installation method**
+   - Ask: "Installation method? (npm/pip/go/docker/manual)"
+   - Determines which installation instructions to generate
+
+5. **Main features**
+   - Ask: "List 3-5 key features (one per line)"
+   - Wait for multi-line input
+
+6. **License**
+   - Ask: "License? (MIT/Apache-2.0/GPL/Proprietary)"
+   - Default: MIT for open source projects
+
+**Optional features (ask with Y/n defaults):**
+
+1. **Include badges?** `[Y/n]`
+   - GitHub stars, license badge, build status
+
+2. **Include screenshots/demo?** `[Y/n]`
+   - Adds Screenshots section with placeholder
+
+3. **Include contributing guidelines?** `[Y/n]`
+   - Adds Contributing section with link to CONTRIBUTING.md
+
+4. **Include code of conduct?** `[Y/n]`
+   - Adds Code of Conduct section
 
 ### Step 3: Generate README Structure
 
@@ -595,13 +736,32 @@ This project is licensed under MIT - see [LICENSE](LICENSE).
 - Default to generic language-agnostic examples
 ```
 
-### Step 3: Test Your Skill
+### Step 3: Review What Claude Created
+
+**Ask Claude to explain the skill:**
+
+```
+Can you explain how this skill works? Walk me through each step.
+```
+
+**Ask for improvements:**
+
+```
+Can you add:
+1. Detection of existing README (offer to update instead of replace)
+2. More badge options (npm, PyPI, Docker)
+3. A template for API documentation README
+```
+
+**Claude will iterate on the skill based on your feedback.**
+
+### Step 4: Test Your Skill
 
 **Test locally before packaging:**
 
-1. **Copy to Claude skills directory:**
-```bash
-cp -r ~/my-skills/readme-generator/skills/readme-generator ~/.claude/skills/
+1. **Ask Claude to install it:**
+```
+Can you copy this skill to ~/.claude/skills/ for testing?
 ```
 
 2. **Restart Claude Code**
@@ -612,18 +772,24 @@ cd ~/some-project
 /readme-generator
 ```
 
-4. **Verify it works:**
-- Does it detect repository info?
-- Does it ask the right questions?
-- Does it generate a proper README?
+4. **If it doesn't work, ask Claude to fix it:**
+```
+The skill failed at Step 2 when detecting the repository.
+Can you fix the git detection logic?
+```
 
-### Step 4: Iterate and Improve
+### Step 5: Iterate with Claude
 
-**Based on testing:**
-- Add missing questions
-- Improve templates
-- Handle edge cases
-- Add more examples
+**Based on testing, keep improving:**
+
+```
+The README it generated is good, but can you:
+- Add a troubleshooting section template
+- Include example environment variables
+- Add support for monorepos
+```
+
+**Claude will update the skill until it's perfect.**
 
 ---
 
@@ -1371,18 +1537,55 @@ When ready, consider:
 
 You've learned:
 - ✅ Skill and plugin architecture
-- ✅ How to analyze existing skills
-- ✅ Creating skills from scratch
+- ✅ How to analyze existing RHDP skills
+- ✅ **How to use Claude to create skills** (not write them by hand!)
+- ✅ Effective prompting patterns for skill creation
 - ✅ Packaging skills into plugins
 - ✅ Testing and validation
 - ✅ Publishing to marketplace
 - ✅ Advanced features (templates, prompts, agents)
-- ✅ Best practices and patterns
+
+## The Claude-Assisted Workflow
+
+**Remember: You don't write skills by hand!**
+
+1. **Start with your existing work**
+   - Documentation, runbooks, scripts, workflows
+
+2. **Ask Claude to help**
+   - "Convert this documentation into a skill"
+   - "Create a skill that automates [task]"
+   - "Based on RHDP patterns, generate a skill for [use case]"
+
+3. **Review and iterate**
+   - Test the generated skill
+   - Ask Claude to fix issues
+   - Request improvements
+
+4. **Package and share**
+   - Claude can help create plugin.json
+   - Claude can write README and documentation
+
+**Example conversation:**
+
+```
+User: I have this shell script that deploys applications. Can you turn it into a skill?
+
+Claude: [Reads script, creates SKILL.md with proper workflow steps]
+
+User: Great! Can you add validation steps before deployment?
+
+Claude: [Updates skill with pre-deployment checks]
+
+User: Perfect. Now create the plugin.json for this.
+
+Claude: [Creates plugin metadata]
+```
 
 **Next steps:**
-1. Create your first skill based on your needs
-2. Test it thoroughly
-3. Package it as a plugin
-4. Share with the community
+1. Find a workflow you want to automate
+2. Ask Claude to help create a skill
+3. Test and iterate with Claude's help
+4. Package and share with your team
 
-Happy skill building! 🚀
+Happy skill building with Claude! 🚀
