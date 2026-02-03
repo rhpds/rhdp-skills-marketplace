@@ -33,10 +33,10 @@ title: Home
     <a href="{{ '/setup/cursor.html' | relative_url }}" class="platform-card">
       <div class="platform-icon">⚡</div>
       <h3>Cursor</h3>
-      <p>Install via npx skills - fast, standard, and works with Agent Skills 2.4+</p>
+      <p>One-command install script with bundled dependencies for Agent Skills 2.4+</p>
       <div class="platform-meta">
-        <span class="badge badge-new">New: npx support</span>
-        <span class="badge">Version 2.4+</span>
+        <span class="badge badge-new">New: v2.4.0</span>
+        <span class="badge">Workaround</span>
       </div>
     </a>
 
@@ -70,8 +70,8 @@ title: Home
     <div class="category-card">
       <div class="category-icon">⚡</div>
       <h3>Cursor</h3>
-      <p>npx skills installation</p>
-      <pre><code>npx skills add rhpds/rhdp-skills-marketplace</code></pre>
+      <p>Install script (workaround)</p>
+      <pre><code>curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash</code></pre>
       <a href="{{ '/setup/cursor.html' | relative_url }}">Full guide →</a>
     </div>
 
