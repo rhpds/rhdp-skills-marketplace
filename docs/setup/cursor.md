@@ -5,9 +5,11 @@ title: Cursor Setup
 
 # Cursor Setup
 
-> **✅ Cursor 2.4+ Supported**
+> **✅ Cursor 2.4+ Supported (Workaround)**
 >
-> Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io). RHDP skills work natively in Cursor using npx skills.
+> Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io) but **does not support Claude Code plugin marketplace**. This installation uses a direct install script as a workaround.
+>
+> **Note:** For full plugin marketplace support with automatic updates, use [Claude Code](claude-code.html) instead.
 
 ---
 
@@ -26,40 +28,32 @@ If you're on an older version, update Cursor first.
 
 ## Installation
 
-### Install All Skills (Interactive)
+**One-command install:**
 
 ```bash
-npx skills add rhpds/rhdp-skills-marketplace
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash
 ```
 
-The interactive prompt will show all available skills:
-- **showroom-create-lab** - Generate workshop lab modules
-- **showroom-create-demo** - Create presenter-led demos
-- **showroom-blog-generate** - Transform to blog posts
-- **showroom-verify-content** - Quality validation
-- **agnosticv-catalog-builder** - Create/update catalogs
-- **agnosticv-validator** - Validate configurations
-- **health-deployment-validator** - Create validation roles
+This script will:
+- ✅ Install all 7 skills to `~/.cursor/skills/`
+- ✅ Install documentation to `~/.cursor/docs/`
+- ✅ Bundle prompts and templates with each skill
+- ✅ Everything installed in one step
 
-Select which skills to install.
-
-### Install Specific Skills
+**Verify installation:**
 
 ```bash
-# Workshop and demo creation
-npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-lab
-npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-demo
-
-# AgnosticV catalog work (RHDP internal)
-npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-catalog-builder
-npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-validator
-
-# Deployment validation (RHDP internal)
-npx skills add rhpds/rhdp-skills-marketplace/skills/health-deployment-validator
+ls ~/.cursor/skills/
 ```
 
-Skills are installed to:
-- `~/.cursor/skills/`
+You should see:
+- showroom-create-lab
+- showroom-create-demo
+- showroom-blog-generate
+- showroom-verify-content
+- agnosticv-catalog-builder
+- agnosticv-validator
+- health-deployment-validator
 
 **Restart Cursor** after installation to load the new skills.
 
@@ -72,19 +66,26 @@ Skills are installed to:
 Type `/skill-name` in Cursor Agent chat:
 
 ```
-/showroom:create-lab
-/showroom:create-demo
-/agnosticv:catalog-builder
+/showroom-create-lab
+/showroom-create-demo
+/showroom-blog-generate
+/showroom-verify-content
+/agnosticv-catalog-builder
+/agnosticv-validator
+/health-deployment-validator
 ```
+
+**Note:** Cursor skill names use **hyphens** (not colons) due to naming restrictions.
 
 ### Natural Language
 
 The agent will apply relevant skills automatically:
 
 ```
-Help me create a workshop lab
+Help me create a workshop lab module
 Generate demo content for my presentation
-Create an AgnosticV catalog
+Create an AgnosticV catalog configuration
+Verify my workshop content quality
 ```
 
 ---
@@ -99,16 +100,38 @@ After installation and restart, verify skills are loaded:
 
 ---
 
+## ⚠️ Important: If You Use BOTH Claude Code and Cursor
+
+If you have **both** Claude Code and Cursor installed, you may see duplicate skills:
+
+| Platform | Skill Names | Example |
+|----------|-------------|---------|
+| Claude Code (plugin) | With colons | `/showroom:create-lab` |
+| Cursor (npx) | With hyphens | `/showroom-create-lab` |
+
+**Both skills are identical** - they just have different names due to platform naming requirements.
+
+**Recommendation:** Choose one installation method:
+- **Claude Code users**: Use the plugin marketplace (automatic updates, full integration)
+- **Cursor-only users**: Use npx skills (this guide)
+- **Both**: Use Claude Code plugin, skip npx for Cursor
+
+---
+
 ## Updating Skills
 
 ```bash
-# Update all skills
-npx skills update
-
-# Or remove and reinstall
-npx skills remove rhpds/rhdp-skills-marketplace
-npx skills add rhpds/rhdp-skills-marketplace
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
 ```
+
+The update script will:
+- Check for new versions
+- Show changelog
+- Backup current installation
+- Install latest version
+- Restart Cursor to load updates
+
+**Note:** Unlike Claude Code plugin marketplace, Cursor updates are manual. Claude Code users get automatic update notifications.
 
 ---
 
@@ -116,23 +139,44 @@ npx skills add rhpds/rhdp-skills-marketplace
 
 ### Skills Not Showing After Installation
 
-1. **Restart Cursor completely** (quit and reopen)
+**Most common issue:** Symlinks instead of actual files.
+
+**Fix:**
+```bash
+# Verify you have actual files (not symlinks)
+file ~/.cursor/skills/showroom-create-lab/SKILL.md
+
+# If it says "symbolic link", copy actual files:
+cp -r ~/.agents/skills/* ~/.cursor/skills/
+
+# Restart Cursor
+```
+
+Other checks:
+1. **Restart Cursor completely** (Cmd+Q / Ctrl+Q, then reopen)
 2. Verify installation: `ls ~/.cursor/skills/`
 3. Check Cursor version is 2.4.0+
+
+### Skills Show But Don't Work Properly
+
+Missing support files (templates, prompts, docs):
+
+```bash
+# Copy .claude/ directory to your project
+cd ~/your-project
+git clone https://github.com/rhpds/rhdp-skills-marketplace.git /tmp/rhdp-marketplace
+mkdir -p .claude
+cp -r /tmp/rhdp-marketplace/showroom/.claude/* .claude/
+rm -rf /tmp/rhdp-marketplace
+```
 
 ### Permission Denied
 
 Make sure you have write permissions:
 ```bash
 ls -la ~/.cursor/
+chmod 755 ~/.cursor/skills
 ```
-
-### Skills Not Working
-
-1. Check Cursor version (must be 2.4+)
-2. Verify skills are in `~/.cursor/skills/`
-3. Restart Cursor
-4. Try explicit invocation with `/skill-name`
 
 ---
 

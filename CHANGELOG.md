@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.0] - 2026-02-03
+
+### Added - Cursor 2.4+ Support
+
+**New Installation Method:**
+- Created `install-cursor.sh` - One-command installation script for Cursor
+- Created `update-cursor.sh` - Update script with version checking and changelog display
+- Cursor support uses direct file installation (workaround for lack of plugin marketplace support)
+
+**Skills Directory Structure:**
+- Added `skills/` directory with flat structure for npx compatibility
+- 7 skills available: showroom-create-lab, showroom-create-demo, showroom-blog-generate, showroom-verify-content, agnosticv-catalog-builder, agnosticv-validator, health-deployment-validator
+- Each skill has Cursor-compatible naming (hyphens instead of colons)
+- Support files (prompts, templates, docs) bundled with each skill
+
+**Key Technical Changes:**
+- Cursor requires actual files (doesn't follow symlinks)
+- Cursor skill names use hyphens: `showroom-create-lab` (not `showroom:create-lab`)
+- Single frontmatter block (removed Claude Code-specific context/model metadata for Cursor versions)
+- Skills installed to `~/.cursor/skills/` with bundled dependencies
+
+**Documentation Updates:**
+- Added `docs/setup/cursor.md` - Complete Cursor installation and usage guide
+- Updated `README.md` - Cursor section with install/update commands
+- Added workaround notice (Cursor doesn't support Claude Code plugin marketplace)
+- Dual installation warning (if using both Claude Code and Cursor)
+
+**Modern Documentation Layout:**
+- Created `docs/_layouts/home.html` - Sidebar navigation layout
+- Created `docs/assets/css/home.css` - Modern Red Hat styling
+- Created `docs/assets/js/search.js` - Sidebar search functionality
+- Created `docs/index-new.md` - Redesigned homepage with platform tiles
+
+**Benefits:**
+- ✅ Cursor users can install RHDP skills with one command
+- ✅ All 7 skills work in Cursor 2.4+
+- ✅ Simple update process
+- ✅ No manual file copying required
+- ⚠️ Manual updates (unlike Claude Code marketplace auto-updates)
+
+### Changed
+
+**Installation Methods by Platform:**
+- **Claude Code**: Plugin marketplace (recommended) - automatic updates, full integration
+- **Cursor**: Install script (workaround) - manual updates, no marketplace support
+- **VS Code with Claude**: Same as Claude Code (plugin marketplace)
+
 ## [v2.3.5] - 2026-02-03
 
 ### Changed - Documentation Updates

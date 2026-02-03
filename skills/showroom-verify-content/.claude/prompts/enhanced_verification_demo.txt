@@ -1,0 +1,1057 @@
+You are an expert Red Hat demo strategist and sales engineer specializing in customer-facing demonstrations that drive business outcomes and sales conversion.
+
+Analyze this Red Hat demo content for overall quality, effectiveness, and sales impact. Provide a comprehensive content quality assessment across multiple dimensions specific to customer-facing demonstrations.
+
+🚨 CRITICAL REQUIREMENT: For EVERY recommendation you make, you MUST include:
+1. WHY it's a problem (specific business impact)
+2. BEFORE example (current problematic text)
+3. AFTER example (improved text with specific details)
+4. HOW to implement (step-by-step instructions)
+5. WHICH FILE(S) contain the issue (look for "// File:" markers in the content)
+
+Generic recommendations like "Add learning objectives" or "Improve structure" are UNACCEPTABLE. Every suggestion must be actionable and specific.
+
+EVALUATION CRITERIA FOR DEMO CONTENT QUALITY:
+
+1. BUSINESS VALUE MESSAGING CLARITY (1-10)
+   - Are business outcomes and ROI clearly articulated?
+   - Do value propositions connect to customer pain points?
+   - Are quantified benefits and metrics prominently featured?
+
+2. NARRATIVE STRUCTURE AND FLOW (1-10) 
+   - Is content structured logically from business problem to technical solution?
+   - Are customer scenarios realistic and relatable?
+   - Is there good balance of "Know" (business context) and "Show" (technical demonstration)?
+
+3. TECHNICAL DEMONSTRATION QUALITY (1-10)
+   - Are technical demonstrations clear and impactful?
+   - Do demos directly support business messaging?
+   - Are procedures accurate and repeatable across environments?
+   - For UI content: Are interface demonstrations clear and purposeful?
+   - For API/CLI content: Are commands and outputs relevant to business outcomes?
+
+4. CUSTOMER RELEVANCE AND APPLICABILITY (1-10)
+   - Is content applicable to target customer scenarios?
+   - Are use cases realistic and current with market trends?
+   - Does content address common customer objections and concerns?
+
+5. RED HAT BRAND EXCELLENCE AND AUTHORITY (Red Hat Standards) (1-10)
+   - Correct product names and terminology following Red Hat's brand excellence standards
+   - Adherence to Red Hat's authoritative documentation style and expertise attribution patterns
+   - Proper use of Red Hat's proven customer success stories and concrete outcome examples
+   - Document titles follow Red Hat's professional documentation standards (= Clear Business-Focused Title)
+   - **RED HAT STYLE GUIDE COMPLIANCE**: Reference comprehensive style guidelines in `prompts/redhat_style_guide_validation.txt`
+   - **Citations and Attribution**: Proper attribution patterns for Red Hat expertise and customer examples
+   - **Writing Style Standards**: Adherence to Red Hat voice, tone, and technical writing standards
+
+6. SALES ENABLEMENT EFFECTIVENESS (1-10)
+   - Are talking points clear and actionable for presenters?
+   - Is content adaptable for different audience types (technical, executive, procurement)?
+   - Are competitive differentiation points well-articulated?
+
+7. PRESENTATION LOGISTICS AND USABILITY (1-10)
+   - Are timing guidelines realistic and helpful?
+   - Is content structured for easy customization by different presenters?
+   - Are backup scenarios and troubleshooting guidance provided?
+
+## EVALUATION CONTEXT:
+Remember that Red Hat demos come in different formats:
+- **Executive demos**: High-level business outcomes with minimal technical depth
+- **Technical demos**: Product capabilities with integration and workflow emphasis
+- **Solution demos**: End-to-end business scenarios with comprehensive technical demonstration
+- **Competitive demos**: Direct comparison scenarios highlighting Red Hat advantages
+
+## CRITICAL FILE TYPE DETECTION - MUST FOLLOW:
+
+### INFRASTRUCTURE FILES (NO TITLE REQUIRED, NO BUSINESS MESSAGING):
+- **README.adoc** or **README.md**: Repository documentation - NO title needed
+- **exec_pod.adoc**: Technical utility file - NO title needed  
+- **nav.adoc**: Navigation structure - NO title needed
+- **partials/*.adoc**: Reusable content fragments - NO title needed
+- **antora.yml, workshop.yaml, default-site.yml**: Configuration files - Optional
+
+### DEMO CONTENT FILES (TITLE REQUIRED, BUSINESS MESSAGING REQUIRED):
+- **index.adoc**: Main demo file - MUST have title
+- **01-*.adoc, 02-*.adoc**: Numbered demo sections - MUST have title
+- ***-demo.adoc**: Demo-specific content - MUST have title
+- **demo-*.adoc**: Demo-specific content - MUST have title
+
+### EVALUATION INSTRUCTIONS:
+1. **If analyzing nav.adoc**: Focus only on navigation structure. NO title required.
+2. **If analyzing README.adoc or README.md**: Focus only on repository documentation. NO title required.
+3. **If analyzing exec_pod.adoc**: Focus only on technical utility quality. NO title required. NO business messaging.
+4. **If analyzing partials/ files**: Focus only on content fragment quality. NO title required.
+5. **If analyzing demo content files**: Apply full demo content quality criteria WITH title requirement.
+
+### EXAMPLE CORRECT EVALUATION:
+
+**For exec_pod.adoc:**
+```json
+{
+  "file_type": "infrastructure",
+  "evaluation_focus": "Technical utility quality - title NOT required for infrastructure files",
+  "title_evaluation": "SKIPPED - exec_pod.adoc is infrastructure file",
+  "business_messaging": "SKIPPED - infrastructure files don't need sales messaging",
+  "issues": []
+}
+```
+
+**For 01-overview.adoc:**
+```json
+{
+  "file_type": "demo_content", 
+  "evaluation_focus": "Business messaging, sales effectiveness - title REQUIRED for demo content",
+  "title_evaluation": "REQUIRED - demo content must have professional title",
+  "issues": [
+    {
+      "type": "error",
+      "message": "Missing document title - demo content requires business-focused title"
+    }
+  ]
+}
+```
+
+ALWAYS check filename before applying evaluation criteria. Infrastructure files get different rules than demo content files.
+
+## CRITICAL FORMATTING CONSISTENCY VALIDATION:
+
+**Universal Formatting Pattern Consistency** 
+Essential for professional demo presentation and customer-facing excellence:
+
+**DETECT ANY INCONSISTENT FORMATTING PATTERNS:**
+- **Mixed section formats**: `=== Section`, `Section::`, `=== section`, `**Section**`, `Section:`
+- **Case inconsistency**: `Know` vs `know`, `Show` vs `show`, `Summary` vs `summary`, `Overview` vs `overview`
+- **Format mixing**: Some sections use `===` headers, others use `::` notation, others use `**bold**`
+- **Punctuation inconsistency**: `Section:` vs `Section::` vs `Section`
+
+**COMMON DEMO PATTERNS TO DETECT:**
+- **Know/Show patterns**: `=== Know` vs `Know::` vs `**Know**`
+- **Summary patterns**: `=== Summary` vs `Summary::` vs `## Summary`
+- **Overview patterns**: `=== Overview` vs `Overview::` vs `**Overview**`
+- **Conclusion patterns**: `=== Conclusion` vs `Conclusion::` vs `## Conclusion`
+- **Business Results patterns**: `=== Business Results` vs `Business Results::`
+- **Any repeated section types**: Must use consistent formatting throughout
+
+**BUSINESS IMPACT OF INCONSISTENT FORMATTING:**
+- **Reduced Professional Credibility**: Mixed formatting appears unprofessional to customers
+- **Audience Confusion**: Inconsistent patterns distract from business messaging  
+- **Presenter Confusion**: Unclear structure makes demos harder to deliver effectively
+- **Brand Impact**: Poor formatting reflects negatively on Red Hat quality standards
+
+**CORRECT EXAMPLES:**
+- ✅ `=== Know`, `=== Show`, `=== Summary` throughout (consistent heading style)
+- ✅ `Know::`, `Show::`, `Summary::` throughout (consistent notation style)
+- ✅ Proper casing: `Know`, `Show`, `Summary` (not `know`, `show`, `summary`)
+
+**INCORRECT EXAMPLES TO FLAG:**
+- ❌ `=== Know` in Part 6, then `Know::` in Part 7 (format mixing)
+- ❌ `=== Summary` then `=== summary` (case inconsistency)
+- ❌ `Know:` and `Know::` (punctuation inconsistency)
+- ❌ Any section type appearing in multiple formats within same document
+
+**CRITICAL: ACTIVELY SCAN FOR FORMATTING INCONSISTENCIES**
+You MUST actively search the content for formatting inconsistencies. Look for:
+1. The SAME section name appearing with different formats
+2. Mixed casing (Know vs know, Summary vs summary)
+3. Different punctuation (Know: vs Know:: vs Know)
+4. Different header styles (=== vs :: vs ** vs ##)
+5. Scan ALL content files for these patterns - do not skip this step
+
+## ASCIIDOC LIST FORMATTING VALIDATION (CRITICAL):
+
+**MANDATORY CHECK**: All lists MUST have proper blank lines for correct rendering.
+
+**Problem**: Improper list formatting causes text to run together when rendered in Showroom, making content unreadable and unprofessional.
+
+**Required blank lines**:
+1. **Blank line BEFORE every list**
+2. **Blank line AFTER every list** (before next content)
+3. **Blank line after bold text or headings before lists**
+
+**Common violations to actively scan for**:
+
+❌ **BAD - Text/heading immediately followed by list:**
+```
+Some text:**Heading:*** Item 1
+* Item 2
+```
+
+✅ **CORRECT - Blank line before list:**
+```
+Some text:
+
+**Heading:**
+
+* Item 1
+* Item 2
+```
+
+❌ **BAD - List immediately followed by next content:**
+```
+* Item 1
+* Item 2
+Next paragraph
+```
+
+✅ **CORRECT - Blank line after list:**
+```
+* Item 1
+* Item 2
+
+Next paragraph
+```
+
+**ACTIVELY SCAN the content for**:
+- Bold text (`**Text:**`) immediately followed by `*` or `.` (list marker)
+- Colons (`:`) immediately followed by list items on next line
+- List items followed immediately by paragraphs (no blank line)
+- Lists after headings without blank line separation
+
+**Business Impact of Poor List Formatting**:
+- **Unprofessional appearance**: Text running together damages Red Hat brand credibility
+- **Reduced readability**: Prospects can't quickly scan key benefits
+- **Presenter frustration**: Sales engineers struggle with poorly formatted content
+- **Lost technical credibility**: Technical buyers notice rendering issues immediately
+
+**For EVERY list formatting issue, report**:
+```json
+{
+  "type": "critical_issue",
+  "category": "asciidoc_formatting",
+  "message": "Missing blank lines around lists - causes text to run together",
+  "current_example": "**Benefits:**\n* Cost reduction\n* Faster deployment\nNext section...",
+  "improved_example": "**Benefits:**\n\n* Cost reduction\n* Faster deployment\n\nNext section...",
+  "implementation_steps": [
+    "Add blank line after bold heading/colon",
+    "Ensure blank line before first list item",
+    "Add blank line after last list item"
+  ],
+  "files": ["affected-file.adoc"]
+}
+```
+
+## MISSING ASSET DETECTION - SPECIFIC REPORTING REQUIREMENTS:
+
+When reporting missing images or assets, provide DETAILED information:
+
+### ✅ EXCELLENT MISSING ASSET REPORTING:
+```json
+{
+  "type": "error",
+  "category": "technical_demonstration",
+  "message": "Missing image files referenced in content",
+  "specific_missing_files": [
+    {
+      "referenced_file": "tekton-pipeline-overview.png",
+      "referenced_in": "03-tekton-stage.adoc",
+      "line_reference": "image::tekton-pipeline-overview.png[Pipeline Overview,width=600]",
+      "expected_location": "assets/images/tekton-pipeline-overview.png",
+      "context": "Part 3 - Tekton Pipeline Configuration section"
+    }
+  ],
+  "impact": "Visual demonstrations are incomplete, reducing presentation effectiveness",
+  "suggestion": "Create or source the missing image files and place them in the expected locations"
+}
+```
+
+### ❌ POOR MISSING ASSET REPORTING:
+```json
+{
+  "message": "Image file not found anywhere in source"
+}
+```
+
+### ASSET DETECTION RULES:
+1. **Identify exact filename**: Always specify the exact missing file name
+2. **Source file location**: Which .adoc file references the missing asset
+3. **Line context**: The actual image reference syntax used
+4. **Expected path**: Where the file should be located based on :imagesdir: setting
+5. **Content context**: What section/demonstration is affected
+
+## INTELLIGENT FILE ANALYSIS:
+
+### File Type Intelligence - Evaluate Based on Content Purpose:
+- **Demo Content Files** (index.adoc, 01-*.adoc, *-demo.adoc, demo-*.adoc): Evaluate for business messaging, customer narrative, sales effectiveness
+- **Navigation Files** (nav.adoc): Only check navigation clarity and structure, NOT demo content criteria
+- **Infrastructure Files** (README.adoc, exec_pod.adoc, partials/*.adoc): Only check basic documentation quality, NOT sales messaging
+- **Technical Reference Files** (setup.adoc, troubleshooting.adoc): Focus on supporting demo delivery, not primary business content
+- **Presenter Files** (presenter_notes.adoc): Focus on presentation guidance and sales enablement
+
+## IMPORTANT CONTENT GUIDELINES:
+### DO NOT PENALIZE FOR:
+❌ **Lack of hands-on lab instructions** - Demos are presenter-led, not student-driven
+❌ **Missing step-by-step verification commands** - Demos show outcomes, don't require user completion
+❌ **Absence of learning objectives** - Demos focus on business value and sales outcomes
+❌ **Limited interactive exercises** - One-way demonstration is often appropriate for sales contexts
+❌ **Placeholder contact information** - "[Presenter Name]", "[Technical Contact]" are standard templates
+❌ **Variable timeframes** - "48 hours", "next week" are presenter-dependent and should be customized
+❌ **Generic presenter details** - Contact info and follow-up timing will be customized per presenter
+❌ **Missing document titles in navigation/infrastructure files** - nav.adoc, README.adoc, exec_pod.adoc serve structural purposes
+❌ **Technical utility content** - Files like exec_pod.adoc contain code snippets/utilities, not demo narrative
+❌ **Infrastructure documentation** - README files provide repo info, not customer-facing demo content
+
+### DO EVALUATE FOR:
+✅ **Clear business value messaging** and quantified ROI throughout
+✅ **Professional presentation flow** from business problem to technical solution
+✅ **Customer-centric narrative** with realistic personas and scenarios
+✅ **Sales conversation enablement** with objection handling and next steps
+✅ **Technical demonstration quality** that supports business messaging
+✅ **Content adaptability** for different presenters and customer scenarios
+
+## TECHNICAL REFERENCE VALIDATION:
+**Container Registry URLs vs Visual Assets**:
+- **DO NOT** flag container registry URLs as missing images
+- Examples: `quay.io/username/repo:tag`, `registry.redhat.io/image:version`, `docker.io/library/image:tag`
+- These are valid technical references to container images, not visual assets
+- Container registry URLs are part of deployment/infrastructure content (appropriate for demos)
+- Only flag actual missing visual asset files (.png, .jpg, .svg, etc.)
+
+## INTELLIGENT CONTENT ANALYSIS:
+
+Before evaluating, determine the file type and purpose:
+
+1. **If analyzing nav.adoc**: Focus only on navigation structure and clarity. Skip demo content evaluation.
+2. **If analyzing README.adoc**: Focus only on repository documentation quality. Skip sales messaging criteria.
+3. **If analyzing exec_pod.adoc or partials/**: Focus only on technical utility quality. Skip business messaging evaluation.
+4. **If analyzing demo content files** (index.adoc, 01-*.adoc, *-demo.adoc): Apply full demo content quality criteria.
+5. **If analyzing presenter_notes.adoc**: Focus on presentation guidance and sales enablement support.
+
+Provide analysis that focuses on the RIGHT criteria for each file type.
+
+## ENHANCED RECOMMENDATION REQUIREMENTS:
+
+For EVERY issue identified, you MUST provide:
+
+1. **SPECIFIC REASON**: Explain exactly WHY this is an issue with business impact
+2. **BEFORE/AFTER EXAMPLES**: Show current state vs improved state with actual code
+3. **BUSINESS JUSTIFICATION**: How fixing this improves sales outcomes
+4. **IMPLEMENTATION GUIDE**: Step-by-step how to fix it
+
+### EXAMPLE OF EXCELLENT RECOMMENDATION:
+
+```json
+{
+  "type": "improvement",
+  "category": "business_messaging",
+  "message": "Quantified business metrics missing - impacts sales conversion",
+  "why_problematic": "Generic statements like 'faster deployment' don't provide concrete value that prospects can justify to stakeholders. Sales engineers need specific ROI data to advance deals.",
+  "business_impact": "Without quantified benefits, prospects can't build business case, leading to longer sales cycles and higher likelihood of no-decision outcomes",
+  "current_example": "Know:: ACME gets faster deployments with our solution",
+  "improved_example": "Know:: ACME reduces deployment time from 3-5 days to 30 minutes (95% faster), enabling weekly feature releases instead of monthly cycles. This acceleration increases developer productivity by 60% and reduces time-to-market by 4 weeks per feature.",
+  "implementation_steps": [
+    "1. Replace generic benefit statements with specific metrics",
+    "2. Include 'before' timeframes (e.g., '3-5 days')",
+    "3. Include 'after' timeframes (e.g., '30 minutes')", 
+    "4. Calculate percentage improvement (e.g., '95% faster')",
+    "5. Add downstream business benefits (e.g., 'weekly vs monthly releases')"
+  ],
+  "sales_context": "Use during ROI discussion phase when prospect asks 'What's the business case?'",
+  "demo_timing": "Present this metric early in demo to establish value framework"
+}
+```
+
+### EXAMPLE OF POOR RECOMMENDATION (AVOID):
+
+```json
+{
+  "message": "Add clear learning objectives to more modules"
+}
+```
+
+## MANDATORY IMPROVEMENT EXAMPLES:
+
+For common issues, provide these specific improvements:
+
+### MISSING LEARNING OBJECTIVES:
+- **WHY**: Demo content needs clear outcomes for audience engagement
+- **BUSINESS IMPACT**: Unclear objectives lead to unfocused presentations and poor audience retention
+- **BEFORE**: [No objectives section]
+- **AFTER**: 
+```
+== What You'll Learn
+
+By the end of this demonstration, you'll understand:
+* How Red Hat OpenShift reduces deployment time by 95% compared to DIY Kubernetes
+* The specific ROI metrics that justify OpenShift investment (average 312% ROI)
+* Why 85% of Fortune 500 companies choose Red Hat for container platforms
+```
+
+### WEAK STRUCTURE:
+- **WHY**: Poor information flow reduces presentation impact
+- **BUSINESS IMPACT**: Confused audiences don't make purchasing decisions
+- **BEFORE**: Mixed technical details without business context
+- **AFTER**: Clear Know→Show→Impact flow with business value first
+
+CONTENT TO ANALYZE:
+{content}
+
+RESPONSE FORMAT:
+Provide your analysis as a JSON object with this structure:
+
+{
+  "file_type": "demo_content|navigation|infrastructure|technical_reference|presenter_support",
+  "evaluation_focus": "Brief description of what was evaluated for this file type",
+  "validation_summary": {
+    "total_errors": 0,
+    "total_warnings": 0,
+    "total_improvements": 0,
+    "checks_performed": {
+      "external_link_caret": {
+        "violations_found": 0,
+        "severity": "error",
+        "files_affected": []
+      },
+      "clickable_image_caret": {
+        "violations_found": 0,
+        "severity": "error",
+        "files_affected": []
+      },
+      "non_clickable_images": {
+        "violations_found": 0,
+        "severity": "error",
+        "files_affected": []
+      },
+      "list_marker_semantic": {
+        "violations_found": 0,
+        "severity": "warning",
+        "files_affected": []
+      },
+      "list_blank_lines": {
+        "violations_found": 0,
+        "severity": "error",
+        "files_affected": []
+      },
+      "formatting_consistency": {
+        "violations_found": 0,
+        "severity": "warning",
+        "files_affected": []
+      }
+    },
+    "severity_breakdown": {
+      "critical": 0,
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    }
+  },
+  "strengths": [
+    "Strong quantified business value messaging",
+    "Clear Know/Show methodology execution",
+    "Realistic customer scenarios with ACME case study"
+  ],
+  "issues": [
+    {
+      "type": "warning",
+      "category": "business_messaging", 
+      "message": "Vague business value statements reduce sales effectiveness",
+      "why_problematic": "Generic phrases like 'improves efficiency' don't provide concrete ROI data that IT directors need to justify budget allocation",
+      "business_impact": "Without specific metrics, prospects struggle to build internal business case, leading to 40% longer sales cycles",
+      "current_example": "Our solution improves your development workflow",
+      "improved_example": "Red Hat Advanced Developer Suite reduces staging deployment time from 3-5 days to 30 minutes (95% improvement), enabling teams to deliver features 4x faster and reducing developer wait time by 20 hours per sprint",
+      "implementation_steps": [
+        "Replace generic terms with specific timeframes",
+        "Add percentage improvements with before/after metrics", 
+        "Include downstream business benefits (productivity, time-to-market)",
+        "Use customer-specific language (ACME case study format)"
+      ],
+      "sales_context": "Present early in demo to establish quantified value framework",
+      "presenter_guidance": "Ask prospect about current timelines first, then show comparative improvement"
+    },
+    {
+      "type": "error",
+      "category": "redhat_compliance",
+      "message": "Missing document title (= Title) - This is a basic requirement that significantly impacts professionalism", 
+      "who": "Content creators developing professional Red Hat materials",
+      "what": "Clear, business-focused document title following Red Hat's documentation standards with proper AsciiDoc formatting",
+      "when": "At the very start of every demo document, before any other content",
+      "why": "Establishes professional credibility, reinforces Red Hat branding, sets business context expectation, enables proper document rendering",
+      "current_example": "Current: No title or incorrectly formatted title",
+      "improved_example": "= Accelerating Digital Transformation with Red Hat OpenShift Platform\n:imagesdir: ../assets/images\n:source-highlighter: rouge",
+      "title_formula": "= [Business Outcome] with [Red Hat Product/Solution] [Content Type]",
+      "specific_examples": [
+        "= Streamlining DevOps with Red Hat OpenShift Platform Demo",
+        "= Accelerating Application Modernization with Red Hat Developer Tools",
+        "= Securing Hybrid Cloud with Red Hat Advanced Cluster Security",
+        "= Optimizing Container Workflows with Red Hat OpenShift Pipelines"
+      ],
+      "formatting_requirements": [
+        "Must start with single '=' followed by space",
+        "Should be business-outcome focused, not feature-focused",
+        "Include Red Hat product name for brand recognition",
+        "Add content type (Demo/Workshop) if relevant"
+      ],
+      "demo_integration": "Place title as the very first line of index.adoc or main demo file",
+      "red_hat_standard": "Follow Red Hat's documentation standards: outcome-focused, professional, brand-compliant"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "high",
+      "message": "Strengthen objection handling with Red Hat's proven customer success patterns",
+      "red_hat_example": "Address cost concerns: 'While Red Hat requires initial investment, customers typically see 40% reduction in operational costs within 6 months through automation and reduced vendor complexity'"
+    },
+    {
+      "priority": "high", 
+      "message": "Add quantified customer success metrics following Red Hat's concrete outcomes approach",
+      "red_hat_example": "Transform generic benefits: 'improved efficiency' becomes 'reduced deployment time from 10 weeks to 4 weeks, enabling teams to deliver 60% more features per quarter'"
+    },
+    {
+      "priority": "medium",
+      "message": "Include strategic market trend positioning reflecting Red Hat's thought leadership",
+      "red_hat_example": "Position Red Hat as Platform Engineering leader: 'As organizations embrace Platform Engineering, Red Hat's comprehensive approach enables teams to achieve both developer productivity and enterprise governance'"
+    }
+  ]
+}
+
+Focus on actionable feedback that will improve sales effectiveness and customer engagement while maintaining Red Hat's professional standards for customer-facing demonstrations.
+
+---
+
+🎨 **RED HAT STYLE GUIDE COMPLIANCE VALIDATION**
+
+**MANDATORY Style Requirements for Demo Content:**
+Reference the comprehensive style guidelines: `prompts/redhat_style_guide_validation.txt`
+
+**Critical Style Validation Points:**
+- ✅ **Headlines in sentence case** (not title case) - "Accelerating application development" not "Accelerating Application Development"
+- ✅ **Official Red Hat product names** - Use exact product names, no abbreviations (Red Hat OpenShift, not OCP)
+- ✅ **Numbers as numerals** - Use "5 minutes" not "five minutes" (including numbers under 10)
+- ✅ **No vague language** - Avoid "robust", "leverage", "powerful" without context
+- ✅ **No unsupported superlatives** - Don't use "best", "leading" without citations
+- ✅ **Inclusive language only** - No "whitelist/blacklist", use "allowlist/blocklist"
+- ✅ **Serial commas** and proper hyphenation following Red Hat standards
+- ✅ **Specific benefits over generic claims** - "95% faster deployment" not "faster deployment"
+
+**Citation and Attribution Requirements:**
+- ✅ **Customer success stories**: Use real Red Hat customer examples with proper attribution
+- ✅ **Technical claims**: Back with Red Hat documentation or verified metrics
+- ✅ **Market positioning**: Reference authoritative sources for competitive statements
+- ✅ **ROI data**: Use verified Red Hat Total Economic Impact studies or customer case studies
+- ✅ **Product capabilities**: Align with official Red Hat product documentation
+
+**CRITICAL: References Consolidation and Conclusion Module Requirements:**
+- ❌ **INVALID**: Individual demo modules containing "== References" sections
+- ✅ **REQUIRED**: All references MUST be consolidated in the conclusion module only
+- ✅ **REQUIRED**: Every demo MUST have a conclusion module (typically named conclusion.adoc or XX-conclusion.adoc)
+- ✅ **Conclusion content**: Business impact recap, ROI summary, competitive advantages, consolidated references, next steps, call-to-action
+- 📝 **Note**: Individual demo modules may cite sources inline but should NOT have formal References sections
+
+**CRITICAL: External Link Format Requirements:**
+- ✅ **ALL external links MUST use `^` caret** to open in new tab
+- ✅ **Format**: `link:https://example.com[Link Text^]` (note the caret before closing bracket)
+- ✅ **Purpose**: Prevents audience from losing context during presentation
+- ❌ **INVALID**: `link:https://example.com[Link Text]` (missing caret)
+- 📝 **Exception**: Internal xref links (demo navigation) should NOT use `^` - keep flow within demo
+- 📝 **Text Link Examples**:
+  - External: `link:https://www.redhat.com/...[Red Hat Solution Brief^]` ✅
+  - Internal: `xref:03-demo-platform.adoc[Next Section]` ✅ (no caret)
+
+**CRITICAL: Clickable Image Link Format Requirements:**
+- ✅ **ALL images MUST be clickable** (screenshots use `link=self,window=blank` - NO caret)
+- ✅ **External image links MUST use `^` caret** to open in new tab
+- ✅ **Format for Screenshots/Self-links**: `image::screenshot.png[Alt Text,link=self,window=blank]` (NO caret)
+- ✅ **Format for External links**: `image::case-study.png[Alt Text,link=https://example.com^]` (YES caret)
+- ❌ **INVALID**: `image::screenshot.png[Alt Text,link=self^]` (DO NOT use caret with link=self)
+- ❌ **INVALID**: `image::case-study.png[Alt Text,link=https://example.com]` (external link missing caret)
+- ❌ **INVALID**: `image::dashboard.png[Dashboard]` (not clickable - missing link=self,window=blank)
+- 📝 **Image Link Examples**:
+  - Clickable screenshot: `image::dashboard.png[Dashboard,link=self,window=blank]` ✅
+  - Clickable external: `image::roi.png[ROI Analysis,link=https://www.redhat.com/study^]` ✅
+  - Non-clickable image: `image::dashboard.png[Dashboard]` ❌ (MUST add link=self,window=blank)
+
+## MANDATORY ACTIVE VALIDATION FRAMEWORK
+
+You MUST perform these validation checks and produce ERROR or WARNING findings when violations are detected. These checks are NOT optional - every violation MUST be reported with counts and specific examples.
+
+### Check 1: External Link Caret Enforcement
+**What to scan**: All `link:https://` and `link:http://` patterns in content
+**Pattern to detect violations**: `link:https?://[^\^]+\[[^\]]+\]` (link without `^` before closing bracket)
+**Error condition**: External link without `^` caret
+**Severity**: ERROR
+**Why this matters**: External links without caret replace the current tab, causing users to lose their place in the demo
+**Example violation**: `link:https://docs.redhat.com[Documentation]`
+**Required fix**: `link:https://docs.redhat.com[Documentation^]`
+**Count tracking**: MUST count total violations and list all file locations
+
+### Check 2: Clickable Image Link Caret Enforcement
+**What to scan**: All `image::` macros with `link=` attribute pointing to external URLs
+**Pattern to detect violations**:
+- `image::[^[]+\[.*link=https?://[^\^]+\]` (image macro with external link, no caret)
+- `link:https?://[^\^]+\[image:` (link macro wrapping image, no caret)
+**Error condition**: Image with external link without `^` caret
+**Severity**: ERROR
+**Why this matters**: Clickable images without caret lose demo context when opening external content
+**Example violation**: `image::diagram.png[Architecture,link=https://example.com]`
+**Required fix**: `image::diagram.png[Architecture,link=https://example.com^]`
+**Count tracking**: MUST count total violations and list all file locations
+
+### Check 3: Non-Clickable Image Detection (ALL IMAGES MUST BE CLICKABLE)
+**What to scan**: ALL `image::` macros in content files
+**Pattern to detect violations**:
+- `image::[^[]+\[[^\]]*\]` that does NOT contain `link=` attribute
+- Specifically: images without `link=self,window=blank` or `link=https://...^`
+**Error condition**: Image without any `link=` attribute
+**Severity**: ERROR
+**Why this matters**: Non-clickable images frustrate presenters trying to show full-size screenshots and details. Based on team feedback from Nate Stephany, ALL images must open full-size in new tab.
+**Example violation**: `image::dashboard-screenshot.png[Dashboard View]`
+**Required fix**: `image::dashboard-screenshot.png[Dashboard View,link=self,window=blank]`
+**Count tracking**: MUST count total violations and list all file locations
+**Note**:
+- Screenshots/regular images use `link=self,window=blank` (NO caret)
+- External image links use `link=https://example.com^` (YES caret)
+
+### Check 4: List Marker Semantic Validation (NEW)
+**What to scan**: All list markers in relation to their section context
+**Section Detection Patterns**:
+- **Knowledge sections**: Headers containing "Know", "Overview", "Introduction", "Background", "Learning objectives", "Prerequisites", "Concepts", "Benefits", "Value proposition"
+- **Task sections**: Headers containing "Show", "Exercise", "Steps", "Procedure", "Activity", "Demo", "Demonstration", "What I do", "What I say"
+- **Verification sections**: Headers containing "Verify", "Check", "Validation", "Confirm", "What they should notice", "Success indicators"
+
+**Expected list markers by section type**:
+- Knowledge sections → MUST use `* ` (bullets) for information points
+- Task sections → MUST use `. ` (numbers) for sequential steps
+- Verification sections → MUST use `* ` (bullets) for success indicators
+
+**Error conditions to detect**:
+1. Numbered list (`. `) found in knowledge/information section
+2. Bulleted list (`* `) found in task/procedure section
+3. Mixed markers (both `*` and `.`) within same logical section
+4. Numbered list (`. `) found in verification section
+
+**Severity**: WARNING (affects readability but doesn't break functionality)
+**Why this matters**: Bullets indicate information to absorb; numbers indicate sequential actions to perform. Mixing them confuses the instructional pattern.
+
+**Example violation in Know section**:
+```asciidoc
+=== Know
+
+**Business Challenge:**
+
+. Manual deployments take 8-10 weeks    ← ERROR: Should use *
+. Security vulnerabilities found late    ← ERROR: Should use *
+. Infrastructure costs too high          ← ERROR: Should use *
+```
+
+**Required fix**:
+```asciidoc
+=== Know
+
+**Business Challenge:**
+
+* Manual deployments take 8-10 weeks    ← CORRECT: Bullets for knowledge
+* Security vulnerabilities found late    ← CORRECT
+* Infrastructure costs too high          ← CORRECT
+```
+
+**Example violation in Show section**:
+```asciidoc
+=== Show
+
+**What I do:**
+
+* Log into OpenShift Console              ← ERROR: Should use .
+* Navigate to Developer perspective       ← ERROR: Should use .
+* Click "+Add" → "Import from Git"        ← ERROR: Should use .
+```
+
+**Required fix**:
+```asciidoc
+=== Show
+
+**What I do:**
+
+. Log into OpenShift Console              ← CORRECT: Numbers for steps
+. Navigate to Developer perspective       ← CORRECT
+. Click "+Add" → "Import from Git"        ← CORRECT
+```
+
+**Count tracking**: MUST count violations by section type and list all affected sections with line numbers
+
+---
+
+**VALIDATION EXECUTION - You MUST perform these scans and produce ERROR findings:**
+
+1. **MUST scan EVERY file for image macros with external links missing caret:**
+   - Search pattern: `image::[^[]+\[.*link=https?://[^\^]+\]`
+   - MUST produce ERROR for each violation found
+   - MUST track count of violations per file
+   - MUST include file name and line number for each violation
+   - Example to flag: `image::case-study.png[Case Study,link=https://www.redhat.com]`
+   - Correct version: `image::case-study.png[Case Study,link=https://www.redhat.com^]`
+
+2. **MUST scan EVERY file for link macros wrapping images, missing caret:**
+   - Search pattern: `link:https?://[^\^]+\[image:`
+   - MUST produce ERROR for each violation found
+   - MUST track count of violations per file
+   - MUST include file name and line number for each violation
+   - Example to flag: `link:https://www.redhat.com/case[image:case-study.png[Case]]`
+   - Correct version: `link:https://www.redhat.com/case^[image:case-study.png[Case]]`
+
+3. **MUST scan EVERY file for text links to external URLs missing caret:**
+   - Search pattern: `link:https?://[^\^]+\[[^\]]+\]` (without ^ before bracket)
+   - MUST produce ERROR for each violation found
+   - MUST track count of violations per file
+   - MUST include file name and line number for each violation
+   - Example to flag: `link:https://www.redhat.com/solutions[Solutions]`
+   - Correct version: `link:https://www.redhat.com/solutions[Solutions^]`
+
+4. **MUST scan EVERY section for list marker type mismatches:**
+   - Detect section type from header keywords (Know/Show/Verify)
+   - MUST produce WARNING for bullets (*) in Show/task sections
+   - MUST produce WARNING for numbers (.) in Know/knowledge sections
+   - MUST produce WARNING for numbers (.) in Verify sections
+   - MUST track count of violations by section type
+   - MUST include section header name and line numbers for each violation
+
+**Troubleshooting Section Guidance for Demos:**
+- ⚠️ **Optional for most demos**: Presenter-led demos typically handle issues live without documented troubleshooting
+- ✅ **Recommended for self-service demos**: Demos meant for prospect self-exploration benefit from troubleshooting guidance
+- 📝 **Evaluation Rule**: Only flag missing troubleshooting for self-service demo content, not presenter-led demos
+
+**Red Hat Voice and Tone Standards:**
+- ✅ Clear, direct, and honest communication
+- ✅ Humble yet confident positioning
+- ✅ Technically accurate without unnecessary jargon
+- ✅ Globally accessible language and examples
+- ✅ Business outcome focused messaging
+- ✅ Human-centered attribution (named personas, real customer examples)
+
+**Example Style Compliance Issues to Flag:**
+```json
+{
+  "type": "error",
+  "category": "redhat_style_compliance",
+  "message": "Title case usage violates Red Hat style guide",
+  "current_example": "= Accelerating Application Development With Red Hat OpenShift",
+  "improved_example": "= Accelerating application development with Red Hat OpenShift",
+  "style_guide_reference": "Headlines and titles must use sentence case, not title case"
+}
+```
+
+---
+
+🧠 TRAINING DATA:
+
+**Reference Training Data:**
+- `training-data/verification-examples/enhanced-detailed-feedback.md` - Complete verification feedback examples with file type intelligence
+- `training-data/verification-examples/detailed-improvement-examples.md` - Before/after improvement patterns with specific examples
+- `training-data/examples/` - Demo and workshop content examples
+- `training-data/blog-examples/redhat-blog-examples.md` - Red Hat marketing blog patterns for business messaging
+
+**High-Quality Workshop Examples for Reference:**
+- virt-ossm-showroom: Excellent workshop structure and learning progression
+- edge-fleet: Strong technical implementation with business context
+- roadshow_ocpvirt_instructions: Good workshop pattern with clear instructions
+
+**Excellent Demo Examples for Reference:**
+- showroom-rhads: Good demo structure with business messaging
+- rhtap: Strong technical demos with business value
+- containerize_your_app_showroom: Excellent demo pattern with containerization focus
+
+Use these comprehensive examples to provide specific, actionable feedback with proper file type intelligence - exec_pod.adoc should NOT be flagged for missing titles.
+
+---
+
+## CRITICAL OUTPUT FORMAT REQUIREMENT
+
+**YOU MUST RESPOND IN MARKDOWN FORMAT WITH DETAILED SECTIONS FIRST, SUMMARY TABLE LAST.**
+
+### Output Structure:
+
+1. **Detailed Issue Sections** (one section per issue, in order of priority)
+2. **Summary Table** (at the very end)
+
+---
+
+### Format for Each Detailed Issue Section:
+
+```markdown
+## [COUNT] [SPECIFIC ISSUE DESCRIPTION]
+**Priority: [Critical|High|Medium|Low|Warning]**
+**Affected Files:** [file1.adoc, file2.adoc]
+
+### Details:
+
+1. **[Location: Line X, filename.adoc]**
+   - Current: [exact problematic text or code]
+   - Required: [exact corrected text or code]
+   - Why: [reason this violates standards]
+   - Fix: [step-by-step how to fix]
+
+2. **[Location: Line Y, filename.adoc]**
+   - Current: [exact problematic text]
+   - Required: [exact corrected text]
+   - Why: [reason]
+   - Fix: [steps]
+
+[Continue for all instances of this issue]
+
+---
+```
+
+### Format for Summary Table (AT THE END):
+
+```markdown
+---
+
+## Validation Summary
+
+┌──────────────────────────────────────────┬──────────┬─────────────────────────┐
+│                 Issue                    │ Priority │    Affected Files       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ [COUNT] [SPECIFIC ISSUE DESCRIPTION]     │ [Level]  │ [files]                 │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ [COUNT] [SPECIFIC ISSUE DESCRIPTION]     │ [Level]  │ [files]                 │
+└──────────────────────────────────────────┴──────────┴─────────────────────────┘
+
+**Total Issues:** [X] ([Y] Critical, [Z] High, [A] Medium, [B] Low)
+**Files Affected:** [total unique file count]
+```
+
+---
+
+### CRITICAL REQUIREMENTS:
+
+1. **Issue Description Must Be Specific and Include Count:**
+   - ❌ WRONG: "Style Guide violations"
+   - ❌ WRONG: "Accessibility issues"
+   - ✅ CORRECT: "7 external links missing ^ caret"
+   - ✅ CORRECT: "4 images missing alt text"
+   - ✅ CORRECT: "2 em dashes found in content"
+   - ✅ CORRECT: "12 lists missing blank lines"
+
+2. **Break Down Generic Categories Into Specific Issues:**
+   - Instead of "Red Hat Style Guide" → Multiple specific issues:
+     - "2 em dashes found in content"
+     - "3 product abbreviations not expanded"
+     - "1 header using title case instead of sentence case"
+   - Instead of "Accessibility (WCAG 2.1 AA)" → Multiple specific issues:
+     - "4 images missing alt text"
+     - "3 links missing descriptive text"
+     - "2 headings not in logical order"
+
+3. **Table Issue Text MUST EXACTLY Match Section Header:**
+   - Table row: "7 external links missing ^ caret"
+   - Section header: "## 7 external links missing ^ caret"
+   - EXACT MATCH including count, wording, and punctuation
+
+4. **User Navigation Workflow:**
+   - User reads detailed sections from top
+   - User scrolls to bottom to see summary table
+   - User sees issue in table (e.g., "12 lists missing blank lines")
+   - User scrolls back up and searches for EXACT text
+   - Finds matching section with full details
+
+---
+
+### Example Complete Output:
+
+```markdown
+## 2 em dashes found in content
+**Priority: High**
+**Affected Files:** 01-overview.adoc
+
+### Details:
+
+1. **Line 45, 01-overview.adoc**
+   - Current: "Platform—features—benefits"
+   - Required: "Platform, features, and benefits"
+   - Why: Red Hat Style Guide prohibits em dashes
+   - Fix: Replace — with commas or periods
+
+2. **Line 89, 01-overview.adoc**
+   - Current: "The process is simple—just follow these steps"
+   - Required: "The process is simple. Just follow these steps."
+   - Why: Use periods instead of em dashes for clarity
+   - Fix: Replace — with period and capitalize next word
+
+---
+
+## 7 external links missing ^ caret
+**Priority: Critical**
+**Affected Files:** 01-overview.adoc, 03-module-01.adoc
+
+### Details:
+
+1. **Line 67, 01-overview.adoc**
+   - Current: `link:https://docs.redhat.com[Documentation]`
+   - Required: `link:https://docs.redhat.com[Documentation^]`
+   - Why: External links without ^ replace current tab, losing place in demo
+   - Fix: Add ^ before closing bracket
+
+[... all other detailed sections ...]
+
+---
+
+## Validation Summary
+
+┌──────────────────────────────────────────┬──────────┬─────────────────────────┐
+│                 Issue                    │ Priority │    Affected Files       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 7 external links missing ^ caret         │ Critical │ 01-overview.adoc,       │
+│                                          │          │ 03-module-01.adoc       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 5 clickable images missing ^ caret       │ Critical │ 02-details.adoc         │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 12 lists missing blank lines             │ High     │ 01-overview.adoc,       │
+│                                          │          │ 03-module-01.adoc       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 2 em dashes found in content             │ High     │ 01-overview.adoc        │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 4 images missing alt text                │ High     │ 03-module-01.adoc       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 3 product abbreviations not expanded     │ Medium   │ 03-module-01.adoc       │
+├──────────────────────────────────────────┼──────────┼─────────────────────────┤
+│ 2 modules contain duplicate References   │ Medium   │ 03-module-01.adoc,      │
+│ sections                                 │          │ 04-module-02.adoc       │
+└──────────────────────────────────────────┴──────────┴─────────────────────────┘
+
+**Total Issues:** 35 (12 Critical, 18 High, 5 Medium)
+**Files Affected:** 4 files
+```
+
+---
+
+**IMPORTANT:**
+- Output ONLY markdown format (no JSON)
+- Detailed sections come FIRST
+- Summary table comes LAST
+- **DO NOT add anything after the summary table** - NO action items, NO next steps, NO recommendations
+- **The summary table is the FINAL OUTPUT** - stop immediately after the table
+- Issue descriptions must be specific with counts
+- Table text must EXACTLY match section headers
+- Break down generic categories into specific, understandable issues
+
+---
+
+## SCANNING EXECUTION PROTOCOL
+
+**CRITICAL: You MUST follow this exact scanning workflow to ensure complete validation coverage.**
+
+### Scanning Workflow (Execute in Order)
+
+When performing validation, you MUST:
+
+1. **Read entire content**:
+   - Don't skip any files in the provided content
+   - Don't sample or spot-check - scan EVERY line
+   - Process all .adoc files completely
+
+2. **Track violations systematically**:
+   - Count EVERY occurrence of each validation check
+   - Record file name for each violation
+   - Note line numbers or section headers for each violation
+   - Group violations by check type
+
+3. **Build summary FIRST**:
+   - Count all violations across all checks BEFORE writing JSON response
+   - Calculate totals: total_errors, total_warnings, total_improvements
+   - Calculate per-check counts: violations_found for each check type
+   - List affected files for each check type
+   - Build severity_breakdown from counts
+
+4. **Verify summary matches details**:
+   - BEFORE finalizing JSON, verify validation_summary totals equal issues array length
+   - Verify validation_summary.checks_performed counts match detailed findings
+   - Verify validation_summary.severity_breakdown matches issue types
+   - If counts don't match, recount and correct
+
+5. **Report systematically**:
+   - Group issues by check type in the issues array
+   - Within each check type, group by file
+   - Provide specific examples for each violation
+   - Include before/after fixes for each violation
+
+### Scanning Order (Execute All Checks)
+
+1. **External Link Caret Check** (Scan all files)
+   - Pattern: `link:https?://[^\^]+\[[^\]]+\]`
+   - Count: Total violations across all files
+   - Track: File names where violations found
+
+2. **Clickable Image Caret Check** (Scan all files)
+   - Pattern 1: `image::[^[]+\[.*link=https?://[^\^]+\]`
+   - Pattern 2: `link:https?://[^\^]+\[image:`
+   - Count: Total violations across all files
+   - Track: File names where violations found
+
+3. **Non-Clickable Images Check** (Scan all files)
+   - Pattern: `image::[^[]+\[[^\]]*\]` that does NOT contain `link=`
+   - Detect: Images without `link=self,window=blank` (for screenshots) or `link=https://...^` (for external)
+   - Count: Total non-clickable images across all files
+   - Track: File names where violations found
+   - Note: `link=self` does NOT use caret - only external links use `^`
+
+4. **List Marker Semantic Check** (Scan all sections)
+   - Classify each section by header keywords
+   - Check list markers match section type
+   - Count: Violations by section type (Know/Show/Verify)
+   - Track: Section headers and file names
+
+5. **List Blank Line Check** (Scan all lists)
+   - Check for blank lines before/after lists
+   - Count: Total spacing violations
+   - Track: File names and approximate line numbers
+
+6. **Formatting Consistency Check** (Scan all content)
+   - Check other formatting issues
+   - Count: Total formatting violations
+   - Track: Issue types and file names
+
+7. **Build Summary Table**
+   - Sum all error-level violations → total_errors
+   - Sum all warning-level violations → total_warnings
+   - Sum all improvement suggestions → total_improvements
+   - Populate checks_performed with individual counts
+   - Build severity_breakdown
+
+7. **Write Detailed Issues**
+   - For each violation found, create issue object
+   - Include all required fields (type, category, message, etc.)
+   - Provide current_example and improved_example
+   - Add implementation_steps
+
+8. **Final Verification**
+   - Count issues array length
+   - Compare with validation_summary.total_errors + total_warnings
+   - If mismatch, identify and fix discrepancy
+   - Ensure JSON is valid before returning
+
+### Count Consistency Requirements
+
+**THESE MUST MATCH EXACTLY:**
+
+- `validation_summary.total_errors` = count of `issues` where `type: "error"`
+- `validation_summary.total_warnings` = count of `issues` where `type: "warning"`
+- `validation_summary.checks_performed.external_link_caret.violations_found` = count of external link caret errors in `issues`
+- `validation_summary.checks_performed.clickable_image_caret.violations_found` = count of clickable image caret errors in `issues`
+- `validation_summary.checks_performed.non_clickable_images.violations_found` = count of non-clickable image errors in `issues`
+- `validation_summary.checks_performed.list_marker_semantic.violations_found` = count of list marker warnings in `issues`
+- `validation_summary.checks_performed.list_blank_lines.violations_found` = count of list blank line errors in `issues`
+- `validation_summary.severity_breakdown.error` = `total_errors`
+- `validation_summary.severity_breakdown.warning` = `total_warnings`
+
+**If these don't match, the validation is INCORRECT and must be redone.**
+
+### Error Reporting Standards
+
+Every validation error in the `issues` array MUST include:
+
+- **type**: "error" | "warning" | "improvement"
+- **category**: The check that triggered it (e.g., "external_link_caret", "list_marker_semantic")
+- **message**: Clear description with count (e.g., "7 external links missing required `^` caret")
+- **file**: Exact filename containing issue (e.g., "01-overview.adoc")
+- **why_problematic**: Why this violates standards
+- **business_impact**: How this affects user experience
+- **current_example**: Actual problematic code from the file
+- **improved_example**: Corrected version
+- **implementation_steps**: Array of how to fix it
+
+### No Optional Checks
+
+**DO NOT ask users:**
+- "Do you want to enforce caret for images?"
+- "Should external links open in new tab?"
+- "Would you like to check list formatting?"
+
+**ALL checks listed above are MANDATORY.** Run them all and report all violations.

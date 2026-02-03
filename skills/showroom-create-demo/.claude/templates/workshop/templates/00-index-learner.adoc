@@ -1,0 +1,48 @@
+= {{ Workshop Title }}
+
+Welcome to the {{ workshop name }} workshop!
+
+== What you'll learn
+
+In this workshop, you will:
+
+* {{ Learning objective 1 }}
+* {{ Learning objective 2 }}
+* {{ Learning objective 3 }}
+* {{ Learning objective 4 }}
+
+== Who this is for
+
+This workshop is designed for {{ target audience }} who want to {{ main goal }}.
+
+**Experience level**: {{ Beginner/Intermediate/Advanced }}
+
+== Prerequisites
+
+Before starting this workshop, you should have:
+
+* {{ Prerequisite 1 }}
+* {{ Prerequisite 2 }}
+* {{ Prerequisite 3 (optional) }}
+
+== Workshop environment
+
+{{ Brief description of the lab environment and what's pre-configured }}
+
+You will have access to:
+
+* OpenShift cluster: {openshift_console_url}
+* Username: {user}
+* Password: {password}
+
+NOTE: All environment details and credentials are available in the lab interface.
+
+== Estimated time
+
+This workshop will take approximately **{{ X hours }}** to complete.
+
+You can work at your own pace.
+
+== Let's get started!
+
+Click on **Workshop Overview** in the navigation to begin your learning journey.

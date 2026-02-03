@@ -269,37 +269,30 @@ Skills are installed to:
 
 ### Cursor 2.4+
 
-**✅ Fully Supported:** Cursor 2.4+ implements the [Agent Skills open standard](https://agentskills.io).
+**⚠️ Workaround Installation:** Cursor supports Agent Skills but **not** the Claude Code plugin marketplace. This uses a direct install script.
 
-**Installation (npx skills):**
-
-```bash
-npx skills add rhpds/rhdp-skills-marketplace
-# Interactive: Select which skills to install
-```
-
-**Or install specific skills:**
+**One-command install:**
 
 ```bash
-npx skills add rhpds/rhdp-skills-marketplace/skills/showroom-create-lab
-npx skills add rhpds/rhdp-skills-marketplace/skills/agnosticv-catalog-builder
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash
 ```
 
-Skills are installed to:
-- Skills: `~/.cursor/skills/`
+Installs all 7 skills with prompts and templates bundled. **Restart Cursor** after installation.
+
+**To update:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
+```
 
 **How to use:**
 
-1. **Explicit invocation:** Type `/skill-name` in Agent chat
-   - `/showroom:create-lab`
-   - `/showroom:create-demo`
-   - `/agnosticv:catalog-builder`
+1. **Explicit invocation:** `/showroom-create-lab`, `/agnosticv-catalog-builder` *(hyphens, not colons)*
+2. **Natural language:** "Help me create a workshop lab"
 
-2. **Natural language:** The agent will apply relevant skills automatically
-   - "Help me create a workshop lab"
-   - "Generate demo content"
+**Note:** For full marketplace support with automatic updates, use [Claude Code](https://rhpds.github.io/rhdp-skills-marketplace/setup/claude-code.html) instead.
 
-**Requirements:** Cursor version 2.4.0 or later
+**Requirements:** Cursor 2.4.0+ • [Full Guide →](https://rhpds.github.io/rhdp-skills-marketplace/setup/cursor.html)
 
 ---
 
