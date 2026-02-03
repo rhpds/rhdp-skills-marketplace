@@ -17,6 +17,31 @@ model: sonnet
 
 ---
 
+## ⚠️ CRITICAL: Keep Questions Simple and Direct
+
+**When asking for paths, URLs, or locations:**
+- Just ask for the path or URL directly
+- DO NOT ask about GitHub organizations, root folders, subdirectories, or try to find/detect them
+- DO NOT offer multiple options to search or auto-detect
+- Accept exactly what the user provides - don't try to be smart about it
+
+**Example of what NOT to do:**
+```
+❌ Which GitHub organization? (rhpds / redhat-scholars / Other)
+❌ Should I auto-detect your catalog directory? [Y/n]
+❌ Which subdirectory should I use?
+```
+
+**Example of what TO do:**
+```
+✅ What is the URL or path to your Showroom repository?
+✅ What is the path to the catalog/CI directory?
+```
+
+Just ask, use what they give you, move on. Users know their paths - trust them.
+
+---
+
 ## Purpose
 
 Unified skill for creating and updating AgnosticV catalog configurations. Handles everything from full catalog creation to updating individual files like description.adoc or info-message-template.adoc.
@@ -503,6 +528,8 @@ Select workloads (comma-separated numbers, or 'all'):
 
 ### Step 7: Showroom Repository Detection
 
+**Ask directly for the Showroom URL or path. DO NOT ask about GitHub org, root folders, or try to find it yourself:**
+
 ```
 📚 Showroom Content
 
@@ -511,10 +538,15 @@ Q: Do you have a Showroom repository for this catalog? [Y/n]
 
 **If YES:**
 ```
-Q: Showroom repository URL:
-   Example: https://github.com/rhpds/showroom-ansible-ai
+Q: What is the URL or path to your Showroom repository?
 
-URL:
+   Just provide the URL or path - I'll use it as-is.
+
+   Examples:
+   - https://github.com/rhpds/showroom-ansible-ai
+   - /path/to/local/showroom
+
+URL or path:
 ```
 
 **If NO:**
@@ -589,10 +621,13 @@ Once created, come back and re-run this skill with the repository URL.
 
 **If YES:**
 ```
-Q: Showroom repository URL:
-   Example: https://github.com/rhpds/ansible-aap-ai-showroom
+Q: What is the URL or path to your Showroom repository?
 
-Showroom URL:
+   Examples:
+   - https://github.com/rhpds/ansible-aap-ai-showroom
+   - /path/to/local/showroom
+
+Showroom URL or path:
 ```
 
 **Ask about custom Ansible collection:**
@@ -1314,11 +1349,20 @@ echo "  3. Create PR: git push origin $current_branch && gh pr create --fill"
 
 ### Step 1: Locate Showroom
 
+**Ask directly for the path. DO NOT ask about GitHub org or try to find it yourself:**
+
 ```
 📚 Showroom Content
 
-Q: Path to your Showroom repository:
-   (Press Enter to use current directory)
+Q: What is the path to your Showroom repository?
+
+   Just provide the path or URL - I'll use it as-is.
+   Press Enter to use current directory.
+
+   Examples:
+   - /Users/you/work/my-workshop-showroom
+   - https://github.com/rhpds/my-workshop-showroom
+   - . (current directory)
 
 Path:
 ```
@@ -1737,39 +1781,21 @@ If N, allow editing:
 
 ### Step 4: Locate Output Directory
 
+**Ask directly for the path. DO NOT try to auto-detect, search, or ask about subdirectories:**
+
 ```
 📂 Output Location
 
-Q: Where should I save description.adoc?
+Q: What is the path to the catalog/CI directory where I should save description.adoc?
 
-1. Auto-detect AgV catalog path
-2. Specify custom path
+   Just provide the full path - I'll save the file there directly.
 
-Choice [1/2]:
-```
+   Examples:
+   - ~/work/code/agnosticv/agd_v2/my-workshop
+   - /Users/you/code/agnosticv/catalogs/demo-catalog
+   - agd_v2/my-catalog (relative to AgV repo)
 
-**If option 1:**
-```bash
-# Look for existing catalog in AgV (don't assume agd_v2/ structure)
-catalog_dirs=$(find "$AGV_PATH" -type f -name "common.yaml" -not -path "*/\.*" -exec dirname {} \; 2>/dev/null)
-
-# Match by name similarity
-echo "Found catalogs:"
-echo "$catalog_dirs" | while read dir; do
-  # Show relative path from AGV_PATH
-  rel_path="${dir#$AGV_PATH/}"
-  echo "  - $rel_path"
-done
-
-echo ""
-echo "Q: Which catalog directory? (enter relative path, or 'none' for custom path)"
-echo "   Example: agd_v2/my-catalog or catalogs/demo-catalog"
-read -p "Catalog path: " catalog_path
-
-if [[ "$catalog_path" == "none" ]]; then
-  echo "Q: Enter full path to catalog directory:"
-  read -p "Custom path: " catalog_path
-fi
+Path:
 ```
 
 **Write file and optionally commit** (same as Mode 1, Step 12)
@@ -1782,11 +1808,16 @@ fi
 
 ### Step 1: Locate Catalog
 
+**Ask directly for the path. DO NOT try to find it or ask about subdirectories:**
+
 ```
 📂 Catalog Location
 
-Q: Path to your AgV catalog directory:
-   Example: ~/work/code/agnosticv/agd_v2/my-catalog
+Q: What is the path to your AgV catalog directory?
+
+   Examples:
+   - ~/work/code/agnosticv/agd_v2/my-catalog
+   - /path/to/agnosticv/catalogs/demo-catalog
 
 Path:
 ```
