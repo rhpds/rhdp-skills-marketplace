@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.1] - 2026-02-04
+
+### Fixed - Simplified User Questions
+
+**AgnosticV Catalog Builder Improvements:**
+- Simplified all path/URL questions based on user feedback
+- Removed confusing questions about GitHub organizations, root folders, and subdirectories
+- Removed auto-detect and search options that added complexity
+- Added prominent warning at top of skill about keeping questions simple
+- Now asks directly: "What is the URL or path?" and uses exactly what user provides
+
+**Questions simplified:**
+- Showroom repository URL/path (Steps 7, 8a)
+- Showroom path for description extraction (Mode 2, Step 1)
+- Output directory for description.adoc (Mode 2, Step 4)
+- Catalog location (Mode 3, Step 1)
+- Removed redhat-scholars examples
+
+**User feedback addressed:**
+> "Like just ask me for the path or the URL. Don't ask about an org or a root folder or some other nonsense. I don't want you to find it, that just makes it more complicated and guess-y than it needs to be."
+
+**Benefits:**
+- ✅ Faster workflow - fewer questions
+- ✅ Less confusion - no guessing about what to enter
+- ✅ More control - users provide exact paths they want
+- ✅ Cleaner interaction - trust users know their paths
+
+### Changed - Documentation & Homepage
+
+**GitHub Pages Improvements:**
+- Removed Jekyll theme (jekyll-theme-cayman) to use custom layouts
+- Homepage now uses modern sidebar layout with Red Hat styling
+- Removed dedicated VS Code setup page (mentioned in note instead)
+- Highlighted "Create Your Own Skill" prominently on homepage
+
+**"Create Your Own Skill" Visibility:**
+- Added as button in hero section
+- Created prominent red gradient section after skills section
+- Highlighted in sidebar navigation with red background
+- Removed from buried "Need Help?" section at bottom
+
+**Platform Support:**
+- Simplified to Claude Code and Cursor (two platforms)
+- VS Code mentioned as "works with Claude extension (same as Claude Code)"
+- Removed third platform card to simplify choice
+
+**Version Updates:**
+- Updated README.md version badge from v2.3.5 to v2.4.0
+- Added version: 2.4.0 to Jekyll config (_config.yml)
+
+**Benefits:**
+- ✅ Modern, professional look with sidebar navigation
+- ✅ "Create Your Own Skill" is now highly visible
+- ✅ Clearer platform choice (two options instead of three)
+- ✅ Accurate version display across all documentation
+
 ## [v2.4.0] - 2026-02-03
 
 ### Added - Cursor 2.4+ Support
