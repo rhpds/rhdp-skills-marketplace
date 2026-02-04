@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.2] - 2026-02-04
+
+### Added - Skill Documentation Improvements
+
+**Visual Workflow Diagrams:**
+- Created SVG workflow diagrams for all 7 skills showing inputs → process → outputs
+- Diagrams use consistent color scheme:
+  - Blue (#0066CC) for inputs/questions
+  - Green (#00AA00) for process steps
+  - Orange (#FF8800) for outputs
+- Each diagram includes clear arrows showing workflow progression
+- Embedded in SKILL.md files for easy reference
+
+**"What You'll Need Before Starting" Sections:**
+- Added preparation checklists to all 7 skills
+- Shows required vs. helpful information to gather
+- Lists access requirements clearly
+- Helps users prepare before running skills
+- Reduces back-and-forth during skill execution
+
+**Skills documented:**
+- `showroom:create-lab` - Workshop module creation
+- `showroom:create-demo` - Demo content creation
+- `showroom:verify-content` - Content validation
+- `showroom:blog-generate` - Blog post generation
+- `agnosticv:catalog-builder` - Catalog creation (4 modes)
+- `agnosticv:validator` - Configuration validation
+- `health:deployment-validator` - Health check creation
+
+**Benefits:**
+- ✅ Visual understanding of skill workflows
+- ✅ Clear expectations about required information
+- ✅ Faster skill execution with less interruption
+- ✅ Better user experience with upfront requirements
+- ✅ Consistent documentation across all skills
+
+### Files Added
+
+**Workflow Diagrams (7 SVG files):**
+- `showroom/skills/create-lab/workflow.svg`
+- `showroom/skills/create-demo/workflow.svg`
+- `showroom/skills/verify-content/workflow.svg`
+- `showroom/skills/blog-generate/workflow.svg`
+- `agnosticv/skills/catalog-builder/workflow.svg`
+- `agnosticv/skills/validator/workflow.svg`
+- `health/skills/deployment-validator/workflow.svg`
+
+### Changed
+
+**All SKILL.md files updated:**
+- Added workflow diagram section near top of file
+- Added "What You'll Need Before Starting" preparation checklist
+- Improved documentation structure and readability
+
 ## [v2.4.1] - 2026-02-04
 
 ### Fixed - Simplified User Questions
