@@ -40,6 +40,19 @@ This guide helps you migrate from the old `install.sh` script to the new plugin-
 
 ---
 
+## ✓ Prerequisites
+
+<div class="prereq-box">
+  <h4>Before migrating, ensure you have Claude Code installed:</h4>
+  <ol>
+    <li>If you don't have Claude Code yet, install it from <a href="https://claude.com/claude-code" target="_blank">https://claude.com/claude-code</a></li>
+    <li>Verify installation: <code>claude --version</code> in your terminal</li>
+  </ol>
+  <p style="margin-top: 1rem;"><strong>VS Code users:</strong> Install the Claude extension from the VS Code marketplace instead.</p>
+</div>
+
+---
+
 ## 🚀 Migration Steps
 
 <div class="migration-steps">
@@ -47,7 +60,7 @@ This guide helps you migrate from the old `install.sh` script to the new plugin-
     <div class="step-number">1</div>
     <div class="step-content">
       <h3>💾 Backup Your Installation</h3>
-      <p>If you have customized any skills, back them up first:</p>
+      <p>In your terminal, back up any customized skills:</p>
       <pre><code>cp -r ~/.claude/skills ~/.claude/skills-backup
 cp -r ~/.claude/docs ~/.claude/docs-backup</code></pre>
     </div>
@@ -57,7 +70,7 @@ cp -r ~/.claude/docs ~/.claude/docs-backup</code></pre>
     <div class="step-number">2</div>
     <div class="step-content">
       <h3>🗑️ Remove Old Installation</h3>
-      <p>Clean up the old file-based installation:</p>
+      <p>In your terminal, clean up the old file-based installation:</p>
       <pre><code>rm -rf ~/.claude/skills/create-lab
 rm -rf ~/.claude/skills/create-demo
 rm -rf ~/.claude/skills/blog-generate
@@ -72,8 +85,18 @@ rm -rf ~/.claude/docs</code></pre>
   <div class="step-card">
     <div class="step-number">3</div>
     <div class="step-content">
+      <h3>🚀 Start Claude Code</h3>
+      <p>In your terminal, start Claude Code:</p>
+      <pre><code>claude</code></pre>
+      <p style="margin-top: 0.5rem; color: #586069; font-size: 0.875rem;">This opens the Claude Code interactive chat where you'll run the next commands.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-number">4</div>
+    <div class="step-content">
       <h3>📦 Add Marketplace</h3>
-      <p>Add the RHDP marketplace:</p>
+      <p><strong>In Claude Code chat (NOT in terminal)</strong>, add the RHDP marketplace:</p>
       <pre><code># If you have SSH keys configured
 /plugin marketplace add rhpds/rhdp-skills-marketplace
 
@@ -83,10 +106,10 @@ rm -rf ~/.claude/docs</code></pre>
   </div>
 
   <div class="step-card">
-    <div class="step-number">4</div>
+    <div class="step-number">5</div>
     <div class="step-content">
       <h3>⬇️ Install Plugins</h3>
-      <p>Install the plugins you need:</p>
+      <p><strong>In Claude Code chat</strong>, install the plugins you need:</p>
       <pre><code># For workshop/demo creation (most users)
 /plugin install showroom@rhdp-marketplace
 
@@ -99,7 +122,7 @@ rm -rf ~/.claude/docs</code></pre>
   </div>
 
   <div class="step-card">
-    <div class="step-number">5</div>
+    <div class="step-number">6</div>
     <div class="step-content">
       <h3>🔄 Restart Claude Code</h3>
       <p>Exit Claude Code completely and restart it to load the new plugins.</p>
@@ -107,10 +130,10 @@ rm -rf ~/.claude/docs</code></pre>
   </div>
 
   <div class="step-card">
-    <div class="step-number">6</div>
+    <div class="step-number">7</div>
     <div class="step-content">
       <h3>✓ Verify Installation</h3>
-      <p>Check that skills are available:</p>
+      <p><strong>In Claude Code chat</strong>, check that skills are available:</p>
       <pre><code>/skills</code></pre>
       <div class="success-box" style="margin-top: 1rem;">
         <strong>You should see:</strong>
@@ -345,6 +368,31 @@ cp -r ~/.claude/docs-backup ~/.claude/docs
   border-radius: 8px;
   font-weight: 600;
   margin: 1rem 0;
+}
+
+.prereq-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.prereq-box h4 {
+  margin-top: 0;
+  color: #24292e;
+}
+
+.prereq-box ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.prereq-box code {
+  background: #f6f8fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  color: #EE0000;
 }
 
 .comparison-grid {
