@@ -178,7 +178,7 @@ You should see `showroom`, `agnosticv`, and/or `health` listed.
 
 ## 🔄 Updates
 
-The marketplace automatically checks for updates. To update manually:
+The marketplace automatically checks for updates. **To update manually:**
 
 ```bash
 /plugin marketplace update
