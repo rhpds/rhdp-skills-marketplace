@@ -37,7 +37,15 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 
 ### Installation (Marketplace Method - Recommended)
 
-Add the RHDP marketplace to Claude Code:
+**Prerequisites:** Install Claude Code first from https://claude.com/claude-code
+
+**Step 1:** Start Claude Code in your terminal:
+
+```bash
+claude
+```
+
+**Step 2:** In Claude Code chat (NOT in terminal), add the RHDP marketplace:
 
 ```bash
 # If you have SSH keys configured (shorter)
@@ -47,7 +55,7 @@ Add the RHDP marketplace to Claude Code:
 /plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
 ```
 
-Then install the plugins you need:
+**Step 3:** In Claude Code chat, install the plugins you need:
 
 ```bash
 # For workshop/demo creation
@@ -271,7 +279,7 @@ Skills are installed to:
 
 **⚠️ Workaround Installation:** Cursor supports Agent Skills but **not** the Claude Code plugin marketplace. This uses a direct install script.
 
-**One-command install:**
+**One-command install (run in your TERMINAL, not in Cursor chat):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash
@@ -279,7 +287,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 Installs all 7 skills with prompts and templates bundled. **Restart Cursor** after installation.
 
-**To update:**
+**To update (run in your TERMINAL, not in Cursor chat):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
