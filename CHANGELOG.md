@@ -28,12 +28,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added "Run this in your TERMINAL" callouts for Cursor installation commands
 - Consistent distinction between terminal and chat commands across all documentation
 
+**Plugin Version Sync:**
+- Fixed plugin.json versions in all three plugins to match v2.4.3 release
+- `showroom/.claude-plugin/plugin.json` - Updated from 1.0.0 to 2.4.3
+- `agnosticv/.claude-plugin/plugin.json` - Updated from 2.2.0 to 2.4.3
+- `health/.claude-plugin/plugin.json` - Updated from 1.0.0 to 2.4.3
+- Claude Code marketplace now correctly shows v2.4.3 as available version
+
 **Files Modified:**
 - `README.md` - Complete installation flow with `claude` command first
 - `docs/setup/claude-code.md` - Prerequisites and 3-step flow
 - `docs/setup/cursor.md` - Terminal command callouts and curl rendering fix
 - `docs/setup/migration.md` - Prerequisites, complete flow, and step numbering
 - `docs/reference/quick-reference.md` - Platform-specific command notes
+- `showroom/.claude-plugin/plugin.json` - Version sync to 2.4.3
+- `agnosticv/.claude-plugin/plugin.json` - Version sync to 2.4.3
+- `health/.claude-plugin/plugin.json` - Version sync to 2.4.3
 
 ### Benefits
 - ✅ Users understand to run `claude` before `/plugin` commands
