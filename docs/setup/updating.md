@@ -7,6 +7,17 @@ title: Updating Skills
 
 Keep your RHDP Skills Marketplace plugins up to date to get the latest features, bug fixes, and improvements.
 
+<div class="important-note">
+⚠️ <strong>IMPORTANT: Two-Step Update Process</strong>
+
+You must update the marketplace FIRST before updating plugins:
+
+1. **Update marketplace** - Syncs from GitHub to learn about new versions
+2. **Update plugins** - Installs the new versions
+
+If you skip Step 1, the marketplace won't know new versions exist and won't show "Update now" options.
+</div>
+
 ---
 
 ## Claude Code / VS Code
@@ -46,9 +57,15 @@ Red Hat Showroom workshop and demo authoring, verification, and content transfor
 
 Use arrow keys or tab to cycle to the **Marketplaces** tab.
 
-**Step 3: Update Marketplace**
+**Step 3: Update Marketplace (REQUIRED FIRST)**
 
 Select **Update marketplace** from the menu.
+
+**Why this step is required:**
+- The marketplace is a cached copy of the GitHub repository
+- When new versions are released, your local cache is outdated
+- Updating marketplace syncs from GitHub and pulls latest plugin.json files
+- Only AFTER this sync will Claude Code know v2.4.3 (or newer) exists
 
 You'll see:
 - Last updated date
@@ -70,6 +87,26 @@ The plugin will update to the latest version from the marketplace.
 
 ---
 
+## Understanding the Update Process
+
+**Why two steps?**
+
+**Step 1: Update Marketplace**
+- **What it does**: Syncs the marketplace repository from GitHub
+- **What changes**: Local cache of plugin.json files
+- **What it learns**: New versions are available (e.g., v2.4.3)
+- **What it does NOT do**: Does not update your installed plugins
+
+**Step 2: Update Plugins**
+- **What it does**: Downloads and installs new plugin versions
+- **What changes**: Your installed skills in `~/.claude/plugins/cache/`
+- **Requires**: Marketplace must be updated first (Step 1)
+- **Why**: Can't install what it doesn't know exists
+
+**Common mistake:** Trying to update plugins without updating marketplace first = marketplace still thinks you have the latest version because its cache is outdated.
+
+---
+
 ## Quick Update Command
 
 Instead of using the UI, you can update via command:
@@ -79,10 +116,12 @@ Instead of using the UI, you can update via command:
 ```
 
 This will:
-1. Sync the marketplace
+1. **Sync the marketplace** (pulls latest plugin.json from GitHub)
 2. Check all installed plugins for updates
 3. Show changelog for available updates
 4. Prompt you to install updates
+
+**This command does both steps automatically** - it syncs marketplace THEN shows plugin updates.
 
 **Example output:**
 
@@ -217,7 +256,16 @@ Then check for updates:
 <details>
 <summary><strong>Update command shows "no updates available" but I know there's a new version</strong></summary>
 
-Remove and re-add the marketplace:
+**Most common cause:** Marketplace cache is stale. You must update the marketplace FIRST before plugin updates appear.
+
+Try:
+
+```bash
+/plugin marketplace sync
+/plugin marketplace update
+```
+
+If that doesn't work, remove and re-add the marketplace:
 
 ```bash
 /plugin marketplace remove rhdp-marketplace
@@ -268,6 +316,20 @@ To see all past versions and changes:
 </div>
 
 <style>
+.important-note {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.important-note strong {
+  color: #856404;
+  font-size: 1.1rem;
+}
+
 .next-steps {
   background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
   color: white;
