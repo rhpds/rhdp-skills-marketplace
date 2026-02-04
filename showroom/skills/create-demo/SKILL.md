@@ -143,7 +143,130 @@ etc.
 
 ---
 
-### Step 0: Parse Arguments (If Provided)
+### Step 0: Reference Repository Setup (IMPORTANT)
+
+**Before generating content, we need access to real Showroom demo examples for quality reference.**
+
+**CRITICAL: This step MUST happen before any content generation to ensure quality matches real Showroom demo standards.**
+
+**Ask the user:**
+
+```
+📚 Reference Repository Check
+
+To generate high-quality demo content that matches Showroom standards, I need access to real Showroom demo examples.
+
+Do you have a Showroom repository cloned locally that I can reference for patterns and examples?
+
+Options:
+1. Yes - I have a local Showroom repo (Recommended - best quality)
+2. No - Clone template to /tmp/ for me
+3. Skip - Generate without reference (Not recommended - may need manual rewrites)
+
+Your choice: [1/2/3]
+```
+
+**If Option 1 (YES - Local repo):**
+
+```
+Great! Please provide the path to your Showroom repository:
+
+Example: ~/work/showroom-content/my-demo
+
+Path:
+```
+
+**Validation:**
+- Check if path exists using Read tool
+- Verify it contains demo content in `content/modules/ROOT/pages/*.adoc` files
+- If invalid, ask again or offer Option 2
+
+**Once valid path provided:**
+1. Read 2-3 example demo modules from `content/modules/ROOT/pages/*.adoc`
+2. Analyze and learn from:
+   - Know/Show structure and separation
+   - Business value messaging patterns
+   - Presenter guidance formatting
+   - Talk track examples ("What I say", "What I do", "What they should notice")
+   - Code block formatting and syntax highlighting
+   - Image and diagram patterns (link=self,window=blank usage)
+   - Navigation includes and xrefs
+   - List formatting (blank lines before/after lists)
+   - External link patterns (^ caret usage)
+   - Business metrics and ROI presentation
+3. Use these patterns as templates for generating new demo content
+
+**If Option 2 (NO - Clone template):**
+
+```
+I'll clone the Showroom template repository to /tmp/showroom-reference for you.
+
+This provides standard Showroom demo examples to ensure quality output.
+
+Proceed? [Yes/No]
+```
+
+**If Yes:**
+```bash
+git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
+```
+
+Then:
+1. Read example demo modules from `/tmp/showroom-reference/content/modules/ROOT/pages/*.adoc`
+2. Analyze demo patterns (same as Option 1)
+3. Use for content generation
+
+**If No or clone fails:**
+- Warn user: "⚠️  Without reference examples, generated demo content quality may require significant manual rewrites"
+- Ask: "Continue anyway? [Yes/No]"
+- If Yes, proceed with generic templates (lower quality expected)
+- If No, exit skill
+
+**If Option 3 (Skip):**
+
+```
+⚠️  WARNING: Generating without reference repository
+
+Without real Showroom demo examples, the generated content:
+- May not match Showroom demo quality standards
+- Will likely need manual rewrites
+- May miss important Know/Show separation patterns
+- Could lack effective business messaging
+- May take 5x longer to finalize
+
+This is the issue reported: "Module 2 is crap, requires manual rewrite with actual showroom docs"
+
+Are you sure you want to skip reference repository? [Yes/No]
+```
+
+**If Yes:** Proceed with generic templates, but add note in final output warning about potential quality issues
+**If No:** Go back to Option 1 or 2
+
+**Why This Step Matters:**
+
+Before this fix:
+- ❌ Demo modules were "crap"
+- ❌ Required manual rewrite using actual Showroom docs
+- ❌ 5 days of rework time
+- ❌ Business messaging didn't match Showroom quality
+- ❌ Know/Show structure was inconsistent
+
+After this fix:
+- ✅ Demos generated with quality matching real Showroom content from first iteration
+- ✅ Know/Show separation follows proven patterns
+- ✅ Business messaging matches professional standards
+- ✅ Reduces manual rewrites from days to hours
+- ✅ AI learns from actual examples, not generic patterns
+
+**Store reference path for later use:**
+- Save reference repository path to use throughout demo generation
+- When generating demo modules, read reference examples to match quality
+- Apply learned Know/Show patterns to new content
+- Follow business messaging style from references
+
+---
+
+### Step 1: Parse Arguments (If Provided)
 
 **Check if user invoked skill with arguments**.
 
@@ -211,7 +334,7 @@ Proceeding to: Step 1 (Determine Context)
 
 ---
 
-### Step 1: Determine Context (New Demo vs Continuation)
+### Step 2: Determine Context (New Demo vs Continuation)
 
 **SKIP THIS STEP IF**:
 - User provided `--new` flag in arguments (already know: NEW demo)
@@ -235,7 +358,7 @@ What's your situation? [1/2/3]
 
 **ONLY AFTER user answers, proceed based on their response.**
 
-### Step 1.5: Ask for Target Directory (if not provided as argument)
+### Step 2.5: Ask for Target Directory (if not provided as argument)
 
 **SKIP THIS STEP IF**: User provided `<directory>` as argument
 
@@ -256,7 +379,7 @@ Press Enter to use default, or type a different path:
 **If continuing existing demo**:
 - Provide path to previous module (I'll read and auto-detect the story)
 
-### Step 2: Plan Overall Demo Story (if new demo)
+### Step 3: Plan Overall Demo Story (if new demo)
 
 Great! Let's plan your demo together. I'll ask you a few questions to understand what you're trying to achieve.
 
@@ -350,7 +473,7 @@ Your target duration:
 
 ---
 
-### Step 3: Gather Module-Specific Details
+### Step 4: Gather Module-Specific Details
 
 Now for this specific module:
 
@@ -427,7 +550,7 @@ Now for this specific module:
    - I'll save them to `content/modules/ROOT/assets/images/`
    - And reference them properly in Show sections
 
-### Step 4: Get UserInfo Variables (if applicable)
+### Step 5: Get UserInfo Variables (if applicable)
 
 If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
 
@@ -472,7 +595,7 @@ I'll use common placeholder variables:
 
 **Result**: I'll use these in Show sections for precise presenter instructions with actual URLs and credentials.
 
-### Step 5: Handle Diagrams, Screenshots, and Demo Scripts (if provided)
+### Step 6: Handle Diagrams, Screenshots, and Demo Scripts (if provided)
 
 If you provided visual assets or scripts:
 
@@ -531,7 +654,7 @@ link:https://www.redhat.com/case-study^[image:customer-success-story.png[Case St
 
 **Critical**: Clickable images linking to external URLs MUST use `^` caret to open in new tab, preventing audience from losing demo context.
 
-### Step 6: Fetch and Analyze References
+### Step 7: Fetch and Analyze References
 
 Based on your references, I'll:
 - Fetch URLs and extract technical capabilities
@@ -548,7 +671,7 @@ Based on your references, I'll:
 - References will be consolidated in the conclusion module, NOT in individual modules
 - Each module can cite sources inline (e.g., "According to Red Hat's Total Economic Impact study...") but the formal References section will only appear in the conclusion
 
-### Step 7: Read Templates and Verification Criteria (BEFORE Generating)
+### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
 **CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
 
@@ -569,7 +692,25 @@ Based on your references, I'll:
 - Generate content that ALREADY passes all checks
 - No separate validation step needed - content is validated during creation
 
-### Step 8: Generate Demo Module (Using Verification Criteria)
+### Step 9: Generate Demo Module (Using Verification Criteria)
+
+**IMPORTANT: Use Reference Repository from Step 0**
+
+Before generating ANY demo content, refer back to the reference repository demo examples from Step 0:
+
+1. **Read reference demo examples again** if needed to refresh patterns
+2. **Match Know/Show structure** from real Showroom demos
+3. **Apply learned patterns** to new demo content:
+   - Know sections match reference business messaging style
+   - Show sections follow reference presenter guidance patterns
+   - Talk tracks ("What I say", "What I do") match reference format
+   - Business metrics and ROI presentation follows reference examples
+   - Code block formatting follows reference style
+   - Image references use same patterns (link=self,window=blank)
+   - List formatting matches reference (blank lines before/after)
+   - External links follow reference pattern (^ caret for new tabs)
+
+**This ensures generated demo content matches real Showroom demo quality instead of generic templates.**
 
 I'll create a module with Know/Show structure:
 
@@ -932,14 +1073,14 @@ Add lightweight visual guidance without forcing asset creation:
 - Helps presenters prepare assets if they want
 - Keeps demos tight without forcing asset creation
 
-### Step 9: Validate
+### Step 10: Validate
 
 I'll automatically run:
 - **workshop-reviewer** agent: Validates structure
 - **style-enforcer** agent: Applies Red Hat style standards
 - Verify Know/Show balance and business focus
 
-### Step 10: Update Navigation (REQUIRED)
+### Step 11: Update Navigation (REQUIRED)
 
 I'll automatically add the module to `content/modules/ROOT/nav.adoc` - this is REQUIRED for the module to appear in the Showroom sidebar.
 
@@ -952,7 +1093,7 @@ I'll automatically add the module to `content/modules/ROOT/nav.adoc` - this is R
 
 **Note**: Without this nav.adoc entry, your demo won't be accessible in Showroom!
 
-### Step 11: Deliver
+### Step 12: Deliver
 
 **CRITICAL: Manage Output Tokens to Prevent Overflow**
 
@@ -1014,7 +1155,7 @@ I'll automatically add the module to `content/modules/ROOT/nav.adoc` - this is R
 - ✅ Give clear next steps for presenters
 - ✅ Keep output concise (under 5000 tokens)
 
-### Step 12: Generate Conclusion Module (MANDATORY)
+### Step 13: Generate Conclusion Module (MANDATORY)
 
 **After delivering the final module, ask if this is the last module:**
 

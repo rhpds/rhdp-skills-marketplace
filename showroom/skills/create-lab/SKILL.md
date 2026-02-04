@@ -159,7 +159,124 @@ etc.
 
 ---
 
-### Step 0: Parse Arguments (If Provided)
+### Step 0: Reference Repository Setup (IMPORTANT)
+
+**Before generating content, we need access to real Showroom examples for quality reference.**
+
+**CRITICAL: This step MUST happen before any content generation to ensure quality matches real Showroom standards.**
+
+**Ask the user:**
+
+```
+📚 Reference Repository Check
+
+To generate high-quality content that matches Showroom standards, I need access to real Showroom examples.
+
+Do you have a Showroom repository cloned locally that I can reference for patterns and examples?
+
+Options:
+1. Yes - I have a local Showroom repo (Recommended - best quality)
+2. No - Clone template to /tmp/ for me
+3. Skip - Generate without reference (Not recommended - may need manual rewrites)
+
+Your choice: [1/2/3]
+```
+
+**If Option 1 (YES - Local repo):**
+
+```
+Great! Please provide the path to your Showroom repository:
+
+Example: ~/work/showroom-content/my-workshop
+
+Path:
+```
+
+**Validation:**
+- Check if path exists using Read tool
+- Verify it contains `content/modules/ROOT/pages/*.adoc` files
+- If invalid, ask again or offer Option 2
+
+**Once valid path provided:**
+1. Read 2-3 example modules from `content/modules/ROOT/pages/*.adoc`
+2. Analyze and learn from:
+   - Section structure (= Title, == Heading, === Subheading)
+   - Code block formatting and syntax highlighting
+   - Admonition usage (TIP, NOTE, WARNING, IMPORTANT)
+   - Image and diagram patterns (link=self,window=blank usage)
+   - Navigation includes and xrefs
+   - List formatting (blank lines before/after lists)
+   - External link patterns (^ caret usage)
+   - Business scenario integration
+3. Use these patterns as templates for generating new content
+
+**If Option 2 (NO - Clone template):**
+
+```
+I'll clone the Showroom template repository to /tmp/showroom-reference for you.
+
+This provides standard Showroom examples to ensure quality output.
+
+Proceed? [Yes/No]
+```
+
+**If Yes:**
+```bash
+git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
+```
+
+Then:
+1. Read example modules from `/tmp/showroom-reference/content/modules/ROOT/pages/*.adoc`
+2. Analyze patterns (same as Option 1)
+3. Use for content generation
+
+**If No or clone fails:**
+- Warn user: "⚠️  Without reference examples, generated content quality may require significant manual rewrites"
+- Ask: "Continue anyway? [Yes/No]"
+- If Yes, proceed with generic templates (lower quality expected)
+- If No, exit skill
+
+**If Option 3 (Skip):**
+
+```
+⚠️  WARNING: Generating without reference repository
+
+Without real Showroom examples, the generated content:
+- May not match Showroom quality standards
+- Will likely need manual rewrites
+- May miss important formatting patterns
+- Could take 5x longer to finalize
+
+This is the issue reported: "Module 2 is crap, requires manual rewrite with actual showroom docs"
+
+Are you sure you want to skip reference repository? [Yes/No]
+```
+
+**If Yes:** Proceed with generic templates, but add note in final output warning about potential quality issues
+**If No:** Go back to Option 1 or 2
+
+**Why This Step Matters:**
+
+Before this fix:
+- ❌ Module 2 was "crap"
+- ❌ Required manual rewrite using actual Showroom docs
+- ❌ 5 days of rework time
+- ❌ WebFetch tried to get examples from GitHub URLs but got 404 errors
+
+After this fix:
+- ✅ Modules generated with quality matching real Showroom content from first iteration
+- ✅ Reduces manual rewrites from days to hours
+- ✅ AI learns from actual examples, not generic patterns
+- ✅ Faster iteration, fewer back-and-forth edits
+
+**Store reference path for later use:**
+- Save reference repository path to use throughout content generation
+- When generating modules, read reference examples to match quality
+- Apply learned patterns to new content
+
+---
+
+### Step 1: Parse Arguments (If Provided)
 
 **Check if user invoked skill with arguments**.
 
@@ -227,7 +344,7 @@ Proceeding to: Step 1 (Determine Context)
 
 ---
 
-### Step 1: Determine Context (New Lab vs Existing Lab)
+### Step 2: Determine Context (New Lab vs Existing Lab)
 
 **SKIP THIS STEP IF**:
 - User provided `--new` flag in arguments (already know: NEW lab)
@@ -251,7 +368,7 @@ What's your situation? [1/2/3]
 
 **ONLY AFTER user answers, proceed based on their response.**
 
-### Step 1.5: Ask for Target Directory (if not provided as argument)
+### Step 2.5: Ask for Target Directory (if not provided as argument)
 
 **SKIP THIS STEP IF**: User provided `<directory>` as argument
 
@@ -297,7 +414,7 @@ Press Enter to use default, or type a different path:
     4. What's the current state in the story?
   - This prevents broken continuity
 
-### Step 2: Plan Overall Lab Story (if first module)
+### Step 3: Plan Overall Lab Story (if first module)
 
 Awesome! Let's design your workshop together. I'll ask you some questions to build the perfect learning experience.
 
@@ -403,7 +520,7 @@ Note: If you're not sure, I'll use placeholders that work across versions.
 - Adjust module count and topics
 - Change the progression
 
-### Step 2.1: Update Lab Configuration Files (REQUIRED for new labs)
+### Step 3.1: Update Lab Configuration Files (REQUIRED for new labs)
 
 **CRITICAL: Update these files with the lab name BEFORE generating any content files.**
 
@@ -439,7 +556,7 @@ Using the lab title and slug from Step 2, update:
 
 ---
 
-### Step 3: Gather Module-Specific Details
+### Step 4: Gather Module-Specific Details
 
 Now for this specific module:
 
@@ -538,7 +655,7 @@ Now for this specific module:
    - Proof-of-concept content
    - Modules with very straightforward steps
 
-### Step 4: Get UserInfo Variables (if applicable)
+### Step 5: Get UserInfo Variables (if applicable)
 
 If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
 
@@ -609,7 +726,7 @@ I'll use common placeholder variables:
 - Seeing what endpoints/tools exist in the environment
 - NOT for hardcoding actual values in content
 
-### Step 5: Handle Diagrams, Screenshots, and Code Blocks (if provided)
+### Step 6: Handle Diagrams, Screenshots, and Code Blocks (if provided)
 
 If you provided visual assets or code:
 
@@ -683,7 +800,7 @@ link:https://docs.redhat.com/architecture^[image:architecture-diagram.png[Archit
 
 **Critical**: Clickable images linking to external URLs MUST use `^` caret to open in new tab, just like text links.
 
-### Step 6: Fetch and Analyze References
+### Step 7: Fetch and Analyze References
 
 Based on your references, I'll:
 - Fetch URLs with WebFetch
@@ -717,7 +834,7 @@ Based on your references, I'll:
   - External: `link:https://docs.redhat.com/...[Red Hat Documentation^]`
   - Internal: `xref:03-module-02-next.adoc[Next Module]` (no caret)
 
-### Step 7: Read Templates and Verification Criteria (BEFORE Generating)
+### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
 **CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
 
@@ -743,11 +860,27 @@ Based on your references, I'll:
 - Generate content that ALREADY passes all checks
 - No separate validation step needed - content is validated during creation
 
-### Step 8: Generate Files (Using Verification Criteria)
+### Step 9: Generate Files (Using Verification Criteria)
+
+**IMPORTANT: Use Reference Repository from Step 0**
+
+Before generating ANY content, refer back to the reference repository examples from Step 0:
+
+1. **Read reference examples again** if needed to refresh patterns
+2. **Match structure and style** from real Showroom modules
+3. **Apply learned patterns** to new content:
+   - Section structure matches reference examples
+   - Code block formatting follows reference style
+   - Image references use same patterns (link=self,window=blank)
+   - List formatting matches reference (blank lines before/after)
+   - External links follow reference pattern (^ caret for new tabs)
+   - Business scenario integration follows reference approach
+
+**This ensures generated content matches real Showroom quality instead of generic templates.**
 
 **CRITICAL: If this is the FIRST module of a NEW lab, generate files in this order:**
 
-#### Step 8.1: Generate index.adoc (First Module Only)
+#### Step 9.1: Generate index.adoc (First Module Only)
 
 **Purpose**: Learner-facing landing page - NOT a facilitator guide
 
@@ -801,7 +934,7 @@ Click on the next section to begin the workshop.
 - ✅ Prerequisites and environment info
 - ✅ Encouragement to get started
 
-#### Step 8.2: Generate 01-overview.adoc (First Module Only)
+#### Step 9.2: Generate 01-overview.adoc (First Module Only)
 
 **Purpose**: Business scenario and learning objectives
 
@@ -811,7 +944,7 @@ Click on the next section to begin the workshop.
 - Expected outcomes
 - Estimated time
 
-#### Step 8.3: Generate 02-details.adoc (First Module Only)
+#### Step 9.3: Generate 02-details.adoc (First Module Only)
 
 **Purpose**: Technical requirements and setup
 
@@ -821,7 +954,7 @@ Click on the next section to begin the workshop.
 - Environment details
 - Authors/contact
 
-#### Step 8.4: Generate 03-module-01-*.adoc (Always)
+#### Step 9.4: Generate 03-module-01-*.adoc (Always)
 
 I'll create a complete module with:
 
@@ -1100,7 +1233,7 @@ oc delete project my-project
 - Second-person narrative
 - Code blocks with syntax highlighting
 
-### Step 9: Final Quality Check
+### Step 10: Final Quality Check
 
 **Since verification criteria were applied during generation (Step 7-8), the module should already meet all standards.**
 
@@ -1122,14 +1255,14 @@ oc delete project my-project
 3. **Navigation**:
    - ✓ nav.adoc will be updated in Step 10
 
-**Note:** Content was generated using verification prompts from Step 7, so it should already comply with:
+**Note:** Content was generated using verification prompts from Step 8 AND reference repository examples from Step 0, so it should already comply with:
 - Red Hat style guide
 - Workshop structure standards
 - Technical accuracy requirements
 - Accessibility standards
 - Content quality standards
 
-### Step 10: Update Navigation (REQUIRED)
+### Step 11: Update Navigation (REQUIRED)
 
 I'll automatically update `content/modules/ROOT/nav.adoc` - this is REQUIRED for the module to appear in the Showroom sidebar.
 
@@ -1159,7 +1292,7 @@ I'll automatically update `content/modules/ROOT/nav.adoc` - this is REQUIRED for
 
 **Note**: Without this nav.adoc entry, your module won't be accessible in Showroom!
 
-### Step 11: Deliver
+### Step 12: Deliver
 
 **CRITICAL: Manage Output Tokens to Prevent Overflow**
 
@@ -1226,7 +1359,7 @@ I'll automatically update `content/modules/ROOT/nav.adoc` - this is REQUIRED for
 - ✅ Give clear next steps
 - ✅ Keep output concise (under 5000 tokens)
 
-### Step 12: Generate Conclusion Module (MANDATORY)
+### Step 13: Generate Conclusion Module (MANDATORY)
 
 **After delivering the final module, ask if this is the last module:**
 
