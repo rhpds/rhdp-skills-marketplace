@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.3] - 2026-02-03
+
+### Fixed - Installation Documentation
+
+**Complete Installation Flow:**
+- Added Prerequisites section to migration guide showing Claude Code installation requirement
+- Added Step 3 to migration guide: "Start Claude Code" with `claude` command
+- Updated all installation steps to clarify which commands run in terminal vs. Claude Code chat
+- Fixed README.md to show complete 3-step installation flow
+- Fixed all setup guides to show running `claude` command before `/plugin` commands
+
+**Code Block Rendering:**
+- Fixed curl command rendering issue in Cursor setup update section
+- Made instruction text bold before code blocks to ensure proper Jekyll markdown processing
+- Applied fix to both Cursor and Claude Code setup guides
+
+**Clarity Improvements:**
+- Added "(NOT in terminal)" clarifications for Claude Code chat commands
+- Added "Run this in your TERMINAL" callouts for Cursor installation commands
+- Consistent distinction between terminal and chat commands across all documentation
+
+**Files Modified:**
+- `README.md` - Complete installation flow with `claude` command first
+- `docs/setup/claude-code.md` - Prerequisites and 3-step flow
+- `docs/setup/cursor.md` - Terminal command callouts and curl rendering fix
+- `docs/setup/migration.md` - Prerequisites, complete flow, and step numbering
+- `docs/reference/quick-reference.md` - Platform-specific command notes
+
+### Benefits
+- ✅ Users understand to run `claude` before `/plugin` commands
+- ✅ Clear distinction between terminal and chat commands
+- ✅ Code blocks render properly on GitHub Pages
+- ✅ Reduced installation confusion and support requests
+
 ## [v2.4.2] - 2026-02-04
 
 ### Added - Skill Documentation Improvements
