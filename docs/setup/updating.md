@@ -57,6 +57,9 @@ Red Hat Showroom workshop and demo authoring, verification, and content transfor
 
 Use arrow keys or tab to cycle to the **Marketplaces** tab.
 
+![Navigate to Marketplaces tab](/assets/images/updating/step1-plugin-marketplaces.png)
+*Screenshot: Use arrow keys or Tab to navigate to the Marketplaces tab*
+
 **Step 3: Update Marketplace (REQUIRED FIRST)**
 
 Select **Update marketplace** from the menu.
@@ -71,6 +74,9 @@ You'll see:
 - Last updated date
 - "✓ Updated 1 marketplace" confirmation after syncing
 
+![Updated marketplace confirmation](/assets/images/updating/step2-updated-marketplace.png)
+*Screenshot: "✓ Updated 1 marketplace" confirmation shows marketplace is synced*
+
 **Step 4: Check for Plugin Updates**
 
 Navigate back to the **Installed** tab.
@@ -79,11 +85,20 @@ For each plugin, you'll see:
 - Current version
 - "Update now" option if updates are available
 
+![Plugin details showing version](/assets/images/updating/step3-installed-tab.png)
+*Screenshot: Installed tab shows current version (e.g., Version: 2.4.3)*
+
 **Step 5: Update Plugins**
 
-Select **Update now** for each plugin that has updates available.
+Select **Update now** for each plugin that has updates are available.
+
+![Update now option](/assets/images/updating/step4-update-now.png)
+*Screenshot: Select "Update now" to install the latest version*
 
 The plugin will update to the latest version from the marketplace.
+
+![Updated version confirmation](/assets/images/updating/step5-version-updated.png)
+*Screenshot: After update, version number shows the latest release (e.g., Version: 2.4.4)*
 
 ---
 
@@ -378,5 +393,27 @@ details[open] summary {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #e1e4e8;
+}
+
+/* Screenshot styling */
+img[src*="/assets/images/updating/"] {
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 1.5rem 0 0.5rem 0;
+  max-width: 100%;
+  display: block;
+}
+
+img[src*="/assets/images/updating/"] + em {
+  display: block;
+  text-align: center;
+  color: #586069;
+  font-size: 0.875rem;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background: #f6f8fa;
+  border-radius: 4px;
 }
 </style>
