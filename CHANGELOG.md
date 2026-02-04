@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.4] - 2026-02-04
+
+### Added - Plugin Update Documentation
+
+**Comprehensive Updating Guide:**
+- Created new `docs/setup/updating.md` with complete plugin update instructions
+- Step-by-step guide for checking current versions
+- UI navigation guide for marketplace and plugin updates
+- Explains two-step update process: marketplace sync THEN plugin updates
+- Added prominent warning about updating marketplace FIRST
+- "Understanding the Update Process" section explaining why marketplace must sync first
+- Quick command reference for `/plugin marketplace update`
+- Cursor manual update instructions
+- Troubleshooting section for common update issues
+
+**Documentation Navigation:**
+- Added "Updating skills →" link to main documentation index (`docs/index.md`)
+- Updated setup guide (`docs/setup/index.md`) with link to detailed updating guide
+- Version badge updated from v2.4.2 to v2.4.3 in documentation home
+
+**Release Process Documentation:**
+- Updated `~/CLAUDE.md` with RHDP Skills Marketplace release guidelines
+- Added version update checklist (plugin.json files, VERSION, CHANGELOG, README)
+- Example release process showing plugin.json must be updated FIRST
+- Explains why: Claude Code marketplace reads from plugin.json, not VERSION file
+
+**Files Modified:**
+- `docs/setup/updating.md` - New comprehensive updating guide (NEW)
+- `docs/index.md` - Added updating link, version badge to v2.4.3
+- `docs/setup/index.md` - Simplified update section with link to guide
+- `~/CLAUDE.md` - Release guidelines and version update checklist
+- `showroom/.claude-plugin/plugin.json` - Version 2.4.3 → 2.4.4
+- `agnosticv/.claude-plugin/plugin.json` - Version 2.4.3 → 2.4.4
+- `health/.claude-plugin/plugin.json` - Version 2.4.3 → 2.4.4
+
+### Benefits
+- ✅ Users understand marketplace must be synced before plugin updates
+- ✅ Clear explanation of two-step update process
+- ✅ Troubleshooting guide for update issues
+- ✅ Release process documented for future versions
+- ✅ Plugin version numbers now correct in marketplace
+
 ## [v2.4.3] - 2026-02-03
 
 ### Fixed - Installation Documentation

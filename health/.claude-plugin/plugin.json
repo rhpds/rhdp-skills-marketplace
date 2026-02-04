@@ -1,6 +1,6 @@
 {
   "name": "health",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "RHDP deployment health checks and post-deployment validation",
   "author": {
     "name": "RHDP Team",
