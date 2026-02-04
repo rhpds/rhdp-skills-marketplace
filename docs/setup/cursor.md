@@ -200,7 +200,7 @@ After installation and restart, verify skills are loaded:
 💻 <strong>Run this in your TERMINAL</strong> (not in Cursor chat):
 </div>
 
-To update to the latest version:
+**To update to the latest version:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
