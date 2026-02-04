@@ -5,144 +5,250 @@ title: Quick Reference
 
 # Quick Reference
 
-Common commands and workflows for RHDP Skills Marketplace.
+<div class="reference-badge">📚 Common Commands & Workflows</div>
+
+Your go-to guide for RHDP Skills Marketplace commands and workflows.
 
 ---
 
-## Installation Commands
+## 🔧 Installation Commands
 
-```bash
-# Add marketplace (choose one)
-# If you have SSH keys configured for GitHub
-/plugin marketplace add rhpds/rhdp-skills-marketplace
+<div class="install-note" style="background: #e7f3ff; border-left: 4px solid #0969da; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+ℹ️ <strong>For Claude Code & VS Code users only.</strong> These commands run in Claude Code chat after Claude Code is installed.<br>
+<strong>Cursor users:</strong> Use the terminal install script instead (see <a href="../setup/cursor.html">Cursor setup</a>).
+</div>
 
-# If SSH not configured, use HTTPS
-/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
+<div class="command-section">
+  <h3>Add Marketplace</h3>
+  <div class="command-options">
+    <div class="command-option">
+      <h4>With SSH Keys</h4>
+      <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace</code></pre>
+    </div>
+    <div class="command-option">
+      <h4>Without SSH (HTTPS)</h4>
+      <pre><code>/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace</code></pre>
+    </div>
+  </div>
+</div>
 
-# Install plugins
-/plugin install showroom@rhdp-marketplace
+<div class="command-section">
+  <h3>Install Plugins</h3>
+  <pre><code>/plugin install showroom@rhdp-marketplace
 /plugin install agnosticv@rhdp-marketplace
-/plugin install health@rhdp-marketplace
+/plugin install health@rhdp-marketplace</code></pre>
+</div>
 
-# Update marketplace (interactive: select marketplace, press 'u')
-/plugin marketplace update
-
-# Update plugins (interactive: navigate to "Update now", press Enter)
-/plugin update showroom@rhdp-marketplace
+<div class="command-section">
+  <h3>Update Commands</h3>
+  <div class="update-grid">
+    <div class="update-card">
+      <h4>Update Marketplace</h4>
+      <pre><code>/plugin marketplace update</code></pre>
+      <p class="command-note">Interactive: select marketplace, press 'u'</p>
+    </div>
+    <div class="update-card">
+      <h4>Update Plugins</h4>
+      <pre><code>/plugin update showroom@rhdp-marketplace
 /plugin update agnosticv@rhdp-marketplace
-/plugin update health@rhdp-marketplace
-```
+/plugin update health@rhdp-marketplace</code></pre>
+      <p class="command-note">Interactive: navigate to "Update now", press Enter</p>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Showroom Workflows
+## 📝 Showroom Workflows
 
-### Creating a Workshop Lab
+<div class="workflow-cards">
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <span class="workflow-icon">🎓</span>
+      <h3>Creating a Workshop Lab</h3>
+    </div>
+    <div class="workflow-steps-list">
+      <div class="workflow-step-item">
+        <span class="step-num">1</span>
+        <code>/showroom:create-lab</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">2</span>
+        <span>Answer prompts (name, abstract, technologies, module count)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">3</span>
+        <span>Review generated content</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">4</span>
+        <code>/showroom:verify-content</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">5</span>
+        <span>Fix any issues</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">6</span>
+        <code>/showroom:blog-generate</code> <span class="optional">(optional)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">7</span>
+        <span>Publish</span>
+      </div>
+    </div>
+  </div>
 
-```
-1. /showroom:create-lab
-2. Answer prompts (name, abstract, technologies, module count)
-3. Review generated content
-4. /showroom:verify-content
-5. Fix any issues
-6. /showroom:blog-generate (optional)
-7. Publish
-```
-
-### Creating a Demo
-
-```
-1. /showroom:create-demo
-2. Answer prompts (name, abstract, technologies)
-3. Review generated content
-4. /showroom:verify-content
-5. Present or publish
-```
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <span class="workflow-icon">🎭</span>
+      <h3>Creating a Demo</h3>
+    </div>
+    <div class="workflow-steps-list">
+      <div class="workflow-step-item">
+        <span class="step-num">1</span>
+        <code>/showroom:create-demo</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">2</span>
+        <span>Answer prompts (name, abstract, technologies)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">3</span>
+        <span>Review generated content</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">4</span>
+        <code>/showroom:verify-content</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">5</span>
+        <span>Present or publish</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 ---
 
-## AgnosticV Workflows
+## ⚙️ AgnosticV Workflows
 
-### Creating a New Catalog
+<div class="workflow-cards">
+  <div class="workflow-card agv">
+    <div class="workflow-header">
+      <span class="workflow-icon">📦</span>
+      <h3>Creating a New Catalog</h3>
+    </div>
+    <div class="workflow-steps-list">
+      <div class="workflow-step-item">
+        <span class="step-num">1</span>
+        <code>cd ~/work/code/agnosticv</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">2</span>
+        <code>/agnosticv:catalog-builder</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">3</span>
+        <span>Choose mode: 1 (Full Catalog)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">4</span>
+        <span>Git workflow runs automatically (pulls main, creates branch)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">5</span>
+        <span>Answer prompts (name, infrastructure, workloads)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">6</span>
+        <span>Review generated files (auto-committed to branch)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">7</span>
+        <code>git push origin &lt;branch-name&gt;</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">8</span>
+        <code>gh pr create --fill</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">9</span>
+        <span>Test in RHDP Integration</span>
+      </div>
+    </div>
+  </div>
 
-```
-1. cd ~/work/code/agnosticv
-2. /agnosticv:catalog-builder
-3. Choose mode: 1 (Full Catalog)
-4. Git workflow runs automatically (pulls main, creates branch)
-5. Answer prompts (name, infrastructure, workloads)
-6. Review generated files (auto-committed to branch)
-7. git push origin <branch-name>
-8. gh pr create --fill
-9. Test in RHDP Integration
-```
-
-### Validating a Catalog
-
-```
-1. cd ~/work/code/agnosticv/<directory>/<catalog-name>
-2. /agnosticv:validator
-3. Review validation report
-4. Fix errors and warnings
-5. Re-validate
-```
-
-### Generating Catalog Description
-
-```
-1. Have Showroom content ready
-2. /agnosticv:catalog-builder
-3. Choose mode: 2 (Description Only)
-4. Provide Showroom repo URL or local path
-5. Review generated description.adoc
-6. Auto-committed to branch
-```
+  <div class="workflow-card agv">
+    <div class="workflow-header">
+      <span class="workflow-icon">✓</span>
+      <h3>Validating a Catalog</h3>
+    </div>
+    <div class="workflow-steps-list">
+      <div class="workflow-step-item">
+        <span class="step-num">1</span>
+        <code>cd ~/work/code/agnosticv/&lt;directory&gt;/&lt;catalog-name&gt;</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">2</span>
+        <code>/agnosticv:validator</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">3</span>
+        <span>Review validation report</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">4</span>
+        <span>Fix errors and warnings</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">5</span>
+        <span>Re-validate</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Common File Locations
+## 📁 Common File Locations
 
-### Claude Code / VS Code with Claude
-
-```
-~/.claude/
-├── plugins/             # Installed plugins
+<div class="locations-grid">
+  <div class="location-card">
+    <h3>Claude Code / VS Code</h3>
+    <pre><code>~/.claude/
+├── plugins/
 │   ├── installed/
 │   │   ├── showroom@rhdp-marketplace/
 │   │   ├── agnosticv@rhdp-marketplace/
 │   │   └── health@rhdp-marketplace/
 │   └── marketplaces/
 │       └── rhdp-marketplace/
-└── skills/              # Legacy skills (if migrating)
-```
+└── skills/  # Legacy (if migrating)</code></pre>
+  </div>
 
-### Cursor
+  <div class="location-card">
+    <h3>Cursor</h3>
+    <pre><code>~/.cursor/
+├── plugins/
+└── skills/  # Legacy</code></pre>
+  </div>
 
-```
-~/.cursor/
-├── plugins/             # Installed plugins
-└── skills/              # Legacy skills
-```
-
-### AgnosticV Repository
-
-```
-~/work/code/agnosticv/
-├── agd_v2/              # Standard catalogs
-│   └── <catalog-name>/
+  <div class="location-card">
+    <h3>AgnosticV Repository</h3>
+    <pre><code>~/work/code/agnosticv/
+├── agd_v2/      # Standard catalogs
+│   └── &lt;catalog-name&gt;/
 │       ├── common.yaml
 │       ├── description.adoc
 │       └── dev.yaml
-├── enterprise/          # Enterprise catalogs
-└── summit-2025/         # Event catalogs
-```
+├── enterprise/  # Enterprise catalogs
+└── summit-2025/ # Event catalogs</code></pre>
+  </div>
 
----
-
-## Showroom Content Structure
-
-```
-showroom-repo/
+  <div class="location-card">
+    <h3>Showroom Content</h3>
+    <pre><code>showroom-repo/
 ├── content/
 │   └── modules/
 │       └── ROOT/
@@ -154,157 +260,57 @@ showroom-repo/
 │           ├── partials/
 │           │   └── _attributes.adoc
 │           └── nav.adoc
-└── antora.yml
-```
+└── antora.yml</code></pre>
+  </div>
+</div>
 
 ---
 
-## AgnosticV Catalog Structure
+## 🔍 Verification Commands
 
-### common.yaml
-
-```yaml
----
-__meta__:
-  asset_uuid: <UUID>
-  catalog:
-    display_name: "<Name>"
-    abstract: "<Abstract>"
-  deployer: babylon
-
-workloads:
-  - <collection>.<role>
-
-requirements_content:
-  collections:
-    - name: <collection>
-      version: ">=1.0.0"
-```
-
-### description.adoc (v1.8.0+ RHDP Structure - Nate's Format)
-
-```asciidoc
-Brief overview (3-4 sentences max). Start with product name, not catalog name.
-Explain what this shows and intended use.
-
-[IMPORTANT]
-====
-Warnings after overview (GPU required, beta/alpha features, limited support, etc.)
-====
-
-== Lab Guide
-
-You can find a preview version of the link:<showroom-url>[lab guide^] here.
-
-== Featured Technology and Products
-
-* Red Hat OpenShift Container Platform {ocp_version}
-* Technology {version}
-* Product Name {version}
-
-== Detailed Overview
-
-* *Module 1 Title*
-** Key learning point 1
-** Key learning point 2
-** Key learning point 3
-
-* *Module 2 Title*
-** Key learning point 1
-** Key learning point 2
-
-== Authors
-
-* Author Name 1
-* Author Name 2
-
-== Support
-
-For help with instructions or functionality, contact lab authors.
-
-For problems with provisioning or environment stability:
-
-* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
-* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
-```
+<div class="verification-box">
+  <h3>Quick Checks</h3>
+  <div class="verification-commands">
+    <div class="verify-item">
+      <h4>Check installed plugins</h4>
+      <pre><code>/plugin list</code></pre>
+    </div>
+    <div class="verify-item">
+      <h4>Check marketplace</h4>
+      <pre><code>/plugin marketplace list</code></pre>
+    </div>
+    <div class="verify-item">
+      <h4>Check AgnosticV repo</h4>
+      <pre><code>cd ~/work/code/agnosticv && git status</code></pre>
+    </div>
+    <div class="verify-item">
+      <h4>Validate YAML syntax</h4>
+      <pre><code>yamllint common.yaml</code></pre>
+    </div>
+    <div class="verify-item">
+      <h4>Test Showroom locally</h4>
+      <pre><code>npm run dev</code></pre>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Common AsciiDoc Attributes
+## 🆘 Troubleshooting Quick Fixes
 
-```asciidoc
-:openshift_console_url: <console-url>
-:user: <username>
-:password: <password>
-:api_url: <api-url>
-:user_namespace: <namespace>
-:litellm_api_url: <litellm-url>
-:litellm_api_key: <api-key>
-```
+<details>
+<summary><strong>Skills not showing</strong></summary>
 
----
-
-## Git Commands for AgnosticV
-
-```bash
-# Start new catalog
-cd ~/work/code/agnosticv
-git checkout main
-git pull origin main
-git checkout -b <catalog-name>
-
-# Commit changes
-git status
-git add <directory>/<catalog-name>/
-git commit -m "Add <catalog-name> catalog"
-git push origin <catalog-name>
-
-# Create PR
-gh pr create --fill
-
-# Clean up after merge
-git checkout main
-git pull origin main
-git branch -d <catalog-name>
-```
-
----
-
-## Verification Commands
-
-```bash
-# Check installed plugins
-/plugin list
-
-# Check marketplace
-/plugin marketplace list
-
-# Check AgnosticV repo
-cd ~/work/code/agnosticv && git status
-
-# Validate YAML syntax
-yamllint common.yaml
-
-# Test Showroom locally
-npm run dev
-```
-
----
-
-## Troubleshooting Quick Fixes
-
-### Skills Not Showing
-
-```bash
-# Restart Claude Code
+<pre><code># Restart Claude Code
 # Then verify installation:
-/plugin list
-```
+/plugin list</code></pre>
 
-### Need to Reinstall
+</details>
 
-```bash
-# Uninstall plugins
+<details>
+<summary><strong>Need to reinstall</strong></summary>
+
+<pre><code># Uninstall plugins
 /plugin uninstall showroom@rhdp-marketplace
 /plugin uninstall agnosticv@rhdp-marketplace
 /plugin uninstall health@rhdp-marketplace
@@ -312,33 +318,365 @@ npm run dev
 # Reinstall
 /plugin install showroom@rhdp-marketplace
 /plugin install agnosticv@rhdp-marketplace
-/plugin install health@rhdp-marketplace
-```
+/plugin install health@rhdp-marketplace</code></pre>
 
-### AgnosticV Repo Not Found
+</details>
 
-```bash
-cd ~/work/code
-git clone git@github.com:rhpds/agnosticv.git
-```
+<details>
+<summary><strong>AgnosticV repo not found</strong></summary>
 
-### UUID Collision
+<pre><code>cd ~/work/code
+git clone git@github.com:rhpds/agnosticv.git</code></pre>
 
-```bash
-# Generate new UUID
+</details>
+
+<details>
+<summary><strong>UUID collision</strong></summary>
+
+<pre><code># Generate new UUID
 uuidgen
-# Update common.yaml:__meta__:asset_uuid
-```
+# Update common.yaml:__meta__:asset_uuid</code></pre>
+
+</details>
 
 ---
 
-## Support Resources
+## 🔗 Support Resources
 
-- **GitHub Issues:** [Report bugs](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- **Slack:** [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-- **Documentation:** [Full docs](https://rhpds.github.io/rhdp-skills-marketplace)
-- **Changelog:** [Version history](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/CHANGELOG.md)
+<div class="support-grid">
+  <a href="https://github.com/rhpds/rhdp-skills-marketplace/issues" target="_blank" class="support-card">
+    <div class="support-icon">🐛</div>
+    <h4>GitHub Issues</h4>
+    <p>Report bugs and request features</p>
+  </a>
+
+  <a href="https://redhat.enterprise.slack.com/archives/C04MLMA15MX" target="_blank" class="support-card">
+    <div class="support-icon">💬</div>
+    <h4>#forum-demo-developers</h4>
+    <p>Get help from the community</p>
+  </a>
+
+  <a href="https://rhpds.github.io/rhdp-skills-marketplace" target="_blank" class="support-card">
+    <div class="support-icon">📖</div>
+    <h4>Documentation</h4>
+    <p>Full guides and references</p>
+  </a>
+
+  <a href="https://github.com/rhpds/rhdp-skills-marketplace/blob/main/CHANGELOG.md" target="_blank" class="support-card">
+    <div class="support-icon">📋</div>
+    <h4>Changelog</h4>
+    <p>Version history and updates</p>
+  </a>
+</div>
 
 ---
 
-[← Back to Home](../)
+<div class="navigation-footer">
+  <a href="../index.html" class="nav-button">← Back to Home</a>
+</div>
+
+<style>
+.reference-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.command-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.command-section h3 {
+  margin-top: 0;
+  color: #24292e;
+}
+
+.command-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.command-option h4 {
+  margin: 0 0 0.5rem 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.command-option pre {
+  margin: 0;
+}
+
+.command-section pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0 0 0;
+  overflow-x: auto;
+}
+
+.update-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.update-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: #24292e;
+}
+
+.update-card pre {
+  margin: 0.5rem 0;
+}
+
+.command-note {
+  margin: 0.5rem 0 0 0;
+  color: #586069;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.workflow-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.workflow-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.workflow-card.agv {
+  border-color: #0969da;
+}
+
+.workflow-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.workflow-icon {
+  font-size: 2rem;
+}
+
+.workflow-header h3 {
+  margin: 0;
+  color: #24292e;
+  font-size: 1.125rem;
+}
+
+.workflow-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.workflow-step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: #EE0000;
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.workflow-step-item code {
+  background: #f6f8fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: #EE0000;
+  font-size: 0.8rem;
+}
+
+.optional {
+  color: #586069;
+  font-style: italic;
+}
+
+.locations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.location-card {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.location-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #24292e;
+  font-size: 1rem;
+}
+
+.location-card pre {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.verification-box {
+  background: linear-gradient(135deg, #d4edda 0%, #ffffff 100%);
+  border: 2px solid #28a745;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.verification-box h3 {
+  margin-top: 0;
+  color: #155724;
+}
+
+.verification-commands {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.verify-item h4 {
+  margin: 0 0 0.5rem 0;
+  color: #155724;
+  font-size: 0.875rem;
+}
+
+.verify-item pre {
+  background: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.support-card {
+  display: block;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.support-card:hover {
+  border-color: #EE0000;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.support-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.support-card h4 {
+  margin: 0.5rem 0;
+  color: #24292e;
+}
+
+.support-card p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.navigation-footer {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e4e8;
+}
+
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #24292e;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  border-color: #EE0000;
+  color: #EE0000;
+  transform: translateY(-2px);
+}
+
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+
+summary:hover {
+  color: #EE0000;
+}
+
+details[open] {
+  padding-bottom: 1rem;
+}
+
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+</style>

@@ -5,730 +5,882 @@ title: /agnosticv:catalog-builder
 
 # /agnosticv:catalog-builder
 
+<div class="skill-badge">🔧 Catalog Builder</div>
+
 Create or update AgnosticV catalog files for RHDP deployments (unified skill).
 
 ---
 
-## Before You Start
+## 📋 What You'll Need Before Starting
+
+<div class="workflow-diagram">
+  <a href="workflow.svg" target="_blank">
+    <img src="workflow.svg" alt="catalog-builder workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
+  </a>
+  <p style="text-align: center; color: #586069; font-size: 0.875rem; margin-top: 0.5rem;">Click to view full workflow diagram</p>
+</div>
 
 ### Prerequisites
 
-1. **Clone the AgnosticV repository:**
-   ```bash
-   cd ~/work/code
-   git clone git@github.com:rhpds/agnosticv.git
-   cd agnosticv
-   ```
+<div class="prereq-grid">
+  <div class="prereq-item">
+    <div class="prereq-icon">📁</div>
+    <h4>Clone AgnosticV Repository</h4>
+    <pre><code>cd ~/work/code
+git clone git@github.com:rhpds/agnosticv.git
+cd agnosticv</code></pre>
+  </div>
 
-2. **Verify RHDP access:**
-   - Ensure you have write access to the AgnosticV repository
-   - Test with: `gh repo view rhpds/agnosticv`
-   - You should be able to create pull requests
+  <div class="prereq-item">
+    <div class="prereq-icon">🔐</div>
+    <h4>Verify RHDP Access</h4>
+    <ul>
+      <li>Write access to AgnosticV repository</li>
+      <li>Test: <code>gh repo view rhpds/agnosticv</code></li>
+      <li>Ability to create pull requests</li>
+    </ul>
+  </div>
 
-3. **For Full Catalog - Have your workshop content ready:**
-   - Workshop lab content (from `/showroom:create-lab`)
-   - Infrastructure requirements (CNV, AWS, etc.)
-   - Workload list (OpenShift AI, AAP, etc.)
+  <div class="prereq-item">
+    <div class="prereq-icon">📝</div>
+    <h4>Workshop Content Ready</h4>
+    <ul>
+      <li>Workshop lab content (from <code>/showroom:create-lab</code>)</li>
+      <li>Infrastructure requirements (CNV, AWS, etc.)</li>
+      <li>Workload list (OpenShift AI, AAP, etc.)</li>
+    </ul>
+  </div>
+</div>
 
-4. **For Description Only - Have Showroom content:**
-   - Completed workshop in Showroom format
-   - Modules in `content/modules/ROOT/pages/`
+### What You'll Need (By Mode)
 
-### What You'll Need
+<div class="mode-tabs">
+  <div class="mode-tab">
+    <h4>Mode 1: Full Catalog</h4>
+    <ul>
+      <li>Catalog name (e.g., "Agentic AI on OpenShift")</li>
+      <li>Category (Workshops, Demos, or Sandboxes)</li>
+      <li>Infrastructure type (CNV multi-node, AWS, SNO, etc.)</li>
+      <li>Workloads to deploy</li>
+      <li>Multi-user requirements (yes/no)</li>
+    </ul>
+  </div>
 
-Depending on what you're creating:
+  <div class="mode-tab">
+    <h4>Mode 2: Description Only</h4>
+    <ul>
+      <li>Path to Showroom repository</li>
+      <li>Brief overview (2-3 sentences starting with product name)</li>
+    </ul>
+  </div>
 
-**Full Catalog:**
-- Catalog name (e.g., "Agentic AI on OpenShift")
-- Category (Workshops, Demos, or Sandboxes)
-- Infrastructure type (CNV multi-node, AWS, SNO, etc.)
-- Workloads to deploy
-- Multi-user requirements (yes/no)
-
-**Description Only:**
-- Path to Showroom repository
-- Brief overview (2-3 sentences starting with product name)
-
-**Info Template:**
-- Data keys from `agnosticd_user_info.data`
-
----
-
-## Quick Start
-
-1. Navigate to AgnosticV repository
-2. Run `/agnosticv:catalog-builder`
-3. Choose mode: Full Catalog / Description Only / Info Template
-4. Answer guided questions
-5. Review generated files
-6. Files auto-committed to new branch
-
----
-
-## What It Can Generate
-
-### Mode 1: Full Catalog
-
-Creates complete catalog with all files:
-
-```
-~/work/code/agnosticv/agd_v2/your-catalog-name/
-├── common.yaml          # Infrastructure and workloads
-├── dev.yaml            # Development environment
-├── description.adoc    # Catalog UI description
-└── info-message-template.adoc  # User notification
-```
-
-### Mode 2: Description Only
-
-Updates just the description file:
-
-```
-~/work/code/agnosticv/agd_v2/your-catalog-name/
-└── description.adoc    # Generated from Showroom content
-```
-
-### Mode 3: Info Template
-
-Creates user notification template:
-
-```
-~/work/code/agnosticv/agd_v2/your-catalog-name/
-└── info-message-template.adoc  # With agnosticd_user_info data
-```
+  <div class="mode-tab">
+    <h4>Mode 3: Info Template</h4>
+    <ul>
+      <li>Data keys from <code>agnosticd_user_info.data</code></li>
+    </ul>
+  </div>
+</div>
 
 ---
 
-## Detailed Question-by-Question Workflow
-
-The skill asks questions step-by-step. Here's exactly what you'll see:
-
-### Mode 1: Full Catalog - Detailed Steps
-
-**Step 1: Mode Selection**
-```
-Q: What would you like to create or update?
-   1. Full Catalog (common.yaml, dev.yaml, description.adoc, info-message-template.adoc)
-   2. Description Only (description.adoc)
-   3. Info Message Template (info-message-template.adoc)
-
-Expected Answer: 1
-```
-
-**Step 2: Git Workflow (Automatic)**
-```
-✓ Checking current branch: main
-✓ Pulling latest from origin/main
-✓ Creating new branch...
-
-Q: What should we name your branch? (NO feature/ prefix)
-   Example: add-ansible-ai-workshop
-
-Expected Answer: add-your-catalog-name
-```
-
-**Step 3: Repository Path**
-```
-Q: What is your AgnosticV repository directory path?
-
-Expected Answer: ~/work/code/agnosticv
-```
-
-**Step 4: Search Similar Catalogs (Optional)**
-```
-Q: Search for similar catalogs to use as reference? (y/n)
-
-Expected Answer: y
-
-Q: Enter search keywords (technology, product, or catalog name)
-   Example: ansible, openshift, ai
-
-Expected Answer: ansible ai
-```
-
-**Step 5: Catalog Name**
-```
-Q: What is your catalog name (slug)?
-   Format: lowercase-with-dashes
-   Example: agentic-ai-openshift
-
-Expected Answer: your-catalog-slug
-```
-
-**Step 6: Display Name**
-```
-Q: What is the display name for the catalog?
-   Example: "Agentic AI on OpenShift"
-
-Expected Answer: Your Catalog Display Name
-```
-
-**Step 7: Category**
-```
-Q: Category? (Workshops, Demos, or Sandboxes)
-   - Workshops: Multi-user hands-on labs
-   - Demos: Presenter-led demonstrations
-   - Sandboxes: Self-service environments
-
-Expected Answer: Workshops
-```
-
-**Step 8: Infrastructure**
-```
-Q: Which infrastructure?
-   1. CNV multi-node (Most common - multi-user labs)
-   2. CNV SNO (Edge demos, lightweight)
-   3. AWS (GPU workloads, high memory)
-   4. HCP (Hosted Control Plane)
-
-Expected Answer: 1
-```
-
-**Step 9: Multi-user**
-```
-Q: Multi-user support? (y/n)
-   Choose 'y' for workshops with multiple participants
-
-Expected Answer: y
-```
-
-**Step 10: Technologies**
-```
-Q: What technologies will be used? (comma-separated)
-   Example: OpenShift AI, Ansible, Pipelines
-
-Expected Answer: OpenShift AI, LiteLLM, Ansible
-```
-
-**Step 11: Workload Selection**
-```
-Based on your technologies, recommended workloads:
-  - rhpds.openshift_ai.ocp4_workload_openshift_ai
-  - rhpds.litellm_virtual_keys.ocp4_workload_litellm_virtual_keys
-  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
-  - rhpds.showroom.ocp4_workload_showroom
-
-Q: Use these workloads? (y/n)
-
-Expected Answer: y
-
-Q: Add additional workloads? (comma-separated, or press enter to skip)
-
-Expected Answer: (press enter or add custom workloads)
-```
-
-**Step 12: UUID Generation (Automatic)**
-```
-✓ Generating UUID...
-✓ Validating uniqueness...
-✓ UUID: 12345678-1234-1234-1234-123456789abc
-```
-
-**Step 13: Showroom Repository (Auto-detect or Ask)**
-```
-Q: Path or URL to your Showroom repository?
-   - Local path: ~/path/to/showroom
-   - HTTPS URL: https://github.com/org/repo
-
-Expected Answer: ~/work/code/showroom/my-workshop
-```
-
-**Step 14: Directory Selection**
-```
-Q: Where should the catalog be created?
-   1. agd_v2/ (Standard catalogs - recommended)
-   2. enterprise/ (Enterprise-specific)
-   3. summit-2025/ (Event-specific)
-
-Expected Answer: 1
-```
-
-**Step 15: File Generation (Automatic)**
-```
-✓ Generating common.yaml...
-✓ Generating dev.yaml...
-✓ Generating description.adoc...
-✓ Generating info-message-template.adoc...
-✓ Files created in: agd_v2/your-catalog-slug/
-```
-
-**Step 16: Git Commit (Automatic)**
-```
-✓ Staging files...
-✓ Committing to branch...
-   git add agd_v2/your-catalog-slug/
-   git commit -m "Add your-catalog-slug catalog"
-✓ Complete! Ready to push.
-```
-
-**Step 17: Next Steps (Displayed)**
-```
-=== Next Steps ===
-
-1. Review generated files:
-   cd ~/work/code/agnosticv/agd_v2/your-catalog-slug/
-
-2. Validate configuration:
-   /agnosticv:validator
-
-3. Push to remote:
-   git push origin add-your-catalog-name
-
-4. Create pull request:
-   gh pr create --fill
-
-5. Test in RHDP Integration before requesting merge
-```
-
-### Mode 2: Description Only - Detailed Steps
-
-**Step 1: Mode Selection**
-```
-Q: What would you like to create or update?
-   2. Description Only (description.adoc)
-
-Expected Answer: 2
-```
-
-**Step 2: Git Workflow**
-```
-(Same as Mode 1 - automatic pull/branch)
-```
-
-**Step 3: Showroom Path**
-```
-Q: Path or URL to your Showroom repository?
-   (Press Enter to use current directory)
-
-Expected Answer: ~/work/code/showroom/my-workshop
-```
-
-**Step 4: Showroom Found or Not?**
-
-**If Showroom content found:**
-```
-✓ Found Showroom content
-
-📖 Analyzing all module content...
-✓ Reading ALL modules (not just index.adoc)
-✓ Extracting overview from index.adoc
-✓ Detecting Red Hat products across all modules
-✓ Extracting version numbers
-✓ Identifying technical topics
-```
-
-**If NO Showroom content found:**
-```
-✗ No Showroom content found
-
-Options:
-1. Enter description details manually (I'll ask you questions)
-2. Create Showroom content first and come back
-3. Exit and use Mode 1 (Full Catalog) instead
-
-Your choice [1/2/3]:
-```
-
-**Step 5a: Manual Entry (if no Showroom)**
-```
-Q: Brief overview (3-4 sentences):
-   - What is this showing/doing?
-   - What is the intended use?
-   - Do NOT mention catalog name
-
-Q: Warnings? (GPU, beta/alpha, high memory)
-   [optional]
-
-Q: Lab/Demo Guide URL:
-   Link to Showroom or repo
-
-Q: Featured Products (max 3-4 with versions):
-   Only what matters
-
-Q: How many modules/chapters?
-   [number]
-
-For each module:
-Q: Module title:
-Q: Module details (2-3 bullets max):
-   [enter bullets, press Enter twice when done]
-
-Q: Authors:
-   [from __meta__.owners or manual]
-
-Q: Content support Slack channel:
-Q: Author Slack handle:
-Q: Author email [optional]:
-```
-
-**Step 5b: Review Extracted Content (if Showroom found)**
-```
-📝 Description Content Review
-
-I've read ALL X modules and extracted:
-
-Overview (from index.adoc):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[extracted overview]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Products Detected (from all modules):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Red Hat OpenShift AI
-- Ansible Automation Platform 2.5
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Q: Is this overview accurate? [Y to use / N to provide custom]:
-Q: Are detected products correct? [Y to use / N to customize]:
-```
-
-**Step 6: File Generation**
-```
-✓ Generating description.adoc (RHDP structure)...
-  - Brief overview (3-4 sentences max)
-  - Warnings (if any)
-  - Lab/Demo Guide link
-  - Featured Products (max 3-4)
-  - Detailed Overview (each module + 2-3 bullets)
-  - Authors (from __meta__.owners)
-  - Support (Content + Environment)
-✓ Auto-committed to branch
-```
-
-### Mode 3: Info Template - Detailed Steps
-
-**Step 1: Mode Selection**
-```
-Q: What would you like to create or update?
-   3. Info Message Template (info-message-template.adoc)
-
-Expected Answer: 3
-```
-
-**Step 2: Git Workflow**
-```
-(Same as Mode 1 - automatic pull/branch)
-```
-
-**Step 3: Data Keys**
-```
-Q: What data keys are set in agnosticd_user_info.data?
-   Example: api_url, api_key, showroom_url
-
-Expected Answer: litellm_api_url, litellm_api_key, showroom_primary_view_url
-```
-
-**Step 4: Lab Code (Optional)**
-```
-Q: Lab code (e.g., LB1234)? (press enter to skip)
-
-Expected Answer: LB1688
-```
-
-**Step 5: File Generation**
-```
-✓ Generating info-message-template.adoc...
-✓ Including data placeholders: {litellm_api_url}, {litellm_api_key}...
-✓ Auto-committed to branch
-```
+## 🚀 Quick Start
+
+<div class="quick-start-steps">
+  <div class="quick-step">
+    <div class="quick-step-number">1</div>
+    <div class="quick-step-content">
+      <h4>Navigate to Repository</h4>
+      <p>Open your AgnosticV repository directory</p>
+    </div>
+  </div>
+
+  <div class="quick-step">
+    <div class="quick-step-number">2</div>
+    <div class="quick-step-content">
+      <h4>Run Catalog Builder</h4>
+      <p><code>/agnosticv:catalog-builder</code></p>
+    </div>
+  </div>
+
+  <div class="quick-step">
+    <div class="quick-step-number">3</div>
+    <div class="quick-step-content">
+      <h4>Choose Mode</h4>
+      <p>Select: Full Catalog / Description Only / Info Template</p>
+    </div>
+  </div>
+
+  <div class="quick-step">
+    <div class="quick-step-number">4</div>
+    <div class="quick-step-content">
+      <h4>Answer Questions</h4>
+      <p>Follow guided prompts</p>
+    </div>
+  </div>
+
+  <div class="quick-step">
+    <div class="quick-step-number">5</div>
+    <div class="quick-step-content">
+      <h4>Review & Commit</h4>
+      <p>Files auto-committed to new branch</p>
+    </div>
+  </div></div>
 
 ---
 
-## Common Workflows
+## 📁 What It Can Generate
 
-### Workflow 1: Create Full Catalog from Scratch
+<div class="mode-generation-grid">
+  <div class="mode-generation-card">
+    <div class="mode-header">Mode 1: Full Catalog</div>
+    <p>Creates complete catalog with all files:</p>
+    <pre><code>agd_v2/your-catalog-name/
+├── common.yaml
+├── dev.yaml
+├── description.adoc
+└── info-message-template.adoc</code></pre>
+  </div>
 
-```
-/agnosticv:catalog-builder
+  <div class="mode-generation-card">
+    <div class="mode-header">Mode 2: Description Only</div>
+    <p>Updates just the description:</p>
+    <pre><code>agd_v2/your-catalog-name/
+└── description.adoc</code></pre>
+  </div>
+
+  <div class="mode-generation-card">
+    <div class="mode-header">Mode 3: Info Template</div>
+    <p>Creates user notification:</p>
+    <pre><code>agd_v2/your-catalog-name/
+└── info-message-template.adoc</code></pre>
+  </div>
+</div>
+
+---
+
+## 🔄 Common Workflows
+
+<div class="workflow-steps">
+  <div class="workflow-step">
+    <div class="workflow-icon">1️⃣</div>
+    <div class="workflow-content">
+      <h4>Workflow 1: Create Full Catalog from Scratch</h4>
+      <pre><code>/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
 → Git: Pull main, create branch (no feature/ prefix)
 → Search similar catalogs
 → Select infrastructure and workloads
 → Generate all 4 files
-→ Auto-commit to branch
-```
+→ Auto-commit to branch</code></pre>
+    </div>
+  </div>
 
-Then validate and create PR:
-```
-/agnosticv:validator
-→ Check configuration
-
-git push origin your-branch
-gh pr create --fill
-```
-
-### Workflow 2: Update Description After Content Changes
-
-```
-/agnosticv:catalog-builder
+  <div class="workflow-step">
+    <div class="workflow-icon">2️⃣</div>
+    <div class="workflow-content">
+      <h4>Workflow 2: Update Description After Content Changes</h4>
+      <pre><code>/agnosticv:catalog-builder
 → Mode: 2 (Description Only)
 → Point to Showroom repo
 → Auto-extracts modules and technologies
 → Generates description.adoc
-→ Auto-commits to branch
-```
+→ Auto-commits to branch</code></pre>
+    </div>
+  </div>
 
-### Workflow 3: Add Info Template for User Data
-
-```
-/agnosticv:catalog-builder
+  <div class="workflow-step">
+    <div class="workflow-icon">3️⃣</div>
+    <div class="workflow-content">
+      <h4>Workflow 3: Add Info Template for User Data</h4>
+      <pre><code>/agnosticv:catalog-builder
 → Mode: 3 (Info Template)
 → Specify data keys from workload
 → Generates template with placeholders
-→ Shows how to use agnosticd_user_info
-```
+→ Shows how to use agnosticd_user_info</code></pre>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Mode Details
+## 📝 Mode Details
 
-### Mode 1: Full Catalog
+<details>
+<summary><strong>Mode 1: Full Catalog - Detailed Workflow</strong></summary>
 
-**What it creates:**
+<div class="detail-content">
+  <h4>What it creates:</h4>
+  <ul>
+    <li><strong>common.yaml</strong> - Main configuration (infrastructure and workloads)</li>
+    <li><strong>dev.yaml</strong> - Development environment overrides</li>
+    <li><strong>description.adoc</strong> - UI description following RHDP structure</li>
+    <li><strong>info-message-template.adoc</strong> - User notification template</li>
+  </ul>
 
-**common.yaml** - Main configuration
-```yaml
-asset_uuid: <generated-uuid>
-name: Display Name
-category: Workshops
-cloud_provider: equinix_metal
-workloads:
-  - rhpds.showroom.ocp4_workload_showroom
-  - rhpds.aap25.ocp4_workload_aap25
-```
+  <h4>Step-by-step process:</h4>
+  <ol>
+    <li>Select Full Catalog mode</li>
+    <li>Git workflow (automatic pull/branch creation - NO feature/ prefix)</li>
+    <li>Search for similar catalogs (optional, for reference)</li>
+    <li>Enter catalog name (slug format: lowercase-with-dashes)</li>
+    <li>Specify display name and category</li>
+    <li>Choose infrastructure (CNV multi-node, AWS, SNO, HCP)</li>
+    <li>Configure multi-user support</li>
+    <li>Specify technologies and workloads</li>
+    <li>UUID auto-generated and validated for uniqueness</li>
+    <li>Files generated and auto-committed</li>
+  </ol>
+</div>
 
-**dev.yaml** - Dev overrides
-```yaml
-cloud_provider: "{{ cloud_provider }}"
-num_users: 1
-```
+</details>
 
-**description.adoc** - UI description (see example below)
+<details>
+<summary><strong>Mode 2: Description Only - RHDP Official Structure</strong></summary>
 
-**info-message-template.adoc** - User notification (see example below)
+<div class="detail-content">
+  <h4>v1.8.0: Enhanced with full module analysis</h4>
+  
+  <p><strong>With Showroom content:</strong></p>
+  <ul>
+    <li>Reads ALL modules (not just index.adoc)</li>
+    <li>Extracts overview from index.adoc</li>
+    <li>Detects Red Hat products across all modules</li>
+    <li>Extracts version numbers</li>
+    <li>Identifies technical topics</li>
+    <li>Shows extracted data for review before generating</li>
+  </ul>
 
-### Mode 2: Description Only
+  <p><strong>Without Showroom content:</strong></p>
+  <ul>
+    <li>Guided questions for RHDP structure</li>
+    <li>Brief overview (3-4 sentences)</li>
+    <li>Warnings (optional)</li>
+    <li>Guide link</li>
+    <li>Featured products (max 3-4)</li>
+    <li>Module details (title + 2-3 bullets per module)</li>
+  </ul>
 
-**v1.8.0: Now follows official RHDP structure**
+  <h4>Generated description.adoc follows RHDP structure:</h4>
+  <ol>
+    <li>Brief Overview (3-4 sentences max, starts with product name)</li>
+    <li>Warnings (optional, after overview)</li>
+    <li>Lab/Demo Guide (link to Showroom)</li>
+    <li>Featured Technology and Products (max 3-4)</li>
+    <li>Detailed Overview (each module + 2-3 bullets)</li>
+    <li>Authors (from __meta__.owners)</li>
+    <li>Support (Content + Environment)</li>
+  </ol>
+</div>
 
-**With Showroom:**
-- Reads ALL modules (not just index.adoc)
-- Extracts overview from index.adoc
-- Detects Red Hat products across all modules
-- Extracts version numbers
-- Identifies technical topics
-- Shows extracted data for review before generating
+</details>
 
-**Without Showroom:**
-- Asks all questions needed for RHDP structure
-- Brief overview (3-4 sentences)
-- Warnings (optional)
-- Guide link
-- Featured products (max 3-4)
-- Module details (title + 2-3 bullets per module)
-- Authors and support information
+<details>
+<summary><strong>Mode 3: Info Template - User Data Sharing</strong></summary>
 
-Generates description.adoc with RHDP official structure:
-1. Brief Overview (3-4 sentences max)
-2. Warnings (optional, after overview)
-3. Lab/Demo Guide (link to Showroom)
-4. Featured Technology and Products (max 3-4)
-5. Detailed Overview (each module + 2-3 bullets)
-6. Authors (from __meta__.owners)
-7. Support (Content + Environment)
-
-### Mode 3: Info Template
-
-Documents how to share data:
-
-```yaml
-# In your workload:
+<div class="detail-content">
+  <h4>Documents how to share data with users:</h4>
+  
+  <pre><code># In your workload:
 - name: Save user data
   agnosticd.core.agnosticd_user_info:
     data:
       api_url: "{{ my_api_url }}"
-      api_key: "{{ my_api_key }}"
-```
+      api_key: "{{ my_api_key }}"</code></pre>
 
-Template uses: `{api_url}` and `{api_key}`
+  <p>Template uses: <code>{api_url}</code> and <code>{api_key}</code></p>
 
----
+  <h4>Steps:</h4>
+  <ol>
+    <li>Select Info Template mode</li>
+    <li>Git workflow (automatic)</li>
+    <li>Specify data keys from agnosticd_user_info.data</li>
+    <li>Optional: add lab code (e.g., LB1234)</li>
+    <li>Template generated with proper placeholders</li>
+  </ol>
+</div>
 
-## Real Examples
-
-### Example description.adoc
-
-**v1.8.0: RHDP Official Structure**
-
-From `agd_v2/vllm-playground-aws/description.adoc`:
-
-```asciidoc
-vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs, tool calling, and MCP integration. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs, and implement agentic workflows with performance benchmarking.
-
-NOTE: GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
-
-== Demo Guide
-
-* link:https://rhpds.github.io/showroom-vllm-playground[Guide^]
-
-== Featured Technology and Products
-
-* Red Hat Enterprise Linux 10
-* vLLM Playground 0.1.1
-* Red Hat AI
-
-== Detailed Overview
-
-=== Introduction to vLLM Playground
-
-* Overview of vLLM architecture and container-based deployment
-* ACME Corp use case: modernizing customer support with AI
-* Deploy first vLLM server instance
-
-=== Structured Outputs Configuration
-
-* Configure JSON schema validation for reliable outputs
-* Integrate with downstream systems using structured data
-* Test output consistency across multiple requests
-
-=== Tool Calling and MCP Integration
-
-* Implement function calling to extend AI capabilities
-* Enable Model Context Protocol for agentic workflows
-* Build human-in-the-loop approval system
-
-=== Performance Benchmarking
-
-* Run load tests against vLLM deployments
-* Compare CPU vs GPU performance metrics
-* Validate production readiness criteria
-
-== Authors
-
-* Michael Tao
-* Jane Developer
-
-== Support
-
-=== Content Support
-
-For help with instructions or functionality:
-
-* Slack: #vllm-playground-demo - tag @michael-tao
-* Email: mtao@redhat.com
-
-=== Environment Support
-
-For problems with provisioning or environment stability:
-
-* link:https://red.ht/rhdp-ticket[Open RHDP Support Ticket^]
-* Slack: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
-```
-
-### Example info-message-template.adoc
-
-From `agd_v2/agentic-ai-openshift/info-message-template.adoc`:
-
-```asciidoc
-= LB1688: Agentic AI
-
-== Your Lab Environment Access
-
-|===
-| Instructions URL | {showroom_primary_view_url}
-|===
-```
+</details>
 
 ---
 
-## Git Workflow
+## 💡 Tips & Best Practices
 
-**Always follows this pattern:**
-
-1. **Pull latest main**
-   ```bash
-   git checkout main
-   git pull origin main
-   ```
-
-2. **Create descriptive branch** (NO feature/ prefix)
-   ```
-   Good: add-ansible-ai-workshop
-   Good: update-ocp-pipelines-description
-   Bad: feature/add-workshop
-   ```
-
-3. **Auto-commit changes**
-   ```bash
-   git add agd_v2/your-catalog/
-   git commit -m "Add your-catalog catalog"
-   ```
-
-4. **Push and create PR**
-   ```bash
-   git push origin your-branch
-   gh pr create --fill
-   ```
-
----
-
-## Tips
-
-- **Start with product name** - Description overview must start with product, not "This workshop"
-- **Use real examples** - Reference existing catalogs for patterns
-- **Validate before PR** - Always run `/agnosticv:validator`
-- **Test in dev first** - Use dev.yaml for testing
-- **No feature/ prefix** - Branch names should be descriptive without feature/
-- **Convert lists to strings** - For info templates: `{{ my_list | join(', ') }}`
+<div class="tips-grid">
+  <div class="tip-card">
+    <h4>🏷️ Start with Product Name</h4>
+    <p>Description overview must start with product, not "This workshop"</p>
+  </div>
+  <div class="tip-card">
+    <h4>📚 Use Real Examples</h4>
+    <p>Reference existing catalogs for patterns</p>
+  </div>
+  <div class="tip-card">
+    <h4>✓ Validate Before PR</h4>
+    <p>Always run <code>/agnosticv:validator</code></p>
+  </div>
+  <div class="tip-card">
+    <h4>🧪 Test in Dev First</h4>
+    <p>Use dev.yaml for testing</p>
+  </div>
+  <div class="tip-card">
+    <h4>🌿 No feature/ Prefix</h4>
+    <p>Branch names should be descriptive without feature/</p>
+  </div>
+  <div class="tip-card">
+    <h4>📝 Convert Lists to Strings</h4>
+    <p>For info templates: <code>{{ my_list | join(', ') }}</code></p>
+  </div>
+</div>
 
 ---
 
-## Troubleshooting
+## 🆘 Troubleshooting
 
-**Skill not found?**
-- Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/agnosticv-catalog-builder`
+<details>
+<summary><strong>Skill not found?</strong></summary>
 
-**Branch already exists?**
-```bash
-git branch -D old-branch
-# Or use different name
-```
+<ul>
+  <li>Restart Claude Code or VS Code</li>
+  <li>Verify installation: <code>ls ~/.claude/skills/agnosticv-catalog-builder</code></li>
+  <li>Check the <a href="../reference/troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
 
-**UUID collision?**
-- Skill auto-regenerates unique UUID
+</details>
 
-**Showroom content not found?**
-```bash
-# Verify structure
+<details>
+<summary><strong>Branch already exists?</strong></summary>
+
+<pre><code>git branch -D old-branch
+# Or use different name</code></pre>
+
+</details>
+
+<details>
+<summary><strong>UUID collision?</strong></summary>
+
+<ul>
+  <li>Skill auto-regenerates unique UUID</li>
+  <li>Check against existing catalogs automatically</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Showroom content not found?</strong></summary>
+
+<pre><code># Verify structure
 ls ~/path/to/showroom/content/modules/ROOT/pages/
-# Should contain .adoc files
-```
+# Should contain .adoc files</code></pre>
 
-**Description starts with "This workshop"?**
-- Must start with product name
-- Example: "OpenShift Pipelines enables..." not "This workshop teaches..."
+</details>
 
----
+<details>
+<summary><strong>Description starts with "This workshop"?</strong></summary>
 
-## Related Skills
+<div class="priority-box">
+  <h4>RHDP Requirement:</h4>
+  <p>Description overview must start with the product name, not "This workshop teaches..."</p>
+  <p><strong>Example:</strong> "OpenShift Pipelines enables..." NOT "This workshop teaches OpenShift Pipelines..."</p>
+</div>
 
-- `/agnosticv:validator` - Validate catalog before PR
-- `/showroom:create-lab` - Create Showroom workshop first
-- `/ftl` - Create automated graders/solvers
-
----
-
-## Migration from Old Skills
-
-If you used `/agv-generator` or `/generate-agv-description`:
-
-**Old:** `/agv-generator` → **New:** `/agnosticv:catalog-builder` (Mode 1: Full Catalog)
-
-**Old:** `/generate-agv-description` → **New:** `/agnosticv:catalog-builder` (Mode 2: Description Only)
-
-All functionality consolidated into one unified skill with improved workflow.
+</details>
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agnosticv:validator →](agnosticv-validator.html)
+## 📊 Git Workflow
+
+<div class="git-workflow-box">
+  <h3>Always follows this pattern:</h3>
+  
+  <div class="git-step">
+    <h4>1. Pull latest main</h4>
+    <pre><code>git checkout main
+git pull origin main</code></pre>
+  </div>
+
+  <div class="git-step">
+    <h4>2. Create descriptive branch (NO feature/ prefix)</h4>
+    <div class="example-grid">
+      <div class="example good">
+        <div class="example-header">✅ Good</div>
+        <code>add-ansible-ai-workshop</code><br>
+        <code>update-ocp-pipelines-description</code>
+      </div>
+      <div class="example bad">
+        <div class="example-header">❌ Bad</div>
+        <code>feature/add-workshop</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="git-step">
+    <h4>3. Auto-commit changes</h4>
+    <pre><code>git add agd_v2/your-catalog/
+git commit -m "Add your-catalog catalog"</code></pre>
+  </div>
+
+  <div class="git-step">
+    <h4>4. Push and create PR</h4>
+    <pre><code>git push origin your-branch
+gh pr create --fill</code></pre>
+  </div>
+</div>
+
+---
+
+## 🔗 Related Skills
+
+<div class="related-skills">
+  <a href="agnosticv-validator.html" class="related-skill-card">
+    <div class="related-skill-icon">✓</div>
+    <div class="related-skill-content">
+      <h4>/agnosticv:validator</h4>
+      <p>Validate catalog before PR</p>
+    </div>
+  </a>
+
+  <a href="create-lab.html" class="related-skill-card">
+    <div class="related-skill-icon">📝</div>
+    <div class="related-skill-content">
+      <h4>/showroom:create-lab</h4>
+      <p>Create Showroom workshop first</p>
+    </div>
+  </a>
+
+  <a href="deployment-health-checker.html" class="related-skill-card">
+    <div class="related-skill-icon">🏥</div>
+    <div class="related-skill-content">
+      <h4>/health:deployment-validator</h4>
+      <p>Create automated health checks</p>
+    </div>
+  </a>
+</div>
+
+---
+
+<div class="navigation-footer">
+  <a href="index.html" class="nav-button">← Back to Skills</a>
+  <a href="agnosticv-validator.html" class="nav-button">Next: /agnosticv:validator →</a>
+</div>
+
+<style>
+.skill-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.workflow-diagram {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.prereq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.prereq-item {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.prereq-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prereq-item h4 {
+  margin: 0.5rem 0;
+  color: #24292e;
+}
+
+.prereq-item pre {
+  background: #f6f8fa;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin: 0.5rem 0 0 0;
+}
+
+.prereq-item ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.25rem;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.mode-tab {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.mode-tab h4 {
+  margin-top: 0;
+  color: #3B82F6;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mode-tab ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.quick-start-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.quick-step {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.quick-step-number {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.quick-step-content h4 {
+  margin: 0.5rem 0;
+  color: #24292e;
+}
+
+.quick-step-content p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.mode-generation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.mode-generation-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.mode-header {
+  font-weight: 700;
+  color: #3B82F6;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.mode-generation-card p {
+  color: #586069;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+.mode-generation-card pre {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.75rem 0 0 0;
+}
+
+.workflow-steps {
+  margin: 2rem 0;
+}
+
+.workflow-step {
+  display: flex;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.workflow-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.workflow-content {
+  flex: 1;
+}
+
+.workflow-content h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+}
+
+.workflow-content pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0 0 0;
+}
+
+.detail-content {
+  padding: 1rem 0;
+}
+
+.detail-content h4 {
+  color: #24292e;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-content ul,
+.detail-content ol {
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.detail-content pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.tip-card h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+  font-size: 0.875rem;
+}
+
+.tip-card p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.priority-box {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.priority-box h4 {
+  margin-top: 0;
+  color: #24292e;
+}
+
+.priority-box p {
+  margin: 0.5rem 0;
+}
+
+.git-workflow-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.git-workflow-box h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #24292e;
+}
+
+.git-step {
+  margin-bottom: 1.5rem;
+}
+
+.git-step h4 {
+  color: #3B82F6;
+  margin-bottom: 0.5rem;
+}
+
+.git-step pre {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0 0 0;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.example {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.example.good {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.example.bad {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.example-header {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.example code {
+  display: block;
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.related-skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.related-skill-card {
+  display: flex;
+  gap: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.related-skill-card:hover {
+  border-color: #3B82F6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.related-skill-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.related-skill-content h4 {
+  margin: 0 0 0.25rem 0;
+  color: #24292e;
+  font-size: 1rem;
+}
+
+.related-skill-content p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.navigation-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e4e8;
+}
+
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #24292e;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  border-color: #3B82F6;
+  color: #3B82F6;
+  transform: translateY(-2px);
+}
+
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+
+summary:hover {
+  color: #3B82F6;
+}
+
+details[open] {
+  padding-bottom: 1rem;
+}
+
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+</style>

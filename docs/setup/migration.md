@@ -1,134 +1,189 @@
 ---
 layout: default
-title: Migration Guide
+title: Claude Code Migration Guide
 ---
 
-# Migration Guide: install.sh → Plugin Marketplace
+# Claude Code Migration Guide
+
+<div class="migration-badge">📦 install.sh → Plugin Marketplace</div>
 
 This guide helps you migrate from the old `install.sh` script to the new plugin-based marketplace system.
 
 ---
 
-## Why Migrate?
+## 🎯 Why Migrate?
 
-**Old way (file-based):**
-```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash
-```
-- Manual updates required
-- No version management
-- Hard to share with team
-- Skills in `~/.claude/skills/`
+<div class="comparison-grid">
+  <div class="comparison-card old-way">
+    <h3>❌ Old Way (File-Based)</h3>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install.sh | bash</code></pre>
+    <ul class="feature-list">
+      <li>✗ Manual updates required</li>
+      <li>✗ No version management</li>
+      <li>✗ Hard to share with team</li>
+      <li>✗ Skills in <code>~/.claude/skills/</code></li>
+    </ul>
+  </div>
 
-**New way (plugin-based):**
-```bash
-/plugin marketplace add rhpds/rhdp-skills-marketplace
-/plugin install showroom@rhdp-marketplace
-```
-- Automatic updates with `/plugin marketplace update`
-- Version management and rollback
-- Easy team distribution
-- Standard package management (like dnf/brew)
+  <div class="comparison-card new-way">
+    <h3>✅ New Way (Plugin-Based)</h3>
+    <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin install showroom@rhdp-marketplace</code></pre>
+    <ul class="feature-list">
+      <li>✓ Automatic update notifications</li>
+      <li>✓ Version management and rollback</li>
+      <li>✓ Easy team distribution</li>
+      <li>✓ Standard package management</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
-## Migration Steps
+## 🚀 Migration Steps
 
-### Step 1: Backup Your Old Installation
+<div class="migration-steps">
+  <div class="step-card">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <h3>💾 Backup Your Installation</h3>
+      <p>If you have customized any skills, back them up first:</p>
+      <pre><code>cp -r ~/.claude/skills ~/.claude/skills-backup
+cp -r ~/.claude/docs ~/.claude/docs-backup</code></pre>
+    </div>
+  </div>
 
-If you have customized any skills, back them up first:
-
-```bash
-cp -r ~/.claude/skills ~/.claude/skills-backup
-cp -r ~/.claude/docs ~/.claude/docs-backup
-```
-
-### Step 2: Remove Old File-Based Installation
-
-Clean up the old installation:
-
-```bash
-rm -rf ~/.claude/skills/create-lab
+  <div class="step-card">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <h3>🗑️ Remove Old Installation</h3>
+      <p>Clean up the old file-based installation:</p>
+      <pre><code>rm -rf ~/.claude/skills/create-lab
 rm -rf ~/.claude/skills/create-demo
 rm -rf ~/.claude/skills/blog-generate
 rm -rf ~/.claude/skills/verify-content
 rm -rf ~/.claude/skills/agnosticv-catalog-builder
 rm -rf ~/.claude/skills/agnosticv-validator
 rm -rf ~/.claude/skills/deployment-health-checker
-rm -rf ~/.claude/docs
-```
+rm -rf ~/.claude/docs</code></pre>
+    </div>
+  </div>
 
-### Step 3: Install Plugin-Based Marketplace
-
-Add the marketplace:
-
-```bash
-# If you have SSH keys configured
+  <div class="step-card">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <h3>📦 Add Marketplace</h3>
+      <p>Add the RHDP marketplace:</p>
+      <pre><code># If you have SSH keys configured
 /plugin marketplace add rhpds/rhdp-skills-marketplace
 
 # If you don't have SSH configured
-/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace
-```
+/plugin marketplace add https://github.com/rhpds/rhdp-skills-marketplace</code></pre>
+    </div>
+  </div>
 
-### Step 4: Install Plugins
-
-Install the plugins you need:
-
-```bash
-# For workshop/demo creation (most users)
+  <div class="step-card">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      <h3>⬇️ Install Plugins</h3>
+      <p>Install the plugins you need:</p>
+      <pre><code># For workshop/demo creation (most users)
 /plugin install showroom@rhdp-marketplace
 
 # For AgnosticV catalogs (RHDP internal)
 /plugin install agnosticv@rhdp-marketplace
 
 # For deployment health checks (RHDP internal)
-/plugin install health@rhdp-marketplace
-```
+/plugin install health@rhdp-marketplace</code></pre>
+    </div>
+  </div>
 
-### Step 5: Restart Claude Code
+  <div class="step-card">
+    <div class="step-number">5</div>
+    <div class="step-content">
+      <h3>🔄 Restart Claude Code</h3>
+      <p>Exit Claude Code completely and restart it to load the new plugins.</p>
+    </div>
+  </div>
 
-Exit Claude Code completely and restart it to load the new plugins.
-
-### Step 6: Verify Installation
-
-Check that skills are available:
-
-```bash
-/skills
-```
-
-You should see:
-- `/showroom:create-lab`
-- `/showroom:create-demo`
-- `/showroom:blog-generate`
-- `/showroom:verify-content`
-- `/agnosticv:catalog-builder`
-- `/agnosticv:validator`
-- `/health:deployment-validator`
+  <div class="step-card">
+    <div class="step-number">6</div>
+    <div class="step-content">
+      <h3>✓ Verify Installation</h3>
+      <p>Check that skills are available:</p>
+      <pre><code>/skills</code></pre>
+      <div class="success-box" style="margin-top: 1rem;">
+        <strong>You should see:</strong>
+        <ul style="margin-top: 0.5rem;">
+          <li><code>/showroom:create-lab</code></li>
+          <li><code>/showroom:create-demo</code></li>
+          <li><code>/showroom:blog-generate</code></li>
+          <li><code>/showroom:verify-content</code></li>
+          <li><code>/agnosticv:catalog-builder</code></li>
+          <li><code>/agnosticv:validator</code></li>
+          <li><code>/health:deployment-validator</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
 ---
 
-## What Changed?
+## 📋 What Changed?
 
 ### Skill Names
 
+<div class="info-box">
 Skills now include namespace prefixes to show which plugin provides them:
+</div>
 
-| Old Name                  | New Name                      |
-|---------------------------|-------------------------------|
-| `/create-lab`             | `/showroom:create-lab`        |
-| `/create-demo`            | `/showroom:create-demo`       |
-| `/blog-generate`          | `/showroom:blog-generate`     |
-| `/verify-content`         | `/showroom:verify-content`    |
-| `/agnosticv-catalog-builder` | `/agnosticv:catalog-builder` |
-| `/agnosticv-validator`    | `/agnosticv:validator`        |
-| `/deployment-health-checker` | `/health:deployment-validator` |
+<table class="changes-table">
+  <thead>
+    <tr>
+      <th>Old Name</th>
+      <th>New Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>/create-lab</code></td>
+      <td><code>/showroom:create-lab</code></td>
+    </tr>
+    <tr>
+      <td><code>/create-demo</code></td>
+      <td><code>/showroom:create-demo</code></td>
+    </tr>
+    <tr>
+      <td><code>/blog-generate</code></td>
+      <td><code>/showroom:blog-generate</code></td>
+    </tr>
+    <tr>
+      <td><code>/verify-content</code></td>
+      <td><code>/showroom:verify-content</code></td>
+    </tr>
+    <tr>
+      <td><code>/agnosticv-catalog-builder</code></td>
+      <td><code>/agnosticv:catalog-builder</code></td>
+    </tr>
+    <tr>
+      <td><code>/agnosticv-validator</code></td>
+      <td><code>/agnosticv:validator</code></td>
+    </tr>
+    <tr>
+      <td><code>/deployment-health-checker</code></td>
+      <td><code>/health:deployment-validator</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ### Directory Structure
 
-**Old file-based installation:**
-```
-~/.claude/
+<details>
+<summary><strong>Click to see directory structure comparison</strong></summary>
+
+<h4>Old file-based installation:</h4>
+<pre><code>~/.claude/
 ├── skills/
 │   ├── create-lab/
 │   │   └── SKILL.md
@@ -139,12 +194,10 @@ Skills now include namespace prefixes to show which plugin provides them:
 │   └── ...
 ├── docs/
 │   └── (documentation files)
-└── skills/.rhdp-marketplace-version
-```
+└── skills/.rhdp-marketplace-version</code></pre>
 
-**New plugin-based installation:**
-```
-~/.claude/
+<h4>New plugin-based installation:</h4>
+<pre><code>~/.claude/
 └── plugins/
     ├── cache/
     │   └── rhdp-marketplace/
@@ -168,65 +221,99 @@ Skills now include namespace prefixes to show which plugin provides them:
     │   └── rhdp-marketplace/
     │       └── (full marketplace repo)
     ├── installed_plugins.json
-    └── known_marketplaces.json
-```
+    └── known_marketplaces.json</code></pre>
 
-**Key Differences:**
+<h4>Key Differences:</h4>
+<table class="differences-table">
+  <thead>
+    <tr>
+      <th>Aspect</th>
+      <th>Old Location</th>
+      <th>New Location</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Skills</strong></td>
+      <td><code>~/.claude/skills/create-lab/</code></td>
+      <td><code>~/.claude/plugins/cache/rhdp-marketplace/showroom/1.0.0/skills/create-lab/</code></td>
+    </tr>
+    <tr>
+      <td><strong>Documentation</strong></td>
+      <td><code>~/.claude/docs/</code></td>
+      <td>Embedded in plugin directories</td>
+    </tr>
+    <tr>
+      <td><strong>Version tracking</strong></td>
+      <td><code>.rhdp-marketplace-version</code></td>
+      <td>Built into plugin system with versioned directories</td>
+    </tr>
+    <tr>
+      <td><strong>Updates</strong></td>
+      <td>Manual (run update.sh)</td>
+      <td>Automatic (<code>/plugin update</code>)</td>
+    </tr>
+    <tr>
+      <td><strong>Management</strong></td>
+      <td>Manual file copies</td>
+      <td>Plugin system</td>
+    </tr>
+  </tbody>
+</table>
 
-| Aspect | Old Location | New Location |
-|--------|-------------|--------------|
-| **Skills** | `~/.claude/skills/create-lab/` | `~/.claude/plugins/cache/rhdp-marketplace/showroom/1.0.0/skills/create-lab/` |
-| **Documentation** | `~/.claude/docs/` | Embedded in plugin directories |
-| **Version tracking** | `.rhdp-marketplace-version` | Built into plugin system with versioned directories |
-| **Updates** | Manual (run update.sh) | Automatic (`/plugin update`) |
-| **Management** | Manual file copies | Plugin system |
-
----
-
-## Updating Plugins
-
-### Step 1: Update Marketplace
-
-```bash
-/plugin marketplace update
-```
-
-This opens an interactive UI:
-1. Select the marketplace
-2. Press `u` to update it
-3. Press `Esc` to go back
-
-This refreshes the marketplace cache with the latest plugin versions.
-
-### Step 2: Update Plugins
-
-```bash
-/plugin update showroom@rhdp-marketplace
-```
-
-This opens an interactive UI:
-1. Navigate with `ctrl+p` or arrow keys
-2. Select "Update now" and press `Enter`
-3. Press `Esc` to go back
-
-**Note:** Both commands are interactive - you must use the UI to perform updates.
-
-After updating, **restart Claude Code** to load the new versions.
+</details>
 
 ---
 
-## Troubleshooting
+## 🔄 Updating Plugins
 
-See the [Troubleshooting Guide](../reference/troubleshooting.html#migration-issues) for common migration issues.
+<div class="update-process">
+  <div class="update-step">
+    <h4>Step 1: Update Marketplace</h4>
+    <pre><code>/plugin marketplace update</code></pre>
+    <p>This opens an interactive UI:</p>
+    <ol>
+      <li>Select the marketplace</li>
+      <li>Press <code>u</code> to update it</li>
+      <li>Press <code>Esc</code> to go back</li>
+    </ol>
+    <p class="note">This refreshes the marketplace cache with the latest plugin versions.</p>
+  </div>
+
+  <div class="update-step">
+    <h4>Step 2: Update Plugins</h4>
+    <pre><code>/plugin update showroom@rhdp-marketplace</code></pre>
+    <p>This opens an interactive UI:</p>
+    <ol>
+      <li>Navigate with <code>ctrl+p</code> or arrow keys</li>
+      <li>Select "Update now" and press <code>Enter</code></li>
+      <li>Press <code>Esc</code> to go back</li>
+    </ol>
+  </div>
+</div>
+
+<div class="install-note">
+ℹ️ <strong>Note:</strong> Both commands are interactive - you must use the UI to perform updates. After updating, <strong>restart Claude Code</strong> to load the new versions.
+</div>
 
 ---
 
-## Rollback (If Needed)
+## 🆘 Troubleshooting
 
-If you need to rollback to the old file-based installation:
+<div class="troubleshooting-box">
+  <p>See the <a href="../reference/troubleshooting.html#migration-issues">Troubleshooting Guide</a> for common migration issues.</p>
+</div>
 
-```bash
-# Restore from backup
+---
+
+## ↩️ Rollback (If Needed)
+
+<details>
+<summary><strong>Click to see rollback instructions</strong></summary>
+
+<p>If you need to rollback to the old file-based installation:</p>
+
+<pre><code># Restore from backup
 cp -r ~/.claude/skills-backup ~/.claude/skills
 cp -r ~/.claude/docs-backup ~/.claude/docs
 
@@ -234,13 +321,335 @@ cp -r ~/.claude/docs-backup ~/.claude/docs
 /plugin uninstall showroom@rhdp-marketplace
 /plugin uninstall agnosticv@rhdp-marketplace
 /plugin uninstall health@rhdp-marketplace
-/plugin marketplace remove rhdp-marketplace
-```
+/plugin marketplace remove rhdp-marketplace</code></pre>
+
+</details>
 
 ---
 
-## Next Steps
+<div class="next-steps">
+  <h3>📚 Next Steps</h3>
+  <ul>
+    <li><a href="claude-code.html">Claude Code Setup Guide →</a></li>
+    <li><a href="../reference/troubleshooting.html">Troubleshooting →</a></li>
+    <li><a href="../reference/quick-reference.html">Quick Reference →</a></li>
+  </ul>
+</div>
 
-- [Setup Guide](index.html) - Team configuration and advanced setup
-- [Troubleshooting](../reference/troubleshooting.html) - Common issues and solutions
-- [Quick Reference](../reference/quick-reference.html) - Common workflows
+<style>
+.migration-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.comparison-card {
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid;
+}
+
+.comparison-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.comparison-card pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.old-way {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.old-way h3 {
+  color: #856404;
+}
+
+.new-way {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.new-way h3 {
+  color: #155724;
+}
+
+.feature-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  padding: 0.25rem 0;
+}
+
+.migration-steps {
+  margin: 2rem 0;
+}
+
+.step-card {
+  display: flex;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+}
+
+.step-content p {
+  margin-bottom: 0.75rem;
+  color: #586069;
+}
+
+.step-content pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.success-box {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+  padding: 1rem;
+  border-radius: 4px;
+  color: #155724;
+}
+
+.success-box ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.success-box code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.info-box {
+  background: #e7f3ff;
+  border-left: 4px solid #0969da;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.changes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.changes-table thead {
+  background: #f6f8fa;
+}
+
+.changes-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e1e4e8;
+}
+
+.changes-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.changes-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.changes-table code {
+  background: #f6f8fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  color: #EE0000;
+}
+
+.differences-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.differences-table th,
+.differences-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.differences-table thead {
+  background: #f6f8fa;
+}
+
+.differences-table code {
+  background: #f6f8fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.875rem;
+}
+
+.update-process {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.update-step {
+  margin-bottom: 1.5rem;
+}
+
+.update-step:last-child {
+  margin-bottom: 0;
+}
+
+.update-step h4 {
+  margin-top: 0;
+  color: #24292e;
+}
+
+.update-step pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0;
+}
+
+.update-step ol {
+  margin: 0.5rem 0;
+}
+
+.update-step .note {
+  font-style: italic;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.install-note {
+  background: #e7f3ff;
+  border-left: 4px solid #0969da;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.troubleshooting-box {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.troubleshooting-box a {
+  color: #856404;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.troubleshooting-box a:hover {
+  text-decoration: none;
+}
+
+.next-steps {
+  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.next-steps h3 {
+  margin-top: 0;
+  color: white;
+}
+
+.next-steps a {
+  color: white;
+  text-decoration: underline;
+}
+
+.next-steps a:hover {
+  text-decoration: none;
+}
+
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+
+summary:hover {
+  color: #EE0000;
+}
+
+details[open] {
+  padding-bottom: 1rem;
+}
+
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+</style>

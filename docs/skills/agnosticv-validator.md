@@ -5,33 +5,46 @@ title: /agnosticv:validator
 
 # /agnosticv:validator
 
+<div class="skill-badge" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">✓ Catalog Validation</div>
+
 Validate AgnosticV catalog configurations and best practices before creating pull request.
 
 ---
 
-## Before You Start
+## 📋 What You'll Need Before Starting
+
+<div class="workflow-diagram">
+  <a href="workflow.svg" target="_blank">
+    <img src="workflow.svg" alt="validator workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
+  </a>
+  <p style="text-align: center; color: #586069; font-size: 0.875rem; margin-top: 0.5rem;">Click to view full workflow diagram</p>
+</div>
 
 ### Prerequisites
 
-1. **Have AgnosticV repository cloned:**
-   ```bash
-   cd ~/work/code/agnosticv
-   ```
+<div class="prereq-grid">
+  <div class="prereq-item">
+    <div class="prereq-icon">📁</div>
+    <h4>AgnosticV Repository</h4>
+    <pre><code>cd ~/work/code/agnosticv</code></pre>
+  </div>
 
-2. **Catalog files created:**
-   ```bash
-   # Your catalog should exist:
-   agd_v2/your-catalog-name/
-   ├── common.yaml
-   ├── dev.yaml
-   └── description.adoc
-   ```
+  <div class="prereq-item">
+    <div class="prereq-icon">📄</div>
+    <h4>Catalog Files Created</h4>
+    <pre><code>agd_v2/your-catalog-name/
+├── common.yaml
+├── dev.yaml
+└── description.adoc</code></pre>
+  </div>
 
-3. **Verify repository is up to date:**
-   ```bash
-   git checkout main
-   git pull origin main
-   ```
+  <div class="prereq-item">
+    <div class="prereq-icon">🔄</div>
+    <h4>Repository Up to Date</h4>
+    <pre><code>git checkout main
+git pull origin main</code></pre>
+  </div>
+</div>
 
 ### What You'll Need
 
@@ -41,252 +54,873 @@ Validate AgnosticV catalog configurations and best practices before creating pul
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-1. Navigate to AgnosticV repository
-2. Run `/agnosticv:validator`
-3. Review validation results
-4. Fix any issues found
-5. Create pull request when clean
+<div class="quick-start-steps">
+  <div class="quick-step">
+    <div class="quick-step-number">1</div>
+    <div class="quick-step-content">
+      <h4>Navigate to Repo</h4>
+      <p>AgnosticV repository</p>
+    </div>
+  </div>
 
----
+  <div class="quick-step">
+    <div class="quick-step-number">2</div>
+    <div class="quick-step-content">
+      <h4>Run Validator</h4>
+      <p><code>/agnosticv:validator</code></p>
+    </div>
+  </div>
 
-## What It Validates
+  <div class="quick-step">
+    <div class="quick-step-number">3</div>
+    <div class="quick-step-content">
+      <h4>Review Results</h4>
+      <p>Check validation report</p>
+    </div>
+  </div>
 
-The validator performs 17 comprehensive checks across your catalog:
+  <div class="quick-step">
+    <div class="quick-step-number">4</div>
+    <div class="quick-step-content">
+      <h4>Fix Issues</h4>
+      <p>Address errors and warnings</p>
+    </div>
+  </div>
 
-### Check 1: File Structure
-
-- **Required files**: common.yaml must exist
-- **Recommended files**: dev.yaml, description.adoc, info-message-template.adoc
-- **File paths**: Correct directory structure
-- **Naming**: Follows catalog naming convention
-
-### Check 2: UUID Compliance
-
-- **Format**: RFC 4122 compliant UUID
-- **Case**: Lowercase only (no uppercase)
-- **Uniqueness**: Not used by other catalogs
-- **Structure**: Proper hyphenation (8-4-4-4-12)
-
-### Check 3: Category Validation
-
-- **Valid values**: Must be exactly one of:
-  - `Workshops` - Multi-user hands-on learning
-  - `Demos` - Single-user presenter-led (MUST NOT be multi-user)
-  - `Labs` - General learning environments
-  - `Sandboxes` - Self-service playgrounds
-  - `Brand_Events` - Events like Red Hat Summit, Red Hat One
-- **Case-sensitive**: Must match exactly (plural)
-- **Required**: Cannot be empty
-- **Demo rules**:
-  - Demos MUST be single-user (ERROR if multiuser: true)
-  - Demos MUST NOT have workshopLabUiRedirect enabled (ERROR)
-
-### Check 4-9: Core Validation
-
-- **Check 4: Workloads** - Collection format, existence, dependencies, naming
-- **Check 5: Authentication** - HTPasswd or LDAP configuration
-- **Check 6: Showroom** - Content repository and workload setup
-- **Check 7: Infrastructure** - CNV pools, AWS, or SNO configuration
-- **Check 8: YAML Syntax** - Valid YAML, required fields, data types
-- **Check 9: Best Practices** - Naming conventions, documentation
-
-### Check 10: Stage Files Validation
-
-- **dev.yaml**: Must have `purpose: development`
-- **event.yaml**: Should have `purpose: events` (if exists)
-- **prod.yaml**: Should have `purpose: production` (if exists)
-- **scm_ref**: Validates deployment repository references
-
-### Check 11: Multi-User Configuration (CRITICAL)
-
-- **num_users parameter**: Required for multi-user catalogs
-- **worker_instance_count**: Must scale with num_users
-- **workshopLabUiRedirect**:
-  - **WARNING** if not enabled for multi-user workshops
-  - Multi-user workshops SHOULD enable this for per-user lab UI routing
-- **Category compliance**: Workshops/Brand_Events must be multi-user
-
-### Check 12: Bastion Configuration
-
-- **Image version**: RHEL 9.4-10.0 recommended
-- **Resources**: Minimum 2 cores, 4Gi memory
-- **Configuration**: Proper bastion setup for CNV pools
-
-### Check 13: Collection Versions
-
-- **Git collections**: Must specify version (not allowed to omit)
-- **Galaxy collections**: Version validation
-- **Format**: Proper requirements_content structure
-
-### Check 14: Deployer Configuration
-
-- **scm_url**: Must point to agnosticd-v2 repository
-- **scm_ref**: Deployment reference (main, tag, branch)
-- **execution_environment**: Container image for deployment
-
-### Check 14a: Reporting Labels (CRITICAL - ERROR if missing)
-
-- **primaryBU**: **REQUIRED** for business unit tracking
-  - Examples: `Hybrid_Platforms`, `Application_Services`, `Ansible`, `RHEL`
-  - Used for tracking and reporting across RHDP
-  - **ERROR severity** if missing
-
-### Check 15: Component Propagation
-
-- **Multi-stage catalogs**: Validates data flow between stages
-- **propagate_provision_data**: Ensures proper variable passing
-- **Component structure**: Validates __meta__.components configuration
-
-### Check 16: AsciiDoc Templates
-
-- **description.adoc**: Required catalog description
-- **info-message-template.adoc**: Required user notification template
-- **Variable substitutions**: Validates {variable} syntax usage
-- **Content quality**: Checks for proper structure
+  <div class="quick-step">
+    <div class="quick-step-number">5</div>
+    <div class="quick-step-content">
+      <h4>Create PR</h4>
+      <p>When validation is clean</p>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Common Workflow
+## ✓ What It Validates
 
-### 1. Generate Catalog
+<div class="validation-box">
+  <h3>17 Comprehensive Checks</h3>
+  <p>The validator performs extensive checks across your catalog configuration:</p>
+</div>
 
-```
-/agnosticv:catalog-builder
-→ Create catalog files
-```
+<details open>
+<summary><strong>Check 1: File Structure</strong></summary>
 
-### 2. Validate Configuration
+<ul>
+  <li><strong>Required files:</strong> common.yaml must exist</li>
+  <li><strong>Recommended files:</strong> dev.yaml, description.adoc, info-message-template.adoc</li>
+  <li><strong>File paths:</strong> Correct directory structure</li>
+  <li><strong>Naming:</strong> Follows catalog naming convention</li>
+</ul>
 
-```
-/agnosticv:validator
+</details>
+
+<details>
+<summary><strong>Check 2: UUID Compliance</strong></summary>
+
+<ul>
+  <li><strong>Format:</strong> RFC 4122 compliant UUID</li>
+  <li><strong>Case:</strong> Lowercase only (no uppercase)</li>
+  <li><strong>Uniqueness:</strong> Not used by other catalogs</li>
+  <li><strong>Structure:</strong> Proper hyphenation (8-4-4-4-12)</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 3: Category Validation</strong></summary>
+
+<div class="check-content">
+  <h4>Valid values (must be exactly one):</h4>
+  <ul>
+    <li><code>Workshops</code> - Multi-user hands-on learning</li>
+    <li><code>Demos</code> - Single-user presenter-led (MUST NOT be multi-user)</li>
+    <li><code>Labs</code> - General learning environments</li>
+    <li><code>Sandboxes</code> - Self-service playgrounds</li>
+    <li><code>Brand_Events</code> - Events like Red Hat Summit, Red Hat One</li>
+  </ul>
+
+  <h4>Important Rules:</h4>
+  <ul>
+    <li><strong>Case-sensitive:</strong> Must match exactly (plural)</li>
+    <li><strong>Required:</strong> Cannot be empty</li>
+    <li><strong>Demo rules:</strong>
+      <ul>
+        <li>Demos MUST be single-user (ERROR if multiuser: true)</li>
+        <li>Demos MUST NOT have workshopLabUiRedirect enabled (ERROR)</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Checks 4-9: Core Validation</strong></summary>
+
+<ul>
+  <li><strong>Check 4: Workloads</strong> - Collection format, existence, dependencies, naming</li>
+  <li><strong>Check 5: Authentication</strong> - HTPasswd or LDAP configuration</li>
+  <li><strong>Check 6: Showroom</strong> - Content repository and workload setup</li>
+  <li><strong>Check 7: Infrastructure</strong> - CNV pools, AWS, or SNO configuration</li>
+  <li><strong>Check 8: YAML Syntax</strong> - Valid YAML, required fields, data types</li>
+  <li><strong>Check 9: Best Practices</strong> - Naming conventions, documentation</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 10: Stage Files Validation</strong></summary>
+
+<ul>
+  <li><strong>dev.yaml:</strong> Must have <code>purpose: development</code></li>
+  <li><strong>event.yaml:</strong> Should have <code>purpose: events</code> (if exists)</li>
+  <li><strong>prod.yaml:</strong> Should have <code>purpose: production</code> (if exists)</li>
+  <li><strong>scm_ref:</strong> Validates deployment repository references</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 11: Multi-User Configuration (CRITICAL)</strong></summary>
+
+<ul>
+  <li><strong>num_users parameter:</strong> Required for multi-user catalogs</li>
+  <li><strong>worker_instance_count:</strong> Must scale with num_users</li>
+  <li><strong>workshopLabUiRedirect:</strong>
+    <ul>
+      <li><strong>WARNING</strong> if not enabled for multi-user workshops</li>
+      <li>Multi-user workshops SHOULD enable this for per-user lab UI routing</li>
+    </ul>
+  </li>
+  <li><strong>Category compliance:</strong> Workshops/Brand_Events must be multi-user</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 12: Bastion Configuration</strong></summary>
+
+<ul>
+  <li><strong>Image version:</strong> RHEL 9.4-10.0 recommended</li>
+  <li><strong>Resources:</strong> Minimum 2 cores, 4Gi memory</li>
+  <li><strong>Configuration:</strong> Proper bastion setup for CNV pools</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 13: Collection Versions</strong></summary>
+
+<ul>
+  <li><strong>Git collections:</strong> Must specify version (not allowed to omit)</li>
+  <li><strong>Galaxy collections:</strong> Version validation</li>
+  <li><strong>Format:</strong> Proper requirements_content structure</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 14: Deployer Configuration</strong></summary>
+
+<ul>
+  <li><strong>scm_url:</strong> Must point to agnosticd-v2 repository</li>
+  <li><strong>scm_ref:</strong> Deployment reference (main, tag, branch)</li>
+  <li><strong>execution_environment:</strong> Container image for deployment</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 14a: Reporting Labels (CRITICAL - ERROR if missing)</strong></summary>
+
+<div class="critical-box">
+  <h4>⚠️ primaryBU: REQUIRED for business unit tracking</h4>
+  <p>Examples: <code>Hybrid_Platforms</code>, <code>Application_Services</code>, <code>Ansible</code>, <code>RHEL</code></p>
+  <p>Used for tracking and reporting across RHDP</p>
+  <p><strong>ERROR severity</strong> if missing</p>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 15: Component Propagation</strong></summary>
+
+<ul>
+  <li><strong>Multi-stage catalogs:</strong> Validates data flow between stages</li>
+  <li><strong>propagate_provision_data:</strong> Ensures proper variable passing</li>
+  <li><strong>Component structure:</strong> Validates __meta__.components configuration</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 16: AsciiDoc Templates</strong></summary>
+
+<ul>
+  <li><strong>description.adoc:</strong> Required catalog description</li>
+  <li><strong>info-message-template.adoc:</strong> Required user notification template</li>
+  <li><strong>Variable substitutions:</strong> Validates {variable} syntax usage</li>
+  <li><strong>Content quality:</strong> Checks for proper structure</li>
+</ul>
+
+</details>
+
+---
+
+## 🔄 Common Workflow
+
+<div class="workflow-steps">
+  <div class="workflow-step">
+    <div class="workflow-icon">1️⃣</div>
+    <div class="workflow-content">
+      <h4>Generate Catalog</h4>
+      <pre><code>/agnosticv:catalog-builder
+→ Create catalog files</code></pre>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">2️⃣</div>
+    <div class="workflow-content">
+      <h4>Validate Configuration</h4>
+      <pre><code>/agnosticv:validator
 → Check for issues
-→ Get validation report
-```
+→ Get validation report</code></pre>
+    </div>
+  </div>
 
-### 3. Fix Issues
+  <div class="workflow-step">
+    <div class="workflow-icon">3️⃣</div>
+    <div class="workflow-content">
+      <h4>Fix Issues</h4>
+      <p>Fix reported issues in:</p>
+      <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
+        <li>common.yaml</li>
+        <li>dev.yaml</li>
+        <li>description.adoc</li>
+      </ul>
+    </div>
+  </div>
 
-```
-# Fix reported issues in:
-- common.yaml
-- dev.yaml
-- description.adoc
-```
+  <div class="workflow-step">
+    <div class="workflow-icon">4️⃣</div>
+    <div class="workflow-content">
+      <h4>Re-validate</h4>
+      <pre><code>/agnosticv:validator
+→ Confirm all issues resolved</code></pre>
+    </div>
+  </div>
 
-### 4. Re-validate
-
-```
-/agnosticv:validator
-→ Confirm all issues resolved
-```
-
-### 5. Create Pull Request
-
-```bash
-git checkout -b add-your-catalog
+  <div class="workflow-step">
+    <div class="workflow-icon">5️⃣</div>
+    <div class="workflow-content">
+      <h4>Create Pull Request</h4>
+      <pre><code>git checkout -b add-your-catalog
 git add agd_v2/your-catalog-name/
 git commit -m "Add your-catalog catalog"
 git push origin add-your-catalog
-gh pr create --fill
-```
+gh pr create --fill</code></pre>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Example Validation Report
+## 📊 Example Validation Report
 
-```
-✅ UUID: Valid and unique (a1b2c3d4-e5f6-7890-abcd-ef1234567890)
-✅ Category: Valid value (Workshops)
-✅ Workloads: All collections found
-⚠️  Description: Missing estimated time
-❌ common.yaml: Invalid cloud_provider value
-```
+<div class="report-box">
+  <h3>Sample Validation Output</h3>
+  <div class="report-items">
+    <div class="report-item success">
+      <span class="report-icon">✅</span>
+      <div class="report-content">
+        <strong>UUID:</strong> Valid and unique (a1b2c3d4-e5f6-7890-abcd-ef1234567890)
+      </div>
+    </div>
 
----
+    <div class="report-item success">
+      <span class="report-icon">✅</span>
+      <div class="report-content">
+        <strong>Category:</strong> Valid value (Workshops)
+      </div>
+    </div>
 
-## Common Issues and Fixes
+    <div class="report-item success">
+      <span class="report-icon">✅</span>
+      <div class="report-content">
+        <strong>Workloads:</strong> All collections found
+      </div>
+    </div>
 
-### UUID Issues
+    <div class="report-item warning">
+      <span class="report-icon">⚠️</span>
+      <div class="report-content">
+        <strong>Description:</strong> Missing estimated time
+      </div>
+    </div>
 
-**Problem**: UUID contains uppercase letters
-```yaml
-# ❌ Wrong:
-asset_uuid: A1B2C3D4-E5F6-7890-ABCD-EF1234567890
-```
-
-**Fix**: Convert to lowercase
-```yaml
-# ✅ Correct:
-asset_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-```
-
-### Category Issues
-
-**Problem**: Wrong category name
-```yaml
-# ❌ Wrong:
-category: Workshop  # Singular or wrong case
-```
-
-**Fix**: Use exact plural form
-```yaml
-# ✅ Correct:
-category: Workshops  # Must be: Workshops, Demos, or Sandboxes
-```
-
-### Workload Issues
-
-**Problem**: Incorrect workload format
-```yaml
-# ❌ Wrong:
-workloads:
-  - showroom  # Missing collection namespace
-```
-
-**Fix**: Use full collection path
-```yaml
-# ✅ Correct:
-workloads:
-  - rhpds.showroom.ocp4_workload_showroom
-```
+    <div class="report-item error">
+      <span class="report-icon">❌</span>
+      <div class="report-content">
+        <strong>common.yaml:</strong> Invalid cloud_provider value
+      </div>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Tips
+## 🔧 Common Issues and Fixes
 
-- **Always validate** before creating PR
-- Fix critical errors (❌) first
-- Address warnings (⚠️) next
-- Run validator multiple times as you fix issues
-- Check against similar catalogs for patterns
-- Keep common.yaml and dev.yaml in sync
+<div class="issues-grid">
+  <div class="issue-card">
+    <h3>UUID Issues</h3>
+    <div class="code-comparison">
+      <div class="code-wrong">
+        <h4>❌ Wrong:</h4>
+        <pre><code>asset_uuid: A1B2C3D4-E5F6-7890-ABCD-EF1234567890</code></pre>
+        <p>UUID contains uppercase letters</p>
+      </div>
+      <div class="code-right">
+        <h4>✅ Correct:</h4>
+        <pre><code>asset_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890</code></pre>
+        <p>Convert to lowercase</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="issue-card">
+    <h3>Category Issues</h3>
+    <div class="code-comparison">
+      <div class="code-wrong">
+        <h4>❌ Wrong:</h4>
+        <pre><code>category: Workshop  # Singular or wrong case</code></pre>
+        <p>Wrong category name</p>
+      </div>
+      <div class="code-right">
+        <h4>✅ Correct:</h4>
+        <pre><code>category: Workshops  # Must be: Workshops, Demos, or Sandboxes</code></pre>
+        <p>Use exact plural form</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="issue-card">
+    <h3>Workload Issues</h3>
+    <div class="code-comparison">
+      <div class="code-wrong">
+        <h4>❌ Wrong:</h4>
+        <pre><code>workloads:
+  - showroom  # Missing collection namespace</code></pre>
+        <p>Incorrect workload format</p>
+      </div>
+      <div class="code-right">
+        <h4>✅ Correct:</h4>
+        <pre><code>workloads:
+  - rhpds.showroom.ocp4_workload_showroom</code></pre>
+        <p>Use full collection path</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 ---
 
-## Troubleshooting
+## 💡 Tips & Best Practices
 
-**Skill not found?**
-- Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/agnosticv-validator`
-
-**Validation fails but looks correct?**
-- Check for hidden characters or extra spaces
-- Verify YAML indentation (use spaces, not tabs)
-- Compare with working catalog examples
-
-**Workload not found error?**
-- Check `~/.claude/docs/workload-mappings.md`
-- Verify collection is published
-- Ensure namespace.collection.role format
+<div class="tips-grid">
+  <div class="tip-card">
+    <h4>✓ Always Validate</h4>
+    <p>Before creating PR</p>
+  </div>
+  <div class="tip-card">
+    <h4>❌ Fix Critical First</h4>
+    <p>Errors before warnings</p>
+  </div>
+  <div class="tip-card">
+    <h4>🔄 Run Multiple Times</h4>
+    <p>As you fix issues</p>
+  </div>
+  <div class="tip-card">
+    <h4>📋 Check Examples</h4>
+    <p>Similar catalogs for patterns</p>
+  </div>
+  <div class="tip-card">
+    <h4>⚖️ Keep in Sync</h4>
+    <p>common.yaml and dev.yaml</p>
+  </div>
+</div>
 
 ---
 
-## Related Skills
+## 🆘 Troubleshooting
 
-- `/agnosticv:catalog-builder` - Create/update catalog (unified skill)
-- `/showroom:create-lab` - Create workshop content
+<details>
+<summary><strong>Skill not found?</strong></summary>
+
+<ul>
+  <li>Restart Claude Code or VS Code</li>
+  <li>Verify installation: <code>ls ~/.claude/skills/agnosticv-validator</code> (Claude Code) or <code>ls ~/.cursor/skills/agnosticv-validator</code> (Cursor)</li>
+  <li>Check the <a href="../reference/troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Validation fails but looks correct?</strong></summary>
+
+<ul>
+  <li>Check for hidden characters or extra spaces</li>
+  <li>Verify YAML indentation (use spaces, not tabs)</li>
+  <li>Compare with working catalog examples</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Workload not found error?</strong></summary>
+
+<ul>
+  <li>Check <code>~/.claude/docs/workload-mappings.md</code></li>
+  <li>Verify collection is published</li>
+  <li>Ensure namespace.collection.role format</li>
+</ul>
+
+</details>
 
 ---
 
-[← Back to Skills](index.html) | [Next: /agnosticv:catalog-builder →](agnosticv-catalog-builder.html)
+## 🔗 Related Skills
+
+<div class="related-skills">
+  <a href="agnosticv-catalog-builder.html" class="related-skill-card">
+    <div class="related-skill-icon">🔧</div>
+    <div class="related-skill-content">
+      <h4>/agnosticv:catalog-builder</h4>
+      <p>Create/update catalog (unified skill)</p>
+    </div>
+  </a>
+
+  <a href="create-lab.html" class="related-skill-card">
+    <div class="related-skill-icon">📝</div>
+    <div class="related-skill-content">
+      <h4>/showroom:create-lab</h4>
+      <p>Create workshop content</p>
+    </div>
+  </a>
+</div>
+
+---
+
+<div class="navigation-footer">
+  <a href="index.html" class="nav-button">← Back to Skills</a>
+  <a href="agnosticv-catalog-builder.html" class="nav-button">Next: /agnosticv:catalog-builder →</a>
+</div>
+
+<style>
+.skill-badge {
+  display: inline-block;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.workflow-diagram {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.prereq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.prereq-item {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.prereq-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prereq-item h4 {
+  margin: 0.5rem 0;
+  color: #24292e;
+}
+
+.prereq-item pre {
+  background: #f6f8fa;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin: 0.5rem 0 0 0;
+}
+
+.quick-start-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.quick-step {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.quick-step-number {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.quick-step-content h4 {
+  margin: 0.5rem 0;
+  color: #24292e;
+}
+
+.quick-step-content p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.validation-box {
+  background: linear-gradient(135deg, #e7f3ff 0%, #ffffff 100%);
+  border: 2px solid #0969da;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.validation-box h3 {
+  margin-top: 0;
+  color: #0969da;
+}
+
+.check-content {
+  margin-top: 1rem;
+}
+
+.check-content h4 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+}
+
+.critical-box {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.critical-box h4 {
+  margin-top: 0;
+  color: #856404;
+}
+
+.workflow-steps {
+  margin: 2rem 0;
+}
+
+.workflow-step {
+  display: flex;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.workflow-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.workflow-content {
+  flex: 1;
+}
+
+.workflow-content h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+}
+
+.workflow-content pre {
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 0.5rem 0 0 0;
+}
+
+.report-box {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.report-box h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #24292e;
+}
+
+.report-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.report-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.report-item.success {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.report-item.warning {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.report-item.error {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.report-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.report-content {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.issues-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.issue-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.issue-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #24292e;
+}
+
+.code-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.code-wrong,
+.code-right {
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.code-wrong {
+  background: #f8d7da;
+  border: 1px solid #dc3545;
+}
+
+.code-right {
+  background: #d4edda;
+  border: 1px solid #28a745;
+}
+
+.code-wrong h4 {
+  margin-top: 0;
+  color: #721c24;
+}
+
+.code-right h4 {
+  margin-top: 0;
+  color: #155724;
+}
+
+.code-wrong pre,
+.code-right pre {
+  margin: 0.5rem 0;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.code-wrong p,
+.code-right p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.tip-card h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #24292e;
+  font-size: 0.875rem;
+}
+
+.tip-card p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.related-skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.related-skill-card {
+  display: flex;
+  gap: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.related-skill-card:hover {
+  border-color: #17a2b8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.related-skill-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.related-skill-content h4 {
+  margin: 0 0 0.25rem 0;
+  color: #24292e;
+  font-size: 1rem;
+}
+
+.related-skill-content p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+.navigation-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e4e8;
+}
+
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #24292e;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  border-color: #17a2b8;
+  color: #17a2b8;
+  transform: translateY(-2px);
+}
+
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+
+summary:hover {
+  color: #17a2b8;
+}
+
+details[open] {
+  padding-bottom: 1rem;
+}
+
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+</style>
