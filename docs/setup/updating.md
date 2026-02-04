@@ -1,11 +1,15 @@
 ---
 layout: default
-title: Updating Skills
+title: Updating Claude Code Skills
 ---
 
-# Updating Skills
+# Updating Claude Code Skills
 
 Keep your RHDP Skills Marketplace plugins up to date to get the latest features, bug fixes, and improvements.
+
+<div class="platform-note">
+💻 <strong>For Cursor users:</strong> See the <a href="updating-cursor.html">Cursor updating guide</a> instead.
+</div>
 
 <div class="important-note">
 ⚠️ <strong>IMPORTANT: Two-Step Update Process</strong>
@@ -57,8 +61,8 @@ Red Hat Showroom workshop and demo authoring, verification, and content transfor
 
 Use arrow keys or tab to cycle to the **Marketplaces** tab.
 
-![Navigate to Marketplaces tab](/assets/images/updating/step1-plugin-marketplaces.png)
-*Screenshot: Use arrow keys or Tab to navigate to the Marketplaces tab*
+<img src="{{ '/assets/images/updating/step1-plugin-marketplaces.png' | relative_url }}" alt="Navigate to Marketplaces tab">
+<em>Screenshot: Use arrow keys or Tab to navigate to the Marketplaces tab</em>
 
 **Step 3: Update Marketplace (REQUIRED FIRST)**
 
@@ -74,8 +78,8 @@ You'll see:
 - Last updated date
 - "✓ Updated 1 marketplace" confirmation after syncing
 
-![Updated marketplace confirmation](/assets/images/updating/step2-updated-marketplace.png)
-*Screenshot: "✓ Updated 1 marketplace" confirmation shows marketplace is synced*
+<img src="{{ '/assets/images/updating/step2-updated-marketplace.png' | relative_url }}" alt="Updated marketplace confirmation">
+<em>Screenshot: "✓ Updated 1 marketplace" confirmation shows marketplace is synced</em>
 
 **Step 4: Check for Plugin Updates**
 
@@ -85,20 +89,20 @@ For each plugin, you'll see:
 - Current version
 - "Update now" option if updates are available
 
-![Plugin details showing version](/assets/images/updating/step3-installed-tab.png)
-*Screenshot: Installed tab shows current version (e.g., Version: 2.4.3)*
+<img src="{{ '/assets/images/updating/step3-installed-tab.png' | relative_url }}" alt="Plugin details showing version">
+<em>Screenshot: Installed tab shows current version (e.g., Version: 2.4.3)</em>
 
 **Step 5: Update Plugins**
 
 Select **Update now** for each plugin that has updates are available.
 
-![Update now option](/assets/images/updating/step4-update-now.png)
-*Screenshot: Select "Update now" to install the latest version*
+<img src="{{ '/assets/images/updating/step4-update-now.png' | relative_url }}" alt="Update now option">
+<em>Screenshot: Select "Update now" to install the latest version</em>
 
 The plugin will update to the latest version from the marketplace.
 
-![Updated version confirmation](/assets/images/updating/step5-version-updated.png)
-*Screenshot: After update, version number shows the latest release (e.g., Version: 2.4.4)*
+<img src="{{ '/assets/images/updating/step5-version-updated.png' | relative_url }}" alt="Updated version confirmation">
+<em>Screenshot: After update, version number shows the latest release (e.g., Version: 2.4.4)</em>
 
 ---
 
@@ -220,35 +224,6 @@ If your version is lower than the latest release:
 
 ---
 
-## Cursor Updates
-
-Cursor uses manual updates (no marketplace integration).
-
-**Check Current Version:**
-
-```bash
-ls -la ~/.cursor/skills/
-```
-
-**Update to Latest:**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
-```
-
-The script will:
-1. Check current version
-2. Show available updates
-3. Display changelog
-4. Backup existing installation
-5. Install latest version
-
-**Verify Update:**
-
-Restart Cursor, then check skills are available with `/showroom-create-lab` (or other skill names).
-
----
-
 ## Troubleshooting
 
 <details>
@@ -343,6 +318,25 @@ To see all past versions and changes:
 .important-note strong {
   color: #856404;
   font-size: 1.1rem;
+}
+
+.platform-note {
+  background: #e7f3ff;
+  border-left: 4px solid #0969da;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+  color: #0969da;
+}
+
+.platform-note a {
+  color: #0969da;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.platform-note a:hover {
+  text-decoration: none;
 }
 
 .next-steps {
