@@ -11,26 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added - Plugin Update Documentation
 
-**Comprehensive Updating Guide:**
-- Created new `docs/setup/updating.md` with complete plugin update instructions
+**Separate Platform-Specific Updating Guides:**
+- Created `docs/setup/updating.md` - Claude Code updating with complete UI walkthrough
+- Created `docs/setup/updating-cursor.md` - Cursor manual updating process (NEW)
+- Platform-specific navigation links in sidebar
+- Cross-links between guides for easy platform switching
 - Step-by-step guide for checking current versions
 - UI navigation guide for marketplace and plugin updates
 - Explains two-step update process: marketplace sync THEN plugin updates
 - Added prominent warning about updating marketplace FIRST
 - "Understanding the Update Process" section explaining why marketplace must sync first
 - Quick command reference for `/plugin marketplace update`
-- Cursor manual update instructions
-- Troubleshooting section for common update issues
+- Troubleshooting sections for both platforms
 
 **Visual Guide with Screenshots:**
-- Added 5 professional screenshots showing step-by-step plugin update process
+- Added 5 professional screenshots showing step-by-step plugin update process (Claude Code)
 - Screenshots cover: Navigate to Marketplaces, Update confirmation, Current version, Update now option, Updated version
+- Fixed screenshot rendering using Jekyll's `relative_url` filter
+- Screenshots now properly display on GitHub Pages
 - Professional styling with borders, shadows, and descriptive captions
 - CSS enhancements for screenshot presentation
 
 **Documentation Navigation:**
 - Added "Updating" section to sidebar navigation (before "Create Your Own")
-- Links to "Update Claude Code Skills" and "Update Cursor Skills"
+- Separate platform-specific links: "Claude Code" and "Cursor"
+- Updated both layout files (home.html and default.html) for consistency
 - Added "Updating skills →" link to main documentation index (`docs/index.md`)
 - Updated setup guide (`docs/setup/index.md`) with link to detailed updating guide
 - Version badges updated across documentation (v2.4.2 → v2.4.4)
@@ -42,8 +47,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explains why: Claude Code marketplace reads from plugin.json, not VERSION file
 
 **Files Modified:**
-- `docs/setup/updating.md` - New comprehensive updating guide with screenshots (NEW)
-- `docs/_layouts/default.html` - Added "Updating" section to sidebar navigation
+- `docs/setup/updating.md` - Claude Code updating guide with screenshots and fixed image paths
+- `docs/setup/updating-cursor.md` - Cursor updating guide (NEW)
+- `docs/_layouts/default.html` - Updated navigation with separate platform links
+- `docs/_layouts/home.html` - Updated navigation with separate platform links
 - `docs/_config.yml` - Updated version to 2.4.4
 - `docs/index.md` - Added updating link, version badge to v2.4.4
 - `docs/setup/index.md` - Simplified update section with link to guide
@@ -55,12 +62,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `health/.claude-plugin/plugin.json` - Version 2.4.3 → 2.4.4
 
 ### Benefits
-- ✅ Users understand marketplace must be synced before plugin updates
-- ✅ Clear visual guide showing exact UI steps with screenshots
+- ✅ Users get platform-specific guidance (Claude Code vs Cursor)
+- ✅ Screenshots properly display on GitHub Pages with Jekyll relative_url
+- ✅ Clear visual guide showing exact UI steps with 5 screenshots
 - ✅ Professional documentation with modern styling
-- ✅ Better sidebar navigation structure (Updating section added)
+- ✅ Better sidebar navigation structure (separate platform links)
+- ✅ Users understand marketplace must be synced before plugin updates
 - ✅ Clear explanation of two-step update process
-- ✅ Troubleshooting guide for update issues
+- ✅ Troubleshooting guides for both platforms
 - ✅ Release process documented for future versions
 - ✅ Plugin version numbers now correct in marketplace
 
