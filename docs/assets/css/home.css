@@ -170,11 +170,12 @@ body {
   color: var(--secondary-color);
 }
 
-.hero p {
+.hero p, .hero-subtitle {
   font-size: 1.25rem;
   color: var(--text-muted);
   max-width: 700px;
   margin: 0 auto 2rem;
+  line-height: 1.6;
 }
 
 .hero-actions {
@@ -214,6 +215,12 @@ body {
 .btn-secondary:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
+}
+
+.btn-large {
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 /* Platform Tiles */
@@ -309,6 +316,30 @@ body {
   color: #0969da;
 }
 
+.platform-action {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.platform-note {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.section-primary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  margin-bottom: 4rem;
+}
+
 /* Category Cards */
 .category-grid {
   display: grid;
@@ -357,6 +388,39 @@ body {
 
 .category-card a:hover {
   text-decoration: underline;
+}
+
+.category-card-highlight {
+  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
+  border-color: #EE0000;
+  color: white;
+}
+
+.category-card-highlight h3,
+.category-card-highlight p {
+  color: white;
+}
+
+.category-card-highlight .category-icon {
+  filter: brightness(0) invert(1);
+}
+
+.category-cta {
+  display: inline-block;
+  background: white;
+  color: var(--primary-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none !important;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.category-cta:hover {
+  background: #f8f9fa;
+  transform: translateX(4px);
+  text-decoration: none !important;
 }
 
 /* Responsive */

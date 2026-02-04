@@ -6,25 +6,21 @@ title: Home
 <div class="hero">
   <div class="hero-badge">v2.4.2</div>
   <h1>RHDP Skills Marketplace</h1>
-  <p>AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
+  <p class="hero-subtitle">AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
   <div class="hero-actions">
-    <a href="#platforms" class="btn btn-primary">Get Started</a>
-    <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" class="btn btn-secondary">Create Your Own Skill</a>
+    <a href="#platforms" class="btn btn-primary btn-large">Get Started</a>
     <a href="https://github.com/rhpds/rhdp-skills-marketplace" class="btn btn-secondary">View on GitHub</a>
   </div>
 </div>
 
-<div class="section" id="platforms">
+<div class="section section-primary" id="platforms">
   <div class="section-header">
     <h2>Choose Your Platform</h2>
     <p>Select your IDE to get started with RHDP skills</p>
-    <p style="font-size: 0.875rem; color: #586069; margin-top: 0.5rem;">
-      <strong>Note:</strong> Also works with VS Code using the Claude extension (same installation as Claude Code)
-    </p>
   </div>
 
   <div class="platform-grid">
-    <a href="{{ '/setup/claude-code.html' | relative_url }}" class="platform-card">
+    <a href="{{ '/setup/claude-code.html' | relative_url }}" class="platform-card platform-card-hover">
       <div class="platform-icon">🚀</div>
       <h3>Claude Code</h3>
       <p>Native plugin marketplace with automatic updates and version management</p>
@@ -32,18 +28,22 @@ title: Home
         <span class="badge badge-recommended">Recommended</span>
         <span class="badge">Plugin System</span>
       </div>
+      <div class="platform-action">Install in 2 commands →</div>
     </a>
 
-    <a href="{{ '/setup/cursor.html' | relative_url }}" class="platform-card">
+    <a href="{{ '/setup/cursor.html' | relative_url }}" class="platform-card platform-card-hover">
       <div class="platform-icon">⚡</div>
       <h3>Cursor</h3>
       <p>One-command install script with bundled dependencies for Agent Skills 2.4+</p>
       <div class="platform-meta">
-        <span class="badge badge-new">New: v2.4.0</span>
-        <span class="badge">Workaround</span>
+        <span class="badge badge-new">New in v2.4</span>
+        <span class="badge">One-command</span>
       </div>
+      <div class="platform-action">Install with bash →</div>
     </a>
   </div>
+
+  <p class="platform-note">Also works with VS Code using the Claude extension (same as Claude Code)</p>
 </div>
 
 <div class="section" id="quick-install">
@@ -115,24 +115,19 @@ title: Home
   </div>
 </div>
 
-<div class="section" style="background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%); padding: 3rem 2rem; border-radius: 12px; margin: 2rem 0;">
-  <div class="section-header" style="text-align: center;">
-    <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">🎓 Create Your Own Skill</h2>
-    <p style="color: rgba(255,255,255,0.9); font-size: 1.125rem; max-width: 600px; margin: 0 auto 2rem;">
-      Learn to build custom AI skills for your workflows with Claude's help. Step-by-step workshop included.
-    </p>
-    <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" style="display: inline-block; background: white; color: #EE0000; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.125rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-      Start Workshop →
-    </a>
-  </div>
-</div>
-
 <div class="section">
   <div class="section-header">
-    <h2>Need Help?</h2>
+    <h2>Resources</h2>
   </div>
 
   <div class="category-grid">
+    <div class="category-card category-card-highlight">
+      <div class="category-icon">🎓</div>
+      <h3>Create Your Own Skill</h3>
+      <p>Learn to build custom AI skills for your workflows with Claude's help</p>
+      <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" class="category-cta">Start Workshop →</a>
+    </div>
+
     <div class="category-card">
       <div class="category-icon">🔄</div>
       <h3>Migration Guides</h3>
