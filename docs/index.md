@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-badge">v2.4.2</div>
+  <div class="hero-badge">v2.4.3</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
   <div class="hero-actions">
@@ -140,6 +140,7 @@ title: Home
       <div class="category-icon">📚</div>
       <h3>Documentation</h3>
       <p>Complete guides and references</p>
+      <a href="{{ '/setup/updating.html' | relative_url }}">Updating skills →</a><br>
       <a href="{{ '/reference/quick-reference.html' | relative_url }}">Quick reference →</a><br>
       <a href="{{ '/reference/troubleshooting.html' | relative_url }}">Troubleshooting →</a>
     </div>

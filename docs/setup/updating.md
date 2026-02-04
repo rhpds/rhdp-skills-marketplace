@@ -1,0 +1,320 @@
+---
+layout: default
+title: Updating Skills
+---
+
+# Updating Skills
+
+Keep your RHDP Skills Marketplace plugins up to date to get the latest features, bug fixes, and improvements.
+
+---
+
+## Claude Code / VS Code
+
+### Check Current Version
+
+**Step 1: Open Plugin Interface**
+
+In Claude Code chat, type:
+
+```bash
+/plugin
+```
+
+**Step 2: View Installed Plugins**
+
+Navigate to the **Installed** tab (use arrow keys or tab to cycle through tabs).
+
+You'll see your installed plugins with their current versions:
+
+```
+showroom @ rhdp-marketplace
+Scope: user
+Version: 2.4.3
+Red Hat Showroom workshop and demo authoring, verification, and content transformation
+```
+
+### Update Plugins
+
+**Step 1: Open Plugin Interface**
+
+```bash
+/plugin
+```
+
+**Step 2: Navigate to Marketplaces Tab**
+
+Use arrow keys or tab to cycle to the **Marketplaces** tab.
+
+**Step 3: Update Marketplace**
+
+Select **Update marketplace** from the menu.
+
+You'll see:
+- Last updated date
+- "✓ Updated 1 marketplace" confirmation after syncing
+
+**Step 4: Check for Plugin Updates**
+
+Navigate back to the **Installed** tab.
+
+For each plugin, you'll see:
+- Current version
+- "Update now" option if updates are available
+
+**Step 5: Update Plugins**
+
+Select **Update now** for each plugin that has updates available.
+
+The plugin will update to the latest version from the marketplace.
+
+---
+
+## Quick Update Command
+
+Instead of using the UI, you can update via command:
+
+```bash
+/plugin marketplace update
+```
+
+This will:
+1. Sync the marketplace
+2. Check all installed plugins for updates
+3. Show changelog for available updates
+4. Prompt you to install updates
+
+**Example output:**
+
+```
+Checking for updates...
+
+Updates available:
+• showroom: v2.4.2 → v2.4.3
+• agnosticv: v2.4.2 → v2.4.3
+• health: v2.4.2 → v2.4.3
+
+Changelog for v2.4.3:
+- Fixed installation documentation
+- Fixed code block rendering in setup guides
+- Updated migration guide with claude command
+- Synced plugin.json versions
+
+Install updates? (y/n)
+```
+
+---
+
+## Verify Updated Version
+
+After updating, verify the new version:
+
+**Method 1: Plugin List**
+
+```bash
+/plugin list
+```
+
+Shows all installed plugins with versions:
+
+```
+showroom @ rhdp-marketplace (v2.4.3)
+agnosticv @ rhdp-marketplace (v2.4.3)
+health @ rhdp-marketplace (v2.4.3)
+```
+
+**Method 2: Plugin Interface**
+
+```bash
+/plugin
+```
+
+Navigate to **Installed** tab, select a plugin to see full details including version number.
+
+---
+
+## Check Latest Available Version
+
+To see what version is currently available in the marketplace:
+
+**Step 1: Check GitHub Releases**
+
+Visit: https://github.com/rhpds/rhdp-skills-marketplace/releases
+
+The latest release tag shows the current version (e.g., v2.4.3).
+
+**Step 2: Compare with Installed Version**
+
+Use `/plugin list` to see your installed version.
+
+If your version is lower than the latest release:
+1. Run `/plugin marketplace update`
+2. Install available updates
+
+---
+
+## Update Frequency
+
+**Recommended schedule:**
+- Check for updates: **Monthly**
+- Critical fixes: Update immediately when announced in Slack
+
+**Update notifications:**
+- Claude Code marketplace checks automatically
+- Announcements posted in: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
+- GitHub releases: https://github.com/rhpds/rhdp-skills-marketplace/releases
+
+---
+
+## Cursor Updates
+
+Cursor uses manual updates (no marketplace integration).
+
+**Check Current Version:**
+
+```bash
+ls -la ~/.cursor/skills/
+```
+
+**Update to Latest:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/update-cursor.sh | bash
+```
+
+The script will:
+1. Check current version
+2. Show available updates
+3. Display changelog
+4. Backup existing installation
+5. Install latest version
+
+**Verify Update:**
+
+Restart Cursor, then check skills are available with `/showroom-create-lab` (or other skill names).
+
+---
+
+## Troubleshooting
+
+<details>
+<summary><strong>Marketplace shows outdated versions</strong></summary>
+
+Force sync the marketplace:
+
+```bash
+/plugin marketplace sync
+```
+
+Then check for updates:
+
+```bash
+/plugin marketplace update
+```
+
+</details>
+
+<details>
+<summary><strong>Update command shows "no updates available" but I know there's a new version</strong></summary>
+
+Remove and re-add the marketplace:
+
+```bash
+/plugin marketplace remove rhdp-marketplace
+/plugin marketplace add rhpds/rhdp-skills-marketplace
+```
+
+Then install the plugins again:
+
+```bash
+/plugin install showroom@rhdp-marketplace
+/plugin install agnosticv@rhdp-marketplace
+/plugin install health@rhdp-marketplace
+```
+
+</details>
+
+<details>
+<summary><strong>Plugin updated but I still see old version</strong></summary>
+
+1. Restart Claude Code completely
+2. Check version again: `/plugin list`
+3. If still showing old version, reinstall:
+   ```bash
+   /plugin uninstall showroom
+   /plugin install showroom@rhdp-marketplace
+   ```
+
+</details>
+
+---
+
+## Version History
+
+To see all past versions and changes:
+
+- **CHANGELOG**: https://github.com/rhpds/rhdp-skills-marketplace/blob/main/CHANGELOG.md
+- **All Releases**: https://github.com/rhpds/rhdp-skills-marketplace/releases
+
+---
+
+<div class="next-steps">
+  <h3>📚 Next Steps</h3>
+  <ul>
+    <li><a href="../reference/quick-reference.html">Quick Reference Guide →</a></li>
+    <li><a href="claude-code.html">Installation Guide →</a></li>
+    <li><a href="../skills/create-lab.html">Using Skills →</a></li>
+  </ul>
+</div>
+
+<style>
+.next-steps {
+  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.next-steps h3 {
+  margin-top: 0;
+  color: white;
+}
+
+.next-steps a {
+  color: white;
+  text-decoration: underline;
+}
+
+.next-steps a:hover {
+  text-decoration: none;
+}
+
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+
+summary:hover {
+  color: #EE0000;
+}
+
+details[open] {
+  padding-bottom: 1rem;
+}
+
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+</style>
