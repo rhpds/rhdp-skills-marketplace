@@ -33,8 +33,8 @@ Have these ready before running this skill:
 **Access needed:**
 - ✅ Read permissions to the Showroom repository directory
 - ✅ Verification prompts available in:
-  - `.claude/prompts/` (repo-specific prompts), or
-  - `~/.claude/prompts/` (global prompts), or
+  - `showroom/prompts/` (repo-specific prompts), or
+  - `~/showroom/prompts/` (global prompts), or
   - RHDP marketplace default prompts
 
 **What gets checked:**
@@ -162,8 +162,8 @@ Without reference examples:
 **CRITICAL: Before running verification, detect which prompt sets are available and let user choose.**
 
 **Detection Priority:**
-1. **Current Git Repo**: `.claude/prompts/` in current repository (highest priority)
-2. **Global Home**: `~/.claude/prompts/` (user's global settings)
+1. **Current Git Repo**: `showroom/prompts/` in current repository (highest priority)
+2. **Global Home**: `~/showroom/prompts/` (user's global settings)
 
 **Prompt Detection Steps:**
 
@@ -172,14 +172,14 @@ Without reference examples:
    git rev-parse --show-toplevel 2>/dev/null
    ```
 
-2. **If in git repo, check for local `.claude/prompts/`:**
+2. **If in git repo, check for local `showroom/prompts/`:**
    ```bash
-   ls [repo-root]/.claude/prompts/*.txt 2>/dev/null
+   ls [repo-root]/showroom/prompts/*.txt 2>/dev/null
    ```
 
 3. **Check global home directory:**
    ```bash
-   ls ~/.claude/prompts/*.txt 2>/dev/null
+   ls ~/showroom/prompts/*.txt 2>/dev/null
    ```
 
 **If multiple locations found, ask user:**
@@ -187,10 +187,10 @@ Without reference examples:
 ```
 🔍 Found verification prompts in multiple locations:
 
-1. Current repo: /Users/psrivast/work/showroom-content/aap-selfserv-intro-showroom/.claude/prompts/
+1. Current repo: /Users/psrivast/work/showroom-content/aap-selfserv-intro-showroom/showroom/prompts/
    └─ Last updated: 13 Jan 16:01 (10 prompts)
 
-2. Global home: ~/.claude/prompts/
+2. Global home: ~/showroom/prompts/
    └─ Last updated: 13 Jan 14:47 (10 prompts)
 
 Which prompts should I use for verification?
@@ -205,7 +205,7 @@ Your choice: [1/2]
 **If only one location found:**
 
 ```
-✅ Using verification prompts from: ~/.claude/prompts/
+✅ Using verification prompts from: ~/showroom/prompts/
    Last updated: 13 Jan 14:47
    Total prompts: 10
 ```
@@ -216,8 +216,8 @@ Your choice: [1/2]
 ❌ ERROR: No verification prompts found in any location.
 
 Verification prompts should be in:
-- Current repo: .claude/prompts/ (if repo-specific)
-- Global home: ~/.claude/prompts/ (for all projects)
+- Current repo: showroom/prompts/ (if repo-specific)
+- Global home: ~/showroom/prompts/ (for all projects)
 
 Please ensure verification prompts are available in one of these locations.
 ```
@@ -225,7 +225,7 @@ Please ensure verification prompts are available in one of these locations.
 **After user selects, confirm and show which prompts will be used:**
 
 ```
-📋 Using prompts from: Current repo (.claude/prompts/)
+📋 Using prompts from: Current repo (showroom/prompts/)
 
 Will use these validation frameworks:
 ✓ enhanced_verification_workshop.txt (43K, updated 16:01)
@@ -669,24 +669,24 @@ Every verification run checks:
 **Why multiple prompt locations?**
 
 Different repositories may need customized verification rules:
-- **Global defaults** (`~/.claude/prompts/`): Your standard verification rules for all projects
-- **Repo-specific** (`.claude/prompts/` in git repo): Custom rules for specific projects
+- **Global defaults** (`~/showroom/prompts/`): Your standard verification rules for all projects
+- **Repo-specific** (`showroom/prompts/` in git repo): Custom rules for specific projects
 
 **Recommended workflow:**
 
-1. **Most repos**: Use global defaults from `~/.claude/prompts/`
+1. **Most repos**: Use global defaults from `~/showroom/prompts/`
    - Consistent verification across all your content
    - Easy to update centrally
 
-2. **Special repos**: Add `.claude/prompts/` to repo if you need custom rules
+2. **Special repos**: Add `showroom/prompts/` to repo if you need custom rules
    - Example: Stricter image requirements for partner content
    - Example: Relaxed rules for internal documentation
    - Example: Additional industry-specific validation
 
 **How the skill detects prompts:**
 
-1. Checks current git repo for `.claude/prompts/*.txt`
-2. Checks global home `~/.claude/prompts/*.txt`
+1. Checks current git repo for `showroom/prompts/*.txt`
+2. Checks global home `~/showroom/prompts/*.txt`
 3. Asks you which to use if multiple locations found
 4. Shows you which prompts will be used before running verification
 
@@ -700,7 +700,7 @@ Different repositories may need customized verification rules:
 
 ## Files Used
 
-**Verification prompts** (in `.claude/prompts/`):
+**Verification prompts** (in `showroom/prompts/`):
 - `enhanced_verification_workshop.txt`
 - `enhanced_verification_demo.txt`
 - `redhat_style_guide_validation.txt`
@@ -714,3 +714,8 @@ Different repositories may need customized verification rules:
 **Reference examples**:
 - `content/modules/ROOT/pages/workshop/example/`
 - `content/modules/ROOT/pages/demo/`
+
+## Related Skills
+
+- `/showroom:create-lab` -- Create new workshop modules
+- `/showroom:create-demo` -- Create presenter-led demo content

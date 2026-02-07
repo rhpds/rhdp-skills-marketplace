@@ -70,7 +70,7 @@ This directory contains comprehensive verification prompts used by `/create-lab`
 
 ## Installation
 
-These prompts are automatically installed to `~/.claude/prompts/` when you install the Showroom namespace:
+These prompts are automatically installed to `~/showroom/prompts/` when you install the Showroom namespace:
 
 ```bash
 # Install using the install script
@@ -100,14 +100,14 @@ Skills that use these prompts:
 ### Prompt Detection Priority
 
 Skills automatically detect prompts from:
-1. **Current git repo**: `.claude/prompts/` (highest priority - project-specific)
-2. **Global home**: `~/.claude/prompts/` (default - user's global settings)
+1. **Current git repo**: `showroom/prompts/` (highest priority - project-specific)
+2. **Global home**: `~/showroom/prompts/` (default - user's global settings)
 
 ## Customization
 
 To customize verification rules for a specific project:
 
-1. Copy relevant prompts to your project's `.claude/prompts/` directory
+1. Copy relevant prompts to your project's `showroom/prompts/` directory
 2. Modify criteria for project-specific requirements
 3. Skills will use project prompts instead of global prompts
 

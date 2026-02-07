@@ -40,16 +40,7 @@ Have these ready before running this skill:
 
 ## When to Use
 
-**Use this skill when you want to**:
-- Create presenter-led demo content
-- Transform technical documentation into business-focused demos
-- Add a module to an existing demo
-- Create content for sales engineers or field demonstrations
-
-**Don't use this for**:
-- Hands-on workshop content → use `/create-lab`
-- Converting to blog posts → use `/blog-generate`
-- Reviewing existing content → use `/verify-content`
+Use this skill to create presenter-led demo content, transform technical documentation into business-focused demos, or add modules to existing demos.
 
 ## Shared Rules
 
@@ -599,21 +590,7 @@ I'll use common placeholder variables:
 
 If you provided visual assets or scripts:
 
-**For presenter screenshots**:
-- Save to `content/modules/ROOT/assets/images/`
-- Use descriptive names showing what presenters will see
-- Reference in Show sections with proper context:
-  ```asciidoc
-  image::console-developer-view.png[Developer Perspective - What Presenters Will See,link=self,window=blank,align="center",width=700,title="Developer Perspective - What Presenters Will See"]
-  ```
-- **CRITICAL**: **ALWAYS** include `link=self,window=blank` to make images clickable
-
-**For architecture diagrams**:
-- Save to `content/modules/ROOT/assets/images/`
-- Use business-context names: `retail-transformation-architecture.png`
-- Reference in Know sections to show business value
-- Use larger width (700-800px) for visibility during presentations
-- **ALWAYS include `link=self,window=blank`** for clickable images
+See @showroom/docs/SKILL-COMMON-RULES.md for image path conventions and clickable image syntax.
 
 **For demo scripts or commands**:
 - Format in code blocks with syntax highlighting
@@ -641,18 +618,6 @@ If you provided visual assets or scripts:
 - Results: `deployment-success.png`, `metrics-dashboard.png`
 - Comparisons: `before-state.png`, `after-state.png`
 
-**Clickable Images (Links)**:
-If an image should be clickable and link to external content, use `^` caret to open in new tab:
-
-```asciidoc
-// Using image macro with link attribute
-image::customer-success-story.png[Case Study,600,link=https://www.redhat.com/case-study^]
-
-// Using link macro around image
-link:https://www.redhat.com/case-study^[image:customer-success-story.png[Case Study,600]]
-```
-
-**Critical**: Clickable images linking to external URLs MUST use `^` caret to open in new tab, preventing audience from losing demo context.
 
 ### Step 7: Fetch and Analyze References
 
@@ -679,18 +644,7 @@ Based on your references, I'll:
 - `.claude/templates/demo/03-module-01.adoc`
 - `.claude/templates/demo/01-overview.adoc`
 
-**Verification criteria to read and apply DURING generation:**
-1. `.claude/prompts/enhanced_verification_demo.txt` - Complete demo quality checklist
-2. `.claude/prompts/redhat_style_guide_validation.txt` - Red Hat style rules
-3. `.claude/prompts/verify_technical_accuracy_demo.txt` - Technical accuracy for demos
-4. `.claude/prompts/verify_accessibility_compliance_demo.txt` - Accessibility requirements
-5. `.claude/prompts/verify_content_quality.txt` - Content quality standards
-
-**How I use these:**
-- Read ALL verification prompts BEFORE generating
-- Apply criteria WHILE generating content
-- Generate content that ALREADY passes all checks
-- No separate validation step needed - content is validated during creation
+See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
 ### Step 9: Generate Demo Module (Using Verification Criteria)
 
@@ -714,52 +668,7 @@ Before generating ANY demo content, refer back to the reference repository demo 
 
 I'll create a module with Know/Show structure:
 
-**CRITICAL: Image Syntax Enforcement**:
-When generating ANY image reference in the demo content, you MUST include `link=self,window=blank`:
-
-✅ **CORRECT - Always use this format**:
-```asciidoc
-image::filename.png[Description,link=self,window=blank,width=700]
-image::diagram.png[Architecture,link=self,window=blank,align="center",width=800,title="System Architecture"]
-```
-
-❌ **WRONG - Never generate images without link parameter**:
-```asciidoc
-image::filename.png[Description,width=700]
-image::diagram.png[Architecture,align="center",width=800]
-```
-
-**Why**: This makes images clickable to open full-size in new tab, preventing presenters from losing their place.
-
-**CRITICAL: AsciiDoc List Formatting Enforcement**:
-When generating ANY list in the demo content, you MUST include blank lines before and after the list:
-
-✅ **CORRECT - Always use proper spacing**:
-```asciidoc
-**Prerequisites:**
-
-* OpenShift 4.18 or later
-* Admin access to cluster
-* Terminal with oc CLI
-
-In this module, you will...
-```
-
-❌ **WRONG - Text runs together when rendered**:
-```asciidoc
-**Prerequisites:**
-* OpenShift 4.18 or later
-* Admin access to cluster
-* Terminal with oc CLI
-In this module, you will...
-```
-
-**Required blank lines**:
-1. Blank line after bold heading (`**Text:**`) or colon (`:`)
-2. Blank line before first list item
-3. Blank line after last list item (before next content)
-
-**Why**: Without blank lines, Showroom renders lists as plain text, causing content to run together and become unreadable.
+See @showroom/docs/SKILL-COMMON-RULES.md for image syntax and AsciiDoc list formatting rules.
 
 **CRITICAL: Content Originality - No Plagiarism**:
 All generated content MUST be original. Never copy from external sources without proper attribution.
@@ -805,29 +714,7 @@ The process is simple—just follow these steps.
 
 **Why**: Follows Red Hat Corporate Style Guide and improves readability.
 
-**CRITICAL: External Links Must Open in New Tab**:
-All external links MUST use `^` caret to open in new tab, preventing loss of place.
-
-✅ **CORRECT - External links with caret**:
-```asciidoc
-According to link:https://docs.redhat.com/...[Red Hat Documentation^], OpenShift provides...
-See the link:https://www.redhat.com/case-study[RetailCo case study^] for details.
-```
-
-❌ **WRONG - Missing caret**:
-```asciidoc
-According to link:https://docs.redhat.com/...[Red Hat Documentation], OpenShift provides...
-See the link:https://www.redhat.com/case-study[RetailCo case study] for details.
-```
-
-**Internal links (NO caret)**:
-```asciidoc
-✅ CORRECT - Internal navigation without caret:
-Navigate to xref:03-next-module.adoc[Next Module] to continue.
-See xref:02-overview.adoc#problem[Problem Statement] section.
-```
-
-**Why**: External links without caret replace current tab, causing presenters/learners to lose their place. Internal xrefs should NOT use caret to keep flow within the demo/workshop.
+See @showroom/docs/SKILL-COMMON-RULES.md for external link formatting (caret usage).
 
 **CRITICAL: Bullets vs Numbers - Know vs Show**:
 Knowledge sections use bullets (*). Task/step sections use numbers (.).
@@ -1082,16 +969,7 @@ I'll automatically run:
 
 ### Step 11: Update Navigation (REQUIRED)
 
-I'll automatically add the module to `content/modules/ROOT/nav.adoc` - this is REQUIRED for the module to appear in the Showroom sidebar.
-
-**What I'll add**:
-```asciidoc
-* xref:<module-file>[<Module Number>. <Module Title>]
-** xref:<module-file>#part-1[Part 1: <Title>]
-** xref:<module-file>#part-2[Part 2: <Title>]
-```
-
-**Note**: Without this nav.adoc entry, your demo won't be accessible in Showroom!
+See @showroom/docs/SKILL-COMMON-RULES.md for navigation update requirements.
 
 ### Step 12: Deliver
 
@@ -1493,173 +1371,6 @@ Thank you for your time and attention. We're excited to help you {{ primary_valu
 
 **CRITICAL**: The References section MUST include every reference used across all demo modules, organized by category (Product Docs, Red Hat Resources, Customer Stories, Research).
 
-## Example Usage
-
-### Example 1: Create First Demo Module with Overall Story Planning
-
-```
-User: Create a demo showing OpenShift value for C-level executives
-
-Skill: Excellent! Since this is a new demo, let me gather the overall story first.
-
-**Overall Demo Planning:**
-
-Q: Are you creating a new demo or continuing an existing demo?
-A: Creating a new demo
-
-Q: What's the overall message?
-A: "Show how OpenShift reduces time-to-market and operational costs for enterprises"
-
-Q: Target audience?
-A: C-level executives (CTO, CIO) evaluating platform modernization
-
-Q: What are their business priorities?
-A: - Reduce operational costs
-   - Faster feature delivery to stay competitive
-   - Risk mitigation (security, compliance)
-
-Q: Business transformation story?
-A: Current state: Manual deployments take 6-8 weeks, blocking business initiatives
-   Desired state: Self-service platform enabling daily deployments
-
-Q: Customer scenario?
-A: "RetailCo" - Retail company facing Black Friday deadline with current 10-week deployment cycles
-
-Q: Key metrics to showcase?
-A: - 8 weeks → 10 minutes deployment time
-   - 80% reduction in infrastructure costs
-   - 95% reduction in security vulnerabilities
-
-Q: Demo duration?
-A: 30 minutes total
-
-**Recommended Demo Flow:**
-
-Based on your goals, I recommend 2 modules:
-
-Module 1: Platform Value & Developer Experience (15 min)
-- Know: RetailCo's deployment challenge, business impact
-- Show: Self-service deployment demonstration
-- Proof point: 8 weeks → 10 minutes
-- Story: Developer empowerment, IT team efficiency
-
-Module 2: Business Continuity & ROI (15 min)
-- Know: Cost structure, security posture improvements
-- Show: Auto-scaling, built-in security scanning
-- Proof point: 80% cost reduction, 95% fewer vulnerabilities
-- Story: Strategic platform investment ROI
-
-Does this flow work for you, or adjustments needed?
-
-User: Perfect! Create Module 1.
-
-Skill: Great! Now let me gather details for Module 1...
-
-Q1: Module file name? → "03-platform-value.adoc"
-Q2: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift
-Q3: Target audience details? → C-level (using overall)
-Q4: Business scenario? → "RetailCo" (using overall story)
-Q5: Technology? → "OpenShift Container Platform"
-Q6: Demo parts? → 3
-Q7: Key metrics? → "8 weeks → 10 minutes" (using overall)
-Q8: Diagrams? → Architecture diagram: ~/diagrams/retail-platform.png
-
-[Generates Module 1 with RetailCo story]
-[Sets up story arc for Module 2]
-
-✓ Created: content/modules/ROOT/pages/03-platform-value.adoc
-✓ Story established: RetailCo's platform modernization journey
-✓ Business metrics integrated throughout
-✓ Module flow documented for Module 2
-✓ Ready for Module 2 (will auto-continue story)
-```
-
-### Example 2: Basic Demo Creation
-
-```
-User: Create demo Module 1 for OpenShift using:
-      https://docs.openshift.com/container-platform/4.14/
-
-Skill: I'll create that demo module. Let me ask questions...
-       [asks if new demo or continuing]
-       [if new demo: asks overall story questions]
-       [asks module-specific questions]
-       [generates module with business story]
-       [validates with agents]
-
-✓ Created: content/modules/ROOT/pages/03-platform-demo.adoc
-✓ Presenter notes included
-✓ Screenshot guide provided
-✓ Navigation updated
-```
-
-### Example 3: Create Demo with Architecture Diagrams
-
-```
-User: Create demo for OpenShift AI value proposition. I have:
-      - Architecture diagram: ~/diagrams/ai-platform-architecture.png
-      - Before/after workflow diagrams
-
-Skill: Excellent! Let me gather details...
-
-Q1: Module file name? → "03-ai-platform-demo.adoc"
-Q2: Reference materials? → https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai
-Q3: Target audience? → C-level executives
-Q4: Business scenario? → "TechCorp needs faster AI model deployment"
-Q5: Technology? → "Red Hat OpenShift AI"
-Q6: Demo parts? → 3
-Q7: Key metrics? → "Weeks to hours for model deployment"
-Q8: Diagrams/screenshots? → Yes:
-    - Architecture: ~/diagrams/ai-platform-architecture.png
-    - Before workflow: ~/diagrams/before-manual-ml.png
-    - After workflow: ~/diagrams/after-automated-ml.png
-
-Skill: Perfect! Processing diagrams and creating demo...
-
-[Saves diagrams to assets/images/]
-→ ai-platform-architecture.png
-→ before-manual-ml.png
-→ after-automated-ml.png
-
-[Generates demo with:]
-- Part 1 Know section includes architecture diagram
-- Part 1 Show section references the architecture
-- Part 2 Know section uses before/after comparison
-- Each diagram has business-focused captions
-- Presenter tips for discussing diagrams
-
-Example output:
-```asciidoc
-== Part 1 — AI Platform Overview
-
-=== Know
-_TechCorp's data scientists wait weeks for infrastructure, delaying critical AI initiatives._
-
-image::ai-platform-architecture.png[Red Hat OpenShift AI Platform Architecture,link=self,window=blank,align="center",width=800,title="Red Hat OpenShift AI Platform Architecture"]
-
-**Current Challenge:**
-* 2-3 weeks to provision ML infrastructure
-* Manual environment setup prone to errors
-* Inconsistent tooling across teams
-
-=== Show
-* Show the architecture diagram and explain:
-  "This is how OpenShift AI eliminates infrastructure delays..."
-
-* Log into OpenShift AI Dashboard at {rhods_dashboard_url}
-
-[NOTE]
-====
-**Presenter Tip:** Point to the architecture diagram as you navigate the UI.
-Show how the platform maps to the architectural components.
-====
-```
-
-✓ Created: content/modules/ROOT/pages/03-ai-platform-demo.adoc
-✓ 3 diagrams saved and referenced appropriately
-✓ Before/after comparison integrated in Know section
-✓ Presenter notes tied to visual elements
-```
 
 ## Know Section Best Practices
 
@@ -1765,3 +1476,8 @@ Every demo module will have:
 
 **Files modified** (with permission):
 - `content/modules/ROOT/nav.adoc` - Adds navigation entry
+
+## Related Skills
+
+- `/showroom:verify-content` -- Run quality checks on generated demo content
+- `/showroom:blog-generate` -- Convert demo content into blog posts

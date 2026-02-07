@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.5.0-tech-preview] - 2026-02-07
+
+Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
+
+### Changed - AgV Skills Optimization (30% Reduction)
+
+| File | Before | After | Reduction |
+|---|---|---|---|
+| catalog-builder/SKILL.md | 2,783 | 1,774 | 36% |
+| validator/SKILL.md | 1,640 | 1,482 | 10% |
+| AGV-COMMON-RULES.md | 1,640 | 983 | 40% |
+
+- Extracted 3 inline templates to `agnosticv/skills/catalog-builder/templates/`
+- Created shared `agnosticv/docs/constants.md` (Slack URLs, EE image, categories, primaryBU values)
+- Deduplicated AgV path detection across both skills (replaced with @references)
+- Removed trailing sections (examples, troubleshooting, reminders, success criteria)
+
+### Changed - Showroom Skills Deduplication
+
+| File | Before | After | Reduction |
+|---|---|---|---|
+| create-lab/SKILL.md | 1,797 | 1,421 | 21% |
+| create-demo/SKILL.md | 1,767 | 1,483 | 16% |
+
+- Fixed 65+ dead `.claude/prompts/` references → `showroom/prompts/`
+- Replaced duplicated AsciiDoc rules, image conventions, nav updates, verification prompt lists with @references to SKILL-COMMON-RULES.md
+- Removed example sessions from both skills (no operational value for Claude)
+
+### Changed - Agent Cleanup
+
+- Removed 5 unused agents: researcher, technical-writer, accessibility-checker, content-converter, migration-assistant (1,007 lines)
+- Trimmed 3 remaining agents (workshop-reviewer, style-enforcer, technical-editor): 252 → 147 lines (42%)
+- Removed duplicate prompt file lists, kept role definitions and review criteria
+
+### Added - Cross-Skill References
+
+All 7 skills now have a "Related Skills" section linking to complementary skills (e.g., create-lab → verify-content, catalog-builder → validator)
+
+### Added - Testing & Tech Preview Docs
+
+- New docs page: `docs/reference/testing-tech-preview.md`
+- Covers `#branch` marketplace syntax, `--plugin-dir` local testing, and the tech-preview workflow
+- Sidebar nav updated in both layouts
+
+**To test:** `claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview`
+
 ## [v2.4.8] - 2026-02-07
 
 ### Fixed - Best Practices Page Code Block Rendering

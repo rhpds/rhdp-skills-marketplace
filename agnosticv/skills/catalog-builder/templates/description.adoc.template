@@ -1,0 +1,172 @@
+# description.adoc Template (Nate's RHDP Format)
+# Use this structure when generating description.adoc files.
+# Replace all <placeholders> with actual values.
+
+## Template Structure
+
+```asciidoc
+<Brief overview: 3-4 sentences max>
+<Sentence 1: Start with product/technology name - what is this thing showing or doing?>
+<Sentence 2-3: What is the intended use? Real-world scenario or business context>
+<Do NOT mention the catalog name or generic info - get straight to the point>
+
+[IMPORTANT]
+====
+<Add warnings AFTER overview if needed: GPU availability, beta/alpha release, limited support, high memory, etc.>
+<For RH1 labs: "This Red Hat One lab is being released as-is with little change from the version delivered in person at the event. There is limited support for these labs and only those with regular usage will be retained in the RHDP catalog. A 30 day advance notice will be posted for any labs that get scheduled for removal.">
+====
+
+== Lab Guide
+
+You can find a preview version of the link:<github-pages-url>[lab guide^] here.
+
+== Featured Technology and Products
+
+<List ONLY the products that matter or are the focus - max 6-7 for complex labs>
+<Include major versions extracted from AgnosticV>
+
+* <Red Hat Product Name> <Major Version>
+* <Red Hat Product Name> <Major Version>
+* <Related Technology> <Major Version>
+
+== Detailed Overview
+
+* *<Module 1 Title>*
+** <Key learning point 1>
+** <Key learning point 2>
+** <Key learning point 3>
+
+* *<Module 2 Title>*
+** <Key learning point 1>
+** <Key learning point 2>
+** <Key learning point 3>
+
+== Authors
+
+<Retrieve all names from __meta__.owners in common.yaml - names only, NO emails>
+
+* <Author Name>
+* <Author Name>
+
+== Support
+
+For help with instructions or functionality, contact lab authors.
+
+For problems with provisioning or environment stability:
+
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+```
+
+## Key Guidelines
+
+- Brief overview: 3-4 sentences max - start with product name, what it shows, intended use, NO catalog name
+- Warnings AFTER overview using `[IMPORTANT]` blocks (GPU, beta/alpha, limited support, etc.)
+- Lab Guide section: "You can find a preview version of the link:url[lab guide^] here."
+- Featured Products: 6-7 max for complex labs, include all significant products with major versions
+- Detailed Overview: Use `**` (double asterisks) for sub-bullets under module titles, NOT numbered lists
+- Do not create more than 3 sub-bullets for each module
+- Module titles can use `*` for top-level bullets (like `* *Module 1: Title*`)
+- Authors: names only from __meta__.owners in common.yaml - NO emails
+- Support: Simple format with RHDP ticket + Slack links
+
+## Example (Demo)
+
+```asciidoc
+vLLM Playground demonstrates deploying and managing vLLM inference servers using containers with features like structured outputs, tool calling, and MCP integration. This demo uses the ACME Corporation customer support scenario to show how Red Hat AI Inference Server modernizes AI-powered infrastructure. Learners deploy vLLM servers, configure structured outputs for system integration, and implement agentic workflows with performance benchmarking.
+
+[IMPORTANT]
+====
+GPU-enabled nodes recommended for optimal performance. CPU-only mode available but slower.
+====
+
+== Lab Guide
+
+You can find a preview version of the link:https://rhpds.github.io/showroom-vllm-playground[lab guide^] here.
+
+== Featured Technology and Products
+
+* Red Hat Enterprise Linux 10
+* vLLM Playground 0.1.1
+* Red Hat AI
+
+== Detailed Overview
+
+* *Introduction to vLLM Playground*
+** Overview of vLLM architecture and container-based deployment
+** ACME Corp use case: modernizing customer support with AI
+** Deploy first vLLM server instance
+
+* *Structured Outputs Configuration*
+** Configure JSON schema validation for reliable outputs
+** Integrate with downstream systems using structured data
+** Test output consistency across multiple requests
+
+== Authors
+
+* Michael Tao
+* Jane Developer
+
+== Support
+
+For help with instructions or functionality, contact lab authors.
+
+For problems with provisioning or environment stability:
+
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+```
+
+## Example (Workshop - from Nate's PR)
+
+```asciidoc
+Red Hat Advanced Developer Suite (RHADS) scales platform engineering teams to increase developer productivity and reduce software supply chain risk in hybrid and multicloud environments. This hands-on workshop goes deep into the architecture and implementation of RHADS, built for solutions architects, consultants, and technical sellers. Learners deploy and configure core RHADS components, explore real-world integration patterns, and see how RHADS improves developer experience while strengthening software supply chain security.
+
+[IMPORTANT]
+====
+This Red Hat One lab is being released as-is with little change from the version delivered in person at the event.
+There is limited support for these labs and only those with regular usage will be retained in the RHDP catalog.
+A 30 day advance notice will be posted for any labs that get scheduled for removal.
+====
+
+== Lab Guide
+
+You can find a preview version of the link:https://rhpds.github.io/build-secured-dev-workflows-showroom[lab guide^] here.
+
+== Featured Technology and Products
+
+* Red Hat Advanced Developer Suite (RHADS)
+* Red Hat Trusted Artifact Signer (RHTAS)
+* Red Hat Trusted Profile Analyzer (RHTPA)
+* Red Hat Developer Hub (RHDH)
+* Red Hat Advanced Cluster Security (RHACS)
+* Red Hat OpenShift Pipelines
+* Jenkins
+
+== Detailed Overview
+
+* *Module 1: Establish Software Composition Trust with SBOMs*
+** Configure identity and access management using Red Hat Build of Keycloak (RHBK)
+** Deploy Red Hat Trusted Profile Analyzer (RHTPA) using an operator
+** Ingest SBOMs and analyze software composition to gain visibility into vulnerabilities
+
+* *Sign and Verify All Artifacts With RHTAS*
+** Deploy Red Hat Trusted Artifact Signer (RHTAS) for cryptographic signing and verification
+** Integrate RHTAS with Tekton Chains to automate keyless artifact signing
+** Establish immutable provenance tracking with Fulcio, Rekor, and Trillian
+
+== Authors
+
+* Tyrell Reddy
+* Prakhar Srivastava
+* Ramy El Essawy
+
+== Support
+
+For help with instructions or functionality, contact lab authors.
+
+For problems with provisioning or environment stability:
+
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]
+```
