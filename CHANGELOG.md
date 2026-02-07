@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.8] - 2026-02-07
+
+### Fixed - Best Practices Page Code Block Rendering
+
+**Problem:** AsciiDoc example code blocks rendered incorrectly on GitHub Pages. The ` ```asciidoc ` language hint caused Jekyll to leak AsciiDoc delimiters (`----`, `====`, `[source,yaml]`) outside the code fence as raw text.
+
+**Fix:** Changed all AsciiDoc example blocks to use `text` or `yaml` language hints. Split combined before/after examples into separate code blocks for clarity.
+
+**Files Modified:**
+- `docs/reference/best-practices.md` -- Fixed 4 broken code blocks
+
 ## [v2.4.7] - 2026-02-07
 
 ### Added - Claude Code Best Practices Guide
@@ -2037,7 +2048,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.7...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.8...HEAD
+[v2.4.8]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.8
 [v2.4.7]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.7
 [v1.8.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.8.0
 [v1.7.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.3
