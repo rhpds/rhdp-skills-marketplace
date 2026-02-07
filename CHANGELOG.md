@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.5.0-tech-preview] - 2026-02-07
+
+### Changed - AgV Skills Optimization (30% Reduction)
+
+Reduced total AgV skill content from 6,063 to 4,239 lines without losing functionality.
+
+| File | Before | After | Reduction |
+|---|---|---|---|
+| catalog-builder/SKILL.md | 2,783 | 1,774 | 36% |
+| validator/SKILL.md | 1,640 | 1,482 | 10% |
+| AGV-COMMON-RULES.md | 1,640 | 983 | 40% |
+
+- Removed trailing sections from catalog-builder (example sessions, troubleshooting, references, reminders, success criteria, version history)
+- Extracted 3 inline templates to `agnosticv/skills/catalog-builder/templates/`
+- Created shared `agnosticv/docs/constants.md` (Slack URLs, EE image, categories, primaryBU values)
+- Deduplicated AgV path detection across both skills (replaced with @references)
+- Trimmed AGV-COMMON-RULES.md config file templates (replaced with references to template files)
+- Removed validator error handling and exit message sections
+
+### Added - Testing & Tech Preview Docs
+
+- New docs page: `docs/reference/testing-tech-preview.md`
+- Covers `#branch` marketplace syntax, `--plugin-dir` local testing, and the tech-preview workflow
+- Sidebar nav updated in both layouts
+
+**To test:** `claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview`
+
 ## [v2.4.8] - 2026-02-07
 
 ### Fixed - Best Practices Page Code Block Rendering
