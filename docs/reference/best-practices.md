@@ -23,14 +23,14 @@ Claude starts mixing up the two. It references `aap-selfserv-intro` variables in
 
 ### What you see
 
-```asciidoc
-// Showroom module -- but Claude leaks AgV context into it
-[source,yaml]
-----
+Claude generates a Showroom module but stuffs AgV YAML into it:
+
+```yaml
+# This showed up in a Showroom .adoc file -- it's AgV catalog config,
+# not workshop content. Claude carried it over from the previous task.
 agd_v2_collections:
-  - name: aap_selfserv_collection    # <-- wrong workshop entirely
+  - name: aap_selfserv_collection
     git_repo: https://github.com/...
-----
 ```
 
 Or Claude generates a `common.yaml` that includes Showroom-style AsciiDoc formatting because it's still holding onto the previous task.
@@ -119,7 +119,7 @@ capabilities for modern infrastructure...
 
 vs what you actually want:
 
-```asciidoc
+```text
 == What You'll Do
 
 We're going to migrate a VM from VMware into OpenShift Virtualization.
@@ -217,17 +217,25 @@ By the time you're on the Showroom content, Claude's context is packed with Agno
 
 ### What you see
 
-```asciidoc
-// Claude mixes AgD Ansible syntax into Showroom content
-== Deploy the Application
+Claude puts Ansible task syntax where a user command should be:
 
-[source,bash]
-----
-- name: Deploy application     # <-- This is Ansible, not a user command
+```yaml
+# This appeared in a Showroom module as a "user step" --
+# but it's an Ansible task, not something a user would type
+- name: Deploy application
   ansible.builtin.shell: |
     oc apply -f manifests/
   delegate_to: bastion
-----
+```
+
+When it should have been:
+
+```text
+== Deploy the Application
+
+Run the following command to deploy the application:
+
+  oc apply -f manifests/
 ```
 
 ### Fix
@@ -260,7 +268,7 @@ You run `/showroom:create-lab` and tell Claude to generate Module 2 for your wor
 
 ### What you see
 
-```asciidoc
+```text
 == Module 2: Configuring Red Hat Ansible Automation Platform
 
 In this module, you will configure the Ansible Automation Platform
@@ -349,14 +357,18 @@ Claude summarizes everything. But summaries lose detail. It forgets the exact ca
 
 ### What you see
 
-```asciidoc
-// Before auto-compact -- Module 3 style (correct)
+Before auto-compact (Module 3, correct):
+
+```text
 [NOTE]
 ====
 Make sure you replace `%user%` with your assigned username.
 ====
+```
 
-// After auto-compact -- Module 4 style (drifted)
+After auto-compact (Module 4, drifted):
+
+```text
 NOTE: Replace `{user}` with your username.
 ```
 
