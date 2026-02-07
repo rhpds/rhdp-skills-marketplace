@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.7] - 2026-02-07
+
+### Added - Claude Code Best Practices Guide
+
+**New Documentation Page: Claude Code Best Practices for RHDP**
+
+Problem-driven guide showing what goes wrong when you don't use Claude Code properly, with real examples from AgnosticV, AgnosticD, and Showroom repos.
+
+**9 Real Scenarios Covered:**
+1. Not clearing context between tasks -- AgV context leaks into Showroom AsciiDoc
+2. Never compacting during long AgD sessions -- Claude drops `delegate_to: bastion`
+3. No CLAUDE.md in your repo -- `feature/` branch prefix, AI commit footers, Markdown instead of AsciiDoc
+4. Vague prompts that burn context -- 50% context wasted scanning hundreds of catalog items
+5. Working across AgV + AgD + Showroom in one session -- Ansible syntax inside Showroom modules
+6. Generating Showroom content without a reference -- Marketing copy instead of hands-on lab
+7. Not verifying output -- Duplicate YAML keys, silent CI failures
+8. Auto-compact mid-Showroom-lab -- Style drifts between modules (`%user%` becomes `{user}`)
+9. Laptop restarts mid-session -- How to recover with `claude --continue` / `claude --resume`
+
+**Quick Reference Tables:**
+- Keyboard shortcuts, slash commands, all 7 RHDP skills
+- RHDP git rules (branch from main, no `feature/` prefix, no AI attribution)
+
+**Homepage Highlight:**
+- Added prominent card in Resources section with gold border and "Read Before You Start" CTA
+
+**Navigation:**
+- Added to sidebar in both layouts under Reference section
+
+**Files Added/Modified:**
+- `docs/reference/best-practices.md` -- New best practices page
+- `docs/_layouts/default.html` -- Sidebar nav update
+- `docs/_layouts/home.html` -- Sidebar nav update
+- `docs/index.md` -- Highlighted card in Resources
+
 ## [v2.4.6] - 2026-02-07
 
 ### Changed - Default Model to Opus 4.6
@@ -2002,7 +2037,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.7...HEAD
+[v2.4.7]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.7
 [v1.8.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.8.0
 [v1.7.3]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.3
 [v1.7.2]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.7.2

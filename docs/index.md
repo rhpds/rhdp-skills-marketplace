@@ -121,6 +121,13 @@ title: Home
   </div>
 
   <div class="category-grid">
+    <div class="category-card" style="border: 2px solid #ffc107; background: linear-gradient(135deg, #fffde7 0%, #fff8e1 100%);">
+      <div class="category-icon">⚡</div>
+      <h3>Claude Code Best Practices</h3>
+      <p>Real problems we've hit in AgV, AgD, and Showroom -- and how to avoid them. Context management, CLAUDE.md setup, git rules, and more.</p>
+      <a href="{{ '/reference/best-practices.html' | relative_url }}" class="category-cta" style="color: #e65100;">Read Before You Start →</a>
+    </div>
+
     <div class="category-card category-card-highlight">
       <div class="category-icon">🎓</div>
       <h3>Create Your Own Skill</h3>
