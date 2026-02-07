@@ -1,0 +1,182 @@
+# AgnosticV common.yaml Template (2026+)
+# Use this as the base structure when generating common.yaml files.
+# Replace all <placeholders> with actual values from user input.
+
+---
+#include /includes/agd-v2-mapping.yaml
+#include /includes/sandbox-api.yaml
+#include /includes/catalog-icon-openshift.yaml  # or catalog-icon-project-dance, catalog-icon-rh-ai-2025
+#include /includes/terms-of-service.yaml
+#include /includes/access-restriction-rh1-2026-devs.yaml  # Optional - for restricted catalogs
+
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/salesforce-id.yaml
+#include /includes/parameters/num-users-salesforce.yaml  # If multi-user
+
+#include /includes/secrets/ocp4_ai_offline_token.yaml
+#include /includes/secrets/s3-rhpds-private-bucket.yaml
+
+# -------------------------------------------------------------------
+# --- Catalog Item: <Display Name>
+# -------------------------------------------------------------------
+
+# ===================================================================
+# Repository Tag
+# Tag for all repositories that are used in this config.
+# ===================================================================
+tag: main  # Override in prod.yaml, event.yaml with specific tag (e.g., <short-name>-1.0.0)
+
+# -------------------------------------------------------------------
+# Mandatory Variables
+# -------------------------------------------------------------------
+config: openshift-workloads
+cloud_provider: none
+software_to_deploy: none
+openshift_cnv_scale_cluster: true
+clusters:
+  - default:
+      api_url: "{{ openshift_api_url }}"
+      api_token: "{{ openshift_cluster_admin_token }}"
+
+# -------------------------------------------------------------------
+# Platform
+# -------------------------------------------------------------------
+platform: rhpds
+
+# -------------------------------------------------------------------
+# CNV Specific (if using CNV pools)
+# -------------------------------------------------------------------
+bastion_instance_image: rhel-9.6
+bastion_cores: 2
+bastion_memory: 4Gi
+
+# Worker scaling formula
+worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
+ai_workers_cores: 32
+ai_workers_memory: 128Gi
+
+# -------------------------------------------------------------------
+# Common Password
+# -------------------------------------------------------------------
+common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+
+# -------------------------------------------------------------------
+# Student User on Bastion (if needed)
+# -------------------------------------------------------------------
+install_student_user: true
+student_name: lab-user
+student_sudo: true
+
+# -------------------------------------------------------------------
+# Custom collections for this environment
+# -------------------------------------------------------------------
+requirements_content:
+  collections:
+    - name: https://github.com/agnosticd/core_workloads.git
+      type: git
+      version: main
+    - name: https://github.com/agnosticd/showroom.git
+      type: git
+      version: v1.3.9
+    # Add other collections as needed
+
+# -------------------------------------------------------------------
+# Workloads
+# -------------------------------------------------------------------
+workloads:
+  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.showroom.ocp4_workload_showroom_ocp_integration
+  - agnosticd.showroom.ocp4_workload_showroom
+  # Add technology-specific workloads
+
+# ===================================================================
+# Workload: ocp4_workload_authentication_htpasswd
+# ===================================================================
+ocp4_workload_authentication_htpasswd_admin_user: admin
+ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_base: user
+ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
+ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
+ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+
+# ===================================================================
+# Workload: ocp4_workload_showroom
+# ===================================================================
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/showroom-repo.git
+ocp4_workload_showroom_content_git_repo_ref: main
+
+# -------------------------------------------------------------------
+# Metadata
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: <generated-uuid>
+  anarchy:
+    namespace: babylon-anarchy-7
+  components:
+    - name: openshift
+      display_name: OpenShift Cluster
+      item: agd-v2/ocp-cluster-cnv-pools/prod
+      parameter_values:
+        cluster_size: multinode  # or sno
+        host_ocp4_installer_version: "4.20"
+        ocp4_fips_enable: false
+        num_users: "{{ num_users }}"
+      propagate_provision_data:
+        - name: sandbox_openshift_api_key
+          var: sandbox_openshift_api_key
+        - name: sandbox_openshift_api_url
+          var: sandbox_openshift_api_url
+        - name: sandbox_openshift_namespace
+          var: sandbox_openshift_namespace
+        - name: openshift_cluster_admin_token
+          var: openshift_cluster_admin_token
+        - name: openshift_api_url
+          var: openshift_api_url
+        - name: bastion_public_hostname
+          var: bastion_ansible_host
+        - name: bastion_ssh_user_name
+          var: bastion_ansible_user
+        - name: bastion_ssh_password
+          var: bastion_ansible_ssh_pass
+        - name: bastion_ssh_port
+          var: bastion_ansible_port
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "<Display Name>"
+    category: <Workshops|Demos|Labs|Sandboxes|Brand_Events>
+    multiuser: true  # or false for demos
+    workshopLabUiRedirect: true  # Only for workshops
+    parameters:
+      - name: num_users
+        description: Number of users to provision within the environment
+        formLabel: User Count
+        openAPIV3Schema:
+          type: integer
+          default: 3
+          minimum: 3
+          maximum: 60
+    keywords:
+      - <keyword1>
+      - <keyword2>
+    labels:
+      Provider: RHDP
+      Product: <Product_Name>
+      Product_Family: <Product_Family>
+      # Brand_Event: Red_Hat_One_2026  # If Brand_Events
+    reportingLabels:
+      primaryBU: Hybrid_Platforms  # CRITICAL: For business unit tracking/reporting (Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.)
+  owners:
+    maintainer:
+      - email: <email>
+        name: <Name>
+    sme:
+      - email: <sme-email>
+        name: <SME Name>
+  tower:
+    timeout: 14400  # 4 hours - adjust based on complexity
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
+      pull: missing

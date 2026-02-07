@@ -1,0 +1,80 @@
+# info-message-template.adoc Template
+# This template displays user data after environment provisioning.
+# Variables in {curly_braces} are substituted from agnosticd_user_info.data
+
+## With User Data (agnosticd_user_info)
+
+```asciidoc
+= Environment Provisioned
+
+Your <catalog-name> environment has been provisioned successfully!
+
+== Access Information
+
+* *Console URL*: {openshift_console_url}
+* *Username*: {openshift_cluster_admin_username}
+* *Password*: {openshift_cluster_admin_password}
+
+== Guide
+
+Access your workshop guide:
+
+* link:{openshift_cluster_console_url}/showroom[Workshop Guide^]
+
+== Additional Information
+
+=== <Service Name>
+
+* *API URL*: {<data_key_1>}
+* *API Key*: {<data_key_2>}
+
+NOTE: The data above comes from `agnosticd_user_info.data` in your workload.
+
+== Support
+
+Questions? Reach out in Slack: link:https://redhat.enterprise.slack.com/archives/C04MLMA15MX[#forum-demo-developers^]
+```
+
+## Without User Data
+
+```asciidoc
+= Environment Provisioned
+
+Your <catalog-name> environment is ready!
+
+== Access Information
+
+* *Console URL*: {openshift_console_url}
+* *Username*: {openshift_cluster_admin_username}
+* *Password*: {openshift_cluster_admin_password}
+
+== Workshop Guide
+
+link:{openshift_cluster_console_url}/showroom[Open Guide^]
+
+== Support
+
+Questions? link:https://redhat.enterprise.slack.com/archives/C04MLMA15MX[#forum-demo-developers^]
+```
+
+## How to Share Data From Your Workload
+
+In your workload `tasks/workload.yml`:
+
+```yaml
+- name: Save user data for info message
+  agnosticd.core.agnosticd_user_info:
+    data:
+      my_api_url: "{{ api_base_url }}"
+      my_api_key: "{{ virtual_key }}"
+```
+
+Then use in `info-message-template.adoc`:
+
+```
+* API URL: {my_api_url}
+* API Key: {my_api_key}
+```
+
+**Important:** List/array variables from Ansible don't render in AsciiDoc templates.
+Convert to strings first: `{{ my_list | join(', ') }}`
