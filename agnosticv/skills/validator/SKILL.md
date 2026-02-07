@@ -1477,6 +1477,6 @@ Save this checklist for comprehensive review:
 
 ---
 
----
+## Related Skills
 
-**End of Skill Documentation**
+- `/agnosticv:catalog-builder` -- Create or update catalog files if validation fails

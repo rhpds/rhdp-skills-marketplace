@@ -1414,3 +1414,8 @@ Keep building, keep learning! 🚀
 
 **CRITICAL**: The References section MUST include every reference used across all modules, organized by category.
 
+## Related Skills
+
+- `/showroom:verify-content` -- Run quality checks on generated content before publishing
+- `/showroom:blog-generate` -- Convert workshop modules into blog posts
+

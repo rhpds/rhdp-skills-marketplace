@@ -1769,6 +1769,6 @@ Created Virtual CI: published/<name>
 | Conflicting metadata (multi-component) | Ask which values to use |
 | No description.adoc | Report error — required |
 
----
+## Related Skills
 
-**End of Skill Documentation**
+- `/agnosticv:validator` -- Validate catalog configurations after creation

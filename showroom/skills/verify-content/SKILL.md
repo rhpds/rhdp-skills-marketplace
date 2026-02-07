@@ -714,3 +714,8 @@ Different repositories may need customized verification rules:
 **Reference examples**:
 - `content/modules/ROOT/pages/workshop/example/`
 - `content/modules/ROOT/pages/demo/`
+
+## Related Skills
+
+- `/showroom:create-lab` -- Create new workshop modules
+- `/showroom:create-demo` -- Create presenter-led demo content

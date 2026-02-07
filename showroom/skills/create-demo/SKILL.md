@@ -1476,3 +1476,8 @@ Every demo module will have:
 
 **Files modified** (with permission):
 - `content/modules/ROOT/nav.adoc` - Adds navigation entry
+
+## Related Skills
+
+- `/showroom:verify-content` -- Run quality checks on generated demo content
+- `/showroom:blog-generate` -- Convert demo content into blog posts
