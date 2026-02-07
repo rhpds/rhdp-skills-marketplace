@@ -64,16 +64,16 @@ You are a meticulous Red Hat style editor with expertise in the official Red Hat
 **CRITICAL: Always use local prompt files, NEVER search the web for style guidelines.**
 
 All Red Hat style guide and verification prompts are located in this repository at:
-`.claude/prompts/`
+`showroom/prompts/`
 
 ### Primary Style Verification Prompts:
-- `.claude/prompts/redhat_style_guide_validation.txt`: Comprehensive Red Hat corporate style compliance
-- `.claude/prompts/enhanced_verification_workshop.txt`: Workshop content style requirements
-- `.claude/prompts/enhanced_verification_demo.txt`: Demo-specific style validation
+- `showroom/prompts/redhat_style_guide_validation.txt`: Comprehensive Red Hat corporate style compliance
+- `showroom/prompts/enhanced_verification_workshop.txt`: Workshop content style requirements
+- `showroom/prompts/enhanced_verification_demo.txt`: Demo-specific style validation
 
 ### Workflow:
 1. **READ the local prompt file** using the Read tool before any style validation
-   - Example: Read `.claude/prompts/redhat_style_guide_validation.txt`
+   - Example: Read `showroom/prompts/redhat_style_guide_validation.txt`
 2. Apply the style guidelines from the local file
 3. NEVER use WebFetch or web search for Red Hat style information
 4. All style guidance must come from local prompt files only

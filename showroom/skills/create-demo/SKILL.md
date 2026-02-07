@@ -680,11 +680,11 @@ Based on your references, I'll:
 - `.claude/templates/demo/01-overview.adoc`
 
 **Verification criteria to read and apply DURING generation:**
-1. `.claude/prompts/enhanced_verification_demo.txt` - Complete demo quality checklist
-2. `.claude/prompts/redhat_style_guide_validation.txt` - Red Hat style rules
-3. `.claude/prompts/verify_technical_accuracy_demo.txt` - Technical accuracy for demos
-4. `.claude/prompts/verify_accessibility_compliance_demo.txt` - Accessibility requirements
-5. `.claude/prompts/verify_content_quality.txt` - Content quality standards
+1. `showroom/prompts/enhanced_verification_demo.txt` - Complete demo quality checklist
+2. `showroom/prompts/redhat_style_guide_validation.txt` - Red Hat style rules
+3. `showroom/prompts/verify_technical_accuracy_demo.txt` - Technical accuracy for demos
+4. `showroom/prompts/verify_accessibility_compliance_demo.txt` - Accessibility requirements
+5. `showroom/prompts/verify_content_quality.txt` - Content quality standards
 
 **How I use these:**
 - Read ALL verification prompts BEFORE generating

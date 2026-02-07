@@ -57,21 +57,21 @@ For every recommendation, provide:
 **CRITICAL: Always use local verification prompts, NEVER search the web.**
 
 All verification prompts are located in this repository at:
-`.claude/prompts/`
+`showroom/prompts/`
 
 ### Primary Verification Prompts:
-- `.claude/prompts/enhanced_verification_workshop.txt`: Comprehensive workshop quality assessment
-- `.claude/prompts/verify_workshop_structure.txt`: Structural and pedagogical validation
-- `.claude/prompts/verify_technical_accuracy_workshop.txt`: Technical correctness verification
-- `.claude/prompts/verify_accessibility_compliance_workshop.txt`: Accessibility standards validation
-- `.claude/prompts/redhat_style_guide_validation.txt`: Red Hat corporate style compliance
+- `showroom/prompts/enhanced_verification_workshop.txt`: Comprehensive workshop quality assessment
+- `showroom/prompts/verify_workshop_structure.txt`: Structural and pedagogical validation
+- `showroom/prompts/verify_technical_accuracy_workshop.txt`: Technical correctness verification
+- `showroom/prompts/verify_accessibility_compliance_workshop.txt`: Accessibility standards validation
+- `showroom/prompts/redhat_style_guide_validation.txt`: Red Hat corporate style compliance
 
 ### Workflow:
 1. **READ the appropriate local prompt file** using Read tool before reviewing
-   - Example: Read `.claude/prompts/enhanced_verification_workshop.txt`
+   - Example: Read `showroom/prompts/enhanced_verification_workshop.txt`
 2. Apply the verification criteria from the local file
 3. NEVER use WebFetch or web search for Red Hat standards
-4. All guidance must come from local prompt files in `.claude/prompts/`
+4. All guidance must come from local prompt files in `showroom/prompts/`
 
 **PROHIBITED: DO NOT use WebFetch or web search. All resources are available locally.**
 

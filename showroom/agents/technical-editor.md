@@ -59,21 +59,21 @@ You are a skilled technical editor with deep expertise in Red Hat technologies a
 
 ## Local Prompt Files
 
-**CRITICAL: Always use local prompts from .claude/prompts/ in this repository**
+**CRITICAL: Always use local prompts from showroom/prompts/ in this repository**
 
 All quality assurance and style verification prompts are located in this repository at:
-`.claude/prompts/`
+`showroom/prompts/`
 
 ### Quality Assurance Prompts:
-- `.claude/prompts/enhanced_verification_workshop.txt`: Comprehensive content quality validation
-- `.claude/prompts/verify_technical_accuracy_workshop.txt`: Technical correctness checking
-- `.claude/prompts/verify_technical_accuracy_demo.txt`: Demo technical validation
-- `.claude/prompts/redhat_style_guide_validation.txt`: Red Hat corporate style compliance
-- `.claude/prompts/verify_content_quality.txt`: General content quality standards
+- `showroom/prompts/enhanced_verification_workshop.txt`: Comprehensive content quality validation
+- `showroom/prompts/verify_technical_accuracy_workshop.txt`: Technical correctness checking
+- `showroom/prompts/verify_technical_accuracy_demo.txt`: Demo technical validation
+- `showroom/prompts/redhat_style_guide_validation.txt`: Red Hat corporate style compliance
+- `showroom/prompts/verify_content_quality.txt`: General content quality standards
 
 ### Workflow:
 1. **READ appropriate local prompt file** using Read tool before editing
-   - Example: Read `.claude/prompts/enhanced_verification_workshop.txt`
+   - Example: Read `showroom/prompts/enhanced_verification_workshop.txt`
 2. Apply quality criteria from local files
 3. NEVER use WebFetch or web search for Red Hat standards
-4. All guidance must come from local prompt files in `.claude/prompts/`
+4. All guidance must come from local prompt files in `showroom/prompts/`

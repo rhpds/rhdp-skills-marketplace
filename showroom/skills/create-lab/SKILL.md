@@ -847,12 +847,12 @@ Based on your references, I'll:
 - `.claude/templates/workshop/example/03-module-01.adoc` - Example module
 
 **Verification criteria to read and apply DURING generation:**
-1. `.claude/prompts/enhanced_verification_workshop.txt` - Complete quality checklist
-2. `.claude/prompts/redhat_style_guide_validation.txt` - Red Hat style rules
-3. `.claude/prompts/verify_workshop_structure.txt` - Structure requirements
-4. `.claude/prompts/verify_technical_accuracy_workshop.txt` - Technical accuracy standards
-5. `.claude/prompts/verify_accessibility_compliance_workshop.txt` - Accessibility requirements
-6. `.claude/prompts/verify_content_quality.txt` - Content quality standards
+1. `showroom/prompts/enhanced_verification_workshop.txt` - Complete quality checklist
+2. `showroom/prompts/redhat_style_guide_validation.txt` - Red Hat style rules
+3. `showroom/prompts/verify_workshop_structure.txt` - Structure requirements
+4. `showroom/prompts/verify_technical_accuracy_workshop.txt` - Technical accuracy standards
+5. `showroom/prompts/verify_accessibility_compliance_workshop.txt` - Accessibility requirements
+6. `showroom/prompts/verify_content_quality.txt` - Content quality standards
 
 **How I use these:**
 - Read ALL verification prompts BEFORE generating
