@@ -5,7 +5,7 @@ description: Guide you through creating a Red Hat Showroom demo module using the
 
 ---
 context: main
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Demo Module Generator

@@ -5,7 +5,7 @@ description: Validate AgnosticV catalog configurations against best practices an
 
 ---
 context: main
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Skill: agnosticv-validator

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.4.6] - 2026-02-07
+
+### Changed - Default Model to Opus 4.6
+
+**All Skills Updated to Use Opus 4.6:**
+- Changed default model from `sonnet` to `claude-opus-4-6` in all skill SKILL.md files
+- Provides better quality output for complex content generation and validation tasks
+- Ensures consistency with recommended Claude Code model configuration
+
+**Skills Updated:**
+- `showroom/skills/create-lab/SKILL.md` - Updated model to claude-opus-4-6
+- `showroom/skills/create-demo/SKILL.md` - Updated model to claude-opus-4-6
+- `showroom/skills/verify-content/SKILL.md` - Updated model to claude-opus-4-6
+- `agnosticv/skills/catalog-builder/SKILL.md` - Updated model to claude-opus-4-6
+- `agnosticv/skills/validator/SKILL.md` - Updated model to claude-opus-4-6
+- `health/skills/deployment-validator/SKILL.md` - Updated model to claude-opus-4-6
+
+**Impact:**
+- Improved content quality for workshop and demo generation
+- Better technical accuracy in AgnosticV catalog validation
+- Enhanced deployment validation capabilities
+
 ## [v2.4.5] - 2026-02-04
 
 ### Added - Reference Repository Integration for Quality

@@ -5,7 +5,7 @@ description: Run comprehensive quality verification on workshop or demo content 
 
 ---
 context: fork
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Content Verification Skill

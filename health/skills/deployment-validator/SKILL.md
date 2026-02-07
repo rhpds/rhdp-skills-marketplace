@@ -5,7 +5,7 @@ description: Create validation roles for RHDP deployment health checks and post-
 
 ---
 context: main
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Deployment Health Checker Skill

@@ -5,7 +5,7 @@ description: Guide you through creating a single Red Hat Showroom workshop modul
 
 ---
 context: main
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Lab Module Generator

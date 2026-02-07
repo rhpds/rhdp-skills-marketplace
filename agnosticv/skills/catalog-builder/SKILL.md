@@ -5,7 +5,7 @@ description: Create or update AgnosticV catalog files (common.yaml, dev.yaml, de
 
 ---
 context: main
-model: sonnet
+model: claude-opus-4-6
 ---
 
 # Skill: agnosticv-catalog-builder
