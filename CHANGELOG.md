@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v2.5.0-tech-preview] - 2026-02-07
 
-### Changed - AgV Skills Optimization (30% Reduction)
+Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
 
-Reduced total AgV skill content from 6,063 to 4,239 lines without losing functionality.
+### Changed - AgV Skills Optimization (30% Reduction)
 
 | File | Before | After | Reduction |
 |---|---|---|---|
@@ -19,12 +19,31 @@ Reduced total AgV skill content from 6,063 to 4,239 lines without losing functio
 | validator/SKILL.md | 1,640 | 1,482 | 10% |
 | AGV-COMMON-RULES.md | 1,640 | 983 | 40% |
 
-- Removed trailing sections from catalog-builder (example sessions, troubleshooting, references, reminders, success criteria, version history)
 - Extracted 3 inline templates to `agnosticv/skills/catalog-builder/templates/`
 - Created shared `agnosticv/docs/constants.md` (Slack URLs, EE image, categories, primaryBU values)
 - Deduplicated AgV path detection across both skills (replaced with @references)
-- Trimmed AGV-COMMON-RULES.md config file templates (replaced with references to template files)
-- Removed validator error handling and exit message sections
+- Removed trailing sections (examples, troubleshooting, reminders, success criteria)
+
+### Changed - Showroom Skills Deduplication
+
+| File | Before | After | Reduction |
+|---|---|---|---|
+| create-lab/SKILL.md | 1,797 | 1,421 | 21% |
+| create-demo/SKILL.md | 1,767 | 1,483 | 16% |
+
+- Fixed 65+ dead `.claude/prompts/` references → `showroom/prompts/`
+- Replaced duplicated AsciiDoc rules, image conventions, nav updates, verification prompt lists with @references to SKILL-COMMON-RULES.md
+- Removed example sessions from both skills (no operational value for Claude)
+
+### Changed - Agent Cleanup
+
+- Removed 5 unused agents: researcher, technical-writer, accessibility-checker, content-converter, migration-assistant (1,007 lines)
+- Trimmed 3 remaining agents (workshop-reviewer, style-enforcer, technical-editor): 252 → 147 lines (42%)
+- Removed duplicate prompt file lists, kept role definitions and review criteria
+
+### Added - Cross-Skill References
+
+All 7 skills now have a "Related Skills" section linking to complementary skills (e.g., create-lab → verify-content, catalog-builder → validator)
 
 ### Added - Testing & Tech Preview Docs
 
