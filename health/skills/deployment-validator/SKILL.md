@@ -1344,3 +1344,8 @@ After completion:
 - AgnosticV branch: add-{workshop_name}-validation (pushed)
 - Both ready for PR creation
 - Validation tested and working on deployed environment
+
+## Related Skills
+
+- `/agnosticv:validator` -- Validate AgnosticV catalog configurations
+- `/agnosticv:catalog-builder` -- Create or update AgnosticV catalog files

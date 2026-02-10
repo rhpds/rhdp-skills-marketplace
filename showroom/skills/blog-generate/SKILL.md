@@ -626,3 +626,8 @@ Every generated blog will have:
 - Default: `blog-posts/<topic-slug>.md`
 - Example: `blog-posts/openshift-pipelines-tutorial.md`
 - User can specify custom path
+
+## Related Skills
+
+- `/showroom:create-lab` -- Create workshop modules (source content for blogs)
+- `/showroom:create-demo` -- Create demo content (source content for blogs)
