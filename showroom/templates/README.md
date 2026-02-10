@@ -22,7 +22,7 @@ templates/
 
 ## Installation
 
-These templates are automatically installed to `~/.claude/templates/` when you install the Showroom namespace:
+These templates are bundled with the Showroom plugin and available automatically when installed via the marketplace:
 
 ```bash
 # Install using the install script
@@ -36,9 +36,7 @@ Skills that use these templates:
 - **`/create-lab`** - Uses workshop templates to generate multi-module hands-on labs
 - **`/create-demo`** - Uses demo templates to generate presenter-led demonstrations
 
-The skills automatically read these templates from:
-1. Current git repo: `.claude/templates/` (if repo-specific templates exist)
-2. Global home: `~/.claude/templates/` (default location)
+The skills automatically read these templates from the plugin's `showroom/templates/` directory when installed via the Claude Code marketplace.
 
 ## Template Purpose
 
@@ -60,9 +58,9 @@ The skills automatically read these templates from:
 
 To customize templates for a specific project:
 
-1. Copy templates to your project's `.claude/templates/` directory
+1. Copy templates to your project directory
 2. Modify as needed for project-specific requirements
-3. Skills will use project templates instead of global templates
+3. Point skills to your custom templates when running
 
 ## Source
 
