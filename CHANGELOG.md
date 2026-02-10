@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.5.0-tech-preview] - 2026-02-10
+
+Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
+
 ### Changed - Remove Redundant Step 0 from Showroom Skills
 
 Removed "Step 0: Reference Repository Setup" from create-lab, create-demo, and verify-content.
@@ -15,14 +19,19 @@ making the external reference repo prompt redundant. Skills now use bundled temp
 
 - Removed ~382 lines of Step 0 interactive prompts across 3 skills
 - Updated Step 9 (create-lab, create-demo) and Step 4 (verify-content) to reference bundled templates
-- Standardized template paths to `.claude/templates/` convention across all skills
-- Fixed stale template paths in SKILL-COMMON-RULES.md and verify-content
 - Expanded create-demo Step 8 to read 5 of 7 demo templates (was only reading 2)
 - Marked TODO-SKILL-IMPROVEMENTS.md Step 0 task as done
 
-## [v2.5.0-tech-preview] - 2026-02-07
+### Fixed - Broken `.claude/` Path References
 
-Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
+All `.claude/templates/` and `.claude/docs/` paths were broken (no `.claude/` directory exists in repo).
+Fixed across all Showroom skills and docs.
+
+- Replaced `.claude/templates/` → `showroom/templates/` in create-lab, create-demo, verify-content, SKILL-COMMON-RULES.md
+- Replaced `.claude/docs/` → `@showroom/docs/` in create-demo, blog-generate
+- Added missing `context: main` and `model: claude-opus-4-6` frontmatter to blog-generate
+- Updated templates README.md to reflect plugin-based installation
+- Deleted 136 duplicate prompt/template files from `skills/showroom-*/.claude/` (old standalone format, 29,004 lines)
 
 ### Changed - AgV Skills Optimization (30% Reduction)
 
@@ -2107,7 +2116,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.8...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.5.0-tech-preview...HEAD
+[v2.5.0-tech-preview]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.8...v2.5.0-tech-preview
 [v2.4.8]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.8
 [v2.4.7]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.7
 [v1.8.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.8.0

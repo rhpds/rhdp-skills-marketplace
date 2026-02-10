@@ -162,7 +162,7 @@ Options:
 
 ### Step 4: Run Verification Agents
 
-**IMPORTANT: Use the bundled templates in `.claude/templates/workshop/` and `.claude/templates/demo/` as quality references when comparing content patterns.**
+**IMPORTANT: Use the bundled templates in `showroom/templates/workshop/` and `showroom/templates/demo/` as quality references when comparing content patterns.**
 
 I'll run comprehensive verification using these validation frameworks:
 
@@ -600,9 +600,9 @@ Different repositories may need customized verification rules:
 - `verify_content_quality.txt`
 
 **Bundled templates** (quality references):
-- `.claude/templates/workshop/example/` -- Workshop examples
-- `.claude/templates/workshop/templates/` -- Workshop structural templates
-- `.claude/templates/demo/` -- Demo examples
+- `showroom/templates/workshop/example/` -- Workshop examples
+- `showroom/templates/workshop/templates/` -- Workshop structural templates
+- `showroom/templates/demo/` -- Demo examples
 
 ## Related Skills
 

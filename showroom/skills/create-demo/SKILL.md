@@ -44,7 +44,7 @@ Use this skill to create presenter-led demo content, transform technical documen
 
 ## Shared Rules
 
-**IMPORTANT**: This skill follows shared contracts defined in `.claude/docs/SKILL-COMMON-RULES.md`:
+**IMPORTANT**: This skill follows shared contracts defined in `@showroom/docs/SKILL-COMMON-RULES.md`:
 - Version pinning or attribute placeholders (REQUIRED)
 - Reference enforcement (REQUIRED)
 - Attribute file location (REQUIRED)
@@ -518,11 +518,11 @@ Based on your references, I'll:
 **CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
 
 **Templates to read:**
-- `.claude/templates/demo/01-overview.adoc`
-- `.claude/templates/demo/02-details.adoc`
-- `.claude/templates/demo/03-module-01.adoc`
-- `.claude/templates/demo/04-module-02.adoc`
-- `.claude/templates/demo/99-conclusion.adoc`
+- `showroom/templates/demo/01-overview.adoc`
+- `showroom/templates/demo/02-details.adoc`
+- `showroom/templates/demo/03-module-01.adoc`
+- `showroom/templates/demo/04-module-02.adoc`
+- `showroom/templates/demo/99-conclusion.adoc`
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
@@ -1338,11 +1338,11 @@ Every demo module will have:
 ## Integration Notes
 
 **Templates used**:
-- `.claude/templates/demo/01-overview.adoc`
-- `.claude/templates/demo/02-details.adoc`
-- `.claude/templates/demo/03-module-01.adoc`
-- `.claude/templates/demo/04-module-02.adoc`
-- `.claude/templates/demo/99-conclusion.adoc`
+- `showroom/templates/demo/01-overview.adoc`
+- `showroom/templates/demo/02-details.adoc`
+- `showroom/templates/demo/03-module-01.adoc`
+- `showroom/templates/demo/04-module-02.adoc`
+- `showroom/templates/demo/99-conclusion.adoc`
 
 **Agents invoked**:
 - `workshop-reviewer` - Validates structure
