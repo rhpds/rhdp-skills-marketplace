@@ -59,104 +59,6 @@ Have these ready before running this skill:
 
 ## Workflow
 
-### Step 0: Reference Repository Setup (OPTIONAL but Recommended)
-
-**For enhanced verification quality, access to real Showroom examples helps compare content against proven patterns.**
-
-**Ask the user:**
-
-```
-📚 Reference Repository Check (Optional)
-
-For more comprehensive verification, I can compare your content against real Showroom examples.
-
-Do you have a Showroom repository with quality content that I can use as a reference?
-
-Options:
-1. Yes - I have a local Showroom repo (Better verification quality)
-2. No - Clone template to /tmp/ for me
-3. Skip - Verify without reference (Standard verification only)
-
-Your choice: [1/2/3]
-```
-
-**If Option 1 (YES - Local repo):**
-
-```
-Please provide the path to your reference Showroom repository:
-
-Example: ~/work/showroom-content/high-quality-workshop
-
-Path:
-```
-
-**Validation:**
-- Check if path exists using Read tool
-- Verify it contains quality content in `content/modules/ROOT/pages/*.adoc` files
-- If invalid, ask again or offer Option 2
-
-**Once valid path provided:**
-1. Read 2-3 example modules from reference repo
-2. Use as comparison baseline for:
-   - Section structure quality
-   - Code block patterns
-   - Image reference formatting
-   - List formatting (blank lines)
-   - External link patterns (^ caret usage)
-   - Business scenario quality
-   - Verification command patterns
-3. Enhanced verification can flag deviations from proven patterns
-
-**If Option 2 (NO - Clone template):**
-
-```
-I'll clone the Showroom template repository to /tmp/showroom-reference for you.
-
-This provides standard Showroom examples to enhance verification quality.
-
-Proceed? [Yes/No]
-```
-
-**If Yes:**
-```bash
-git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
-```
-
-Then:
-1. Read example modules from template
-2. Use as comparison baseline
-3. Enhanced verification against proven patterns
-
-**If No or clone fails:**
-- Continue with standard verification (no reference comparison)
-
-**If Option 3 (Skip):**
-- Proceed with standard verification
-- No comparison against reference examples
-- Still validates against Red Hat style guide and accessibility standards
-
-**Why Reference Repository Helps Verification:**
-
-With reference examples:
-- ✅ Can compare structure against proven high-quality modules
-- ✅ Identify deviations from successful patterns
-- ✅ Suggest improvements based on real examples
-- ✅ More specific feedback ("Reference example uses X pattern, your content uses Y")
-
-Without reference examples:
-- ✓ Still validates Red Hat style guide compliance
-- ✓ Still checks accessibility standards
-- ✓ Still validates technical accuracy
-- ⚠️  Can't compare against proven Showroom patterns
-- ⚠️  Feedback is more generic
-
-**Store reference path for verification steps:**
-- Save reference repository path if provided
-- During verification, compare content patterns against reference examples
-- Include comparison findings in verification report
-
----
-
 ### Step 1: Detect and Select Verification Prompts (REQUIRED)
 
 **CRITICAL: Before running verification, detect which prompt sets are available and let user choose.**
@@ -260,13 +162,7 @@ Options:
 
 ### Step 4: Run Verification Agents
 
-**If reference repository was provided in Step 0:**
-- Read reference examples before running verification
-- Compare content structure against reference patterns
-- Note deviations from proven Showroom patterns
-- Include reference-based feedback in verification results
-
-**Standard verification (with or without reference):**
+**IMPORTANT: Use the bundled templates in `showroom/templates/workshop/` and `showroom/templates/demo/` as quality references when comparing content patterns.**
 
 I'll run comprehensive verification using these validation frameworks:
 
@@ -286,14 +182,6 @@ I'll run comprehensive verification using these validation frameworks:
 5. `verify_content_quality.txt` - General content quality
 
 ### Step 5: Present Results
-
-**If reference repository was used:**
-- Include section showing comparison against reference examples
-- Highlight where content matches proven patterns
-- Point out deviations with specific examples from reference
-- Suggest improvements based on reference patterns
-
-**Standard results (always included):**
 
 I'll provide results in this order:
 

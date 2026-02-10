@@ -134,129 +134,6 @@ etc.
 
 ---
 
-### Step 0: Reference Repository Setup (IMPORTANT)
-
-**Before generating content, we need access to real Showroom demo examples for quality reference.**
-
-**CRITICAL: This step MUST happen before any content generation to ensure quality matches real Showroom demo standards.**
-
-**Ask the user:**
-
-```
-📚 Reference Repository Check
-
-To generate high-quality demo content that matches Showroom standards, I need access to real Showroom demo examples.
-
-Do you have a Showroom repository cloned locally that I can reference for patterns and examples?
-
-Options:
-1. Yes - I have a local Showroom repo (Recommended - best quality)
-2. No - Clone template to /tmp/ for me
-3. Skip - Generate without reference (Not recommended - may need manual rewrites)
-
-Your choice: [1/2/3]
-```
-
-**If Option 1 (YES - Local repo):**
-
-```
-Great! Please provide the path to your Showroom repository:
-
-Example: ~/work/showroom-content/my-demo
-
-Path:
-```
-
-**Validation:**
-- Check if path exists using Read tool
-- Verify it contains demo content in `content/modules/ROOT/pages/*.adoc` files
-- If invalid, ask again or offer Option 2
-
-**Once valid path provided:**
-1. Read 2-3 example demo modules from `content/modules/ROOT/pages/*.adoc`
-2. Analyze and learn from:
-   - Know/Show structure and separation
-   - Business value messaging patterns
-   - Presenter guidance formatting
-   - Talk track examples ("What I say", "What I do", "What they should notice")
-   - Code block formatting and syntax highlighting
-   - Image and diagram patterns (link=self,window=blank usage)
-   - Navigation includes and xrefs
-   - List formatting (blank lines before/after lists)
-   - External link patterns (^ caret usage)
-   - Business metrics and ROI presentation
-3. Use these patterns as templates for generating new demo content
-
-**If Option 2 (NO - Clone template):**
-
-```
-I'll clone the Showroom template repository to /tmp/showroom-reference for you.
-
-This provides standard Showroom demo examples to ensure quality output.
-
-Proceed? [Yes/No]
-```
-
-**If Yes:**
-```bash
-git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
-```
-
-Then:
-1. Read example demo modules from `/tmp/showroom-reference/content/modules/ROOT/pages/*.adoc`
-2. Analyze demo patterns (same as Option 1)
-3. Use for content generation
-
-**If No or clone fails:**
-- Warn user: "⚠️  Without reference examples, generated demo content quality may require significant manual rewrites"
-- Ask: "Continue anyway? [Yes/No]"
-- If Yes, proceed with generic templates (lower quality expected)
-- If No, exit skill
-
-**If Option 3 (Skip):**
-
-```
-⚠️  WARNING: Generating without reference repository
-
-Without real Showroom demo examples, the generated content:
-- May not match Showroom demo quality standards
-- Will likely need manual rewrites
-- May miss important Know/Show separation patterns
-- Could lack effective business messaging
-- May take 5x longer to finalize
-
-This is the issue reported: "Module 2 is crap, requires manual rewrite with actual showroom docs"
-
-Are you sure you want to skip reference repository? [Yes/No]
-```
-
-**If Yes:** Proceed with generic templates, but add note in final output warning about potential quality issues
-**If No:** Go back to Option 1 or 2
-
-**Why This Step Matters:**
-
-Before this fix:
-- ❌ Demo modules were "crap"
-- ❌ Required manual rewrite using actual Showroom docs
-- ❌ 5 days of rework time
-- ❌ Business messaging didn't match Showroom quality
-- ❌ Know/Show structure was inconsistent
-
-After this fix:
-- ✅ Demos generated with quality matching real Showroom content from first iteration
-- ✅ Know/Show separation follows proven patterns
-- ✅ Business messaging matches professional standards
-- ✅ Reduces manual rewrites from days to hours
-- ✅ AI learns from actual examples, not generic patterns
-
-**Store reference path for later use:**
-- Save reference repository path to use throughout demo generation
-- When generating demo modules, read reference examples to match quality
-- Apply learned Know/Show patterns to new content
-- Follow business messaging style from references
-
----
-
 ### Step 1: Parse Arguments (If Provided)
 
 **Check if user invoked skill with arguments**.
@@ -648,21 +525,16 @@ See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and 
 
 ### Step 9: Generate Demo Module (Using Verification Criteria)
 
-**IMPORTANT: Use Reference Repository from Step 0**
+**IMPORTANT: Use the bundled demo templates read in Step 8 as quality references.**
 
-Before generating ANY demo content, refer back to the reference repository demo examples from Step 0:
-
-1. **Read reference demo examples again** if needed to refresh patterns
-2. **Match Know/Show structure** from real Showroom demos
-3. **Apply learned patterns** to new demo content:
-   - Know sections match reference business messaging style
-   - Show sections follow reference presenter guidance patterns
-   - Talk tracks ("What I say", "What I do") match reference format
-   - Business metrics and ROI presentation follows reference examples
-   - Code block formatting follows reference style
-   - Image references use same patterns (link=self,window=blank)
-   - List formatting matches reference (blank lines before/after)
-   - External links follow reference pattern (^ caret for new tabs)
+Apply patterns from the bundled templates to new demo content:
+- Know/Show structure and separation
+- Business value messaging style
+- Presenter guidance and talk track format ("What I say", "What I do")
+- Code block formatting and syntax highlighting
+- Image references (link=self,window=blank)
+- List formatting (blank lines before/after)
+- External links (^ caret for new tabs)
 
 **This ensures generated demo content matches real Showroom demo quality instead of generic templates.**
 
