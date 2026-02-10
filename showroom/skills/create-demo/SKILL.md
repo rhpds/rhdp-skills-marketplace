@@ -518,8 +518,11 @@ Based on your references, I'll:
 **CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
 
 **Templates to read:**
-- `.claude/templates/demo/03-module-01.adoc`
 - `.claude/templates/demo/01-overview.adoc`
+- `.claude/templates/demo/02-details.adoc`
+- `.claude/templates/demo/03-module-01.adoc`
+- `.claude/templates/demo/04-module-02.adoc`
+- `.claude/templates/demo/99-conclusion.adoc`
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
@@ -1335,8 +1338,11 @@ Every demo module will have:
 ## Integration Notes
 
 **Templates used**:
-- `.claude/templates/demo/03-module-01.adoc`
 - `.claude/templates/demo/01-overview.adoc`
+- `.claude/templates/demo/02-details.adoc`
+- `.claude/templates/demo/03-module-01.adoc`
+- `.claude/templates/demo/04-module-02.adoc`
+- `.claude/templates/demo/99-conclusion.adoc`
 
 **Agents invoked**:
 - `workshop-reviewer` - Validates structure

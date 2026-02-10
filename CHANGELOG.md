@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - Remove Redundant Step 0 from Showroom Skills
+
+Removed "Step 0: Reference Repository Setup" from create-lab, create-demo, and verify-content.
+The plugin already bundles quality templates in `showroom/templates/demo/` and `showroom/templates/workshop/`
+making the external reference repo prompt redundant. Skills now use bundled templates automatically.
+
+- Removed ~382 lines of Step 0 interactive prompts across 3 skills
+- Updated Step 9 (create-lab, create-demo) and Step 4 (verify-content) to reference bundled templates
+- Standardized template paths to `.claude/templates/` convention across all skills
+- Fixed stale template paths in SKILL-COMMON-RULES.md and verify-content
+- Expanded create-demo Step 8 to read 5 of 7 demo templates (was only reading 2)
+- Marked TODO-SKILL-IMPROVEMENTS.md Step 0 task as done
+
 ## [v2.5.0-tech-preview] - 2026-02-07
 
 Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
