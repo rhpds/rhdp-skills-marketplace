@@ -5,1308 +5,391 @@ title: Create Your Own Skills
 
 # Create Your Own Skills & Plugins
 
-Learn to use Claude effectively to create custom skills for your workflows.
+<div class="reference-badge">From idea to marketplace in 5 phases</div>
+
+<div class="callout callout-info">
+<strong>Who this is for:</strong> RHDP team members who want to automate a workflow as a reusable Claude Code skill. You don't write skills by hand -- you use Claude to help you build them step by step.
+</div>
 
 ---
 
-## 🎓 Interactive Workshop (Recommended)
+## The Real Workflow {#overview}
 
-**Multi-module hands-on workshop teaching effective Claude prompting:**
+Creating a skill is a 5-phase process. Each phase builds on the previous one:
 
-[**Start the Workshop →**](workshop/index.html)
+| Phase | What You Do | What You Get |
+|-------|-------------|--------------|
+| **1. Document** | Have Claude interview you about your manual process | Plain `.md` reference files capturing your workflow |
+| **2. Convert** | Point Claude at your `.md` files + an existing RHDP skill | A working `SKILL.md` |
+| **3. Package** | Create the plugin directory structure | A plugin ready for testing |
+| **4. Test** | Install locally and run through your workflow | A validated, working skill |
+| **5. Publish** | Push to a marketplace repo | Your team can install it |
 
-**What you'll learn:**
-- Module 1: What are skills and how they work (10 min)
-- Module 2: Use Claude to analyze existing RHDP skills (15 min)
-- **Module 3: Use Claude to create your first skill (30 min)** ← Most important!
-- Module 4: Use Claude to package as plugin (15 min)
-- Module 5: Testing and publishing (20 min)
-
----
-
-## Quick Start: Create a Skill Right Now
-
-**Don't want the full workshop? Here's how to create a skill in 5 minutes:**
-
-### Step 1: Describe Your Workflow
-
-Think about what you want to automate:
-- Deployment process?
-- File generation?
-- Validation workflow?
-
-### Step 2: Prompt Claude
-
-**Copy this template and fill in your details:**
-
-```
-I want to create a Claude Code skill that [does what].
-
-Current manual process:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-The skill should:
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
-Can you read agnosticv/skills/catalog-builder/SKILL.md
-and create a similar skill for my workflow?
-
-Use the same patterns for:
-- Step-by-step workflow
-- Asking user questions
-- File operations
-- Error handling
-```
-
-### Step 3: Iterate with Claude
-
-```
-Can you add:
-- Validation for [prerequisite]
-- Error handling for [edge case]
-- Progress indicators
-```
-
-### Step 4: Test
-
-```
-Can you copy this skill to ~/.claude/skills/ for testing?
-```
-
-**That's it!** You have a working skill.
+<div class="callout callout-tip">
+<strong>Key insight:</strong> Most people skip Phase 1 and jump straight to writing a SKILL.md. This fails because you can't articulate every step, edge case, and decision in a single prompt. The iterative documentation phase is where the real value creation happens.
+</div>
 
 ---
 
-## Effective Prompting Patterns
+## Phase 1: Document Your Workflow with Claude {#phase-1}
 
-### Pattern 1: Convert Shell Script → Skill
+Before writing any skill, get your process out of your head and into written form. Claude is your interviewer.
 
-```
-I have this shell script:
-[paste script]
+### Start a conversation
 
-Create a Claude Code skill that automates this.
-Use patterns from agnosticv:catalog-builder.
-```
+Open Claude Code in your project directory and describe what you want to automate:
 
-### Pattern 2: Convert GitOps Workflow → Skill
+```text
+I want to automate the process of [creating new catalog items / deploying workshops /
+validating content / whatever you do manually].
 
-```
-I manage GitOps repos with this structure:
-apps/
-  myapp/
-    base/
-    overlays/
+Here's what I currently do:
+1. [First thing]
+2. [Second thing]
+3. [Third thing]
 
-Create a skill that generates new applications.
-Reference showroom:create-lab for file generation patterns.
+Can you help me document this process? Ask me questions about each step
+so we capture everything -- prerequisites, decisions, edge cases, and outputs.
 ```
 
-### Pattern 3: Convert Ansible Workload → Skill
+### Build reference files iteratively
 
-```
-I have Ansible workloads in roles/.
-Create a skill that scaffolds new workloads.
-Use agnosticv:catalog-builder as a template.
+As Claude interviews you, ask it to write up each part as a separate `.md` file:
+
+```text
+Great, now write up what we've discussed about the prerequisites
+as docs/my-workflow/01-prerequisites.md
+
+Then write the deployment steps as docs/my-workflow/02-deployment.md
+
+And the validation checks as docs/my-workflow/03-validation.md
 ```
 
-### Pattern 4: Extend Existing Skill
+### What your reference files should capture
 
-```
-Read showroom/skills/blog-generate/SKILL.md
+Each `.md` file should cover:
+- **Prerequisites** -- what must exist before this step
+- **Decisions** -- choices the user makes (with defaults)
+- **Commands** -- the actual bash commands or file operations
+- **Edge cases** -- what to do when things fail
+- **Outputs** -- what gets created or changed
 
-Create similar skill but for [my use case].
-Keep: workflow structure
-Change: [specific differences]
-```
+<div class="callout callout-warning">
+<strong>Don't rush this step.</strong> If you already have documentation, runbooks, shell scripts, or team wiki pages, point Claude at those instead: <code>"Read docs/deployment-process.md and help me restructure it as step-by-step reference files."</code>
+</div>
 
 ---
 
-## Full Workshop: Create Your Own Claude Code Skill & Plugin
+## Phase 2: Convert Your Docs into a SKILL.md {#phase-2}
 
-**For the complete learning experience, take the workshop:**
+Now that you have reference files, point Claude at them along with an existing RHDP skill as a template.
 
-Learn how to create custom skills and plugins for Claude Code by building a real example step-by-step.
+### The conversion prompt
 
----
+```text
+Read my reference files:
+- docs/my-workflow/01-prerequisites.md
+- docs/my-workflow/02-deployment.md
+- docs/my-workflow/03-validation.md
 
-## Workshop Overview
+Also read this existing RHDP skill for patterns:
+agnosticv/skills/catalog-builder/SKILL.md
 
-**What you'll build:** A working Claude Code skill that automates your daily tasks
+Create a SKILL.md for my workflow in skills/my-skill/SKILL.md
 
-**What you'll learn:**
-1. How skills work by exploring real RHDP skills
-2. Create your own skill following our patterns
-3. Package it as a plugin
-4. Share it with your team or contribute to RHDP marketplace
-
-**Time:** 60-90 minutes self-paced
-
-**Prerequisites:**
-- Claude Code CLI or VS Code with Claude extension
-- Basic markdown knowledge (headings, code blocks, lists)
-- Git installed
-
-**Official Resources:**
-- 📚 [Claude Code Documentation](https://code.claude.com/docs) - Complete reference
-- 🏛️ [Agent Skills Standard](https://agentskills.io) - Open standard for AI agent skills
-- 🧑‍💻 [RHDP Marketplace GitHub](https://github.com/rhpds/rhdp-skills-marketplace) - Source code
-
----
-
-## Your Learning Path
-
-**Beginner** (never created a skill):
-1. Start with Module 1 (Understanding)
-2. Do Module 2 exercises (Learn from RHDP skills)
-3. Complete Module 3 (Create your first skill)
-4. Try Module 4 (Package as plugin)
-
-**Intermediate** (created skills before):
-1. Skim Module 1
-2. Jump to Module 5 (Testing)
-3. Explore Module 6 (Advanced features)
-4. Review Module 8 (Best practices)
-
-**Advanced** (contributing to RHDP):
-1. Review Module 7 (Publishing)
-2. Study Module 8 (Patterns)
-3. Check Module 9 (Real-world examples)
-4. See [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) for contribution rules
-
----
-
-## 💡 Have Existing Documentation? Let Claude Help!
-
-**You don't have to start from scratch!**
-
-If you already have:
-- Step-by-step documentation
-- Runbooks or procedures
-- Shell scripts or automation
-- Team workflows
-
-**Claude can help you convert it into a skill.**
-
-### How to Get Help from Claude
-
-**Option 1: Paste your existing docs**
-
-```
-I have this documentation for [task]. Can you help me convert it into a Claude Code skill?
-
-[Paste your documentation here]
-```
-
-**Option 2: Point to your files**
-
-```
-I have a workflow in docs/deployment-process.md.
-Can you read it and help me create a skill that guides users through this process?
-```
-
-**Option 3: Start a conversation**
-
-```
-I want to create a skill that helps with [task].
-Here's what I currently do manually:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-Can you help me structure this as a skill?
-```
-
-**Claude will:**
-- ✅ Analyze your workflow
-- ✅ Suggest skill structure
-- ✅ Write the SKILL.md file
-- ✅ Add proper frontmatter and formatting
-- ✅ Create examples and templates
-
-**Try it now in this workshop!** As you read through the modules, ask Claude to help you create your skill based on your existing work.
-
-### Want to Update an Existing Skill?
-
-**You can also use Claude to improve existing skills!**
-
-**Pattern: Update RHDP marketplace skill**
-```
-Read showroom/skills/create-lab/SKILL.md
-
-I want to add a new feature that [does X].
-Can you update the skill to include this in Step [N]?
-```
-
-**Pattern: Fix issues in your skill**
-```
-My skill in ~/.claude/skills/my-skill/SKILL.md has a problem:
-[describe the issue]
-
-Can you read it and fix the issue?
-```
-
-**Pattern: Add new capabilities**
-```
-Read agnosticv/skills/catalog-builder/SKILL.md
-
-I want to add similar functionality to my skill for [use case].
-Can you show me how to add [feature] following their pattern?
-```
-
-**Pattern: Refactor for better UX**
-```
-Read my skill and suggest improvements:
-- Better question flow
-- Clearer step descriptions
-- More robust error handling
-- Better examples
-```
-
-### Effective Prompting Patterns
-
-**Pattern 1: Convert existing documentation**
-```
-I have documentation for [task] in [file/URL].
-Convert it into a Claude Code skill using RHDP patterns from the marketplace.
-```
-
-**Pattern 2: Create from description**
-```
-Create a Claude Code skill that [does task].
-It should:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-
-Use patterns from showroom:blog-generate for inspiration.
-```
-
-**Pattern 3: Improve existing skill**
-```
-Read agnosticv/skills/catalog-builder/SKILL.md
-Create a similar skill for [my use case] but simplified for [specific need].
-```
-
-**Pattern 4: Debug and fix**
-```
-This skill fails at Step 3 with error [error message].
-Can you fix the bash command and add error handling?
-```
-
----
-
-## Module 1: Understanding Skills & Plugins
-
-### What is a Skill?
-
-A skill is a specialized instruction set that tells Claude how to help with a specific task. It's written in markdown with YAML frontmatter.
-
-**Anatomy of a skill:**
-```markdown
----
-name: my-skill
-description: What this skill does
-version: 1.0.0
----
-
-# Skill Instructions
-
-[Detailed instructions for Claude on how to perform the task]
-```
-
-**Key components:**
-1. **Frontmatter** - Metadata (name, description, version)
-2. **Instructions** - Step-by-step guidance for Claude
-3. **Examples** - Sample outputs and workflows
-4. **Rules** - Constraints and best practices
-
-### What is a Plugin?
-
-A plugin packages one or more skills for distribution. It includes:
-- `plugin.json` - Plugin metadata
-- `skills/` - Directory containing skill files
-- Optional: `docs/`, `templates/`, `prompts/`, `agents/`
-
-**Plugin structure:**
-```
-my-plugin/
-├── .claude-plugin/
-│   └── plugin.json
-├── skills/
-│   ├── skill-one/
-│   │   └── SKILL.md
-│   └── skill-two/
-│       └── SKILL.md
-└── README.md
-```
-
----
-
-## Module 2: Learning from Real RHDP Skills
-
-Let's explore actual skills from the RHDP marketplace. Clone the repository and open the skills to follow along.
-
-### 🔧 Hands-On Setup
-
-```bash
-# Clone the RHDP marketplace
-git clone https://github.com/rhpds/rhdp-skills-marketplace
-cd rhdp-skills-marketplace
-
-# Open in your editor
-code .  # VS Code
-# or just browse on GitHub
-```
-
-**📚 Official Documentation:** See [Skills Reference Guide](https://code.claude.com/docs/en/skills) for core concepts.
-
-### 🚀 Try It Now: Test an Existing Skill
-
-Before creating your own, let's run a real RHDP skill:
-
-```bash
-# Install the showroom plugin (if not already)
-/plugin install showroom@rhdp-marketplace
-
-# Restart Claude Code
-# exit and restart
-
-# Try the blog-generate skill
-/showroom:blog-generate
-```
-
-**What to observe:**
-1. How Claude asks questions
-2. How it detects your environment
-3. How it shows progress through steps
-4. How it generates output
-
-This is what YOUR skill will do!
-
-### Exercise 1: Explore a Simple Skill
-
-**🎯 Open this file:** `showroom/skills/blog-generate/SKILL.md`
-
-This skill converts workshop content to blog posts. It's a great example of a focused, single-purpose skill.
-
-**👀 What to observe:**
-
-1. **Clear frontmatter:**
-```yaml
----
-name: showroom:verify-content
-description: Run comprehensive quality verification on workshop content
----
-```
-
-2. **Secondary configuration block:**
-```yaml
----
-context: fork
-model: sonnet
----
-```
-
-Options:
-- `context: fork` - Run in isolated context
-- `model: sonnet|opus|haiku` - Specify model preference
-
-3. **When to Use section:**
-- Clearly states what the skill does
-- Lists what it DOESN'T do (prevents misuse)
-
-4. **Step-by-step workflow:**
-- Numbered steps with clear actions
-- Uses bash commands Claude can execute
-- Provides decision logic
-
-### Exercise 2: Analyze a Multi-Step Workflow Skill
-
-**🎯 Open this file:** `agnosticv/skills/catalog-builder/SKILL.md`
-
-This is our most complex skill - it creates entire AgnosticV catalog structures. Let's see how it handles complexity.
-
-**👀 What to observe:**
-
-1. **Multi-mode operation:**
-```markdown
-## Modes
-
-**Mode 1:** Full Catalog (common.yaml + dev.yaml + description.adoc + info template)
-**Mode 2:** Description Only (extract from Showroom)
-**Mode 3:** Info Template Only
-```
-
-2. **Variable management:**
-```markdown
-## Variables to Track
-
-Track these throughout the workflow:
-- `AGV_PATH`: Path to AgnosticV repository
-- `CATALOG_NAME`: Name of the catalog
-- `CATEGORY`: Workshop or Demo
-```
-
-3. **Conditional logic:**
-```markdown
-**If Showroom found:**
-  → Step 2: Extract from modules
-
-**If NO Showroom:**
-  → Step 2a: Manual entry
-```
-
-4. **Templates and examples:**
-```yaml
-# Example common.yaml template
-__meta__:
-  deployer:
-    scm_url: https://github.com/redhat-cop/agnosticd
-    scm_ref: development
-```
-
----
-
-## Module 3: Hands-On - Use Claude to Create Your First Skill
-
-Let's use Claude to create a practical skill: **README Generator**
-
-This skill will help generate comprehensive README files for GitHub repositories.
-
-**Important:** You're not writing this by hand! You'll use Claude to help you.
-
-### Step 1: Set Up Your Workspace
-
-```bash
-mkdir -p ~/my-skills/readme-generator/skills/readme-generator
-cd ~/my-skills/readme-generator
-```
-
-### Step 2: Ask Claude to Create the Skill
-
-**Copy this prompt to Claude Code:**
-
-```
-I want to create a Claude Code skill that generates README files for GitHub projects.
-
-The skill should:
-1. Detect the repository name and language
-2. Ask users for project details (description, features, installation method)
-3. Generate a professional README.md with proper sections
-4. Include badges, installation instructions, and usage examples
-
-Can you create a SKILL.md file for this in skills/readme-generator/SKILL.md?
-
-Use these patterns from RHDP skills:
-- Detect environment first (git repo, language)
-- Ask clear questions with examples
+Follow the same patterns:
+- Two YAML frontmatter blocks (identity + execution context)
+- "What You'll Need Before Starting" section
+- "When to Use / Don't Use" section
+- Numbered workflow steps (Step 1, Step 2, etc.)
+- Ask questions SEQUENTIALLY -- one at a time, wait for answer
 - Use bash commands for file operations
-- Show output before writing files
-- Ask for user confirmation
-
-Format it with:
-- YAML frontmatter (name, description, version)
-- Context: fork
-- Step-by-step workflow
-- Examples and templates
+- Show output confirmations, not full file content
 ```
 
-**Claude will generate the SKILL.md file for you!**
+### What Claude will create
 
-### What Claude Creates
-
-Claude will write something like this:
+Claude generates a SKILL.md with this structure:
 
 ```markdown
 ---
-name: readme-generator
-description: Generate comprehensive README.md files for GitHub repositories with proper structure and best practices
-version: 1.0.0
+name: my-plugin:my-skill
+description: What this skill does in one sentence
 ---
 
 ---
-context: fork
-model: sonnet
+context: main
+model: claude-opus-4-6
 ---
 
-# README Generator Skill
+# My Skill Title
 
-Generate professional README.md files for GitHub repositories following best practices.
+One-line description.
+
+## What You'll Need Before Starting
+
+**Required:**
+- Item 1
+- Item 2
+
+**Helpful to have:**
+- Item 3
 
 ## When to Use
 
 **Use this skill when you want to:**
-- Create a new README for a project
-- Improve an existing README with proper structure
-- Add badges, installation instructions, and usage examples
-- Generate contributor guidelines
+- Use case 1
+- Use case 2
 
 **Don't use this for:**
-- Code documentation → use inline comments or docs generators
-- API documentation → use tools like Swagger/OpenAPI
+- Wrong use case -> use `/other-skill`
 
 ## Workflow
 
-### Step 1: Detect Repository Information
+### Step 1: Detect Environment
+[Commands to check prerequisites]
 
-**Gather basic repository information:**
+### Step 2: Ask Questions
+[Sequential questions with defaults]
 
-1. **Check if in git repository:**
-   ```bash
-   git rev-parse --show-toplevel
-   ```
+### Step 3: Generate Output
+[File creation steps]
 
-2. **Get repository name:**
-   ```bash
-   basename $(git rev-parse --show-toplevel)
-   ```
-
-3. **Get remote URL (if exists):**
-   ```bash
-   git remote get-url origin 2>/dev/null
-   ```
-
-4. **Detect primary language:**
-   ```bash
-   find . -name "*.py" -o -name "*.js" -o -name "*.go" -o -name "*.java" | head -5
-   ```
-
-**If not in git repo:**
-- Ask user for project name
-- Ask for primary programming language
-- Ask for repository URL (if creating before pushing)
-
-### Step 2: Ask Key Questions
-
-**Required information:**
-
-1. **Project title**
-   - Use detected name as default
-   - Ask: "Project name? [detected-name]"
-
-2. **One-line description**
-   - Ask: "What does this project do? (one sentence)"
-   - Example: "Generates professional README files for GitHub repositories"
-
-3. **Target audience**
-   - Ask: "Who is this for? (developers/sysadmins/end-users)"
-   - Multiple options: "developers, sysadmins, end users"
-
-4. **Installation method**
-   - Ask: "Installation method? (npm/pip/go/docker/manual)"
-   - Determines which installation instructions to generate
-
-5. **Main features**
-   - Ask: "List 3-5 key features (one per line)"
-   - Wait for multi-line input
-
-6. **License**
-   - Ask: "License? (MIT/Apache-2.0/GPL/Proprietary)"
-   - Default: MIT for open source projects
-
-**Optional features (ask with Y/n defaults):**
-
-1. **Include badges?** `[Y/n]`
-   - GitHub stars, license badge, build status
-
-2. **Include screenshots/demo?** `[Y/n]`
-   - Adds Screenshots section with placeholder
-
-3. **Include contributing guidelines?** `[Y/n]`
-   - Adds Contributing section with link to CONTRIBUTING.md
-
-4. **Include code of conduct?** `[Y/n]`
-   - Adds Code of Conduct section
-
-### Step 3: Generate README Structure
-
-**Create README.md with this structure:**
-
-```markdown
-# [Project Title]
-
-[One-line description]
-
-[Badges if requested]
-
-## Features
-
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
-
-## Installation
-
-[Installation instructions based on method]
-
-## Usage
-
-[Basic usage example with code blocks]
-
-## Configuration
-
-[Configuration options if applicable]
-
-## Examples
-
-[Real-world examples]
-
-## Contributing
-
-[Contributing guidelines if requested]
-
-## License
-
-[License information]
-
-## Support
-
-[Support channels - Issues, Slack, Email]
+### Step 4: Validate and Deliver
+[Verification commands and summary]
 ```
 
-### Step 4: Add Badges (if requested)
+### Understanding the frontmatter
 
-**Generate appropriate badges:**
+Every SKILL.md has two YAML blocks separated by `---`:
 
-For GitHub repo:
-```markdown
-[![License](https://img.shields.io/github/license/OWNER/REPO)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/OWNER/REPO)](https://github.com/OWNER/REPO/stargazers)
-[![Issues](https://img.shields.io/github/issues/OWNER/REPO)](https://github.com/OWNER/REPO/issues)
+**Block 1 -- Identity (required):**
+
+| Field | Purpose | Example |
+|-------|---------|---------|
+| `name` | Invocation name, format: `namespace:skill-name` | `showroom:create-lab` |
+| `description` | One-line description shown in `/skills` list | Free text |
+
+**Block 2 -- Execution context (optional):**
+
+| Field | Purpose | Values |
+|-------|---------|--------|
+| `context` | How the skill runs | `main` (shares conversation), `fork` (isolated thread) |
+| `model` | Which Claude model to use | `claude-opus-4-6`, `sonnet`, `haiku` |
+
+<div class="callout callout-tip">
+<strong>When to use <code>context: fork</code>:</strong> Use it for validation or analysis tasks that should not pollute the main conversation. The <code>verify-content</code> skill uses this. For skills that create files or need ongoing conversation context, use <code>context: main</code>.
+</div>
+
+### Iterate with Claude
+
+Your first version won't be perfect. Iterate:
+
+```text
+This is good! Can you add:
+1. Validation that the target directory exists before starting
+2. A confirmation step before writing files
+3. Error handling if the git command fails
 ```
 
-For npm package:
-```markdown
-[![npm version](https://badge.fury.io/js/PACKAGE.svg)](https://www.npmjs.com/package/PACKAGE)
-[![Downloads](https://img.shields.io/npm/dm/PACKAGE.svg)](https://npmjs.org/package/PACKAGE)
+```text
+What happens if:
+- The user cancels midway?
+- The config file doesn't exist?
+- The branch already exists?
+Can you add error handling for these cases?
 ```
 
-### Step 5: Write Installation Instructions
-
-**Based on installation method, provide:**
-
-**npm:**
-```bash
-npm install package-name
+```text
+Can you improve the UX by:
+- Adding a summary at the end showing what was created
+- Making the git workflow optional
+- Adding a dry-run mode
 ```
 
-**pip:**
-```bash
-pip install package-name
-```
-
-**Docker:**
-```bash
-docker pull user/image:tag
-docker run -p 8080:8080 user/image:tag
-```
-
-**Manual:**
-```bash
-git clone https://github.com/user/repo
-cd repo
-make install
-```
-
-### Step 6: Add Usage Examples
-
-**Create realistic code examples:**
-
-1. Basic usage example
-2. Common use case example
-3. Advanced example (if applicable)
-
-**Use proper code fencing:**
-````markdown
-```language
-code example here
-```
-````
-
-### Step 7: Review and Save
-
-1. **Show generated README to user**
-2. **Ask: Is this README accurate? [Y/n]**
-   - If No: Ask what needs to be changed
-   - If Yes: Save to README.md
-
-3. **Write file:**
-   ```bash
-   cat > README.md <<'EOF'
-   [generated content]
-   EOF
-   ```
-
-4. **Confirm:**
-   ```
-   ✓ README.md created successfully!
-
-   Next steps:
-   - Review the content
-   - Add screenshots if needed
-   - Commit: git add README.md && git commit -m "Add README"
-   ```
-
-## Best Practices
-
-**README Quality Rules:**
-1. **Be concise** - README should be scannable in 2-3 minutes
-2. **Show, don't tell** - Include code examples
-3. **Start simple** - Basic example first, advanced later
-4. **Keep current** - Update README when features change
-5. **Think mobile** - Many developers read on phones
-
-**Structure Rules:**
-1. **Title + description first** - Reader knows what this is immediately
-2. **Installation second** - Reader can try it quickly
-3. **Usage third** - Reader learns how to use it
-4. **Everything else fourth** - Contributing, license, etc.
-
-**Writing Style:**
-- Use present tense ("This tool generates..." not "This tool will generate...")
-- Be specific ("Supports Python 3.8+" not "Supports modern Python")
-- Include commands that work (test your install instructions!)
-- Link to related docs/resources
-
-## Templates
-
-### Minimal README Template
-
-```markdown
-# Project Name
-
-One-line description.
-
-## Installation
-
-\`\`\`bash
-npm install project-name
-\`\`\`
-
-## Usage
-
-\`\`\`javascript
-const project = require('project-name');
-project.doSomething();
-\`\`\`
-
-## License
-
-MIT
-```
-
-### Complete README Template
-
-```markdown
-# Project Name
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-One-line description with key benefit.
-
-## Features
-
-- Feature 1
-- Feature 2
-- Feature 3
-
-## Prerequisites
-
-- Requirement 1
-- Requirement 2
-
-## Installation
-
-\`\`\`bash
-installation commands
-\`\`\`
-
-## Quick Start
-
-\`\`\`bash
-quick start commands
-\`\`\`
-
-## Usage
-
-### Basic Example
-
-\`\`\`language
-basic code example
-\`\`\`
-
-### Advanced Example
-
-\`\`\`language
-advanced code example
-\`\`\`
-
-## Configuration
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| option1 | What it does | value |
-
-## API Reference
-
-[Link to full API docs]
-
-## Examples
-
-See [examples/](examples/) directory.
-
-## Troubleshooting
-
-**Problem:** Common issue
-**Solution:** How to fix
-
-## Contributing
-
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-This project is licensed under MIT - see [LICENSE](LICENSE).
-
-## Support
-
-- Issues: [GitHub Issues](https://github.com/user/repo/issues)
-- Slack: #channel
-- Email: support@example.com
-```
-
-## Error Handling
-
-**If repository detection fails:**
-- Fall back to manual questions
-- Don't assume git repository exists
-- Provide option to create README without git context
-
-**If user answers are incomplete:**
-- Provide sensible defaults
-- Mark sections with TODO for user to fill in
-- Don't leave blank sections
-
-**If language detection fails:**
-- Ask user directly
-- Offer common options (JavaScript, Python, Go, Java, Rust)
-- Default to generic language-agnostic examples
-```
-
-### Step 3: Review What Claude Created
-
-**Ask Claude to explain the skill:**
-
-```
-Can you explain how this skill works? Walk me through each step.
-```
-
-**Ask for improvements:**
-
-```
-Can you add:
-1. Detection of existing README (offer to update instead of replace)
-2. More badge options (npm, PyPI, Docker)
-3. A template for API documentation README
-```
-
-**Claude will iterate on the skill based on your feedback.**
-
-### Step 4: Test Your Skill
-
-**Test locally before packaging:**
-
-1. **Ask Claude to install it:**
-```
-Can you copy this skill to ~/.claude/skills/ for testing?
-```
-
-2. **Restart Claude Code**
-
-3. **Test the skill:**
-```bash
-cd ~/some-project
-/readme-generator
-```
-
-4. **If it doesn't work, ask Claude to fix it:**
-```
-The skill failed at Step 2 when detecting the repository.
-Can you fix the git detection logic?
-```
-
-### Step 5: Iterate with Claude
-
-**Based on testing, keep improving:**
-
-```
-The README it generated is good, but can you:
-- Add a troubleshooting section template
-- Include example environment variables
-- Add support for monorepos
-```
-
-**Claude will update the skill until it's perfect.**
+### Which RHDP skills to use as templates
+
+| If your skill does... | Study this skill | Why |
+|----------------------|-----------------|-----|
+| File generation | `agnosticv:catalog-builder` | Multi-mode, templates, YAML generation |
+| Content creation | `showroom:create-lab` | Sequential questions, AsciiDoc output, reference repo pattern |
+| Content transformation | `showroom:blog-generate` | Read input -> transform -> write output |
+| Validation | `showroom:verify-content` | Fork context, verification prompts, reporting |
+| Infrastructure | `health:deployment-validator` | Ansible role generation, test creation |
 
 ---
 
-## Module 4: Package Your Skill into a Plugin
+## Phase 3: Create the Plugin Structure {#phase-3}
 
-Now let's turn our skill into a distributable plugin.
+A plugin packages your skill(s) for distribution. The minimum structure is two files.
 
-### Step 1: Create Plugin Metadata
+### Minimum viable plugin
 
-Create `.claude-plugin/plugin.json`:
+```text
+my-plugin/
+  .claude-plugin/
+    plugin.json        # Plugin metadata (REQUIRED)
+  skills/
+    my-skill/
+      SKILL.md         # Your skill (REQUIRED)
+```
+
+### Create plugin.json
+
+Here is the actual `showroom/.claude-plugin/plugin.json` from the RHDP marketplace -- it's 7 lines:
 
 ```json
 {
-  "name": "readme-tools",
+  "name": "showroom",
   "version": "1.0.0",
-  "description": "Tools for generating and maintaining README files",
+  "description": "Workshop and demo authoring tools",
   "author": {
     "name": "Your Name",
-    "email": "your.email@example.com"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/yourusername/readme-tools",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/readme-tools.git"
-  },
-  "tags": ["readme", "documentation", "github"],
-  "skills": [
-    {
-      "path": "./skills/readme-generator/SKILL.md",
-      "name": "readme-generator"
-    }
-  ]
+    "email": "you@example.com"
+  }
 }
 ```
 
-**Plugin.json fields explained:**
+| Field | Required | Purpose |
+|-------|----------|---------|
+| `name` | Yes | Plugin name; becomes the namespace prefix (e.g., `showroom:create-lab`) |
+| `version` | Yes | Semver version; shown in `/plugin list` |
+| `description` | Yes | Description shown in marketplace listings |
+| `author` | No | Your contact info |
 
-- `name` - Plugin identifier (lowercase, hyphens)
-- `version` - Semantic version (1.0.0)
-- `description` - What the plugin provides
-- `author` - Your contact information
-- `license` - Open source license
-- `repository` - Git repository URL
-- `tags` - Search/discovery keywords
-- `skills` - Array of skills this plugin provides
+<div class="callout callout-warning">
+<strong>Critical:</strong> The <code>name</code> in plugin.json becomes the namespace prefix for all your skills. If your plugin name is <code>my-tools</code> and your skill name is <code>deploy</code>, users will invoke it as <code>/my-tools:deploy</code>.
+</div>
 
-### Step 2: Add Plugin README
+### Ask Claude to do it
 
-Create `README.md` in plugin root:
+You don't need to create this by hand:
 
-```markdown
-# README Tools Plugin
-
-Claude Code plugin for generating professional README files.
-
-## Skills
-
-- `/readme-generator` - Generate comprehensive README.md files
-
-## Installation
-
-\`\`\`bash
-# Add to your Claude Code skills
-/plugin install readme-tools@your-marketplace
-\`\`\`
-
-## Usage
-
-\`\`\`bash
-cd your-project
-/readme-generator
-\`\`\`
-
-## License
-
-MIT
+```text
+Create a plugin.json for my skill.
+Plugin name: my-tools
+Description: Deployment automation for my team
+Put it in .claude-plugin/plugin.json
 ```
 
-### Step 3: Final Directory Structure
+### Optional directories
 
-Your plugin should look like:
+As your plugin grows, you can add optional directories:
 
+```text
+my-plugin/
+  .claude-plugin/
+    plugin.json
+  skills/
+    skill-one/
+      SKILL.md
+    skill-two/
+      SKILL.md
+  agents/             # Specialized AI personas your skills can invoke
+    reviewer.md
+  docs/               # Shared documentation referenced by skills
+    COMMON-RULES.md
+  prompts/            # Verification/validation prompt files
+    check-quality.txt
+  templates/          # Content templates for file generation
+    config.yaml
+  README.md
 ```
-readme-tools/
-├── .claude-plugin/
-│   └── plugin.json
-├── skills/
-│   └── readme-generator/
-│       └── SKILL.md
-├── README.md
-├── LICENSE
-└── .gitignore
-```
 
-### Step 4: Create Git Repository
+| Directory | Purpose | Real example |
+|-----------|---------|-------------|
+| `agents/` | AI personas with specific expertise (editor, reviewer, style checker) | `showroom/agents/technical-writer.md` |
+| `docs/` | Shared rules and reference docs that multiple skills use | `showroom/docs/SKILL-COMMON-RULES.md` |
+| `prompts/` | Validation criteria files read before generating content | `showroom/prompts/redhat_style_guide_validation.txt` |
+| `templates/` | Starter templates for file generation | `showroom/templates/workshop/` |
+
+---
+
+## Phase 4: Test Locally {#phase-4}
+
+### Install your plugin
 
 ```bash
-cd ~/my-skills/readme-tools
-git init
-git add .
-git commit -m "Initial commit: README generator skill"
-git branch -M main
-git remote add origin https://github.com/yourusername/readme-tools.git
+# Option 1: Install from local directory
+/plugin marketplace add /path/to/your/plugin-directory
+
+# Option 2: Install from GitHub
+/plugin marketplace add yourusername/my-plugin-repo
+```
+
+Then install:
+
+```bash
+/plugin install my-tools@my-marketplace
+```
+
+### Verify it loaded
+
+```bash
+# Check plugin is listed
+/plugin list
+
+# Check skill appears
+# Your skill should show as my-tools:skill-name
+```
+
+### Run through the workflow
+
+```bash
+# Navigate to a test project
+cd ~/test-project
+
+# Run your skill
+/my-tools:deploy
+```
+
+### Fix issues with Claude
+
+When something doesn't work, tell Claude exactly what went wrong:
+
+```text
+My skill failed at Step 3. The error was:
+[paste error message]
+
+Can you fix the SKILL.md? The issue is that it tries to read
+a file that doesn't exist yet at that step.
+```
+
+### Testing checklist
+
+- [ ] Skill loads without errors (`/plugin list` shows it)
+- [ ] All workflow steps execute in order
+- [ ] Questions are clear and have sensible defaults
+- [ ] File operations create the right output
+- [ ] Error cases are handled (missing files, wrong directory, etc.)
+- [ ] The skill works on a fresh project (not just your test directory)
+
+---
+
+## Phase 5: Publish {#phase-5}
+
+### Option A: Standalone GitHub repo
+
+Push your plugin to a GitHub repository. Anyone can install it:
+
+```bash
+# Initialize and push
+cd my-plugin/
+git init && git add . && git commit -m "Initial commit"
+git remote add origin https://github.com/yourusername/my-plugin.git
 git push -u origin main
 ```
 
-### Step 5: Add License
+Users install with:
 
-Create `LICENSE` file (MIT example):
-
-```
-MIT License
-
-Copyright (c) 2026 Your Name
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
-### Step 6: Add .gitignore
-
-```
-.DS_Store
-*.swp
-*~
-.vscode/
-.idea/
-```
-
----
-
-## Module 5: Testing and Validation
-
-### Testing Checklist
-
-**Functional Testing:**
-- [ ] Skill loads without errors
-- [ ] All workflow steps execute correctly
-- [ ] File operations work (read/write)
-- [ ] Git commands execute properly
-- [ ] Questions are clear and complete
-- [ ] Generated output is correct
-
-**Edge Case Testing:**
-- [ ] Works outside git repository
-- [ ] Handles missing dependencies
-- [ ] Graceful error messages
-- [ ] Works with different file structures
-- [ ] Handles user cancellation
-
-**Quality Testing:**
-- [ ] Instructions are clear
-- [ ] Examples are realistic
-- [ ] Templates are well-formatted
-- [ ] Best practices are followed
-- [ ] Documentation is complete
-
-### Validation Commands
-
-**Test installation:**
 ```bash
-/plugin list
-# Should show your plugin
-
-/skills
-# Should show your skill
+/plugin marketplace add yourusername/my-plugin
+/plugin install my-tools@my-plugin
 ```
 
-**Test execution:**
-```bash
-# In a test project
-/readme-generator
-# Follow the workflow
-```
+### Option B: Contribute to RHDP marketplace
 
-**Test error handling:**
-```bash
-# In non-git directory
-/readme-generator
-# Should handle gracefully
-```
-
----
-
-## Module 6: Advanced Plugin Features
-
-### Add Multiple Skills to One Plugin
-
-**Example: README tools with multiple skills**
-
-```
-readme-tools/
-├── .claude-plugin/plugin.json
-├── skills/
-│   ├── readme-generator/SKILL.md
-│   ├── readme-validator/SKILL.md
-│   └── readme-updater/SKILL.md
-```
-
-Update `plugin.json`:
-```json
-{
-  "skills": [
-    {
-      "path": "./skills/readme-generator/SKILL.md",
-      "name": "readme:generator"
-    },
-    {
-      "path": "./skills/readme-validator/SKILL.md",
-      "name": "readme:validator"
-    },
-    {
-      "path": "./skills/readme-updater/SKILL.md",
-      "name": "readme:updater"
-    }
-  ]
-}
-```
-
-**Namespace pattern:**
-- Use `namespace:skill-name` format
-- Namespace groups related skills
-- Makes it clear which plugin provides the skill
-
-### Add Templates
-
-Some skills benefit from templates:
-
-```
-readme-tools/
-├── templates/
-│   ├── minimal-readme.md
-│   ├── complete-readme.md
-│   └── api-readme.md
-```
-
-**In SKILL.md, reference templates:**
-```markdown
-## Step 3: Select Template
-
-Ask user which template to use:
-1. Minimal (quick start projects)
-2. Complete (production projects)
-3. API (library/framework projects)
-
-Read template from:
-```bash
-cat ~/.claude/templates/readme-tools/[template-name].md
-```
-````
-
-### Add Prompts
-
-For complex validation or AI-assisted steps:
-
-```
-readme-tools/
-├── prompts/
-│   ├── validate-readme-quality.txt
-│   └── improve-readme-clarity.txt
-```
-
-**Prompt example (`validate-readme-quality.txt`):**
-```
-Validate this README for quality and completeness:
-
-Check for:
-1. Clear project description
-2. Installation instructions that work
-3. Usage examples with code
-4. Proper markdown formatting
-5. Links that aren't broken
-6. Consistent voice and tone
-
-Report issues and suggest improvements.
-```
-
-### Add Agents
-
-For specialized sub-tasks:
-
-```
-readme-tools/
-├── agents/
-│   └── readme-reviewer.md
-```
-
-**Agent example:**
-```markdown
----
-name: readme-reviewer
-description: Expert README reviewer providing feedback
----
-
-You are an expert at reviewing README files for open source projects.
-
-Your role:
-- Review README structure and completeness
-- Check for clarity and accuracy
-- Suggest improvements for discoverability
-- Validate code examples
-- Ensure best practices are followed
-
-Provide specific, actionable feedback.
-```
-
----
-
-## Module 7: Publishing to Marketplace
-
-### Option 1: Create Your Own Marketplace
-
-**Structure:**
-```
-my-marketplace/
-├── .claude-plugin/
-│   └── marketplace.json
-└── readme-tools/
-    └── [plugin files]
-```
-
-**marketplace.json:**
-```json
-{
-  "name": "my-marketplace",
-  "owner": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
-  },
-  "metadata": {
-    "description": "My custom Claude Code plugins",
-    "version": "1.0.0"
-  },
-  "plugins": [
-    {
-      "name": "readme-tools",
-      "source": "./readme-tools",
-      "version": "1.0.0",
-      "description": "Tools for generating README files"
-    }
-  ]
-}
-```
-
-**Users install with:**
-```bash
-/plugin marketplace add https://github.com/yourusername/my-marketplace
-/plugin install readme-tools@my-marketplace
-```
-
-### Option 2: Contribute to RHDP Marketplace
-
-**Steps:**
+If your skill is useful for the wider RHDP team:
 
 1. **Fork the marketplace:**
 ```bash
@@ -1314,642 +397,307 @@ git clone https://github.com/rhpds/rhdp-skills-marketplace
 cd rhdp-skills-marketplace
 ```
 
-2. **Create your plugin directory:**
-```bash
-mkdir -p your-plugin/skills/your-skill
-```
+2. **Create your plugin directory** following the structure in Phase 3
 
-3. **Add to marketplace.json:**
-```json
-{
-  "plugins": [
-    ...existing plugins...,
-    {
-      "name": "your-plugin",
-      "source": "./your-plugin",
-      "version": "1.0.0",
-      "description": "Your plugin description"
-    }
-  ]
-}
-```
+3. **Submit a pull request** -- requires [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) approval
 
-4. **Create pull request**
-
-5. **Get code owner approval** (from CODEOWNERS file)
+<div class="callout callout-info">
+<strong>RHDP marketplace users install with:</strong><br>
+<code>/plugin marketplace add rhpds/rhdp-skills-marketplace</code><br>
+<code>/plugin install my-tools@rhdp-marketplace</code>
+</div>
 
 ---
 
-## Module 8: Best Practices and Patterns
+## Reference: Patterns from Real Skills {#patterns}
 
-### Skill Writing Best Practices
+These patterns appear in every well-built RHDP skill. Use them in yours.
 
-**1. Clear Workflow Steps:**
+### Pattern 1: Sequential questions
+
+Ask one question at a time. Wait for the answer before asking the next one.
+
+```markdown
+### Step 2: Ask Questions
+
+1. **Project name**
+   - Ask: "What is the project name?"
+   - Default: [detected from git repo]
+   - WAIT for answer before proceeding
+
+2. **Target environment**
+   - Ask: "Which environment? (dev/stage/prod)"
+   - Default: dev
+   - WAIT for answer before proceeding
+```
+
+### Pattern 2: Detect first, ask second
+
+Try to auto-detect information before asking the user:
+
 ```markdown
 ### Step 1: Detect Environment
 
-**First, check the environment:**
-1. Run command to detect
-2. Handle success case
-3. Handle failure case
+1. Check if in git repository:
+   ```bash
+   git rev-parse --show-toplevel 2>/dev/null
+   ```
+
+2. **If git repo found:**
+   - Use detected repo name as default
+   - Show to user for confirmation
+
+3. **If not in git repo:**
+   - Ask user for project name
+   - Ask for repository URL
 ```
 
-**2. Bash Commands Claude Can Execute:**
-```bash
-# Good - simple, direct
-ls -la
+### Pattern 3: Write files, don't display them
 
-# Bad - interactive
-vim file.txt
-
-# Good - non-interactive alternative
-cat file.txt
-```
-
-**3. Decision Logic:**
 ```markdown
-**If condition A:**
-  → Do action 1
-  → Then action 2
+### Step 5: Generate Output
 
-**If condition B:**
-  → Do action 3
-  → Then action 4
+Use the Write tool to create files. Show brief confirmations only:
+
+"Created: config/deployment.yaml (45 lines)"
+"Created: config/service.yaml (22 lines)"
+
+Do NOT display full file content in the conversation.
 ```
 
-**4. Variable Tracking:**
+### Pattern 4: Failure mode behavior
+
 ```markdown
-## Variables to Track
+**If [command] fails:**
 
-Throughout this workflow, maintain:
-- `PROJECT_NAME`: Detected or user-provided project name
-- `LANGUAGE`: Primary programming language
-- `HAS_GIT`: Boolean, true if git repository exists
+**Cannot proceed safely**
+
+**Blocking issue**: [specific problem]
+
+**What I need**:
+1. [specific fix 1]
+2. [specific fix 2]
+
+**Or**: Would you like to proceed with [fallback option]?
 ```
 
-**5. User Questions:**
+### Pattern 5: Cross-skill references
+
 ```markdown
-Q: What is the project name?
-   Default: [detected-name]
-
-Q: Installation method? [npm/pip/docker/manual]
-   Validate: Must be one of the options
-```
-
-### Common Patterns
-
-**Pattern: Detect → Ask → Generate → Review**
-```markdown
-1. Detect what you can automatically
-2. Ask user for what you can't detect
-3. Generate the output
-4. Show user and ask for confirmation
-5. Write the file
-```
-
-**Pattern: Multi-Mode Skills**
-```markdown
-## Modes
-
-Ask user which mode:
-1. Mode A - Full generation
-2. Mode B - Update only
-3. Mode C - Validation only
-
-Based on selection, follow different workflow.
-```
-
-**Pattern: Template Selection**
-```markdown
-## Templates Available
-
-1. Minimal (lines 1-50)
-2. Standard (lines 51-150)
-3. Complete (lines 151-300)
-
-Ask user to select, then use template.
-```
-
-### Error Handling Patterns
-
-**Pattern: Graceful Fallback**
-```markdown
-### Step 1: Try to Detect
-
-```bash
-result=$(git remote get-url origin 2>/dev/null)
-```
-
-**If detection succeeds:**
-- Use detected value
-- Show to user for confirmation
-
-**If detection fails:**
-- Ask user for manual input
-- Provide example format
-- Continue workflow normally
-```
-
-**Pattern: Validation with Retry**
-```markdown
-### Step 3: Validate Input
-
-**Check if valid:**
-```bash
-test -f package.json
-```
-
-**If valid:**
-- Proceed to next step
-
-**If invalid:**
-- Show error message
-- Ask user to fix or provide alternative
-- Retry validation
+**Don't use this for:**
+- Creating workshop content -> use `/showroom:create-lab`
+- Validating configurations -> use `/agnosticv:validator`
 ```
 
 ---
 
-## Module 9: Real-World Examples
+## Reference: RHDP Skills to Learn From {#examples}
 
-### Example 1: Changelog Generator Skill
+All of these are in the [RHDP marketplace repo](https://github.com/rhpds/rhdp-skills-marketplace):
 
-```markdown
----
-name: changelog-generator
-description: Generate CHANGELOG.md from git commits following Keep a Changelog format
----
+| Skill | Path | What to learn from it |
+|-------|------|-----------------------|
+| Create Lab | `showroom/skills/create-lab/SKILL.md` | Sequential questions, reference repo pattern, AsciiDoc generation |
+| Create Demo | `showroom/skills/create-demo/SKILL.md` | Know/Show structure, presenter-led content |
+| Blog Generate | `showroom/skills/blog-generate/SKILL.md` | Content transformation, platform-specific output |
+| Verify Content | `showroom/skills/verify-content/SKILL.md` | Fork context, verification prompts, multi-agent validation |
+| Catalog Builder | `agnosticv/skills/catalog-builder/SKILL.md` | Multi-mode operation, YAML templates, git workflow |
+| Validator | `agnosticv/skills/validator/SKILL.md` | Validation rules, error reporting |
+| Deployment Validator | `health/skills/deployment-validator/SKILL.md` | Ansible role generation, test creation |
 
-# Changelog Generator
-
-Generate a CHANGELOG.md file from git commit history.
-
-## Workflow
-
-### Step 1: Get Version Tags
-
-```bash
-git tag --sort=-v:refname | head -10
-```
-
-### Step 2: Get Commits Between Tags
-
-For each version:
-```bash
-git log v1.0.0..v1.1.0 --pretty=format:"%h %s"
-```
-
-### Step 3: Categorize Commits
-
-Parse commit messages:
-- `feat:` → Added section
-- `fix:` → Fixed section
-- `docs:` → Documentation section
-- `breaking:` → Breaking Changes section
-
-### Step 4: Generate CHANGELOG.md
-
-Use Keep a Changelog format:
-```markdown
-# Changelog
-
-## [1.1.0] - 2026-02-03
-
-### Added
-- New feature from commit
-
-### Fixed
-- Bug fix from commit
-```
-
-[Rest of skill workflow...]
-```
-
-### Example 2: API Documentation Skill
-
-```markdown
----
-name: api-docs-generator
-description: Generate API documentation from OpenAPI/Swagger specifications
 ---
 
-# API Documentation Generator
+## Prompting Tips {#tips}
 
-Convert OpenAPI spec to user-friendly documentation.
+### Be specific about structure
 
-## Workflow
+```text
+# Bad
+Create a skill for deployments
 
-### Step 1: Find OpenAPI Spec
-
-```bash
-find . -name "openapi.yaml" -o -name "swagger.json"
+# Good
+Create a skill that validates prerequisites (oc logged in, project exists),
+asks for environment (dev/stage/prod), deploys with oc apply, and shows status.
+Use agnosticv:catalog-builder as a template for the step structure.
 ```
 
-### Step 2: Parse Endpoints
+### Reference specific skills
 
-Extract:
-- HTTP methods (GET, POST, PUT, DELETE)
-- Paths (/api/users, /api/posts)
-- Parameters
-- Request/response schemas
+```text
+# Bad
+Make it work like other skills
 
-### Step 3: Generate Markdown Docs
-
-For each endpoint:
-```markdown
-## GET /api/users
-
-Get list of users.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| page | integer | No | Page number |
-
-**Response:**
-```json
-{
-  "users": [...]
-}
-```
+# Good
+Use the question pattern from showroom:create-lab Step 2,
+and the file generation pattern from agnosticv:catalog-builder Step 10
 ```
 
-[Rest of skill workflow...]
+### Specify what to keep and what to change
+
+```text
+# Bad
+Similar to catalog-builder but different
+
+# Good
+Keep: step structure, git workflow, confirmation prompts
+Change: Instead of YAML files, generate JSON configs.
+Instead of AgnosticV paths, detect Terraform directories.
+```
+
+### Iterate incrementally
+
+```text
+# Bad
+Add 10 new features all at once
+
+# Good
+First add prerequisite validation. Let me test that.
+Then we'll add confirmation prompts. Then error handling.
 ```
 
 ---
 
-## Module 10: Testing Your Learning
-
-### Capstone Exercise Options
-
-Choose based on your use case:
-
-#### Option A: Shell Script → Skill
-
-**Convert your deployment script into a skill:**
-
-If you have a shell script that:
-- Deploys applications
-- Sets up environments
-- Runs maintenance tasks
-
-**Ask Claude:**
-```
-I have this shell script in deploy.sh that deploys applications to OpenShift.
-Can you convert it into a Claude Code skill that:
-1. Validates prerequisites (oc logged in, project exists)
-2. Asks for environment (dev/stage/prod)
-3. Runs deployment steps with progress
-4. Handles errors gracefully
-5. Shows deployment status
-
-Use RHDP patterns from agnosticv:catalog-builder for inspiration.
-```
-
-#### Option B: GitOps Repository → Skill
-
-**Create a skill that helps with GitOps workflows:**
-
-If you manage GitOps repositories with ArgoCD/FluxCD:
-
-**Ask Claude:**
-```
-I have a GitOps repository structure like:
-- apps/
-  - app1/
-    - base/
-    - overlays/
-      - dev/
-      - prod/
-
-Create a skill that:
-1. Detects the GitOps structure
-2. Creates new application manifests
-3. Generates Kustomization files
-4. Validates YAML syntax
-5. Commits and pushes changes
-
-Reference showroom:create-lab for the workflow pattern.
-```
-
-#### Option C: Ansible Workload → Skill
-
-**Convert Ansible workload documentation into a skill:**
-
-If you have Ansible workloads for RHDP:
-
-**Ask Claude:**
-```
-I have an Ansible workload in roles/my_workload/ that:
-- Deploys OpenShift operators
-- Configures applications
-- Creates user accounts
-
-Create a skill that generates new workloads following this pattern:
-1. Creates role directory structure
-2. Generates tasks/main.yml
-3. Creates default variables
-4. Generates workload validation tasks
-5. Creates README documentation
-
-Use agnosticv:catalog-builder as a reference for file generation.
-```
-
-#### Option D: RHDP-Specific Skills
-
-**Create skills for common RHDP tasks:**
-
-**Workshop Metrics Analyzer:**
-```
-Analyzes Showroom workshops:
-- Counts modules, steps, code blocks
-- Estimates completion time
-- Suggests improvements
-- Generates metrics report
-```
-
-**Catalog Validator Plus:**
-```
-Extends agnosticv:validator with:
-- Naming convention checks
-- Metadata completeness
-- Version currency checks
-- Best practices validation
-```
-
-**AgnosticD Workload Generator:**
-```
-Creates new AgnosticD workloads:
-- Role scaffolding
-- Variable templates
-- Validation tasks
-- Documentation
-```
-
-### Validation Checklist
-
-Your skill should:
-- [ ] Have proper YAML frontmatter
-- [ ] Include clear workflow steps
-- [ ] Use bash commands Claude can execute
-- [ ] Handle errors gracefully
-- [ ] Ask clear questions
-- [ ] Generate correct output
-- [ ] Provide user confirmation
-- [ ] Include examples
-- [ ] Document best practices
-
-### Share Your Work
-
-When ready, consider:
-1. Publishing to GitHub
-2. Creating your own marketplace
-3. Contributing to RHDP marketplace
-4. Sharing with community
-
----
-
-## Resources
-
-### Official Claude Code Documentation
-
-**Core Concepts:**
-- 📖 [Skills Overview](https://code.claude.com/docs/en/skills) - What skills are and how they work
-- 🔧 [Plugin System](https://code.claude.com/docs/en/plugins) - Plugin architecture and installation
-- 🏛️ [Agent Skills Standard](https://agentskills.io) - Open standard specification
-- 💬 [MCP Integration](https://code.claude.com/docs/en/mcp) - Model Context Protocol for advanced features
-
-**Advanced Topics:**
-- 🎯 [Skill Frontmatter](https://code.claude.com/docs/en/skills/frontmatter) - Metadata options
-- 🔄 [Context Management](https://code.claude.com/docs/en/skills/context) - Fork vs inherit
-- 🤖 [Model Selection](https://code.claude.com/docs/en/skills/models) - Choosing sonnet/opus/haiku
-
-### RHDP Marketplace
-
-**Example Plugins:**
-- [Showroom Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/showroom) - Workshop/demo creation (4 skills)
-- [AgnosticV Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/agnosticv) - Infrastructure automation (2 skills)
-- [Health Plugin](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/health) - Deployment validation (1 skill)
-
-**Documentation:**
-- [RHDP Skills Docs](https://rhpds.github.io/rhdp-skills-marketplace) - Complete documentation site
-- [Setup Guides](https://rhpds.github.io/rhdp-skills-marketplace/setup/) - Installation and configuration
-- [Migration Guide](https://rhpds.github.io/rhdp-skills-marketplace/setup/migration.html) - From file-based to plugins
-
-### Community
-
-**Get Help:**
-- GitHub Issues: [rhdp-skills-marketplace/issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
-- Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-
-**Contribute:**
-- See [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) for plugin ownership
-- All contributions require code owner approval
-- Submit PRs to add new skills or improve existing ones
-
----
-
-## Summary
-
-You've learned:
-- ✅ Skill and plugin architecture
-- ✅ How to analyze existing RHDP skills
-- ✅ **How to use Claude to create skills** (not write them by hand!)
-- ✅ Effective prompting patterns for skill creation
-- ✅ Packaging skills into plugins
-- ✅ Testing and validation
-- ✅ Publishing to marketplace
-- ✅ Advanced features (templates, prompts, agents)
-
-## The Claude-Assisted Workflow
-
-**Remember: You don't write skills by hand!**
-
-1. **Start with your existing work**
-   - Documentation, runbooks, scripts, workflows
-
-2. **Ask Claude to help**
-   - "Convert this documentation into a skill"
-   - "Create a skill that automates [task]"
-   - "Based on RHDP patterns, generate a skill for [use case]"
-
-3. **Review and iterate**
-   - Test the generated skill
-   - Ask Claude to fix issues
-   - Request improvements
-
-4. **Package and share**
-   - Claude can help create plugin.json
-   - Claude can write README and documentation
-
-**Example conversation:**
-
-```
-User: I have this shell script that deploys applications. Can you turn it into a skill?
-
-Claude: [Reads script, creates SKILL.md with proper workflow steps]
-
-User: Great! Can you add validation steps before deployment?
-
-Claude: [Updates skill with pre-deployment checks]
-
-User: Perfect. Now create the plugin.json for this.
-
-Claude: [Creates plugin metadata]
-```
-
-**Next steps:**
-1. Find a workflow you want to automate
-2. Ask Claude to help create a skill
-3. Test and iterate with Claude's help
-4. Package and share with your team
-
----
-
-## Ideas for New RHDP Skills
-
-**Looking for inspiration? Here are skills that would be valuable for RHDP:**
-
-### Infrastructure & Deployment
-
-**1. GitOps Application Generator**
-- Detects GitOps repository structure (ArgoCD/FluxCD)
-- Creates new application manifests
-- Generates Kustomization overlays (dev/stage/prod)
-- Validates YAML and Helm charts
-- Commits with proper Git workflow
-
-**2. Ansible Workload Scaffolder**
-- Creates AgnosticD workload structure
-- Generates role templates (tasks, vars, defaults)
-- Creates workload validation tasks
-- Generates sample inventory
-- Adds workload documentation
-
-**3. OpenShift Migration Helper**
-- Analyzes existing OpenShift resources
-- Generates migration manifests
-- Creates backup/restore procedures
-- Validates compatibility (OCP 4.14 → 4.15)
-- Documents migration steps
-
-### Content & Documentation
-
-**4. Lab Dependencies Resolver**
-- Scans Showroom workshop for external dependencies
-- Checks if links are still valid
-- Verifies container images are available
-- Tests API endpoints mentioned in labs
-- Generates dependency report
-
-**5. Multi-Language Content Translator**
-- Detects workshop language
-- Uses translation API to convert content
-- Maintains AsciiDoc formatting
-- Preserves code blocks and commands
-- Generates localized versions (EN/ES/FR/DE/JP)
-
-**6. Workshop Accessibility Auditor**
-- Scans content for accessibility issues
-- Checks alt text for images
-- Validates heading structure
-- Ensures sufficient color contrast
-- Generates WCAG compliance report
-
-### Validation & Quality
-
-**7. Catalog Dependency Checker**
-- Reads AgnosticV catalog common.yaml
-- Checks if collections are available
-- Verifies deployer versions
-- Validates infrastructure requirements
-- Suggests updates for deprecated features
-
-**8. Integration Test Generator**
-- Analyzes workshop steps
-- Generates automated test scripts
-- Creates validation playbooks
-- Tests deployment workflows
-- Generates CI/CD pipeline configs
-
-**9. Cost Estimator**
-- Reads AgnosticV catalog infrastructure
-- Calculates AWS/Azure/GCP costs
-- Estimates runtime costs
-- Suggests cost optimizations
-- Generates budget reports
-
-### Automation & Workflows
-
-**10. Bulk Catalog Updater**
-- Updates multiple catalogs at once
-- Applies consistent changes (new deployer version)
-- Validates all catalogs after update
-- Creates PRs automatically
-- Tracks update status
-
-**11. Release Notes Generator**
-- Scans git commits since last release
-- Categorizes changes (features/fixes/breaking)
-- Generates CHANGELOG.md
-- Creates GitHub release draft
-- Includes contributor credits
-
-**12. Environment Provisioner**
-- Provisions RHDP environments via API
-- Polls for completion
-- Retrieves access credentials
-- Tests connectivity
-- Generates access instructions
-
----
-
-## How to Propose New Skills
-
-**Have an idea? Here's how to get it added:**
-
-1. **Open GitHub Discussion**
-   - Go to [rhdp-skills-marketplace/discussions](https://github.com/rhpds/rhdp-skills-marketplace/discussions)
-   - Describe the use case
-   - Explain the workflow it automates
-
-2. **Prototype with Claude**
-   - Use Claude to create a basic version
-   - Test with your team
-   - Gather feedback
-
-3. **Submit to Marketplace**
-   - Create plugin structure
-   - Add documentation
-   - Submit PR (requires CODEOWNERS approval)
-
-4. **Join the Community**
-   - Share in [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-   - Get feedback and iterate
-   - Help others build skills
-
----
-
-Happy skill building with Claude! 🚀
-
-[**Go to Workshop →**](workshop/index.html)
-
-The workshop covers everything in depth with real examples, effective prompting techniques, and hands-on exercises.
-
----
-
-## Resources
-
-**Official Documentation:**
-- [Claude Code Skills Guide](https://code.claude.com/docs/en/skills)
-- [Agent Skills Standard](https://agentskills.io)
-- [Plugin System](https://code.claude.com/docs/en/plugins)
-
-**Example Skills to Learn From:**
-- [showroom/skills/](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/showroom/skills) - Content creation
-- [agnosticv/skills/](https://github.com/rhpds/rhdp-skills-marketplace/tree/main/agnosticv/skills) - Infrastructure automation
+## Resources {#resources}
+
+<div class="links-grid">
+  <a href="https://github.com/rhpds/rhdp-skills-marketplace" class="link-card">
+    <h4>RHDP Marketplace</h4>
+    <p>Source code with all skills and plugins</p>
+  </a>
+  <a href="../reference/best-practices.html" class="link-card">
+    <h4>Claude Code Best Practices</h4>
+    <p>CLAUDE.md setup, models, context, sessions</p>
+  </a>
+  <a href="../reference/quick-reference.html" class="link-card">
+    <h4>Quick Reference</h4>
+    <p>Commands, shortcuts, workflows at a glance</p>
+  </a>
+  <a href="../setup/claude-code.html" class="link-card">
+    <h4>Claude Code Setup</h4>
+    <p>First-time installation guide</p>
+  </a>
+</div>
 
 **Community:**
 - Slack: [#forum-demo-developers](https://redhat.enterprise.slack.com/archives/C04MLMA15MX)
-- GitHub: [Submit questions](https://github.com/rhpds/rhdp-skills-marketplace/issues)
+- GitHub: [rhdp-skills-marketplace/issues](https://github.com/rhpds/rhdp-skills-marketplace/issues)
+
+---
+
+<div class="navigation-footer">
+  <a href="../index.html" class="nav-button">Back to Home</a>
+</div>
+
+<style>
+/* Page badge */
+.reference-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+/* Callout boxes */
+.callout {
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+.callout-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border-left-color: #ffc107;
+}
+.callout-tip {
+  background: linear-gradient(135deg, #d4edda 0%, #f0fff4 100%);
+  border-left-color: #28a745;
+}
+.callout-info {
+  background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
+  border-left-color: #0969da;
+}
+.callout-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
+  border-left-color: #dc3545;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+}
+table th {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+table td {
+  border: 1px solid #e1e4e8;
+  padding: 8px 12px;
+}
+table tr:nth-child(even) {
+  background-color: #f6f8fa;
+}
+
+/* Links grid */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.link-card {
+  display: block;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+.link-card:hover {
+  border-color: #EE0000;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+.link-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: #24292e;
+}
+.link-card p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+/* Navigation footer */
+.navigation-footer {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e4e8;
+}
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #24292e;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.nav-button:hover {
+  border-color: #EE0000;
+  color: #EE0000;
+  transform: translateY(-2px);
+}
+</style>

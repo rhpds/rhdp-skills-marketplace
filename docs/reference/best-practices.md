@@ -5,470 +5,688 @@ title: Claude Code Best Practices for RHDP
 
 # Claude Code Best Practices for RHDP
 
-<div class="reference-badge">Real problems, real fixes -- from our repos</div>
+<div class="reference-badge">The complete guide to working effectively with Claude Code</div>
 
-<div style="background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%); border-left: 4px solid #ffc107; padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 6px;">
-<strong>Why this page exists:</strong> We've seen Claude produce broken YAML, create branches with wrong naming, generate generic Showroom content, and "forget" what repo it's working in -- all because of avoidable mistakes. This page walks through what goes wrong and how to fix it, using examples from AgnosticV, AgnosticD, and Showroom.
+<div class="callout callout-info">
+<strong>Who this is for:</strong> RHDP developers who use Claude Code daily across AgnosticV, AgnosticD, and Showroom repos. Whether you're creating catalog items, writing workshop content, or building validation roles, this page covers how to configure Claude Code for maximum effectiveness.
 </div>
 
 ---
 
-## Not Clearing Context Between Tasks
+## How Claude Code Memory Works {#memory}
 
-### What happens
+Claude Code uses a layered memory system. Understanding it is the difference between Claude knowing your project conventions and Claude guessing wrong every time.
 
-You're updating an AgnosticV catalog item for `aap-selfserv-intro`. It goes well. Then, without clearing, you ask Claude to write a Showroom module for a different workshop entirely.
+### CLAUDE.md File Hierarchy
 
-Claude starts mixing up the two. It references `aap-selfserv-intro` variables in your new Showroom content. It uses YAML structures from the catalog item inside an AsciiDoc file. You correct it, but the corrections pile up and Claude gets worse, not better.
-
-### What you see
-
-Claude generates a Showroom module but stuffs AgV YAML into it:
-
-```yaml
-# This showed up in a Showroom .adoc file -- it's AgV catalog config,
-# not workshop content. Claude carried it over from the previous task.
-agd_v2_collections:
-  - name: aap_selfserv_collection
-    git_repo: https://github.com/...
-```
-
-Or Claude generates a `common.yaml` that includes Showroom-style AsciiDoc formatting because it's still holding onto the previous task.
-
-### Fix
-
-```
-> /clear
-> I'm working on the Showroom content for ocp-virt-admin-rosetta.
-> The repo is at ~/work/showroom-content/ocp-virt-admin-rosetta-showroom/
-> Create module 2 following the structure in module 1.
-```
-
-One `/clear` between tasks. That's it. Claude starts fresh, no bleed-over.
-
----
-
-## Never Compacting During Long AgnosticD Sessions
-
-### What happens
-
-You're building a new AgnosticD v2 validation role. You've been going for a while -- Claude has read `core_workload`, your role's `tasks/main.yml`, the `defaults/main.yml`, three other reference roles, and the AgnosticV `common.yaml` to understand the collections. The context window is at 80%.
-
-You ask Claude to add a new task to check AAP Controller health. Claude produces something that looks right but silently drops the `delegate_to: bastion` pattern it was using earlier. Or it forgets your role naming convention and generates `validate_aap_health` instead of `ocp4_workload_aap_health`.
-
-### What you see
-
-```yaml
-# Claude "forgot" the project conventions from earlier in the session
-- name: Check AAP Controller
-  ansible.builtin.uri:
-    url: "https://{{ aap_controller_url }}/api/v2/ping/"
-  # Missing: delegate_to: bastion
-  # Missing: register + result check
-  # Wrong role name in the file path
-```
-
-### Fix
-
-Compact with focus instructions so Claude keeps what matters:
-
-```
-> /compact Keep the role naming conventions, delegate_to patterns,
-> core_workload inheritance, and the validation task structure
-```
-
-Or if you're really deep in the weeds, `/clear` and start a fresh session with a more precise prompt:
-
-```
-> I'm building a validation role at roles/ocp4_workload_aap_validate/.
-> It follows core_workload patterns. All oc/ansible commands must use
-> delegate_to: bastion. Read @roles/ocp4_workload_example/tasks/main.yml
-> for the pattern. Add a task that checks AAP Controller health via the
-> /api/v2/ping/ endpoint.
-```
-
----
-
-## No CLAUDE.md in Your Repo
-
-### What happens in AgnosticV
-
-You ask Claude to create a PR for your catalog item changes. Claude runs:
-
-```bash
-git checkout -b feature/update-aap-catalog    # Wrong -- we don't use feature/ prefix
-git commit -m "Update catalog
-
-Co-Authored-By: Claude <noreply@anthropic.com>"   # Wrong -- no AI attribution
-```
-
-Then it pushes to `feature/update-aap-catalog` and creates a PR. Nate reviews it, sees the wrong branch naming and the AI footer in the commit message. You have to redo it.
-
-### What happens in Showroom
-
-Without a CLAUDE.md, Claude doesn't know your content lives in `content/modules/ROOT/pages/`. It creates files in the repo root. Or it writes Markdown instead of AsciiDoc. Or it uses a formal corporate tone instead of the direct, hands-on style your workshops follow.
-
-```markdown
-<!-- Claude writes Markdown because nobody told it to use AsciiDoc -->
-## Introduction
-
-In this module, we will leverage Red Hat OpenShift Virtualization
-to demonstrate enterprise-grade virtual machine management
-capabilities for modern infrastructure...
-```
-
-vs what you actually want:
+Claude reads `CLAUDE.md` files at multiple levels. Files closer to your working directory take priority:
 
 ```text
-== What You'll Do
-
-We're going to migrate a VM from VMware into OpenShift Virtualization.
-By the end of this module, your VM will be running on OpenShift with
-zero downtime. Let's get started.
+~/CLAUDE.md                          # Global -- applies to ALL projects
+~/work/code/agnosticv/CLAUDE.md      # Project -- applies to this repo
+~/work/code/agnosticv/.claude/rules/  # Auto-loaded rules (always active)
 ```
 
-### Fix
+When you run `claude` inside `~/work/code/agnosticv/`, Claude loads **all three levels** automatically. You don't need to reference them -- they're injected into every conversation.
 
-Add a CLAUDE.md to each repo. It doesn't need to be long. Here are working examples:
+<div class="callout callout-tip">
+<strong>Tip:</strong> Put universal rules (git commit style, no AI attribution) in <code>~/CLAUDE.md</code>. Put repo-specific rules (file structure, AsciiDoc vs Markdown, naming conventions) in each repo's <code>CLAUDE.md</code>.
+</div>
 
-**AgnosticV** (`~/work/code/agnosticv/CLAUDE.md`):
+### What Goes in Each Level
+
+**Global `~/CLAUDE.md`** -- rules that apply everywhere:
 
 ```markdown
 ## Git Rules
-- Branch from main, never from other branches
-- Branch names: short and descriptive (e.g., aap-selfserv-catalog)
-- DO NOT use feature/ prefix
 - No AI attribution in commit messages
+- No feature/ prefix on branches
+- Branch from main, short descriptive names
 
-## Catalog Items
+## Style
+- Direct, practical tone
+- No corporate language
+```
+
+**Project `CLAUDE.md`** -- repo-specific conventions:
+
+```markdown
+## AgnosticV Repository
+- Catalog items live in agd_v2/<category>/<name>/
 - Key files: common.yaml, dev.yaml, description.adoc
-- Validate with yamllint before committing
+- Always validate with yamllint before committing
 - PR directly to main
 ```
 
-**Showroom** (in each showroom repo):
-
-```markdown
-## Content
-- AsciiDoc format, NOT Markdown
-- Files go in content/modules/ROOT/pages/
-- Follow Say > Do > Explain pattern
-- No corporate tone -- write like you're sitting next to someone
-
-## Git Rules
-- Branch from main
-- Short descriptive branch names, no feature/ prefix
-- No AI attribution in commits
-```
-
----
-
-## Vague Prompts That Burn Through Context
-
-### What happens
-
-You open Claude in your `agnosticv` repo and type:
-
-```
-> help me fix the catalog item
-```
-
-Claude doesn't know which catalog item. There are hundreds. So it starts scanning directories, reading `common.yaml` files one by one, trying to figure out what you mean. It reads 15 files. Your context is now half full and Claude hasn't done anything useful yet.
-
-Or in a Showroom repo:
-
-```
-> make the content better
-```
-
-Claude reads every `.adoc` file in the repo, produces a vague plan to "improve clarity and flow," and rewrites Module 1 in a way that loses all the technical accuracy.
-
-### What you see
-
-Claude burns through 40-50% of its context window just exploring. Then when it finally writes something, it doesn't have enough room left to do a good job. You hit auto-compact. Claude loses the specifics of what you asked for. The output is generic.
-
-### Fix
-
-Be specific. Reference the file. Tell Claude what "fixed" looks like.
-
-```
-> The common.yaml at sandboxes-gpte/AAP_WORKSHOPS/aap-selfserv-intro/
-> has an incorrect collection repo URL in agd_v2_collections.
-> The URL should point to https://github.com/rhpds/aap-selfserv-collection.
-> Fix it and run yamllint on the result.
-```
-
-```
-> Module 3 in content/modules/ROOT/pages/module-03.adoc needs a new section
-> after the "Deploy the application" step. Add a verification step where
-> the user runs: oc get pods -n %user%-project
-> Follow the same AsciiDoc pattern as the existing steps in the file.
-```
-
----
-
-## Working Across AgV + AgD + Showroom in One Session
-
-### What happens
-
-A new workshop needs work across all three repos: AgnosticV catalog item, AgnosticD role, and Showroom content. You open one Claude session and start jumping between them.
-
-By the time you're on the Showroom content, Claude's context is packed with AgnosticV YAML structures, AgnosticD role patterns, and Ansible task definitions. It starts generating AsciiDoc that includes YAML frontmatter from AgV. Or it uses Ansible `register:` syntax inside a Showroom module because that's what it's been seeing for the last 30 messages.
-
-### What you see
-
-Claude puts Ansible task syntax where a user command should be:
-
-```yaml
-# This appeared in a Showroom module as a "user step" --
-# but it's an Ansible task, not something a user would type
-- name: Deploy application
-  ansible.builtin.shell: |
-    oc apply -f manifests/
-  delegate_to: bastion
-```
-
-When it should have been:
+**`.claude/rules/` directory** -- granular rules that auto-load:
 
 ```text
-== Deploy the Application
-
-Run the following command to deploy the application:
-
-  oc apply -f manifests/
+.claude/rules/
+  git-conventions.md     # Branch naming, commit format
+  yaml-standards.md      # YAML formatting rules
+  naming-conventions.md  # Variable and file naming
 ```
 
-### Fix
+Each `.md` file in `.claude/rules/` is loaded automatically. Use this for rules that should always be active without cluttering the main `CLAUDE.md`.
 
-Separate sessions per repo. Each gets clean context.
+### Template Interpolation
+
+CLAUDE.md supports {% raw %}`{{path}}`{% endraw %} syntax to include content from other files:
+
+{% raw %}
+```markdown
+# My Project CLAUDE.md
+
+{{~/claude/agnosticd-context}}
+{{~/claude/litemaas.md}}
+```
+{% endraw %}
+
+This pulls in shared context files without duplicating content across repos.
+
+### The /memory Command
+
+Type `/memory` in a Claude Code session to view and edit what Claude remembers about the current project. Claude stores learned preferences here -- things like "this user prefers yamllint over manual checking" or "always use oc instead of kubectl in this repo."
+
+```text
+> /memory
+```
+
+This opens your project memory file for direct editing. Add rules here that you want Claude to remember across sessions.
+
+---
+
+## Choosing and Switching Models {#models}
+
+Claude Code supports three model tiers. The right model depends on what you're doing.
+
+### Available Models
+
+<div style="overflow-x: auto;">
+
+| Model | Best For | Cost |
+|---|---|---|
+| **Sonnet** (default) | Daily work -- editing files, running commands, writing code, using skills | Lower |
+| **Opus** | Complex architecture, multi-file refactoring, nuanced content generation | Higher |
+| **Haiku** | Quick lookups, simple questions, fast responses | Lowest |
+
+</div>
+
+### How to Switch Models
+
+**For the current session:**
+
+```text
+> /model
+```
+
+This opens an interactive picker. Select the model you want.
+
+**When starting Claude:**
 
 ```bash
-# Terminal 1 -- AgnosticD role
-cd ~/work/code/agnosticd && claude
-> /rename agd-new-workshop
-
-# Terminal 2 -- AgnosticV catalog
-cd ~/work/code/agnosticv && claude
-> /rename agv-new-workshop
-
-# Terminal 3 -- Showroom content
-cd ~/work/showroom-content/my-workshop-showroom && claude
-> /rename showroom-new-workshop
+claude --model opus
 ```
 
-Finish the AgD role first. Then the AgV catalog. Then the Showroom content. Each session knows exactly what repo it's in and doesn't get confused.
+**Set a default model permanently:**
+
+```bash
+claude /config
+```
+
+Navigate to the model setting and change it. This persists across sessions.
+
+<div class="callout callout-tip">
+<strong>Tip:</strong> Use Sonnet for everyday RHDP work (catalog items, showroom modules, validation roles). Switch to Opus when you need Claude to understand complex relationships across multiple files -- like building a new AgnosticD role that inherits from core_workload while generating matching AgnosticV catalog configs.
+</div>
 
 ---
 
-## Generating Showroom Content Without a Reference
+## Context Management {#context}
 
-### What happens
+Every Claude Code session has a context window -- a limit on how much information Claude can hold at once. Managing it well prevents Claude from "forgetting" your conventions mid-task.
 
-You run `/showroom:create-lab` and tell Claude to generate Module 2 for your workshop. Claude has no reference for your existing content's style, structure, or technical depth. It produces generic content that reads like a product datasheet, not a hands-on lab.
-
-### What you see
+### Check Your Context Usage
 
 ```text
-== Module 2: Configuring Red Hat Ansible Automation Platform
-
-In this module, you will configure the Ansible Automation Platform
-to enable self-service automation capabilities across your organization.
-
-Red Hat Ansible Automation Platform provides a comprehensive solution
-for IT automation that enables your organization to...
+> /context
 ```
 
-That's marketing copy, not a workshop. The user doesn't learn anything from it. Nate rejects it, and you have to rewrite it by hand.
+This shows how much of the context window is in use. When it gets above 70-80%, Claude may start losing details from earlier in the conversation.
 
-### Fix
-
-Always point Claude to an existing module as a reference:
-
-```
-> Read the existing Module 1 at
-> @content/modules/ROOT/pages/module-01.adoc
-> to understand the style, tone, and AsciiDoc structure.
->
-> Now create Module 2 that covers configuring job templates.
-> Follow the exact same patterns -- the callout boxes, the
-> [source,bash] blocks, the verification steps after each action.
-> Keep the same hands-on tone.
-```
-
-Or better yet, point to a module from a different repo that's already reviewed and approved:
-
-```
-> Use ~/work/showroom-content/aap-selfserv-intro-showroom/
-> content/modules/ROOT/pages/module-02.adoc as a reference
-> for quality, structure, and writing style.
-```
-
----
-
-## Not Verifying Claude's Output
-
-### What happens
-
-Claude updates your AgnosticV `common.yaml`. The YAML looks reasonable. You commit and push. The PR fails CI because the YAML has an indentation error on line 47, or a duplicate key, or a missing required field.
-
-Or Claude writes an AgnosticD validation role that looks correct but has a `when:` condition that never evaluates to true, so the task silently skips every time.
-
-### What you see
-
-```yaml
-# Looks fine to a human scanning it quickly
-agd_v2_collections:
-  - name: my_collection
-    git_repo: https://github.com/rhpds/my-collection
-    version: main
-    git_repo: https://github.com/rhpds/my-collection  # Duplicate key -- YAML error
-```
-
-### Fix
-
-Always tell Claude to validate after making changes:
-
-```
-> Update the common.yaml to add the new collection.
-> After the change, run yamllint common.yaml and fix any issues.
-```
-
-```
-> Add the validation tasks. After writing them, run:
-> ansible-lint roles/ocp4_workload_aap_validate/
-> Fix any errors and run it again until it passes clean.
-```
-
-For Showroom content, you can use the verify skill:
-
-```
-> /showroom:verify-content
-```
-
----
-
-## Auto-Compact Kicks In While Writing a Showroom Lab
-
-### What happens
-
-You're halfway through creating Module 4 of your Showroom workshop. Claude has read Modules 1-3 for reference, read the Antora nav file, read your CLAUDE.md, and generated about 200 lines of AsciiDoc. Then auto-compact triggers because the context window is full.
-
-Claude summarizes everything. But summaries lose detail. It forgets the exact callout-box pattern you used in Module 2. It loses the specific variable substitution format (`%user%` vs `{user}`). It drops the navigation structure. When it continues writing, Module 4 suddenly has a different style than Modules 1-3 -- different heading levels, different admonition syntax, missing verification steps.
-
-### What you see
-
-Before auto-compact (Module 3, correct):
+### Clear Context Between Tasks
 
 ```text
-[NOTE]
-====
-Make sure you replace `%user%` with your assigned username.
-====
-```
-
-After auto-compact (Module 4, drifted):
-
-```text
-NOTE: Replace `{user}` with your username.
-```
-
-The module is inconsistent with the rest of the workshop. You have to go back and fix it by hand.
-
-### Fix
-
-**Before you start a long content session**, tell Claude what to preserve during compaction. Add this to your prompt or your CLAUDE.md:
-
-```markdown
-# Compact instructions
-When compacting, always preserve: the AsciiDoc patterns from existing
-modules (callout boxes, source blocks, variable substitution format),
-the Antora nav structure, and the list of completed vs remaining modules.
-```
-
-**When you see context getting high** (check with `/context`), proactively compact instead of waiting for auto-compact:
-
-```
-> /compact Keep the AsciiDoc patterns from module-01.adoc, the %user%
-> variable format, the [NOTE]/[IMPORTANT] callout style, and the
-> verification step pattern. I still need to write modules 4 and 5.
-```
-
-**If auto-compact already fired and the output drifted**, don't keep going. Rewind or clear and re-anchor:
-
-```
 > /clear
-> Read @content/modules/ROOT/pages/module-03.adoc for the exact AsciiDoc
-> patterns and style. Continue writing module-04.adoc using the same
-> structure. The topic is: configuring job templates in AAP.
+```
+
+Use `/clear` when switching between unrelated tasks. If you just finished an AgnosticV catalog item and now need to write Showroom content, clear first. Otherwise Claude carries over YAML patterns into your AsciiDoc files.
+
+### Compact Without Losing Everything
+
+```text
+> /compact Keep the role naming conventions, delegate_to patterns,
+> and the validation task structure from core_workload
+```
+
+`/compact` summarizes the conversation to free up space while preserving what you specify. Use it when you're deep in a long session and don't want to start over.
+
+<div class="callout callout-warning">
+<strong>Auto-compact happens automatically</strong> when context reaches ~95%. When this fires, Claude summarizes everything -- and summaries lose detail. To avoid surprises, compact proactively with focus instructions before auto-compact triggers.
+</div>
+
+### What to Preserve During Compaction
+
+When compacting during a Showroom session:
+
+```text
+> /compact Keep the AsciiDoc patterns from module-01.adoc,
+> the %user% variable format, the [NOTE]/[IMPORTANT] callout style,
+> and the verification step pattern. I still need modules 4 and 5.
+```
+
+When compacting during an AgnosticD session:
+
+```text
+> /compact Keep the role naming conventions, delegate_to: bastion pattern,
+> core_workload inheritance, and the validation task structure
 ```
 
 ---
 
-## Your Laptop Restarts Mid-Session
+## Session Management {#sessions}
 
-### What happens
+### Name Your Sessions
 
-You're building an AgnosticD validation role. Claude has written half the tasks, read the `core_workload` reference, and has a clear picture of what needs to happen next. Then your laptop restarts -- macOS update, battery dies, VPN drops and terminal closes.
+Always name your session when starting real work:
 
-You open a new terminal and type `claude`. Fresh session. All that context is gone. You try to pick up where you left off, but Claude has no idea what you were working on. You end up re-explaining everything from scratch.
-
-### What you see
-
-```
-# New session -- Claude knows nothing about your previous work
-> continue working on the validation role
-
-I'd be happy to help with a validation role! Could you tell me more
-about what you're trying to validate? What's the target environment?
+```text
+> /rename agd-aap-validation-role
 ```
 
-### Fix
+### Resume After Interruptions
 
-**Claude saves every session locally.** You don't lose anything. Just resume:
+Claude saves every session locally. If your laptop restarts, VPN drops, or you close the terminal:
 
 ```bash
 # Resume the most recent session in this directory
 claude --continue
 
-# Or pick from a list of recent sessions
+# Pick from a list of recent sessions
 claude --resume
-```
 
-If you named your session earlier (and you should), resume by name:
-
-```bash
-claude --resume agd-validation-role
+# Resume a specific named session
+claude --resume agd-aap-validation-role
 ```
 
 The full conversation history, tool outputs, and file states are all restored. Claude picks up exactly where it left off.
 
-**The habit**: always `/rename` your session when you start real work:
+### Multiple Sessions for Multiple Repos
 
+When working across repos, run separate Claude sessions:
+
+```bash
+# Terminal 1 -- AgnosticD
+cd ~/work/code/agnosticd && claude
+
+# Terminal 2 -- AgnosticV
+cd ~/work/code/agnosticv && claude
+
+# Terminal 3 -- Showroom
+cd ~/work/showroom-content/my-workshop/ && claude
 ```
-> /rename agd-aap-validation-role
-```
 
-Then if anything interrupts you -- laptop restart, VPN drop, coffee break that turns into a meeting -- you can get right back to it.
-
-### What if you didn't name it?
-
-`claude --resume` without a name opens an interactive picker showing your recent sessions with timestamps and first messages. You can search and preview before selecting one.
+Each session has its own context. No bleed-over between repos.
 
 ---
 
-## Correcting Claude Over and Over
+## Plan Mode {#plan-mode}
 
-### What happens
+Plan mode lets Claude explore and design before writing code. It's read-only -- Claude can read files and search, but can't modify anything until you approve the plan.
 
-Claude creates a branch called `feature/aap-update`. You say "no `feature/` prefix." Claude says sorry and creates `fix/aap-update`. You say "no prefix at all." Claude creates `aap-update` but now the commit message has the AI footer you told it not to use three messages ago. You correct that too. By now the context is full of failed attempts and Claude is performing worse than when you started.
+### How to Enter Plan Mode
 
-### Fix
+**Cycle modes with the keyboard:**
 
-After two corrections on the same issue, stop correcting. `/clear` and write a single prompt that includes everything:
+Press `Shift+Tab` to cycle: **Normal** > **Auto-Accept** > **Plan**
 
+**Or ask Claude directly:**
+
+```text
+> Plan how to add a new validation role for AAP health checks
 ```
-> /clear
 
+### When to Use Plan Mode
+
+- Building a new AgnosticD role from scratch
+- Creating a multi-module Showroom workshop
+- Refactoring an existing catalog item structure
+- Any task where you want Claude to understand the codebase before making changes
+
+### Edit Plans in Your Editor
+
+Press `Ctrl+G` to open the current plan in your default editor (vim, VS Code, etc.) for direct editing.
+
+---
+
+## Keyboard Shortcuts {#shortcuts}
+
+<div style="overflow-x: auto;">
+
+| Shortcut | Action |
+|---|---|
+| `Esc` | Stop Claude mid-action |
+| `Esc` `Esc` | Rewind / checkpoint menu |
+| `Shift+Tab` | Cycle modes: Normal > Auto-Accept > Plan |
+| `Ctrl+G` | Open plan in your editor |
+| `Ctrl+O` | Toggle verbose mode (see Claude's reasoning) |
+| `Option+T` / `Alt+T` | Toggle extended thinking on/off |
+| `Ctrl+B` | Background a running task |
+
+</div>
+
+---
+
+## All Slash Commands {#commands}
+
+<div style="overflow-x: auto;">
+
+| Command | What It Does |
+|---|---|
+| `/clear` | Wipe conversation history -- start fresh |
+| `/compact` | Summarize conversation to free context space |
+| `/model` | Switch between Sonnet, Opus, Haiku |
+| `/rename` | Name the current session for later resume |
+| `/resume` | Pick from previous sessions to continue |
+| `/rewind` | Undo Claude's last changes (code + conversation) |
+| `/init` | Generate a CLAUDE.md for the current repo |
+| `/memory` | View/edit persistent project memory |
+| `/cost` | Check token usage and cost (API users) |
+| `/context` | See context window usage |
+| `/config` | Open Claude Code settings |
+| `/hooks` | Configure automated checks |
+| `/help` | Show all available commands |
+
+</div>
+
+---
+
+## Extended Thinking {#thinking}
+
+Extended thinking gives Claude more time to reason through complex problems before responding. Toggle it with `Option+T` (Mac) or `Alt+T` (Linux).
+
+Use extended thinking when:
+- Debugging a multi-file issue where the root cause isn't obvious
+- Writing complex Ansible logic with nested conditionals
+- Designing a new AgnosticV catalog item structure with multiple workloads
+- Claude keeps producing wrong output and you want it to reason more carefully
+
+<div class="callout callout-info">
+<strong>Note:</strong> Extended thinking uses more tokens and is slower. Don't leave it on for simple tasks like file edits or running commands.
+</div>
+
+---
+
+## Hooks {#hooks}
+
+Hooks run shell commands automatically before or after Claude performs actions. Use them to enforce standards without remembering to ask.
+
+### Example: Auto-lint YAML After Every Edit
+
+Add to `.claude/settings.json` in your AgnosticV repo:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "yamllint -d relaxed \"$TOOL_INPUT_FILE_PATH\" 2>&1 || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Every time Claude edits or creates a file, `yamllint` runs automatically. Claude sees the lint output and fixes issues without you asking.
+
+### Example: Block Destructive Git Commands
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$TOOL_INPUT\" | grep -qE 'push --force|reset --hard|clean -f' && echo 'Blocked: destructive git command' >&2 && exit 2 || exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## RHDP Skills Usage {#skills}
+
+### Available Skills
+
+<div style="overflow-x: auto;">
+
+| Skill | What It Does | Use When |
+|---|---|---|
+| `/showroom:create-lab` | Generate a workshop module with AsciiDoc | Building hands-on lab content |
+| `/showroom:create-demo` | Create a Know/Show demo module | Building presenter-led demos |
+| `/showroom:verify-content` | Run quality checks on Showroom content | Before submitting a PR |
+| `/showroom:blog-generate` | Convert workshop/demo into a blog post | Repurposing content |
+| `/agnosticv:catalog-builder` | Create/update AgV catalog files | New catalog items or updates |
+| `/agnosticv:validator` | Validate AgV catalog configs | Before submitting AgV PRs |
+| `/health:deployment-validator` | Create Ansible validation roles | Building RHDP health checks |
+
+</div>
+
+### Getting Better Output from Skills
+
+The most common complaint is that skills produce generic content. Here's how to fix that.
+
+**Always provide a reference module:**
+
+```text
+> Read @content/modules/ROOT/pages/module-01.adoc for the style,
+> tone, and AsciiDoc patterns. Now create module-02 following
+> the exact same structure.
+```
+
+**Be specific about what you want:**
+
+```text
+# Bad -- produces generic content
+> /showroom:create-lab
+
+# Good -- Claude knows exactly what to generate
+> /showroom:create-lab
+> Workshop topic: Migrating VMs from VMware to OpenShift Virtualization
+> This module covers the MTV operator. Target audience: infrastructure
+> admins familiar with VMware but new to OpenShift.
+> Reference: @content/modules/ROOT/pages/module-01.adoc
+```
+
+**For AgnosticV, know your mode:**
+
+The catalog-builder skill offers 4 modes. Choose the right one:
+1. **Full Catalog** -- new catalog item from scratch
+2. **Common.yaml Only** -- updating deployment config
+3. **Description.adoc Only** -- updating the RHDP listing page
+4. **Info Message Only** -- updating the post-deployment info page
+
+---
+
+## Setting Up CLAUDE.md for Each Repo {#claude-md-setup}
+
+### For AgnosticV
+
+```markdown
+## AgnosticV Repository
+
+### Structure
+- Catalogs: agd_v2/<category>/<name>/ (standard)
+- Enterprise: enterprise/<category>/<name>/
+- Key files: common.yaml, dev.yaml, description.adoc
+
+### Rules
+- Validate YAML with yamllint before committing
+- Asset UUIDs must be unique (generate with uuidgen)
+- Branch from main, PR to main
+- No feature/ prefix on branches
+- No AI attribution in commits
+
+### Naming
+- Catalog names: lowercase with hyphens
+- Branch names: short, descriptive (e.g., update-aap-catalog)
+```
+
+### For Showroom Content
+
+```markdown
+## Showroom Workshop
+
+### Content Format
+- AsciiDoc (.adoc), NOT Markdown
+- Files: content/modules/ROOT/pages/
+- Navigation: content/modules/ROOT/nav.adoc
+- Partials: content/modules/ROOT/partials/
+
+### Writing Style
+- Second person ("you will", not "we will")
+- Direct and hands-on, not corporate
+- Follow Say > Do > Explain pattern
+- Use %user% for username substitution (not {user})
+
+### AsciiDoc Patterns
+- [source,bash] for commands
+- [NOTE]/[IMPORTANT]/[WARNING] for callouts
+- Every action needs a verification step
+```
+
+### For AgnosticD
+
+```markdown
+## AgnosticD v2 Repository
+
+### Roles
+- Path: roles/ocp4_workload_<name>/
+- Inherit from core_workload patterns
+- All oc/ansible commands: delegate_to: bastion
+- Register results and check with assert
+
+### Naming
+- Roles: ocp4_workload_<descriptive_name>
+- Variables: role_name_variable_name
+- Tasks: descriptive, starts with verb
+```
+
+<div class="callout callout-tip">
+<strong>Quick start:</strong> Run <code>/init</code> in any repo to have Claude generate a starter CLAUDE.md based on the repo's contents.
+</div>
+
+---
+
+## End-to-End Workflows {#workflows}
+
+### New Workshop from Scratch
+
+When building a new workshop, the sequence and session isolation matter.
+
+**Step 1: Create Showroom content** (Terminal 1)
+
+```bash
+cd ~/work/showroom-content/my-new-workshop-showroom && claude
+```
+
+```text
+> /rename showroom-new-workshop
+> /showroom:create-lab
+```
+
+Generate Module 1 with your reference materials. Then for Module 2+, always reference the previous module:
+
+```text
+> Read @content/modules/ROOT/pages/module-01.adoc for the style
+> and patterns. Now create module-02 covering job templates.
+```
+
+**Step 2: Verify Showroom content** (same terminal)
+
+```text
+> /showroom:verify-content
+```
+
+Fix any issues before moving on.
+
+**Step 3: Create AgV catalog item** (Terminal 2)
+
+```bash
+cd ~/work/code/agnosticv && claude
+```
+
+```text
+> /rename agv-new-workshop
+> /agnosticv:catalog-builder
+```
+
+Choose Mode 1 (Full Catalog). Point it to your new Showroom repo.
+
+**Step 4: Validate and PR** (each terminal)
+
+```text
+# In AgnosticV terminal
+> Run yamllint on common.yaml. Fix any issues. Commit and create PR.
+
+# In Showroom terminal
+> Commit all modules. Create PR.
+```
+
+<div class="callout callout-warning">
+<strong>Key discipline:</strong> Finish each repo's work in its own session before moving to the next. Don't switch between repos in a single session -- that's where context bleed happens.
+</div>
+
+### Updating an Existing Catalog Item
+
+```text
+> Read @sandboxes-gpte/AAP_WORKSHOPS/aap-selfserv-intro/common.yaml
+> The collection URL is wrong. Change it to
+> https://github.com/rhpds/aap-selfserv-collection
+> Run yamllint after the change.
+```
+
+Always read first, state the change, ask for validation. One prompt, one task.
+
+---
+
+## RHDP Power Tips {#tips}
+
+These are things that aren't documented elsewhere but matter daily.
+
+### AsciiDoc Copy-Paste Commands in Showroom
+
+Claude consistently writes `[source,bash]` for commands. That's wrong for Showroom -- it loses the copy button and breaks variable substitution. The correct block syntax is:
+
+```text
+[source,bash,role=execute,subs=attributes+]
+----
+oc get pods -n %user%-project
+----
+```
+
+Without `role=execute`, no copy button in the Showroom UI. Without `subs=attributes+`, `%user%` renders as literal text. Put this in your Showroom CLAUDE.md:
+
+```markdown
+## AsciiDoc Command Blocks
+Always use: [source,bash,role=execute,subs=attributes+]
+Never use: [source,bash] alone
+```
+
+### Always Check nav.adoc
+
+Claude creates module files but often forgets to update `content/modules/ROOT/nav.adoc`, or updates it with the wrong path. The module exists but doesn't appear in navigation. After generating modules, always say:
+
+```text
+> Update nav.adoc to include module-04.adoc in the correct position
+```
+
+### Read Before Updating
+
+Don't say "update the catalog item." Say:
+
+```text
+> Read @sandboxes-gpte/AAP_WORKSHOPS/aap-selfserv-intro/common.yaml
+> and add a new collection entry for aap-selfserv-collection at
+> version main.
+```
+
+Claude can't update what it hasn't read. Letting it guess the current state leads to overwrites and lost fields.
+
+### Track Multi-Day Work in CLAUDE.md
+
+If a project spans multiple sessions, add state to your repo's CLAUDE.md:
+
+```markdown
+## Current Work
+- aap-selfserv workshop: modules 1-2 done and merged
+- Modules 3-5 remaining
+- Catalog item created but not yet tested
+```
+
+This survives across sessions and gives Claude instant context, even if you forget to `--resume`.
+
+### The %user% Variable Drift
+
+Showroom uses `%user%` for dynamic substitution. AsciiDoc natively uses `{attribute}` syntax. Claude drifts between them, especially after compaction. Add to your CLAUDE.md or compact instructions:
+
+```text
+Always use %user% for variable substitution, never {user}
+```
+
+---
+
+## Common Pitfalls {#pitfalls}
+
+### Context Bleed Between Tasks
+
+**Problem:** You finish an AgV catalog item, then ask Claude to write Showroom content without clearing. Claude puts YAML structures inside AsciiDoc files.
+
+**Fix:** One `/clear` between unrelated tasks.
+
+```text
+> /clear
+> I'm working on the Showroom content for ocp-virt-admin.
+> The repo is at ~/work/showroom-content/ocp-virt-admin-showroom/
+> Create module 2 following the structure in module 1.
+```
+
+### Auto-Compact Loses Your Patterns
+
+**Problem:** You're writing Module 4 of a workshop. Auto-compact fires. Suddenly Module 4 uses different heading levels, different admonition syntax, and `{user}` instead of `%user%`.
+
+**Fix:** Compact proactively with focus instructions before auto-compact triggers.
+
+```text
+> /compact Keep the AsciiDoc patterns from module-01.adoc,
+> the %user% variable format, and the [NOTE] callout style.
+> I still need to write modules 4 and 5.
+```
+
+### Vague Prompts Burn Context
+
+**Problem:** "Help me fix the catalog item" -- Claude reads 15 files trying to figure out which one. Half your context is gone before it does anything useful.
+
+**Fix:** Be specific. Reference the file. Tell Claude what "fixed" looks like.
+
+```text
+> The common.yaml at sandboxes-gpte/AAP_WORKSHOPS/aap-selfserv-intro/
+> has an incorrect collection repo URL. The URL should point to
+> https://github.com/rhpds/aap-selfserv-collection. Fix it and
+> run yamllint on the result.
+```
+
+### Correcting Claude Over and Over
+
+**Problem:** Claude creates `feature/aap-update`. You say no prefix. Claude creates `fix/aap-update`. You say no prefix at all. Three corrections later, context is full of failed attempts.
+
+**Fix:** After two corrections on the same issue, `/clear` and write a single prompt with all constraints.
+
+```text
+> /clear
 > Create a branch called aap-catalog-update from main.
 > Update the common.yaml to add the new collection entry.
 > Run yamllint to validate.
@@ -476,68 +694,296 @@ After two corrections on the same issue, stop correcting. `/clear` and write a s
 > Push and create a PR to main.
 ```
 
-One clear prompt with all constraints upfront beats five rounds of corrections.
+### Not Validating Claude's Output
+
+**Problem:** Claude writes a `common.yaml` that looks right. You commit and push. CI fails because of a duplicate key or indentation error.
+
+**Fix:** Tell Claude to validate after every change.
+
+```text
+> Update the common.yaml. After the change, run yamllint
+> and fix any issues before committing.
+```
+
+For Showroom content:
+
+```text
+> /showroom:verify-content
+```
 
 ---
 
-## Quick Reference Tables
+## Plugin Management {#plugins}
 
-### Keyboard Shortcuts
+### Install the RHDP Marketplace
 
-| Shortcut | Action |
-|---|---|
-| `Esc` | Stop Claude mid-action |
-| `Esc + Esc` | Rewind / checkpoint menu |
-| `Shift+Tab` | Cycle modes: Normal > Auto-Accept > Plan |
-| `Ctrl+G` | Open plan in your editor |
-| `Ctrl+O` | Toggle verbose mode (see Claude's thinking) |
-| `Option+T` / `Alt+T` | Toggle extended thinking on/off |
+```text
+> /plugin marketplace add rhpds/rhdp-skills-marketplace
+```
 
-### Slash Commands
+### Install Plugins
 
-| Command | When to Use |
-|---|---|
-| `/clear` | Switching tasks, after failed corrections, between repos |
-| `/compact` | Deep in a session, need to free context without losing everything |
-| `/model` | Switch between Sonnet (daily work) and Opus (complex architecture) |
-| `/rename` | Name your session so you can `/resume` it later |
-| `/resume` | Pick up where you left off yesterday |
-| `/rewind` | Undo Claude's last changes (code + conversation) |
-| `/init` | Bootstrap a CLAUDE.md for a new repo |
-| `/memory` | View/edit what Claude remembers about this project |
-| `/cost` | Check token usage (API users) |
-| `/context` | See what's consuming your context window |
-| `/hooks` | Set up automated checks (e.g., lint after every edit) |
+```text
+> /plugin install showroom@rhdp-marketplace
+> /plugin install agnosticv@rhdp-marketplace
+> /plugin install health@rhdp-marketplace
+```
 
-### RHDP Skills
+### Update Plugins
 
-| Skill | Use Case |
-|---|---|
-| `/showroom:create-lab` | Generate a new workshop module from reference materials |
-| `/showroom:create-demo` | Create a presenter-led demo using Know/Show structure |
-| `/showroom:verify-content` | Run quality checks on existing Showroom content |
-| `/showroom:blog-generate` | Turn a workshop/demo into a blog post |
-| `/agnosticv:catalog-builder` | Create or update AgV catalog files |
-| `/agnosticv:validator` | Validate AgV catalog configs |
-| `/health:deployment-validator` | Create Ansible validation roles for RHDP health checks |
+```text
+> /plugin marketplace update
+> /plugin update showroom@rhdp-marketplace
+```
 
-### RHDP Git Rules (All Repos)
+### Check What's Installed
 
-| Rule | Example |
-|---|---|
-| Branch from `main` | `git checkout -b aap-catalog-fix main` |
-| Short descriptive names | `aap-catalog-fix`, `showroom-module3`, `validation-role` |
-| No `feature/` prefix | ~~`feature/aap-update`~~ |
-| No AI attribution in commits | No `Co-Authored-By: Claude` footer |
-| PR to `main` | `gh pr create --base main` |
-| Lint before committing | `yamllint`, `ansible-lint` |
+```text
+> /plugin list
+```
+
+### Test from a Branch
+
+To test unreleased changes from the `tech-preview` branch:
+
+```text
+> /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview
+```
+
+### Test Locally
+
+For local development with a cloned copy of the marketplace:
+
+```bash
+claude --plugin-dir ~/work/code/rhdp-skills-marketplace/showroom
+```
 
 ---
 
-## Further Reading
+## Configuration Files {#config}
 
-- [Claude Code Best Practices (official)](https://code.claude.com/docs/en/best-practices) -- The full upstream guide from Anthropic
-- [Memory Management](https://code.claude.com/docs/en/memory) -- CLAUDE.md, auto memory, `.claude/rules/`
-- [Common Workflows](https://code.claude.com/docs/en/common-workflows) -- Plan mode, subagents, PR workflows
-- [Managing Costs](https://code.claude.com/docs/en/costs) -- Token usage, model selection, reducing overhead
-- [Hooks Reference](https://code.claude.com/docs/en/hooks) -- Automate lint checks, block destructive commands
+### Settings Locations
+
+<div style="overflow-x: auto;">
+
+| File | Scope | What Goes Here |
+|---|---|---|
+| `~/.claude/settings.json` | Global | Default model, allowed tools, global hooks |
+| `.claude/settings.json` | Project | Project-specific hooks, permissions |
+| `~/CLAUDE.md` | Global | Universal rules (git style, commit format) |
+| `CLAUDE.md` | Project | Repo-specific conventions |
+| `.claude/rules/*.md` | Project | Auto-loaded rules (always active in this repo) |
+
+</div>
+
+### Open Settings
+
+```text
+> /config
+```
+
+### Change Default Model
+
+In `~/.claude/settings.json`:
+
+```json
+{
+  "model": "claude-sonnet-4-20250514",
+  "permissions": {
+    "allow": ["Read", "Glob", "Grep"]
+  }
+}
+```
+
+Or use the CLI:
+
+```bash
+claude /config
+```
+
+---
+
+## RHDP Git Rules {#git}
+
+These apply across all RHDP repos:
+
+<div style="overflow-x: auto;">
+
+| Rule | Correct | Wrong |
+|---|---|---|
+| Branch from `main` | `git checkout -b aap-catalog-fix main` | `git checkout -b aap-catalog-fix dev` |
+| Short descriptive names | `aap-catalog-fix` | `feature/aap-update` |
+| No prefix | `showroom-module3` | `feature/showroom-module3` |
+| No AI attribution | Clean commit message | `Co-Authored-By: Claude` footer |
+| PR to `main` | `gh pr create --base main` | `gh pr create --base dev` |
+| Lint first | `yamllint common.yaml` | Commit without linting |
+
+</div>
+
+---
+
+## Further Reading {#links}
+
+<div class="links-grid">
+  <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" class="link-card">
+    <h4>Claude Code Documentation</h4>
+    <p>Official docs from Anthropic</p>
+  </a>
+  <a href="../reference/quick-reference.html" class="link-card">
+    <h4>Quick Reference</h4>
+    <p>Commands and workflows at a glance</p>
+  </a>
+  <a href="../reference/troubleshooting.html" class="link-card">
+    <h4>Troubleshooting</h4>
+    <p>Fix common plugin and skill issues</p>
+  </a>
+  <a href="../setup/claude-code.html" class="link-card">
+    <h4>Claude Code Setup</h4>
+    <p>First-time installation guide</p>
+  </a>
+</div>
+
+---
+
+<div class="navigation-footer">
+  <a href="../index.html" class="nav-button">Back to Home</a>
+</div>
+
+<style>
+/* Page badge */
+.reference-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+/* Callout boxes */
+.callout {
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+.callout-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border-left-color: #ffc107;
+}
+.callout-tip {
+  background: linear-gradient(135deg, #d4edda 0%, #f0fff4 100%);
+  border-left-color: #28a745;
+}
+.callout-info {
+  background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
+  border-left-color: #0969da;
+}
+.callout-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
+  border-left-color: #dc3545;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+}
+table th {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+table td {
+  border: 1px solid #e1e4e8;
+  padding: 8px 12px;
+}
+table tr:nth-child(even) {
+  background-color: #f6f8fa;
+}
+
+/* Collapsible sections */
+details {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #24292e;
+}
+summary:hover {
+  color: #EE0000;
+}
+details[open] {
+  padding-bottom: 1rem;
+}
+details[open] summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+/* Links grid */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.link-card {
+  display: block;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+.link-card:hover {
+  border-color: #EE0000;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+.link-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: #24292e;
+}
+.link-card p {
+  margin: 0;
+  color: #586069;
+  font-size: 0.875rem;
+}
+
+/* Navigation footer */
+.navigation-footer {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e4e8;
+}
+.nav-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 2px solid #e1e4e8;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #24292e;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.nav-button:hover {
+  border-color: #EE0000;
+  color: #EE0000;
+  transform: translateY(-2px);
+}
+</style>
