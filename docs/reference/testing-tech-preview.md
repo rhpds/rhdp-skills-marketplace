@@ -54,21 +54,34 @@ git push origin tech-preview
 
 ### Option 1: Marketplace with Branch Specifier
 
-The simplest way. Add `#tech-preview` to the marketplace URL:
+Edit `~/.claude/plugins/known_marketplaces.json` and add a `ref` field pointing to `tech-preview`:
 
-```bash
-claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview
+```json
+{
+  "rhdp-marketplace": {
+    "source": {
+      "source": "github",
+      "repo": "rhpds/rhdp-skills-marketplace",
+      "ref": "tech-preview"
+    },
+    "installLocation": "/Users/you/.claude/plugins/marketplaces/rhdp-marketplace",
+    "lastUpdated": "2026-01-01T00:00:00.000Z"
+  }
+}
 ```
 
-This tells Claude Code to pull all skills from the `tech-preview` branch instead of `main`. Your skills list stays the same -- `/showroom:create-lab`, `/agnosticv:catalog-builder`, etc. -- but the underlying SKILL.md files come from the `tech-preview` branch.
+Then update the plugins inside Claude Code:
 
-To go back to stable:
-
-```bash
-claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace
+```
+/plugin marketplace update rhdp-marketplace
+/plugin update showroom@rhdp-marketplace
+/plugin update agnosticv@rhdp-marketplace
+/plugin update health@rhdp-marketplace
 ```
 
-(No `#branch` defaults to `main`.)
+Restart Claude Code (exit and relaunch) to pick up the new skill definitions.
+
+To go back to stable, remove the `"ref": "tech-preview"` line from the JSON file, repeat the update commands, and restart.
 
 ### Option 2: Local Directory (For Development)
 
@@ -151,27 +164,28 @@ Tell your teammates:
 
 ```
 I've pushed AgV skill changes to tech-preview. To test:
-claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview
+
+1. Edit ~/.claude/plugins/known_marketplaces.json
+   Add "ref": "tech-preview" to the source object
+2. Run: /plugin marketplace update rhdp-marketplace
+3. Run: /plugin update agnosticv@rhdp-marketplace
+4. Restart Claude Code
 
 Try running /agnosticv:catalog-builder and let me know if it works.
 ```
 
 ### 4. Merge to Main and Release
 
-Once tested, merge your branch to `main` via PR, tag a release, and teammates switch back to stable:
-
-```bash
-claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace
-```
+Once tested, merge your branch to `main` via PR, tag a release, and teammates switch back to stable by removing the `ref` field from their `known_marketplaces.json` and running the update commands again.
 
 ---
 
 ## Quick Reference
 
-| Method | Command | Best For |
+| Method | How | Best For |
 |---|---|---|
-| Marketplace (stable) | `claude /install-plugin URL` | Day-to-day use |
-| Marketplace (preview) | `claude /install-plugin URL#tech-preview` | Team testing before merge |
+| Marketplace (stable) | Default `known_marketplaces.json` (no `ref`) | Day-to-day use |
+| Marketplace (preview) | Add `"ref": "tech-preview"` + update plugins | Team testing before merge |
 | Local directory | `claude --plugin-dir ./path` | Active development |
 
 | Branch | Purpose | Who Uses It |
@@ -186,16 +200,16 @@ claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace
 
 ### Skills don't update after switching branches
 
-Claude Code caches plugins. After switching between marketplace branches, restart Claude:
+Claude Code caches plugins. After switching marketplace branches, update and restart:
 
-```bash
-# Reinstall from tech-preview
-claude /install-plugin https://github.com/rhpds/rhdp-skills-marketplace#tech-preview
-
-# Restart Claude to pick up changes
-exit
-claude
 ```
+/plugin marketplace update rhdp-marketplace
+/plugin update showroom@rhdp-marketplace
+/plugin update agnosticv@rhdp-marketplace
+/plugin update health@rhdp-marketplace
+```
+
+Then exit and relaunch Claude Code.
 
 ### `--plugin-dir` skills not showing up
 
@@ -222,8 +236,8 @@ claude --plugin-dir ~/work/code/rhdp-skills-marketplace
 
 Check your installed plugins:
 
-```bash
-claude /plugins
+```
+/plugins
 ```
 
 This shows which plugins are loaded and where they come from (marketplace URL or local path).
