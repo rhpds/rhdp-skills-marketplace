@@ -142,6 +142,63 @@ Continue with verification? [Yes/No]
 
 ---
 
+### Step 1.5: Check Showroom Version (REQUIRED)
+
+**Ask the user:**
+
+```
+Are you running Showroom 1.5.1 or above?
+
+Showroom 1.5.1 introduced new structure requirements:
+- default-site.yml (at repo root, not site.yml)
+- supplemental-ui/ (at repo root, not content/supplemental-ui/)
+- ui-config.yml with view_switcher support
+- .github/workflows/gh-pages.yml referencing default-site.yml
+
+Which version are you on? [1.5.1+ / older / not sure]
+```
+
+**If 1.5.1+ (or not sure — check)**: Run the Showroom 1.5.1 structure check below.
+
+**If older**: Skip the 1.5.1 structure check. Use legacy checks only (site.yml, content/supplemental-ui/).
+
+---
+
+**Showroom 1.5.1 Structure Check** (run if version is 1.5.1+ or unknown):
+
+Check for these required files. Report PASS or FAIL for each:
+
+| File | Expected Location | Check |
+|---|---|---|
+| `default-site.yml` | repo root | exists? |
+| `ui-config.yml` | repo root | exists? has `view_switcher:`? |
+| `supplemental-ui/` | repo root (NOT under content/) | exists? |
+| `content/lib/` | content/lib/ | has 4 JS files? |
+| `.github/workflows/gh-pages.yml` | .github/workflows/ | exists? references `default-site.yml`? |
+
+**Check for common migration issues**:
+- `site.yml` at root → should be `default-site.yml`
+- `content/supplemental-ui/` → should be `supplemental-ui/` at root
+- `supplemental_files` in site.yml listing multiple paths → should be `supplemental_files: ./supplemental-ui`
+- `ui-config.yml` missing `view_switcher:` block → needs Showroom 1.5.1 format
+
+**Report format**:
+
+```
+📋 Showroom Structure Check (v1.5.1+)
+
+✅ default-site.yml — found
+✅ ui-config.yml — found, view_switcher present
+❌ supplemental-ui/ — NOT found at root (found at content/supplemental-ui/ — needs migration)
+✅ content/lib/ — 4 JS files present
+❌ .github/workflows/gh-pages.yml — NOT found
+
+Issues found: 2
+Run /showroom:create-lab --new to scaffold missing files, or fix manually.
+```
+
+---
+
 ### Step 2: Identify Content Type
 
 **Q: What type of content are you verifying?**
