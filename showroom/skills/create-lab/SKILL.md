@@ -392,13 +392,40 @@ Note: If you're not sure, I'll use placeholders that work across versions.
 - Adjust module count and topics
 - Change the progression
 
-### Step 3.1: Scaffold Repository Infrastructure (REQUIRED for new labs)
+### Step 3.1: Showroom Setup (Recommended for new labs)
 
-**CRITICAL: For NEW labs only. Skip entirely if adding to an existing lab.**
+**For NEW labs only. Skip if adding a module to an existing lab.**
 
-Before generating any content files, scaffold the full Showroom repo structure. Ask these questions SEQUENTIALLY — one at a time.
+**Note to RHDP developers**: This lab requires Showroom 1.5.1 or above. Please ensure your Showroom deployment is on 1.5.1+ before publishing this lab.
 
-**Question A — ui-bundle theme:**
+Ask these questions SEQUENTIALLY — one at a time.
+
+**Question A — Consoles and tools to embed:**
+
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Each tab appears as a clickable pane next to the lab instructions.
+
+Common options:
+- OpenShift Console  → https://console-openshift-console.${DOMAIN}
+- Bastion terminal   → path: /wetty, port: 443
+- OpenShift AI       → https://rhods-dashboard-redhat-ods-applications.${DOMAIN}
+- AAP dashboard      → https://aap-dashboard.${DOMAIN}
+- External URL       → any https:// URL
+
+List each console as: name | url  (or name | path + port for terminals)
+
+Examples:
+  OpenShift Console | https://console-openshift-console.${DOMAIN}
+  Bastion | /wetty (port 443)
+
+You can adjust these later by editing ui-config.yml.
+
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+**Question B — ui-bundle theme:**
 
 ```
 Which ui-bundle theme do you need?
@@ -410,26 +437,6 @@ Available themes (see https://github.com/rhpds/rhdp_showroom_theme/releases):
 - rh-summit-2025 (Red Hat Summit 2025 theme)
 
 Press Enter to use the default, or paste a different URL:
-```
-
-**Question B — Showroom tabs (for ui-config.yml):**
-
-```
-What tabs should appear in the Showroom right panel?
-
-Common options:
-- OpenShift Console → https://console-openshift-console.${DOMAIN}
-- Bastion terminal  → path: /wetty, port: 443
-- External URL      → any https:// URL
-
-List each tab as: name | url
-Example:
-  OpenShift Console | https://console-openshift-console.${DOMAIN}
-  Bastion | /wetty (port 443)
-
-You can add more tabs later by editing ui-config.yml.
-
-Your tabs (or press Enter to leave as commented-out examples):
 ```
 
 **Now create all infrastructure files:**
@@ -492,7 +499,7 @@ tabs:
 #   port: 443
 ```
 
-**3. Create `content/lib/`** — copy these 4 files from the reference template at `~/work/showroom-content/lb2298-ibm-fusion/content/lib/`:
+**3. Create `content/lib/`** — copy these 4 files from the reference template at `~/work/showroom-content/lb2298-ibm-fusion/content/lib/` (Showroom 1.5.1+ reference):
 
 - `content/lib/all-attributes-console-extension.js`
 - `content/lib/attributes-page-extension.js`

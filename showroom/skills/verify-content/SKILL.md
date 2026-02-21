@@ -142,60 +142,40 @@ Continue with verification? [Yes/No]
 
 ---
 
-### Step 1.5: Check Showroom Version (REQUIRED)
+### Step 1.5: Showroom Version Check (Recommended)
 
-**Ask the user:**
+Check if the repo is on Showroom 1.5.1+. This is a recommendation, not a blocker.
 
-```
-Are you running Showroom 1.5.1 or above?
+**If local path is accessible**, check silently for these indicators:
 
-Showroom 1.5.1 introduced new structure requirements:
-- default-site.yml (at repo root, not site.yml)
-- supplemental-ui/ (at repo root, not content/supplemental-ui/)
-- ui-config.yml with view_switcher support
-- .github/workflows/gh-pages.yml referencing default-site.yml
+| Indicator | Meaning |
+|---|---|
+| `default-site.yml` at root | 1.5.1+ ✅ |
+| `site.yml` at root (no default-site.yml) | pre-1.5.1 ⚠️ |
+| `supplemental-ui/` at root | 1.5.1+ ✅ |
+| `content/supplemental-ui/` | pre-1.5.1 ⚠️ |
+| `ui-config.yml` has `view_switcher:` | 1.5.1+ ✅ |
 
-Which version are you on? [1.5.1+ / older / not sure]
-```
-
-**If 1.5.1+ (or not sure — check)**: Run the Showroom 1.5.1 structure check below.
-
-**If older**: Skip the 1.5.1 structure check. Use legacy checks only (site.yml, content/supplemental-ui/).
-
----
-
-**Showroom 1.5.1 Structure Check** (run if version is 1.5.1+ or unknown):
-
-Check for these required files. Report PASS or FAIL for each:
-
-| File | Expected Location | Check |
-|---|---|---|
-| `default-site.yml` | repo root | exists? |
-| `ui-config.yml` | repo root | exists? has `view_switcher:`? |
-| `supplemental-ui/` | repo root (NOT under content/) | exists? |
-| `content/lib/` | content/lib/ | has 4 JS files? |
-| `.github/workflows/gh-pages.yml` | .github/workflows/ | exists? references `default-site.yml`? |
-
-**Check for common migration issues**:
-- `site.yml` at root → should be `default-site.yml`
-- `content/supplemental-ui/` → should be `supplemental-ui/` at root
-- `supplemental_files` in site.yml listing multiple paths → should be `supplemental_files: ./supplemental-ui`
-- `ui-config.yml` missing `view_switcher:` block → needs Showroom 1.5.1 format
-
-**Report format**:
+**If pre-1.5.1 structure is detected**, include this notice in the Step 5 results (not as a blocker):
 
 ```
-📋 Showroom Structure Check (v1.5.1+)
+⚠️  Showroom version notice
 
-✅ default-site.yml — found
-✅ ui-config.yml — found, view_switcher present
-❌ supplemental-ui/ — NOT found at root (found at content/supplemental-ui/ — needs migration)
-✅ content/lib/ — 4 JS files present
-❌ .github/workflows/gh-pages.yml — NOT found
+This repository appears to be on a pre-1.5.1 Showroom structure.
 
-Issues found: 2
-Run /showroom:create-lab --new to scaffold missing files, or fix manually.
+Recommendation for RHDP developers: upgrade to Showroom 1.5.1+.
+
+What to update:
+- Rename site.yml → default-site.yml
+- Move content/supplemental-ui/ → supplemental-ui/ (repo root)
+- Update supplemental_files in default-site.yml to: ./supplemental-ui
+- Add view_switcher block to ui-config.yml
+- Update .github/workflows/gh-pages.yml to: antora generate default-site.yml
+
+Content verification continues regardless of Showroom version.
 ```
+
+**Do not block verification** — report the notice and continue with all content checks.
 
 ---
 
