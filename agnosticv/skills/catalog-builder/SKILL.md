@@ -1116,23 +1116,28 @@ If user says No or unsure → omit `deployer.actions` entirely.
       pull: missing
 ```
 
-**Ask: sandbox_api destroy behavior** (only if workload modifies external resources):
+**Ask: remove_workloads on destroy** (always ask — important for any catalog):
 
 ```
-Q: Should remove_workloads run when the environment is destroyed?
-   (Default: yes — set catch_all to false only if you want cleanup skipped)
+Q: Do you want remove_workloads to run when the environment is destroyed?
 
-Set catch_all to false? [Y/n]
+remove_workloads cleans up everything the workloads installed when a user
+deletes their environment. This is usually what you want.
+
+Set to NO only if your workload deployed something that should persist
+after destroy (e.g., data in an external system, a shared service, etc.)
+
+Run remove_workloads on destroy? [Y/n]  (default: Yes)
 ```
 
-If yes → add:
+- YES (default) → omit `sandbox_api` entirely (catch_all defaults to true)
+- NO → add:
 ```yaml
   sandbox_api:
     actions:
       destroy:
         catch_all: false
 ```
-If no → omit.
 
 **catalog.reportingLabels** — always ask:
 
