@@ -352,27 +352,39 @@ fi
 
 ### Step 4: Infrastructure Selection
 
-Default is **CNV pools** — used for all standard workshops and demos. Ask sequentially.
+Ask sequentially — ONE question at a time.
 
-**Question A — Cluster size:**
+**Question A — Infrastructure type:**
 
 ```
-🏗️  Cluster size
+🏗️  What type of infrastructure does this catalog need?
 
-SNO (Single Node) or Multi-node?
-
-1. Multi-node (default — for workshops, most demos)
-2. SNO (for lightweight single-user demos, edge content)
+1. OpenShift cluster  (OCP-based — workshops, demos on OpenShift)
+2. RHEL / AAP VMs     (cloud-vms-base — RHEL demos, AAP on VMs, non-OCP workloads)
 
 Choice [1/2]:
 ```
 
-**Question B — OCP version:**
+---
 
+**BRANCH 1: OpenShift cluster (choice 1)**
+
+**Question B — Cluster size:**
+```
+Q: SNO or Multi-node?
+
+1. Multi-node  (default — workshops, most demos)
+2. SNO         (lightweight single-user demos, edge content)
+
+Choice [1/2]:
+```
+
+*If SNO selected → force `multiuser: false`, skip Step 9 user count question.*
+
+**Question C — OCP version:**
 ```
 Q: Which OpenShift version?
 
-Available pool versions:
 1. 4.18
 2. 4.20
 3. 4.21 (latest)
@@ -380,50 +392,28 @@ Available pool versions:
 Choice [1/2/3]:
 ```
 
-Set `host_ocp4_installer_version` to the selected version.
-
-**Question C — Custom pool:**
-
+**Question D — Custom pool:**
 ```
-Q: Do you have a custom CNV pool allocated for this catalog? [Y/n]
+Q: Do you have a custom CNV pool allocated? [Y/n]
 
-If yes, provide the pool path (e.g., agd-v2/my-custom-pool/prod).
-If no, the default pool will be used: agd-v2/ocp-cluster-cnv-pools/prod
+Default: agd-v2/ocp-cluster-cnv-pools/prod
 ```
 
-Use the provided path as `item:`. Default to `agd-v2/ocp-cluster-cnv-pools/prod` if none provided.
-
-**If Multi-node:**
+**Question E — Auto-scale:** *(multi-node only)*
 ```
-Q: Auto-scale workers based on number of users? [Y/n]
-
-Auto-scale adds workers proportionally as num_users increases.
-Recommended for multi-user workshops.
+Q: Auto-scale workers based on num_users? [Y/n]
 ```
 
-**Question D — Cloud provider:**
-
+**Question F — AWS instead of CNV:** *(optional)*
 ```
 Q: Do you need AWS instead of CNV? [Y/n]
 
-Default is CNV pools. AWS is only needed for GPU workloads
-or specific AWS-feature demos.
+AWS is only needed for GPU workloads or specific AWS-feature demos.
 ```
+→ If YES: `Q: Do you have RHDP team approval for AWS? [Y/n]`
+*(No approval → stop)*
 
-**If AWS:**
-```
-Q: Do you have approval for AWS usage? [Y/n]
-
-AWS requires prior approval from the RHDP team due to cost.
-Do not proceed without approval.
-```
-
-If no approval → stop and tell user to request approval before continuing.
-
----
-
-**Generated config — CNV Multi-node (default):**
-
+**Generated config — CNV Multi-node:**
 ```yaml
 config: openshift-workloads
 cloud_provider: none
@@ -432,10 +422,10 @@ __meta__:
   components:
   - name: openshift
     display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools/prod
+    item: agd-v2/ocp-cluster-cnv-pools/prod   # or custom pool / aws-pools
     parameter_values:
-      cluster_size: multinode
-      host_ocp4_installer_version: "4.20"
+      cluster_size: multinode                  # or sno
+      host_ocp4_installer_version: "4.21"      # from Question C
       ocp4_fips_enable: false
       num_users: "{{ num_users }}"
     propagate_provision_data:
@@ -445,46 +435,61 @@ __meta__:
       var: openshift_api_key
 ```
 
-**If auto-scale selected, also add:**
-```yaml
-openshift_cnv_scale_cluster: true
-worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
+*If auto-scale:* add `openshift_cnv_scale_cluster: true` and worker formula.
+
+*If AWS:* change `cloud_provider: aws`, `cloud_provider_version: 1.0.0`, `config: openshift-cluster`, `item: agd-v2/ocp-cluster-aws-pools`.
+
+---
+
+**BRANCH 2: RHEL / AAP VMs (choice 2) — `cloud-vms-base`**
+
+**Question B — Cloud provider for VMs:**
+```
+Q: Where should the VMs run?
+
+1. CNV  (OpenShift Virtualization — VMs on CNV infrastructure)
+2. AWS  (EC2 instances on AWS)
+
+Choice [1/2]:
+```
+→ If AWS: `Q: Do you have RHDP team approval for AWS? [Y/n]`
+
+**Question C — Bastion / VM image:**
+```
+Q: Which RHEL version for the bastion/VMs?
+
+1. RHEL 9.6  (default)
+2. RHEL 10   (latest)
+
+Choice [1/2]:
 ```
 
-**CNV SNO:**
-```yaml
-__meta__:
-  components:
-  - name: openshift
-    display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools/prod
-    parameter_values:
-      cluster_size: sno
-      host_ocp4_installer_version: "4.20"
-      ocp4_fips_enable: false
-    propagate_provision_data:
-    - name: openshift_api_url
-      var: openshift_api_url
-    - name: openshift_cluster_admin_token
-      var: openshift_api_key
+**Question D — VM sizing:**
+```
+Q: VM cores and memory?
+
+Common sizes:
+1. Small   — 4 cores, 8Gi   (lightweight demos)
+2. Medium  — 8 cores, 16Gi  (standard)
+3. Large   — 16 cores, 32Gi (AAP, heavy workloads)
+
+Choice [1/2/3]:
 ```
 
-**AWS (uses ocp-cluster-aws-pools, same component pattern as CNV):**
+**Generated config — cloud-vms-base CNV:**
 ```yaml
-cloud_provider: aws
-cloud_provider_version: 1.0.0
-config: openshift-cluster
+config: cloud-vms-base
+cloud_provider: openshift_cnv   # or: aws
 
-__meta__:
-  components:
-  - name: openshift_base
-    display_name: OpenShift Container Platform Cluster (AWS-Pools)
-    item: agd-v2/ocp-cluster-aws-pools
-    propagate_provision_data:
-    - name: openshift_api_url
-      var: openshift_api_url
-    - name: openshift_cluster_admin_token
-      var: openshift_api_key
+bastion_instance_image: rhel-9.6   # from Question C
+
+instances:
+  - name: bastion
+    count: 1
+    image: "{{ bastion_instance_image }}"
+    cores: 8         # from Question D
+    memory: 16G
+    image_size: 200Gi
 ```
 
 ### Step 5: Authentication Setup
@@ -727,6 +732,13 @@ Q: Brief description (1-2 sentences):
    This appears in the catalog listing.
 
 Description:
+
+Q: Maintainer name and email?
+   This goes into __meta__.owners.maintainer
+   Example: Wolfgang Kulhanek / wkulhanek@redhat.com
+
+Name:
+Email:
 ```
 
 **Validate directory doesn't exist across entire repo:**
@@ -947,9 +959,13 @@ Q: What is the primary business unit (primaryBU)?
 
 Common values:
 - Hybrid_Platforms
+- Application_Services
 - OpenShift_AI
 - Ansible
 - Edge
+- RHEL
+- Middleware
+- Cloud_Services
 
 primaryBU:
 
@@ -981,24 +997,44 @@ Auto-add event keywords silently (user should not add these manually):
 - summit-2026 → add `summit-2026` and `<lab-id>`
 - rh1-2026 → add `rh1-2026` and `<lab-id>`
 
+**catalog.labels.Product and Product_Family** — ask:
+
+```
+Q: What is the primary Red Hat product featured in this catalog?
+   This goes into catalog.labels.Product
+
+Common values:
+- Red_Hat_OpenShift_Container_Platform
+- Red_Hat_Ansible_Automation_Platform
+- Red_Hat_OpenShift_AI
+- Red_Hat_Enterprise_Linux
+
+Product:
+
+Q: Product family?
+   Common values: Red_Hat_Cloud, Red_Hat_Automation, Red_Hat_Linux
+
+Product_Family:
+```
+
 **catalog.workshopLabUiRedirect** — ask if applicable:
 
 ```
-Q: Does this catalog define lab_ui_url (e.g., a direct Showroom URL)
-   and should users be taken directly to it when they claim a seat? [Y/n]
+Q: Should users go directly to the Showroom URL when they claim a seat? [Y/n]
+   (Only set if lab_ui_url is defined in the catalog)
 ```
 
 If yes → set `workshopLabUiRedirect: true`.
 
-**Full `__meta__` output for an event catalog (summit-2026 example):**
+**Full `__meta__` output:**
 
 ```yaml
 __meta__:
-  asset_uuid: {{ generated_uuid }}
+  asset_uuid: <auto-generated>
   owners:
     maintainer:
-    - name: {{ owner_name }}
-      email: {{ owner_email }}
+    - name: <from Step 8>
+      email: <from Step 8>
     instructions:
     - name: TBD
       email: tbd@redhat.com
@@ -1007,7 +1043,7 @@ __meta__:
     scm_url: https://github.com/agnosticd/agnosticd-v2
     scm_ref: main
     execution_environment:
-      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-16
+      image: <latest ee-multicloud chained from AgV grep>
       pull: missing
     # actions:          # Only add if workload touches external resources
     #   stop:
@@ -1022,26 +1058,25 @@ __meta__:
 
   catalog:
     reportingLabels:
-      primaryBU: {{ primary_bu }}
-      # secondaryBU: {{ secondary_bu }}   # uncomment if applicable
+      primaryBU: <from Step 10.2a>
+      # secondaryBU: <optional>
     namespace: babylon-catalog-{{ stage | default('?') }}
-    display_name: "{{ display_name }}"
-    category: {{ category }}
+    display_name: "<from Step 8>"
+    category: <auto from Step 0.5>
     keywords:
-    - {{ event_name }}          # summit-2026 or rh1-2026
-    - {{ lab_id }}              # lbxxxx
-    - {{ user_keyword_1 }}
-    - {{ user_keyword_2 }}
+    - <event_name>      # auto: summit-2026 or rh1-2026 (event catalogs only)
+    - <lab_id>          # auto: lbxxxx (event catalogs only)
+    - <user keywords split from comma-separated input>
     labels:
-      Product: {{ product_label }}
-      Product_Family: {{ product_family_label }}
+      Product: <from Step 10.2a>
+      Product_Family: <from Step 10.2a>
       Provider: RHDP
-      Brand_Event: {{ brand_event }}    # Red_Hat_Summit_2026 or Red_Hat_One_2026
-    multiuser: {{ true | false }}
-    # workshopLabUiRedirect: true     # uncomment if lab_ui_url is defined
+      # Brand_Event: Red_Hat_Summit_2026   # auto-set for event catalogs
+    multiuser: <auto from Step 0.5>
+    # workshopLabUiRedirect: true          # if user confirmed in Step 10.2a
 ```
 
-**For no-event catalogs**, omit `Brand_Event` label and event keywords.
+**For no-event catalogs**: omit `Brand_Event` label and event keywords.
 
 #### 10.3: Generate description.adoc
 

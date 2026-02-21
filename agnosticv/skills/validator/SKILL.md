@@ -1319,14 +1319,16 @@ def check_reporting_labels(config):
     })
     return
 
-  # Validate primaryBU value (common values)
+  # Validate primaryBU value — must match known values
   valid_bus = [
     'Hybrid_Platforms',
     'Application_Services',
     'Ansible',
+    'OpenShift_AI',
+    'Edge',
     'RHEL',
     'Middleware',
-    'Cloud_Services'
+    'Cloud_Services',
   ]
 
   if primary_bu not in valid_bus:
