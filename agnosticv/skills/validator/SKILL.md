@@ -670,6 +670,47 @@ def check_infrastructure(config):
       'fix': 'Change to CNV multi-node or set multiuser: false'
     })
   
+  # --- Component item must end with /prod in common.yaml ---
+  if cluster_item and not cluster_item.endswith('/prod'):
+    errors.append({
+      'check': 'infrastructure',
+      'severity': 'ERROR',
+      'message': f'Component item must point to /prod pool in common.yaml',
+      'location': 'common.yaml:__meta__.components',
+      'current': cluster_item,
+      'fix': f'Change to: {cluster_item.rstrip("/dev").rstrip("/prod")}/prod'
+    })
+  else:
+    passed_checks.append(f"✓ Component item points to /prod pool")
+
+  # --- OCP version must be a known pool version ---
+  ocp_version = cluster_component.get('parameter_values', {}).get('host_ocp4_installer_version', '')
+  known_versions = ['4.18', '4.20', '4.21']
+
+  if ocp_version and str(ocp_version) not in known_versions:
+    warnings.append({
+      'check': 'infrastructure',
+      'severity': 'WARNING',
+      'message': f'OCP version {ocp_version} may not have an available pool',
+      'location': 'common.yaml:__meta__.components.parameter_values',
+      'current': ocp_version,
+      'available_pools': known_versions,
+      'recommendation': f'Use one of the available pool versions: {", ".join(known_versions)}'
+    })
+  elif ocp_version:
+    passed_checks.append(f"✓ OCP version {ocp_version} has available pool")
+
+  # --- AWS requires prior approval ---
+  cloud_provider = config.get('cloud_provider', '')
+  if cloud_provider == 'aws':
+    warnings.append({
+      'check': 'infrastructure',
+      'severity': 'WARNING',
+      'message': 'AWS cloud provider detected — confirm approval obtained',
+      'location': 'common.yaml:cloud_provider',
+      'recommendation': 'AWS requires prior approval from the RHDP team due to cost. Ensure approval was granted before publishing.'
+    })
+
   passed_checks.append(f"✓ Infrastructure type: {cluster_size}")
 ```
 
@@ -1023,11 +1064,12 @@ def check_bastion_config(config):
     })
 ```
 
-### Check 13: Collection Versions
+### Check 13: Collection Versions (tag pattern)
 
 ```python
 def check_collection_versions(config, agv_repo_path, catalog_path):
-  """Validate git collection versions and compare against AgV repo usage"""
+  """Validate tag pattern, showroom fixed version, and standard collection versions"""
+  import glob, re
 
   collections = config.get('requirements_content', {}).get('collections', [])
 
@@ -1041,77 +1083,102 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
     })
     return
 
-  # Scan AgV repo for versions of each collection already in use
-  # This finds the highest version without requiring gh CLI or internet access
-  def get_latest_version_in_agv(repo_url_fragment, agv_path, skip_path):
-    """Grep AgV repo for highest version of a collection"""
-    import glob, re
-    versions = []
-    for f in glob.glob(f"{agv_path}/**/common.yaml", recursive=True):
-      if f.startswith(skip_path):
-        continue
-      try:
-        with open(f) as fh:
-          content = fh.read()
-        if repo_url_fragment not in content:
-          continue
-        # Extract version: lines near the collection name
-        for line in content.splitlines():
-          if 'version:' in line and not line.strip().startswith('#'):
-            v = line.split('version:')[-1].strip()
-            if v and v != 'HEAD':
-              versions.append(v)
-      except:
-        continue
-    # Return highest semver tag found, or most recent string
-    tag_versions = sorted([v for v in versions if re.match(r'^v\d+', v)],
-                          key=lambda x: [int(n) for n in re.findall(r'\d+', x)])
-    return tag_versions[-1] if tag_versions else None
+  # --- Check 1: tag: variable must be defined ---
+  tag_defined = 'tag' in config
+  if not tag_defined:
+    errors.append({
+      'check': 'collections',
+      'severity': 'ERROR',
+      'message': 'Missing top-level tag: variable',
+      'location': 'common.yaml',
+      'fix': 'Add: tag: main  # Override in prod.yaml with specific release tag'
+    })
+  else:
+    passed_checks.append(f"✓ tag variable defined: {config['tag']}")
+
+  # --- Check each collection ---
+  showroom_found = False
 
   for coll in collections:
     coll_name = coll.get('name', '')
-    coll_version = coll.get('version', '')
+    coll_version = str(coll.get('version', ''))
 
     if 'github.com' not in coll_name:
       continue
 
-    # Check version is specified
-    if not coll_version:
-      errors.append({
-        'check': 'collections',
-        'severity': 'ERROR',
-        'message': f'Git collection missing version: {coll_name}',
-        'location': 'common.yaml:requirements_content.collections',
-        'fix': 'Add version: <tag> (check existing AgV catalogs for current version in use)'
-      })
-      continue
+    is_showroom = 'agnosticd/showroom' in coll_name
 
-    if coll_version == 'HEAD':
-      warnings.append({
-        'check': 'collections',
-        'severity': 'WARNING',
-        'message': f'Collection uses HEAD: {coll_name}',
-        'location': 'common.yaml:requirements_content.collections',
-        'recommendation': 'Use specific tag for reproducibility'
-      })
-      continue
+    if is_showroom:
+      showroom_found = True
 
-    # Extract repo fragment for grep (e.g. "agnosticd/showroom")
-    repo_fragment = '/'.join(coll_name.rstrip('/').split('/')[-2:]).replace('.git', '')
-    latest_in_agv = get_latest_version_in_agv(repo_fragment, agv_repo_path, catalog_path)
+      # Showroom must NOT use {{ tag }} — must be a fixed pinned version
+      if '{{' in coll_version and 'tag' in coll_version:
+        errors.append({
+          'check': 'collections',
+          'severity': 'ERROR',
+          'message': 'Showroom collection must use a fixed pinned version, not {{ tag }}',
+          'location': 'common.yaml:requirements_content.collections',
+          'current': coll_version,
+          'fix': 'Set version: v1.5.1 (or highest in use across AgV)'
+        })
+        continue
 
-    if latest_in_agv and latest_in_agv != coll_version:
-      warnings.append({
-        'check': 'collections',
-        'severity': 'WARNING',
-        'message': f'Collection may be outdated: {repo_fragment}',
-        'location': 'common.yaml:requirements_content.collections',
-        'current': coll_version,
-        'latest_in_agv': latest_in_agv,
-        'recommendation': f'Other AgV catalogs use {latest_in_agv} — consider updating'
-      })
+      # Showroom must be v1.5.1 or above
+      version_nums = re.findall(r'\d+', coll_version)
+      if version_nums:
+        major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
+                               for i in range(3))
+        if (major, minor, patch) < (1, 5, 1):
+          errors.append({
+            'check': 'collections',
+            'severity': 'ERROR',
+            'message': f'Showroom collection version below minimum: {coll_version}',
+            'location': 'common.yaml:requirements_content.collections',
+            'fix': 'Set version: v1.5.1 or above'
+          })
+        else:
+          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.5.1)")
+
     else:
-      passed_checks.append(f"✓ Collection version current: {repo_fragment} {coll_version}")
+      # Standard collections should use {{ tag }}
+      if '{{' in coll_version and 'tag' in coll_version:
+        passed_checks.append(f"✓ Collection uses tag pattern: {coll_name.split('/')[-1]}")
+      elif coll_version == 'main':
+        warnings.append({
+          'check': 'collections',
+          'severity': 'WARNING',
+          'message': f'Collection hardcodes "main" instead of using tag pattern: {coll_name}',
+          'location': 'common.yaml:requirements_content.collections',
+          'fix': 'Use version: "{{ tag }}" — allows prod.yaml to override with release tag'
+        })
+      elif coll_version == 'HEAD':
+        errors.append({
+          'check': 'collections',
+          'severity': 'ERROR',
+          'message': f'Collection uses HEAD: {coll_name}',
+          'location': 'common.yaml:requirements_content.collections',
+          'fix': 'Use version: "{{ tag }}"'
+        })
+      elif not coll_version:
+        errors.append({
+          'check': 'collections',
+          'severity': 'ERROR',
+          'message': f'Git collection missing version: {coll_name}',
+          'location': 'common.yaml:requirements_content.collections',
+          'fix': 'Add version: "{{ tag }}"'
+        })
+
+  if not showroom_found:
+    warnings.append({
+      'check': 'collections',
+      'severity': 'WARNING',
+      'message': 'Showroom collection not found in requirements_content',
+      'location': 'common.yaml:requirements_content.collections',
+      'fix': '''Add:
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.1'''
+    })
 
   passed_checks.append(f"✓ Collections defined ({len(collections)} collections)")
 ```
