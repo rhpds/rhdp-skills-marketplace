@@ -608,110 +608,151 @@ requirements_content:
 
 ```python
 def check_infrastructure(config):
-  """Infrastructure type validation and recommendations"""
-  
+  """Infrastructure type validation — handles both OCP and cloud-vms-base configs"""
+
+  config_type = config.get('config', '')
+  cloud_provider = config.get('cloud_provider', '')
   workloads = config.get('workloads', [])
+  multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
+
+  # --- AWS approval warning (applies to ALL config types) ---
+  if cloud_provider == 'aws':
+    warnings.append({
+      'check': 'infrastructure',
+      'severity': 'WARNING',
+      'message': 'AWS cloud provider — confirm RHDP team approval obtained',
+      'location': 'common.yaml:cloud_provider',
+      'recommendation': 'AWS requires prior approval due to cost. Ensure approval was granted before publishing.'
+    })
+
+  # ================================================================
+  # BRANCH A: cloud-vms-base (CNV VMs or AWS VMs — no OCP cluster)
+  # ================================================================
+  if config_type == 'cloud-vms-base':
+
+    # Must have instances defined
+    if 'instances' not in config:
+      errors.append({
+        'check': 'infrastructure',
+        'severity': 'ERROR',
+        'message': 'cloud-vms-base config missing instances: definition',
+        'location': 'common.yaml',
+        'fix': 'Add instances: list with at least a bastion VM definition'
+      })
+    else:
+      passed_checks.append("✓ cloud-vms-base: instances defined")
+
+    # Bastion image should be a supported RHEL version
+    bastion_image = config.get('bastion_instance_image', config.get('default_instance_image', ''))
+    valid_images = ['rhel-9.4', 'rhel-9.5', 'rhel-9.6', 'rhel-10', 'RHEL-10']
+    if bastion_image and not any(img in bastion_image for img in valid_images):
+      warnings.append({
+        'check': 'infrastructure',
+        'severity': 'WARNING',
+        'message': f'Unusual bastion image for cloud-vms-base: {bastion_image}',
+        'location': 'common.yaml:bastion_instance_image',
+        'valid_images': valid_images,
+        'recommendation': 'Use supported RHEL 9.x or 10.x image'
+      })
+    elif bastion_image:
+      passed_checks.append(f"✓ Bastion image: {bastion_image}")
+
+    # cloud-vms-base should not be multi-user (no per-user namespace isolation)
+    if multiuser:
+      warnings.append({
+        'check': 'infrastructure',
+        'severity': 'WARNING',
+        'message': 'cloud-vms-base with multiuser: true — verify isolation is handled',
+        'location': 'common.yaml',
+        'recommendation': 'cloud-vms-base does not provide per-user namespace isolation by default'
+      })
+
+    passed_checks.append(f"✓ Infrastructure type: cloud-vms-base ({cloud_provider})")
+    return
+
+  # ================================================================
+  # BRANCH B: openshift-workloads / openshift-cluster (OCP pool-based)
+  # ================================================================
   components = config.get('__meta__', {}).get('components', [])
-  
-  # Detect infrastructure type
-  cluster_component = next((c for c in components if 'openshift' in c.get('name', '').lower()), None)
-  
+  cluster_component = next(
+    (c for c in components if 'openshift' in c.get('name', '').lower()), None
+  )
+
   if not cluster_component:
     warnings.append({
       'check': 'infrastructure',
       'severity': 'WARNING',
-      'message': 'No OpenShift cluster component found',
+      'message': 'No OpenShift cluster component found in __meta__.components',
       'location': 'common.yaml:__meta__.components',
-      'recommendation': 'Add cluster component if OpenShift-based'
+      'recommendation': 'Add cluster component for openshift-workloads config'
     })
     return
-  
+
   cluster_item = cluster_component.get('item', '')
   cluster_size = cluster_component.get('parameter_values', {}).get('cluster_size', '')
-  
-  # Check GPU workloads on non-AWS
-  gpu_workloads = [w for w in workloads if 'gpu' in w.lower() or 'nvidia' in w.lower()]
-  
-  if gpu_workloads and 'aws' not in cluster_item.lower():
-    warnings.append({
-      'check': 'infrastructure',
-      'severity': 'WARNING',
-      'message': 'GPU workloads detected but not using AWS infrastructure',
-      'workloads': gpu_workloads,
-      'current_infrastructure': cluster_item,
-      'recommendation': 'GPU workloads require AWS with g6.4xlarge instances',
-      'fix': 'Change to AWS infrastructure or remove GPU workloads'
-    })
-  
-  # Check heavy workloads on SNO
-  if cluster_size == 'sno':
-    heavy_workloads = [w for w in workloads if any(tech in w for tech in ['openshift_ai', 'acs', 'service_mesh'])]
-    
-    if len(workloads) > 5 or heavy_workloads:
-      warnings.append({
-        'check': 'infrastructure',
-        'severity': 'WARNING',
-        'message': 'Heavy workloads on SNO (Single Node OpenShift)',
-        'workloads': heavy_workloads if heavy_workloads else f'{len(workloads)} workloads',
-        'recommendation': 'SNO best for lightweight demos, consider CNV multi-node',
-        'resource_concern': 'SNO has limited resources (32Gi RAM, 16 cores)'
-      })
-  
-  # Multi-user on SNO
-  multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
-  
-  if multiuser and cluster_size == 'sno':
-    errors.append({
-      'check': 'infrastructure',
-      'severity': 'ERROR',
-      'message': 'Multi-user enabled on SNO infrastructure',
-      'location': 'common.yaml',
-      'issue': 'SNO cannot support multiple concurrent users',
-      'fix': 'Change to CNV multi-node or set multiuser: false'
-    })
-  
-  # --- Component item must end with /prod in common.yaml ---
+  ocp_version = str(cluster_component.get('parameter_values', {}).get('host_ocp4_installer_version', ''))
+
+  # Component item must end with /prod in common.yaml
   if cluster_item and not cluster_item.endswith('/prod'):
     errors.append({
       'check': 'infrastructure',
       'severity': 'ERROR',
-      'message': f'Component item must point to /prod pool in common.yaml',
+      'message': 'Component item must point to /prod pool in common.yaml',
       'location': 'common.yaml:__meta__.components',
       'current': cluster_item,
-      'fix': f'Change to: {cluster_item.rstrip("/dev").rstrip("/prod")}/prod'
+      'fix': f'Change to: {cluster_item.rstrip("/").rsplit("/", 1)[0]}/prod'
     })
   else:
-    passed_checks.append(f"✓ Component item points to /prod pool")
+    passed_checks.append(f"✓ Component item points to /prod pool: {cluster_item}")
 
-  # --- OCP version must be a known pool version ---
-  ocp_version = cluster_component.get('parameter_values', {}).get('host_ocp4_installer_version', '')
-  known_versions = ['4.18', '4.20', '4.21']
-
-  if ocp_version and str(ocp_version) not in known_versions:
+  # OCP version must be a known available pool version
+  known_ocp_versions = ['4.18', '4.20', '4.21']
+  if ocp_version and ocp_version not in known_ocp_versions:
     warnings.append({
       'check': 'infrastructure',
       'severity': 'WARNING',
       'message': f'OCP version {ocp_version} may not have an available pool',
       'location': 'common.yaml:__meta__.components.parameter_values',
       'current': ocp_version,
-      'available_pools': known_versions,
-      'recommendation': f'Use one of the available pool versions: {", ".join(known_versions)}'
+      'available_pools': known_ocp_versions,
+      'recommendation': f'Use one of: {", ".join(known_ocp_versions)}'
     })
   elif ocp_version:
     passed_checks.append(f"✓ OCP version {ocp_version} has available pool")
 
-  # --- AWS requires prior approval ---
-  cloud_provider = config.get('cloud_provider', '')
-  if cloud_provider == 'aws':
+  # GPU workloads on non-AWS
+  gpu_workloads = [w for w in workloads if 'gpu' in w.lower() or 'nvidia' in w.lower()]
+  if gpu_workloads and cloud_provider != 'aws':
     warnings.append({
       'check': 'infrastructure',
       'severity': 'WARNING',
-      'message': 'AWS cloud provider detected — confirm approval obtained',
-      'location': 'common.yaml:cloud_provider',
-      'recommendation': 'AWS requires prior approval from the RHDP team due to cost. Ensure approval was granted before publishing.'
+      'message': 'GPU workloads detected on non-AWS infrastructure',
+      'workloads': gpu_workloads,
+      'recommendation': 'GPU workloads typically require AWS with GPU instance types'
     })
 
-  passed_checks.append(f"✓ Infrastructure type: {cluster_size}")
+  # Heavy workloads on SNO
+  if cluster_size == 'sno':
+    heavy_workloads = [w for w in workloads if any(t in w for t in ['openshift_ai', 'acs', 'service_mesh'])]
+    if len(workloads) > 5 or heavy_workloads:
+      warnings.append({
+        'check': 'infrastructure',
+        'severity': 'WARNING',
+        'message': 'Heavy workloads on SNO (Single Node OpenShift)',
+        'recommendation': 'SNO has limited resources — consider CNV multi-node for heavy workloads'
+      })
+
+  # Multi-user on SNO
+  if multiuser and cluster_size == 'sno':
+    errors.append({
+      'check': 'infrastructure',
+      'severity': 'ERROR',
+      'message': 'Multi-user enabled on SNO — SNO cannot support concurrent users',
+      'location': 'common.yaml',
+      'fix': 'Change to CNV multi-node or set multiuser: false'
+    })
+
+  passed_checks.append(f"✓ Infrastructure type: {config_type} / {cluster_size or cloud_provider}")
 ```
 
 ### Check 7: Authentication Configuration
