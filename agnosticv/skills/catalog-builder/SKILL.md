@@ -541,20 +541,11 @@ ocp4_workload_authentication_keycloak_remove_kubeadmin: true
 
 ### Step 6: Workload Selection
 
-```
-🧩 Workload Selection
-
-I'll recommend workloads based on your catalog.
-
-Q: What technologies will users learn? (comma-separated)
-   Examples: ansible aap, openshift ai, gitops, pipelines
-
-Technologies:
-```
+Using the technologies from Step 0.5, recommend workloads silently. Present recommendations and confirm.
 
 **Workload recommendation engine:**
 
-Based on keywords, suggest from workload-mappings.md:
+Based on technologies already provided, suggest from `@agnosticv/docs/workload-mappings.md`:
 - `ansible` or `aap` → `rhpds.aap25.ocp4_workload_aap25`
 - `ai` or `gpu` → `rhpds.nvidia_gpu.ocp4_workload_nvidia_gpu`
 - `gitops` or `argocd` → `rhpds.openshift_gitops.ocp4_workload_openshift_gitops`
