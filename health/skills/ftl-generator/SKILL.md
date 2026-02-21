@@ -168,13 +168,37 @@ Your namespace pattern:
 
 WAIT for answer.
 
+**If multi-user, also ask (CRITICAL for credential handling):**
+```
+Should the grader check resources using the student's credentials or cluster-admin?
+
+1. Student credentials (recommended for multi-user)
+   The grader logs in as the student user to validate their work.
+   This correctly tests RBAC and ensures students can access their own resources.
+   Requires: OCP_API_URL and PASSWORD environment variables.
+
+2. Cluster-admin (bastion KUBECONFIG)
+   The grader uses admin access. Simpler but doesn't test student's own access.
+   Use only if the lab doesn't test RBAC or the student's login permissions.
+
+Your choice: [1/2]
+```
+
+WAIT for answer.
+
+**If student credentials (choice 1), read the Showroom module content** to find what credentials the student uses:
+- Look for `{user}`, `{password}`, `{api_url}`, `{console_url}` attributes in `.adoc` files
+- These map to env vars: `LAB_USER`, `PASSWORD`, `OCP_API_URL`
+- The grader will `oc login {{ OCP_API_URL }} -u {{ LAB_USER }} -p {{ PASSWORD }}` before checking resources
+
 **Question 3:**
 ```
 What environment variables does this lab require?
 
 Common examples:
+- OCP_API_URL (OpenShift API URL — required for student credential login)
 - OPENSHIFT_CLUSTER_INGRESS_DOMAIN (OpenShift cluster apps domain)
-- PASSWORD (user or admin password)
+- PASSWORD (student password from Showroom {password} attribute)
 - AAP_HOSTNAME (AAP controller URL)
 - AAP_PASSWORD (AAP admin password)
 - GUID (deployment GUID, usually auto-detected)
@@ -274,6 +298,40 @@ For each module, generate `grade_module_XX.yml` following the three-play pattern
 - Each checkpoint uses the mapped grader role from Step 4
 - Helpful `student_error_message` for each checkpoint (what failed, why, how to fix)
 - Multi-user namespace derivation if Pattern A
+
+**Credential handling — based on Step 3 choice:**
+
+**If student credentials (recommended for multi-user):**
+Add an `oc login` task at the START of Play 2, before any resource checks:
+
+```yaml
+- name: Login as student user
+  ansible.builtin.command: >
+    oc login {{ lookup('env', 'OCP_API_URL') }}
+    -u {{ lab_user }}
+    -p {{ lookup('env', 'PASSWORD') }}
+    --insecure-skip-tls-verify=true
+  changed_when: false
+  no_log: true
+
+- name: Set student kubeconfig context
+  ansible.builtin.set_fact:
+    student_logged_in: true
+```
+
+All subsequent `oc` commands and `kubernetes.core` tasks run in the student's context.
+After grading, log back out:
+```yaml
+- name: Log out student session
+  ansible.builtin.command: oc logout
+  changed_when: false
+  ignore_errors: true
+```
+
+The `OCP_API_URL` and `PASSWORD` env vars come from Showroom `{api_url}` and `{password}` attributes.
+
+**If cluster-admin (bastion KUBECONFIG):**
+No login tasks needed — grader runs with existing bastion admin context.
 
 **Exercise numbering:** X.Y format (module.checkpoint), e.g., 1.1, 1.2, 2.1, 2.2
 
