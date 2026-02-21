@@ -565,52 +565,56 @@ Recommended workloads:
 Select workloads (comma-separated numbers, or 'all'):
 ```
 
-### Step 6.5: Check Latest Collection Versions
+### Step 6.5: Collection Versions *(auto — no question)*
 
-Before generating files, scan the AgV repo to find the versions already in use across existing catalogs. Use that as the recommendation — no external tools needed.
+Use the `{{ tag }}` pattern — one variable controls all standard collection versions.
 
-**Run these greps against `$AGV_PATH`:**
+**In `common.yaml`, always generate:**
+```yaml
+# Tag for all repositories used in this config.
+# Override in prod.yaml or event.yaml with a specific release tag.
+tag: main
+```
 
+**All standard collections use `"{{ tag }}"` as version:**
+```yaml
+requirements_content:
+  collections:
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: "{{ tag }}"
+  # Add other collections as needed — all use "{{ tag }}"
+```
+
+**Showroom collection always uses a fixed pinned version — NOT `{{ tag }}`:**
+
+Silently grep AgV repo for the highest pinned showroom version in use:
 ```bash
-# Find all versions of showroom collection in use
 grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
-  | grep "version:" | sort -V | tail -1
-
-# Find all EE images in use
-grep -r "ee-multicloud" "$AGV_PATH" --include="*.yaml" -h \
-  | grep "image:" | sort | tail -1
+  | grep "version:" | grep -v "tag" | sort -V | tail -1
 ```
 
-**Show the user what was found:**
-
-```
-📦 Collection versions (from existing AgV catalogs):
-
-  agnosticd/showroom       → v1.5.1   (most recent version in use)
-  agnosticd/core_workloads → main     (used as main across catalogs)
-  EE image                 → quay.io/agnosticd/ee-multicloud:chained-2026-02-16
-
-Using these for requirements_content. Press Enter to confirm or type a different version:
+Use that version, or `v1.5.1` as minimum if nothing higher found:
+```yaml
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.1   # fixed — minimum v1.5.1, use highest found in AgV
 ```
 
-**If a collection has no existing version in AgV** (new collection), leave as `<latest-tag>` placeholder and note it for the user to fill in.
+**EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write directly to `__meta__.deployer.execution_environment.image`.
 
-**Store confirmed versions** for use in requirements_content generation (Step 10).
+**In `prod.yaml`**, the developer overrides `tag` to pin a specific release:
+```yaml
+tag: my-catalog-1.0.0   # overrides main → pins all collections to this release
+```
+
+No question asked — all of this is generated automatically.
 
 ---
 
 ### Step 7: Showroom Configuration
 
-**First, show the AgV-side Showroom collection version** (determined in Step 6.5):
-
-```
-📦 Showroom collection version: {{ showroom_version }}
-   (agnosticd/showroom — most recent version found in AgV repo)
-```
-
-This version will be written to `requirements_content` in common.yaml.
-
-**Then ask for the Showroom repo:**
+**Ask for the Showroom repo:**
 
 ```
 📚 Showroom repository
