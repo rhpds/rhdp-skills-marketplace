@@ -31,8 +31,8 @@
 # ---------------------------------------------------------------
 # LiteMaaS (if catalog uses AI model inference)
 # ---------------------------------------------------------------
-# #include /includes/secrets/litemaas-master_api.yaml    # LiteLLM API URL + master key
-# #include /includes/secrets/maas-models-token.yaml       # individual model tokens (codellama, granite, mistral...)
+# #include /includes/secrets/litemaas-master_api.yaml        # LiteLLM API URL + master key
+# #include /includes/parameters/litellm_metadata.yaml        # LiteLLM metadata (model list, endpoints)
 
 # ---------------------------------------------------------------
 # Workload-specific secrets not in pool (add as needed)

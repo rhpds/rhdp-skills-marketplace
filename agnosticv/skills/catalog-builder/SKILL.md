@@ -599,6 +599,20 @@ Recommended workloads:
 Select workloads (comma-separated numbers, or 'all'):
 ```
 
+**After workload selection — ask ONE more question:**
+
+```
+Q: Will this catalog use LiteMaaS for AI model inference? [Y/n]
+
+LiteMaaS provides hosted AI models (granite, mistral, codellama, etc.)
+via a shared inference platform.
+```
+
+- YES → add both to common.yaml includes:
+  - `#include /includes/secrets/litemaas-master_api.yaml`
+  - `#include /includes/parameters/litellm_metadata.yaml`
+- NO → skip
+
 ### Step 5.5: Collection Versions *(auto — no question)*
 
 Use the `{{ tag }}` pattern — one variable controls all standard collection versions.
@@ -922,12 +936,11 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 #include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml
 ```
 
-**LiteMaaS** (if catalog uses AI model inference):
+**LiteMaaS** (added automatically if user answers YES in Step 5):
 ```
-#include /includes/secrets/litemaas-master_api.yaml   # LiteLLM API URL + master key
-#include /includes/secrets/maas-models-token.yaml      # individual model tokens (codellama, granite, mistral, etc.)
+#include /includes/secrets/litemaas-master_api.yaml       # LiteLLM API URL + master key
+#include /includes/parameters/litellm_metadata.yaml        # LiteLLM metadata (model list, endpoints)
 ```
-Include both if the catalog exposes model selection to users. Include only `litemaas-master_api.yaml` if using a single inference endpoint.
 
 **Workload-specific secrets not in pool** (e.g. `ibm-fusion.yaml`, partner credentials) — add manually, leave TODO comment otherwise.
 
