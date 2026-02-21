@@ -357,6 +357,17 @@ SNO (Single Node) or Multi-node?
 Choice [1/2]:
 ```
 
+**Question B — Custom pool:**
+
+```
+Q: Do you have a custom CNV pool allocated for this catalog? [Y/n]
+
+If yes, provide the pool path (e.g., agd-v2/my-custom-pool/prod).
+If no, the default pool will be used: agd-v2/ocp-cluster-cnv-pools/prod
+```
+
+Use the provided path as `item:`. Default to `agd-v2/ocp-cluster-cnv-pools/prod` if none provided.
+
 **If Multi-node:**
 ```
 Q: Auto-scale workers based on number of users? [Y/n]
@@ -396,7 +407,7 @@ __meta__:
   components:
   - name: openshift
     display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools
+    item: agd-v2/ocp-cluster-cnv-pools/prod
     parameter_values:
       cluster_size: multinode
       host_ocp4_installer_version: "4.20"
@@ -421,7 +432,7 @@ __meta__:
   components:
   - name: openshift
     display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools
+    item: agd-v2/ocp-cluster-cnv-pools/prod
     parameter_values:
       cluster_size: sno
       host_ocp4_installer_version: "4.20"
