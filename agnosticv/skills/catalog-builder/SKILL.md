@@ -1084,11 +1084,11 @@ Q: Does any workload in this catalog deploy or configure something
    outside the OpenShift cluster or sandbox? (e.g., external DNS,
    cloud resources, external registries) [Y/n]
 
-If YES: which deployer actions should be disabled?
-  - start  (set to true if base component handles start)
-  - stop   (set to true if base component handles stop)
-  - remove_workloads (set to true only if you DON'T want workload cleanup)
+If YES: which lifecycle actions should be disabled?
+  - start  (disable if base component already handles cluster start)
+  - stop   (disable if base component already handles cluster stop)
 
+Note: remove_workloads is controlled separately via sandbox_api below — not here.
 All default to false. Only set true to DISABLE that action.
 ```
 
@@ -2067,7 +2067,7 @@ From base component's `common.yaml`, extract **only what exists** — do NOT inv
 
 This field is **required** for reporting and must always be verified.
 
-Known valid values (Feb 2026):
+Known valid values (verify latest in AgV `includes/` directory):
 - Application_Developer
 - Artificial_Intelligence
 - Automation
