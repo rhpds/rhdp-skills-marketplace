@@ -240,23 +240,23 @@ What's your situation? [1/2/3]
 
 **ONLY AFTER user answers, proceed based on their response.**
 
-### Step 2.5: Ask for Target Directory (if not provided as argument)
+### Step 2.5: Ask for Showroom Repository Path (if not provided as argument)
 
 **SKIP THIS STEP IF**: User provided `<directory>` as argument
 
 **Ask the user**:
 ```
-Where should I create the lab files?
+What is the path to your cloned Showroom repository?
 
-Default location: content/modules/ROOT/pages/
+The RHDP team will have provided you with a Showroom repository to clone.
+Provide the local path to that cloned repo.
 
-Press Enter to use default, or type a different path:
+Example: /Users/yourname/work/showroom-content/my-lab-showroom
+
+Repo path:
 ```
 
-**Validation**:
-- If directory doesn't exist, ask: "Directory not found. Create it? [Yes/No]"
-- If Yes, create the directory
-- If No, ask again for directory
+Use `content/modules/ROOT/pages/` within that path as the target for lab files.
 
 **If option 1 (NEW lab)**:
 - Generate ALL workshop files: index.adoc, 01-overview.adoc, 02-details.adoc, 03-module-01-*.adoc
@@ -396,7 +396,7 @@ Note: If you're not sure, I'll use placeholders that work across versions.
 
 **For NEW labs only. Skip if adding a module to an existing lab.**
 
-**Note to RHDP developers**: This lab requires Showroom 1.5.1 or above. Please ensure your Showroom deployment is on 1.5.1+ before publishing this lab.
+**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.1 or above. Contact your RHDP administrator to confirm the version before publishing.
 
 Ask these questions SEQUENTIALLY — one at a time.
 
