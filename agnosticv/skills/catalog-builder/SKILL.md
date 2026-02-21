@@ -526,6 +526,66 @@ Q: What is the URL or path to your Showroom repository?
 URL or path:
 ```
 
+**After receiving the URL or path — Showroom 1.5.1 Structure Check (REQUIRED):**
+
+If the user provided a **local path**, check these files directly:
+
+| File | Expected Location | Required |
+|---|---|---|
+| `default-site.yml` | repo root | YES — if only `site.yml` found, repo is pre-1.5.1 |
+| `supplemental-ui/` | repo root | YES — if under `content/`, repo is pre-1.5.1 |
+| `ui-config.yml` | repo root | YES |
+
+**If the Showroom repo is pre-1.5.1 (site.yml at root, or content/supplemental-ui/):**
+
+```
+❌ Showroom repository is not on version 1.5.1 or above.
+
+Required structure (Showroom 1.5.1+):
+  ✅ default-site.yml  (at repo root)
+  ✅ supplemental-ui/  (at repo root, NOT content/supplemental-ui/)
+  ✅ ui-config.yml     (at repo root, with view_switcher block)
+
+Found instead:
+  ❌ site.yml          (must be renamed to default-site.yml)
+  ❌ content/supplemental-ui/  (must move to repo root)
+
+This catalog cannot be created until the Showroom repository is
+upgraded to version 1.5.1 or above.
+
+To upgrade your Showroom repository, run:
+  /showroom:create-lab --new   (will scaffold all 1.5.1 files)
+
+Or migrate manually:
+  1. Rename site.yml → default-site.yml
+  2. Move content/supplemental-ui/ → supplemental-ui/ (repo root)
+  3. Update supplemental_files in default-site.yml to: ./supplemental-ui
+  4. Add view_switcher block to ui-config.yml
+  5. Update .github/workflows/gh-pages.yml to use: antora generate default-site.yml
+
+Come back and re-run this skill once the Showroom is on 1.5.1+.
+
+⏸️  Pausing — upgrade Showroom repository first.
+```
+
+**If the user provided a GitHub URL (cannot check locally):**
+
+```
+⚠️  Cannot verify Showroom structure from URL alone.
+
+Is this Showroom repository using version 1.5.1 or above?
+
+Required files for 1.5.1+:
+  - default-site.yml at repo root (not site.yml)
+  - supplemental-ui/ at repo root (not content/supplemental-ui/)
+  - ui-config.yml with view_switcher block
+
+Check your repository and confirm: [Yes it's 1.5.1+ / No, it's older]
+```
+
+If the user confirms it is **older than 1.5.1**: apply the same blocking message above.
+If the user confirms it is **1.5.1+**: proceed.
+
 **If NO:**
 ```
 ℹ️  You can add the Showroom URL later in common.yaml
@@ -575,25 +635,33 @@ Q: Do you have a Showroom repository created for this catalog? [Y/n]
 
 **If NO:**
 ```
-📚 Create Showroom Repository
+📚 Create Showroom Repository (Showroom 1.5.1+ REQUIRED)
 
-Use the Showroom Nookbag template to create your repository:
+New Showroom repositories MUST use Showroom 1.5.1 or above.
 
-Repository: https://github.com/rhpds/showroom_template_nookbag
+Step 1: Create a new empty GitHub repository
+  Recommended naming: {short-name}-showroom
+  Create in: github.com/rhpds organization
 
-Instructions:
-1. Visit: https://github.com/rhpds/showroom_template_nookbag
-2. Follow the README to generate your showroom repository
-3. Recommended naming: {short-name}-showroom
-4. Create in: github.com/rhpds organization
+Step 2: Clone it locally and scaffold the 1.5.1 structure
+  Run: /showroom:create-lab --new
+  This creates all required files:
+    - default-site.yml
+    - ui-config.yml (with view_switcher)
+    - supplemental-ui/ (at repo root)
+    - content/lib/ (4 JS extension files)
+    - .github/workflows/gh-pages.yml
 
-Example:
-  Use the nookbag template to create your repository:
-  https://github.com/rhpds/showroom_template_nookbag
+  Reference template: https://github.com/rhpds/lb2298-ibm-fusion
+  (This is the canonical 1.5.1+ example)
 
-Once created, come back and re-run this skill with the repository URL.
+⚠️  Do NOT use showroom_template_nookbag as your base — it uses the
+    pre-1.5.1 structure (site.yml, content/supplemental-ui/).
 
-⏸️  Pausing - Create your Showroom repository first.
+Once your Showroom repo has the 1.5.1+ structure, come back and
+re-run this skill with the repository URL.
+
+⏸️  Pausing — create and scaffold your Showroom repository first.
 ```
 
 **If YES:**
