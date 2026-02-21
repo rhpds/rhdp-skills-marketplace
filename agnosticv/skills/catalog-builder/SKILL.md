@@ -489,16 +489,17 @@ Based on keywords, suggest from workload-mappings.md:
 - `ai` or `gpu` → `rhpds.nvidia_gpu.ocp4_workload_nvidia_gpu`
 - `gitops` or `argocd` → `rhpds.openshift_gitops.ocp4_workload_openshift_gitops`
 - `pipelines` → `rhpds.openshift_pipelines.ocp4_workload_openshift_pipelines`
-- `showroom` → `rhpds.showroom.ocp4_workload_showroom` (always recommended)
+- `showroom` → `agnosticd.showroom.ocp4_workload_ocp_console_embed` + `agnosticd.showroom.ocp4_workload_showroom` (always recommended together)
 
 **Present recommendations:**
 ```
 Recommended workloads:
 
-✓ rhpds.ocp4_workload_authentication.ocp4_workload_authentication (selected - auth)
-✓ rhpds.showroom.ocp4_workload_showroom (recommended - guide)
-  rhpds.aap25.ocp4_workload_aap25 (suggested - ansible)
-  rhpds.openshift_gitops.ocp4_workload_openshift_gitops (suggested - gitops)
+✓ agnosticd.core_workloads.ocp4_workload_authentication (selected - auth)
+✓ agnosticd.showroom.ocp4_workload_ocp_console_embed (recommended - console embedding)
+✓ agnosticd.showroom.ocp4_workload_showroom (recommended - guide)
+  agnosticd.aap25.ocp4_workload_aap25 (suggested - ansible)
+  agnosticd.openshift_gitops.ocp4_workload_openshift_gitops (suggested - gitops)
 
 Select workloads (comma-separated numbers, or 'all'):
 ```
@@ -579,7 +580,71 @@ Ensure your repository meets this before publishing.
 
 Then continue without blocking.
 
-**If NO:**
+**After 1.5.1 check passes — ask dev mode (ONE question):**
+
+```
+📋 Dev mode configuration
+
+In AgnosticV, dev mode is always:
+  - common.yaml: ocp4_workload_showroom_antora_enable_dev_mode: "false"
+  - dev.yaml:    ocp4_workload_showroom_antora_enable_dev_mode: "true"
+
+Note to developers: dev mode enables the Antora dev-mode.js extension
+which shows attribute values and other debug info in the Showroom UI.
+It should always be disabled in production (common.yaml) and enabled
+in dev environments (dev.yaml) — this is set automatically.
+
+Press Enter to confirm this default, or type 'skip' to omit dev mode:
+```
+
+Accept Enter → generate dev mode vars in both files.
+User types 'skip' → omit `ocp4_workload_showroom_antora_enable_dev_mode` from output.
+
+**Generate complete Showroom section for common.yaml:**
+
+Based on `summit-2026/lb2298-ibm-fusion/common.yaml` as reference:
+
+```yaml
+# ===================================================================
+# Additional Collections & roles to be installed for this config
+# ===================================================================
+requirements_content:
+  collections:
+  # ... other collections ...
+  # Showroom
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.1
+
+# -------------------------------------------------------------------
+# Workloads
+# -------------------------------------------------------------------
+workloads:
+# ... other workloads ...
+- agnosticd.showroom.ocp4_workload_ocp_console_embed
+- agnosticd.showroom.ocp4_workload_showroom
+
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_showroom
+# -------------------------------------------------------------------
+ocp4_workload_showroom_content_git_repo: {{ showroom_repo_url }}
+ocp4_workload_showroom_content_git_repo_ref: main
+# Default antora playbook is default-site.yml, override here if needed
+# ocp4_workload_showroom_content_antora_playbook: site.yml
+# Dev mode is overridden in dev.yaml
+ocp4_workload_showroom_antora_enable_dev_mode: "false"
+```
+
+**Generate dev.yaml Showroom section:**
+
+```yaml
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_showroom
+# -------------------------------------------------------------------
+ocp4_workload_showroom_antora_enable_dev_mode: "true"
+```
+
+**If NO (no Showroom repo):**
 ```
 ℹ️  You can add the Showroom URL later in common.yaml
 ```
