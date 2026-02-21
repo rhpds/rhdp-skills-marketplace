@@ -555,6 +555,52 @@ Recommended workloads:
 Select workloads (comma-separated numbers, or 'all'):
 ```
 
+### Step 6.5: Check Latest Collection Versions
+
+Before generating files, fetch the latest release tags for all collections being used. Do this automatically — do not ask the user.
+
+**For each GitHub-hosted collection, run:**
+
+```bash
+gh api repos/<org>/<repo>/releases/latest --jq '.tag_name' 2>/dev/null \
+  || gh api repos/<org>/<repo>/tags --jq '.[0].name' 2>/dev/null
+```
+
+**Collections to check:**
+
+| Collection | Repo | Command |
+|---|---|---|
+| showroom | `agnosticd/showroom` | `gh api repos/agnosticd/showroom/releases/latest --jq '.tag_name'` |
+| core_workloads | `agnosticd/core_workloads` | `gh api repos/agnosticd/core_workloads/tags --jq '.[0].name'` |
+| EE image | `agnosticd/agnosticd-v2` | check `quay.io/agnosticd/ee-multicloud` tags manually |
+
+**For each collection found, show:**
+
+```
+📦 Collection versions (fetched from GitHub):
+
+  agnosticd/showroom       → v1.5.1  (latest)
+  agnosticd/core_workloads → main    (no releases, using main)
+
+  EE image: quay.io/agnosticd/ee-multicloud:chained-2026-02-16
+  (verify latest at https://quay.io/repository/agnosticd/ee-multicloud?tab=tags)
+
+Using these versions in requirements_content. Press Enter to confirm or type a different version:
+```
+
+**If `gh` is not available or API call fails**, warn and fall back to known versions:
+
+```
+⚠️  Could not fetch latest versions (gh CLI not available or not authenticated).
+    Using last known versions — verify before merging:
+    - agnosticd/showroom: v1.5.1
+    - agnosticd/core_workloads: main
+```
+
+**Store fetched versions** for use in requirements_content generation (Step 10).
+
+---
+
 ### Step 7: Showroom Repository Detection
 
 **Ask directly for the Showroom URL or path. DO NOT ask about GitHub org, root folders, or try to find it yourself:**
