@@ -112,12 +112,26 @@ WAIT for answer.
 
 Read ALL module `.adoc` files (files matching pattern `*module*.adoc` or numbered files like `03-*.adoc`, `04-*.adoc`, etc.).
 
+**CRITICAL — extract exact project/namespace names from the module content itself.**
+
+Read every module `.adoc` file and look for:
+- `oc new-project <name>` or `oc project <name>` — tells you the exact project name
+- `-n <namespace>` in commands — tells you the namespace pattern
+- Lines like `project mcp-openshift-{user}` or `namespace wksp-{user}` in instructions
+
+Also check if vars/attributes files exist (`vars.adoc`, `_attributes.adoc`) — they may define aliases like `:ocp4_starter_project: wksp-{user}`. But these files don't always exist — always read the modules too.
+
+**Do NOT assume or invent namespace names** — `workshop-{user}` and `wksp-{user}` are different. Wrong namespace = grader checks wrong place and always passes or always fails.
+
+Also note: if the module says "A project has already been created for you" — it is **pre-deployed**. Error messages for pre-deployed resources must NOT say "create it".
+
 For each module file, extract:
 - Module title (from `= Title` heading)
 - Exercise sections (numbered steps, code blocks with commands)
 - Student actions (commands they run: `oc`, `kubectl`, `curl`, `ansible-playbook`, etc.)
 - Resources created (deployments, services, routes, secrets, configmaps, pipelines, etc.)
 - Technology indicators (OpenShift, AAP, RHEL, Tekton, database, etc.)
+- Whether resources are **pre-deployed** or **created by student** — error messages for pre-deployed resources must NOT say "create it"
 
 ---
 
