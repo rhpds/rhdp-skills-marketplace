@@ -293,33 +293,39 @@ All GitHub repositories must be in `github.com/rhpds`.
 
 ### Step 2: Catalog Discovery (Search Existing)
 
-Using the type and technologies from Step 0.5, silently search `agd_v2/` and `openshift_cnv/`. No question needed — just search and show results.
+Silently search `agd_v2/` and `openshift_cnv/` using technologies from Step 1. Read each result's `config:` field to show infra type.
 
 ```bash
-# Search by technologies keywords in directory names and display_names
 grep -rl "$technologies" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
   --include="common.yaml" -l 2>/dev/null \
   | xargs -I{} dirname {} | head -5
 ```
 
-**Show results and ask ONE question:**
+**Show results with infra type — ask ONE question:**
 
 ```
 📖 Found similar catalogs:
 
-1. agd_v2/ansible-aap-workshop/
+1. agd_v2/ansible-aap-workshop/         [OCP cluster]
    └─ Ansible Automation Platform Self-Service
 
-2. openshift_cnv/ocp-cnv-kubevirt-demo/
+2. openshift_cnv/ocp-cnv-kubevirt-demo/ [OCP cluster]
    └─ KubeVirt Virtualization Demo
+
+3. agd_v2/vllm-playground-aws/          [RHEL/AAP VMs]
+   └─ vLLM Playground on AWS
 
 Would you like to use one of these as a reference? [Y/n]
 ```
 
 **If YES:** `Which one? Enter number:`
-Read that catalog's `common.yaml` — copy its workloads, collections, and infra as defaults. User can override anything.
 
-**If NO or none found:** Proceed with fresh catalog from template.
+Read that catalog's `common.yaml`:
+- Copy workloads, collections, infra as defaults
+- **Read `config:` field → auto-set infra type** (`openshift-workloads` → OCP, `cloud-vms-base` → VMs)
+- Skip Step 3 Question A entirely — infra type already known
+
+**If NO or none found:** Proceed to Step 3 and ask infra type there.
 
 ### Category *(auto — set from Step 1, no question)*
 
@@ -368,6 +374,10 @@ fi
 Ask sequentially — ONE question at a time.
 
 **Question A — Infrastructure type:**
+
+**SKIP if infra type was determined from reference catalog in Step 2.**
+
+If no reference was used, ask:
 
 ```
 🏗️  What type of infrastructure does this catalog need?
