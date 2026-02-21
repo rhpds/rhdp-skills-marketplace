@@ -142,40 +142,48 @@ Continue with verification? [Yes/No]
 
 ---
 
-### Step 1.5: Showroom Version Check (Recommended)
+### Step 1.5: Showroom Configuration Check
 
-Check if the repo is on Showroom 1.5.1+. This is a recommendation, not a blocker.
+Check `ui-config.yml` if it exists in the repo. Do not check AgnosticV or any external catalog — external developers do not have access to it. This step checks content configuration only.
 
-**If local path is accessible**, check silently for these indicators:
+**If `ui-config.yml` is found**, read it and check silently:
 
-| Indicator | Meaning |
-|---|---|
-| `default-site.yml` at root | 1.5.1+ ✅ |
-| `site.yml` at root (no default-site.yml) | pre-1.5.1 ⚠️ |
-| `supplemental-ui/` at root | 1.5.1+ ✅ |
-| `content/supplemental-ui/` | pre-1.5.1 ⚠️ |
-| `ui-config.yml` has `view_switcher:` | 1.5.1+ ✅ |
-
-**If pre-1.5.1 structure is detected**, include this notice in the Step 5 results (not as a blocker):
+**Check 1 — Consoles configured:**
+Look at the `tabs:` section. If all entries are commented out or the section is empty:
 
 ```
-⚠️  Showroom version notice
+⚠️  No consoles configured
 
-This repository appears to be on a pre-1.5.1 Showroom structure.
+ui-config.yml has no active tabs. Learners will see no embedded
+consoles or tools in the Showroom right panel.
 
-Recommendation for RHDP developers: upgrade to Showroom 1.5.1+.
-
-What to update:
-- Rename site.yml → default-site.yml
-- Move content/supplemental-ui/ → supplemental-ui/ (repo root)
-- Update supplemental_files in default-site.yml to: ./supplemental-ui
-- Add view_switcher block to ui-config.yml
-- Update .github/workflows/gh-pages.yml to: antora generate default-site.yml
-
-Content verification continues regardless of Showroom version.
+Add at least one tab to ui-config.yml, for example:
+  tabs:
+  - name: OpenShift Console
+    url: 'https://console-openshift-console.${DOMAIN}'
+  - name: Bastion
+    path: /wetty
+    port: 443
 ```
 
-**Do not block verification** — report the notice and continue with all content checks.
+**Check 2 — Split screen enabled:**
+Look for `view_switcher.enabled: true`. If missing or set to false:
+
+```
+⚠️  Split screen not configured
+
+ui-config.yml does not have view_switcher enabled. Learners will not
+be able to switch between split and full-screen modes.
+
+Add to ui-config.yml:
+  view_switcher:
+    enabled: true
+    default_mode: split
+```
+
+**If `ui-config.yml` is not found**, skip silently — do not block or ask.
+
+Include any warnings found here in the Step 5 results summary. Do not block verification.
 
 ---
 

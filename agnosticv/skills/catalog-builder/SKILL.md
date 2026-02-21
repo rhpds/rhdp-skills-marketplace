@@ -526,17 +526,17 @@ Q: What is the URL or path to your Showroom repository?
 URL or path:
 ```
 
-**After receiving the URL or path — Showroom 1.5.1 Structure Check (REQUIRED):**
+**After receiving the URL or path — automatically enforce Showroom 1.5.1:**
 
-If the user provided a **local path**, check these files directly:
+**If the user provided a local path**, silently check these files:
 
-| File | Expected Location | Required |
+| File | Expected | Fail condition |
 |---|---|---|
-| `default-site.yml` | repo root | YES — if only `site.yml` found, repo is pre-1.5.1 |
-| `supplemental-ui/` | repo root | YES — if under `content/`, repo is pre-1.5.1 |
-| `ui-config.yml` | repo root | YES |
+| `default-site.yml` | repo root | only `site.yml` found → pre-1.5.1 |
+| `supplemental-ui/` | repo root | found under `content/` → pre-1.5.1 |
+| `ui-config.yml` | repo root | missing → pre-1.5.1 |
 
-**If the Showroom repo is pre-1.5.1 (site.yml at root, or content/supplemental-ui/):**
+**If pre-1.5.1 detected**, block immediately — no question asked:
 
 ```
 ❌ Showroom repository is not on version 1.5.1 or above.
@@ -553,38 +553,31 @@ Found instead:
 This catalog cannot be created until the Showroom repository is
 upgraded to version 1.5.1 or above.
 
-To upgrade your Showroom repository, run:
-  /showroom:create-lab --new   (will scaffold all 1.5.1 files)
+To scaffold all 1.5.1 files automatically:
+  /showroom:create-lab --new
 
 Or migrate manually:
   1. Rename site.yml → default-site.yml
   2. Move content/supplemental-ui/ → supplemental-ui/ (repo root)
   3. Update supplemental_files in default-site.yml to: ./supplemental-ui
   4. Add view_switcher block to ui-config.yml
-  5. Update .github/workflows/gh-pages.yml to use: antora generate default-site.yml
+  5. Update .github/workflows/gh-pages.yml: antora generate default-site.yml
 
-Come back and re-run this skill once the Showroom is on 1.5.1+.
-
-⏸️  Pausing — upgrade Showroom repository first.
+⏸️  Pausing — upgrade Showroom repository to 1.5.1+ first.
 ```
 
-**If the user provided a GitHub URL (cannot check locally):**
+**If the user provided a GitHub URL**, enforce without asking — proceed and note the requirement:
 
 ```
-⚠️  Cannot verify Showroom structure from URL alone.
+ℹ️  Showroom 1.5.1+ required.
 
-Is this Showroom repository using version 1.5.1 or above?
+This catalog requires the Showroom repository to use version 1.5.1+
+(default-site.yml, supplemental-ui/ at root, view_switcher in ui-config.yml).
 
-Required files for 1.5.1+:
-  - default-site.yml at repo root (not site.yml)
-  - supplemental-ui/ at repo root (not content/supplemental-ui/)
-  - ui-config.yml with view_switcher block
-
-Check your repository and confirm: [Yes it's 1.5.1+ / No, it's older]
+Ensure your repository meets this before publishing.
 ```
 
-If the user confirms it is **older than 1.5.1**: apply the same blocking message above.
-If the user confirms it is **1.5.1+**: proceed.
+Then continue without blocking.
 
 **If NO:**
 ```
