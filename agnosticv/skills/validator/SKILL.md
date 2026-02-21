@@ -1026,8 +1026,8 @@ def check_bastion_config(config):
 ### Check 13: Collection Versions
 
 ```python
-def check_collection_versions(config):
-  """Validate git collection versions are specified"""
+def check_collection_versions(config, agv_repo_path, catalog_path):
+  """Validate git collection versions and compare against AgV repo usage"""
 
   collections = config.get('requirements_content', {}).get('collections', [])
 
@@ -1041,28 +1041,77 @@ def check_collection_versions(config):
     })
     return
 
+  # Scan AgV repo for versions of each collection already in use
+  # This finds the highest version without requiring gh CLI or internet access
+  def get_latest_version_in_agv(repo_url_fragment, agv_path, skip_path):
+    """Grep AgV repo for highest version of a collection"""
+    import glob, re
+    versions = []
+    for f in glob.glob(f"{agv_path}/**/common.yaml", recursive=True):
+      if f.startswith(skip_path):
+        continue
+      try:
+        with open(f) as fh:
+          content = fh.read()
+        if repo_url_fragment not in content:
+          continue
+        # Extract version: lines near the collection name
+        for line in content.splitlines():
+          if 'version:' in line and not line.strip().startswith('#'):
+            v = line.split('version:')[-1].strip()
+            if v and v != 'HEAD':
+              versions.append(v)
+      except:
+        continue
+    # Return highest semver tag found, or most recent string
+    tag_versions = sorted([v for v in versions if re.match(r'^v\d+', v)],
+                          key=lambda x: [int(n) for n in re.findall(r'\d+', x)])
+    return tag_versions[-1] if tag_versions else None
+
   for coll in collections:
     coll_name = coll.get('name', '')
-    coll_type = coll.get('type', '')
     coll_version = coll.get('version', '')
 
-    if coll_type == 'git' or 'github.com' in coll_name:
-      if not coll_version:
-        errors.append({
-          'check': 'collections',
-          'severity': 'ERROR',
-          'message': f'Git collection missing version: {coll_name}',
-          'location': 'common.yaml:requirements_content.collections',
-          'fix': 'Add version: main (or specific tag/commit)'
-        })
-      elif coll_version == 'HEAD':
-        warnings.append({
-          'check': 'collections',
-          'severity': 'WARNING',
-          'message': f'Collection uses HEAD: {coll_name}',
-          'location': 'common.yaml:requirements_content.collections',
-          'recommendation': 'Use specific branch or tag for reproducibility'
-        })
+    if 'github.com' not in coll_name:
+      continue
+
+    # Check version is specified
+    if not coll_version:
+      errors.append({
+        'check': 'collections',
+        'severity': 'ERROR',
+        'message': f'Git collection missing version: {coll_name}',
+        'location': 'common.yaml:requirements_content.collections',
+        'fix': 'Add version: <tag> (check existing AgV catalogs for current version in use)'
+      })
+      continue
+
+    if coll_version == 'HEAD':
+      warnings.append({
+        'check': 'collections',
+        'severity': 'WARNING',
+        'message': f'Collection uses HEAD: {coll_name}',
+        'location': 'common.yaml:requirements_content.collections',
+        'recommendation': 'Use specific tag for reproducibility'
+      })
+      continue
+
+    # Extract repo fragment for grep (e.g. "agnosticd/showroom")
+    repo_fragment = '/'.join(coll_name.rstrip('/').split('/')[-2:]).replace('.git', '')
+    latest_in_agv = get_latest_version_in_agv(repo_fragment, agv_repo_path, catalog_path)
+
+    if latest_in_agv and latest_in_agv != coll_version:
+      warnings.append({
+        'check': 'collections',
+        'severity': 'WARNING',
+        'message': f'Collection may be outdated: {repo_fragment}',
+        'location': 'common.yaml:requirements_content.collections',
+        'current': coll_version,
+        'latest_in_agv': latest_in_agv,
+        'recommendation': f'Other AgV catalogs use {latest_in_agv} — consider updating'
+      })
+    else:
+      passed_checks.append(f"✓ Collection version current: {repo_fragment} {coll_version}")
 
   passed_checks.append(f"✓ Collections defined ({len(collections)} collections)")
 ```
