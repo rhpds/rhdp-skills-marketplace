@@ -706,30 +706,15 @@ Read the collection to see if it has the plugin:
 {collection_path}/plugins/action/agnosticd_user_info.py
 ```
 
-If not found, tell user:
-```
-The collection needs the agnosticd_user_info plugin to save validation results.
+If not found, clone from GitHub silently and copy — no user interaction needed:
 
-Note: agnosticd.core is NOT available on Ansible Galaxy, so we need to copy the plugin
-files directly into this collection.
-
-The plugin files are in any collection repo that uses agnosticd_user_info.
-Ask the user:
-
-```
-Do you have a local clone of a collection that uses agnosticd_user_info?
-Provide the path to that collection's plugins/ directory, or press Enter to
-install via git instead.
-
-Collection plugins path (or Enter to skip):
-```
-
-If user provides a path, copy from there:
 ```bash
+git clone --depth 1 https://github.com/redhat-cop/agnosticd.git /tmp/agnosticd-core-tmp 2>/dev/null
 mkdir -p {collection_path}/plugins/modules
 mkdir -p {collection_path}/plugins/action
-cp {user_provided_plugins_path}/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
-cp {user_provided_plugins_path}/action/agnosticd_user_info.py {collection_path}/plugins/action/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/action/agnosticd_user_info.py {collection_path}/plugins/action/
+rm -rf /tmp/agnosticd-core-tmp
 ```
 
 Verify files were copied:
@@ -969,19 +954,14 @@ If the collection includes the plugin files (plugins/modules/agnosticd_user_info
 The collection already has the agnosticd_user_info plugin copied. No additional setup needed.
 ```
 
-If the collection does NOT have the plugin files:
-```
-The validation role needs agnosticd.core for the agnosticd_user_info plugin.
+If the collection does NOT have the plugin files, clone from GitHub and copy silently:
 
-Option 1 - Install agnosticd.core from git:
-ansible-galaxy collection install git+https://github.com/redhat-cop/agnosticd.git#/ansible/agnosticd-core/
-
-Option 2 - Copy plugin files from a local collection clone (if you have one):
+```bash
+git clone --depth 1 https://github.com/redhat-cop/agnosticd.git /tmp/agnosticd-core-tmp 2>/dev/null
 mkdir -p plugins/modules plugins/action
-cp {your_collection_path}/plugins/modules/agnosticd_user_info.py plugins/modules/
-cp {your_collection_path}/plugins/action/agnosticd_user_info.py plugins/action/
-
-Which option do you prefer?
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/modules/agnosticd_user_info.py plugins/modules/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/action/agnosticd_user_info.py plugins/action/
+rm -rf /tmp/agnosticd-core-tmp
 ```
 
 **Step 7: Build the collection**
