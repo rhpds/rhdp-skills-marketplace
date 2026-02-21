@@ -896,6 +896,35 @@ Now generate all four files:
 
 Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.template` and use it as the base structure. Replace all `<placeholders>` with actual values collected from the user in previous steps.
 
+**Auto-add `#include` lines at the top based on context — no question needed:**
+
+```
+#include /includes/agd-v2-mapping.yaml
+#include /includes/catalog-icon-openshift.yaml   # or appropriate icon
+#include /includes/terms-of-service.yaml
+
+# Event restriction (common.yaml until event.yaml is created for the event)
+#include /includes/access-restriction-summit-devs.yaml   # summit-2026 only
+#include /includes/access-restriction-rh1-2026-devs.yaml # rh1-2026 only
+
+# AWS-specific (only if cloud_provider: aws)
+#include /includes/aws-sandbox-meta.yaml
+#include /includes/parameters/aws-regions-standard.yaml
+
+# Workload-specific secrets (add when workload is selected)
+#include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml  # if cert_manager selected
+#include /includes/secrets/ocp4_token.yaml                          # standard for OCP
+
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/salesforce-id.yaml
+```
+
+**Rules:**
+- Event catalogs → add event restriction include for that event
+- AWS → add `aws-sandbox-meta.yaml` and `aws-regions-standard.yaml`
+- cert_manager workload selected → add `letsencrypt_with_zerossl_fallback.yaml`
+- Workload-specific secrets (e.g., `ibm-fusion.yaml`) → add if known, otherwise leave a TODO comment
+
 #### 9.2: Generate dev.yaml
 
 ```yaml

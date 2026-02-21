@@ -4,17 +4,25 @@
 
 ---
 #include /includes/agd-v2-mapping.yaml
-#include /includes/sandbox-api.yaml
 #include /includes/catalog-icon-openshift.yaml  # or catalog-icon-project-dance, catalog-icon-rh-ai-2025
 #include /includes/terms-of-service.yaml
-#include /includes/access-restriction-rh1-2026-devs.yaml  # Optional - for restricted catalogs
+
+# Event restriction — in common.yaml until event.yaml is created for the event
+# summit-2026: #include /includes/access-restriction-summit-devs.yaml
+# rh1-2026:   #include /includes/access-restriction-rh1-2026-devs.yaml
+
+# AWS only
+# #include /includes/aws-sandbox-meta.yaml
+# #include /includes/parameters/aws-regions-standard.yaml
 
 #include /includes/parameters/purpose.yaml
 #include /includes/parameters/salesforce-id.yaml
 #include /includes/parameters/num-users-salesforce.yaml  # If multi-user
 
-#include /includes/secrets/ocp4_ai_offline_token.yaml
-#include /includes/secrets/s3-rhpds-private-bucket.yaml
+#include /includes/secrets/ocp4_token.yaml
+# Workload-specific secrets — add as needed:
+# #include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml  # cert_manager
+# #include /includes/secrets/<workload-specific>.yaml
 
 # -------------------------------------------------------------------
 # --- Catalog Item: <Display Name>
