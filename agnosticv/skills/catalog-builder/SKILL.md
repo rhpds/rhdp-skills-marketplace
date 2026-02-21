@@ -114,11 +114,24 @@ Use `/agnosticv-catalog-builder` when you need to:
 ## Skill Workflow Overview
 
 ```
-Step 0: Prerequisites & Scope Selection
+Step 0:   Prerequisites & Scope Selection
   ↓
-  ├─ Full Catalog → Steps 1-10 (infrastructure + all files)
-  ├─ Description Only → Steps 1-3 (extract from Showroom)
-  └─ Info Message Template → Steps 1-2 (user data template)
+  ├─ Full Catalog →
+  │    Step 1: Context (event + type + technologies)
+  │    Step 2: Discovery (search AgV for reference)
+  │    Step 3: Infrastructure (OCP or VMs, sizing)
+  │    Step 4: Authentication
+  │    Step 5: Workloads  +  Step 5.5: Versions (auto)
+  │    Step 6: Showroom
+  │    Step 7: Catalog Details  +  Step 7a: Repo setup
+  │    Step 8: Multi-user
+  │    Step 9: Generate Files (common.yaml, dev.yaml, description, info-message)
+  │    Step 10: Directory Path
+  │    Step 11: Write Files
+  │    Step 12: Commit
+  ├─ Description Only  → Steps 1-4
+  ├─ Info Message      → Steps 1-2
+  └─ Virtual CI        → Steps 1-10
 ```
 
 ---
@@ -205,7 +218,7 @@ echo "✓ Created and switched to branch: $branch_name"
 
 **When selected:** User chose option 1 (Full Catalog)
 
-### Step 0.5: Context (REQUIRED — ask before anything else)
+### Step 1: Context (REQUIRED — ask before anything else)
 
 Ask these TWO questions sequentially before touching anything else.
 
@@ -278,7 +291,7 @@ All GitHub repositories must be in `github.com/rhpds`.
 
 ---
 
-### Step 1: Catalog Discovery (Search Existing)
+### Step 2: Catalog Discovery (Search Existing)
 
 Using the type and technologies from Step 0.5, silently search `agd_v2/` and `openshift_cnv/`. No question needed — just search and show results.
 
@@ -308,7 +321,7 @@ Read that catalog's `common.yaml` — copy its workloads, collections, and infra
 
 **If NO or none found:** Proceed with fresh catalog from template.
 
-### Step 2: Category *(auto — no question)*
+### Category *(auto — set from Step 1, no question)*
 
 Category is already determined from Step 0.5. Confirm internally:
 
@@ -322,7 +335,7 @@ Category is already determined from Step 0.5. Confirm internally:
 
 Multiuser auto-set: `Brand_Events` / `Workshops` → `true`, `Demos` → `false`.
 
-### Step 3: UUID Generation (REQUIRED)
+### UUID *(auto — generated and collision-checked silently)*
 
 ```
 🔑 UUID Generation
@@ -350,7 +363,7 @@ if [[ $? -eq 0 ]]; then
 fi
 ```
 
-### Step 4: Infrastructure Selection
+### Step 3: Infrastructure Selection
 
 Ask sequentially — ONE question at a time.
 
@@ -492,7 +505,7 @@ instances:
     image_size: 200Gi
 ```
 
-### Step 5: Authentication Setup
+### Step 4: Authentication Setup
 
 Single unified workload for all authentication. Ask ONE question:
 
@@ -550,7 +563,7 @@ ocp4_workload_authentication_remove_kubeadmin: true
 ocp4_workload_authentication_keycloak_channel: stable-v26.2
 ```
 
-### Step 6: Workload Selection
+### Step 5: Workload Selection
 
 Using the technologies from Step 0.5, recommend workloads silently. Present recommendations and confirm.
 
@@ -576,7 +589,7 @@ Recommended workloads:
 Select workloads (comma-separated numbers, or 'all'):
 ```
 
-### Step 6.5: Collection Versions *(auto — no question)*
+### Step 5.5: Collection Versions *(auto — no question)*
 
 Use the `{{ tag }}` pattern — one variable controls all standard collection versions.
 
@@ -623,7 +636,7 @@ No question asked — all of this is generated automatically.
 
 ---
 
-### Step 7: Showroom Configuration
+### Step 6: Showroom Configuration
 
 **Ask for the Showroom repo:**
 
@@ -713,7 +726,7 @@ ocp4_workload_showroom_antora_enable_dev_mode: "true"
 ℹ️  You can add the Showroom URL later in common.yaml
 ```
 
-### Step 8: Catalog Details
+### Step 7: Catalog Details
 
 ```
 📝 Catalog Details
@@ -751,7 +764,7 @@ if find "$AGV_PATH" -maxdepth 2 -type d -name "$short_name" 2>/dev/null | grep -
 fi
 ```
 
-### Step 8a: Repository Setup
+### Step 7a: Repository Setup
 
 **If no Showroom repo was provided in Step 7**, show creation instructions and pause:
 
@@ -807,7 +820,7 @@ Example structure:
 ✓ Using standard collections only (agnosticd.core_workloads, agnosticd.showroom, etc.)
 ```
 
-### Step 9: Multi-User Configuration
+### Step 8: Multi-User Configuration
 
 ```
 👥 Multi-User Setup
@@ -865,15 +878,15 @@ __meta__:
     # NO workshopLabUiRedirect for demos
 ```
 
-### Step 10: Generate Files
+### Step 9: Generate Files
 
 Now generate all four files:
 
-#### 10.1: Generate common.yaml
+#### 9.1: Generate common.yaml
 
 Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.template` and use it as the base structure. Replace all `<placeholders>` with actual values collected from the user in previous steps.
 
-#### 10.2: Generate dev.yaml
+#### 9.2: Generate dev.yaml
 
 ```yaml
 ---
@@ -889,7 +902,7 @@ __meta__:
 
 **Note:** dev.yaml is minimal — only overrides scm_ref and sets purpose tag for cost tracking.
 
-#### 10.2a: Generate `__meta__` block (REQUIRED — ask sequentially)
+#### 9.2a: Generate `__meta__` block (REQUIRED — ask sequentially)
 
 The `__meta__` block is generated based on all information collected. Use the following rules exactly.
 
@@ -1078,7 +1091,7 @@ __meta__:
 
 **For no-event catalogs**: omit `Brand_Event` label and event keywords.
 
-#### 10.3: Generate description.adoc
+#### 9.3: Generate description.adoc
 
 **Ask for description content:**
 ```
@@ -1104,7 +1117,7 @@ grep "^= " "$temp_dir/content/modules/ROOT/pages"/*.adoc
 
 Read the template and examples at `@agnosticv/skills/catalog-builder/templates/description.adoc.template`. Follow Nate's RHDP format exactly -- the template includes key guidelines and two real examples (demo + workshop).
 
-#### 10.4: Generate info-message-template.adoc
+#### 9.4: Generate info-message-template.adoc
 
 ```
 📧 Info Message Template
@@ -1128,7 +1141,7 @@ Data keys (comma-separated):
 
 Read the template at `@agnosticv/skills/catalog-builder/templates/info-message.adoc.template`. It includes both variants (with and without user data) and explains how `agnosticd_user_info` works.
 
-### Step 11: Determine Catalog Directory Path
+### Step 10: Determine Catalog Directory Path
 
 **If event was selected (summit-2026 or rh1-2026):**
 
@@ -1178,7 +1191,7 @@ if [[ -d "$catalog_path" ]]; then
 fi
 ```
 
-### Step 12: Write Files
+### Step 11: Write Files
 
 ```
 💾 Writing Files
@@ -1214,7 +1227,7 @@ cat > "$catalog_path/info-message-template.adoc" <<'EOF'
 EOF
 ```
 
-### Step 13: Git Commit (Optional)
+### Step 12: Git Commit (Optional)
 
 ```
 🚀 Ready to Commit
