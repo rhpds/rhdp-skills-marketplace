@@ -188,6 +188,53 @@ else:
 
 ---
 
+## Step 1.5: Event Context Detection
+
+Auto-detect event from the catalog directory path. Then confirm with user.
+
+**Detection logic:**
+
+```bash
+# Extract parent directory from catalog path
+# e.g., /path/to/agnosticv/summit-2026/lb2298-ibm-fusion → summit-2026
+parent_dir=$(basename $(dirname $CATALOG_PATH))
+# e.g., lb2298-ibm-fusion → lb2298
+lab_id=$(echo $(basename $CATALOG_PATH) | grep -oP '^lb\d+')
+```
+
+| Detected parent | Conclusion |
+|---|---|
+| `summit-2026` | Event: summit-2026 |
+| `rh1-2026` | Event: rh1-2026 |
+| anything else | No event detected |
+
+**Ask ONE question:**
+
+```
+🎪 Event Context
+
+{% if event_detected %}
+Detected event catalog: {{ parent_dir }}/{{ catalog_slug }}
+Lab ID detected: {{ lab_id }}
+
+Is this for event: {{ parent_dir }}? [Yes/No]
+{% else %}
+Is this catalog for a specific event?
+
+1. Red Hat Summit 2026  (summit-2026)
+2. Red Hat One 2026     (rh1-2026)
+3. No event
+
+Choice [1/2/3]:
+{% endif %}
+```
+
+Store: `event_context` (summit-2026 | rh1-2026 | none), `lab_id` (lbxxxx | empty).
+
+If event confirmed → run **Check 16a: Event Catalog Validation** (event-specific checks).
+
+---
+
 ## Step 2: Validation Scope Selection
 
 ```
@@ -223,7 +270,8 @@ elif choice == 2:
                    "workloads", "authentication", "showroom", "infrastructure",
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
-                   "best_practices"]
+                   "anarchy_namespace", "best_practices",
+                   "event_catalog"]  # event_catalog only runs if event_context != none
 
 elif choice == 3:
   validation_scope = "full"
@@ -231,7 +279,9 @@ elif choice == 3:
                    "workloads", "authentication", "showroom", "infrastructure",
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
-                   "best_practices", "github_api", "collection_urls", "scm_refs"]
+                   "anarchy_namespace", "best_practices",
+                   "event_catalog",   # event_catalog only runs if event_context != none
+                   "github_api", "collection_urls", "scm_refs"]
 ```
 
 ---
@@ -1175,6 +1225,203 @@ def check_component_propagation(config):
   passed_checks.append(f"✓ Multi-stage catalog with {len(components)} component(s)")
 ```
 
+### Check 15a: Anarchy Namespace (ALL catalogs)
+
+```python
+def check_anarchy_namespace(config):
+  """anarchy.namespace must never be defined in catalog files"""
+
+  if config.get('__meta__', {}).get('anarchy', {}).get('namespace'):
+    errors.append({
+      'check': 'anarchy_namespace',
+      'severity': 'ERROR',
+      'message': 'anarchy.namespace must NOT be defined in catalog common.yaml',
+      'location': 'common.yaml:__meta__.anarchy.namespace',
+      'fix': 'Remove __meta__.anarchy.namespace entirely — it is set at the AgV top level',
+      'details': 'Defining anarchy.namespace here overrides the platform setting and causes routing failures'
+    })
+  else:
+    passed_checks.append("✓ anarchy.namespace not defined (correct)")
+```
+
+### Check 16a: Event Catalog Validation (only if event_context is set)
+
+```python
+def check_event_catalog(config, event_context, lab_id, catalog_path):
+  """Event-specific validation based on Developer Guidelines naming standards"""
+
+  if event_context == 'none':
+    return
+
+  catalog = config.get('__meta__', {}).get('catalog', {})
+  labels = catalog.get('labels', {})
+  keywords = catalog.get('keywords', [])
+
+  # --- Brand_Event label ---
+  brand_event_map = {
+    'summit-2026': 'Red_Hat_Summit_2026',
+    'rh1-2026':    'Red_Hat_One_2026',
+  }
+  expected_brand_event = brand_event_map.get(event_context)
+  actual_brand_event = labels.get('Brand_Event')
+
+  if not actual_brand_event:
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': f'Missing Brand_Event label for {event_context} catalog',
+      'location': 'common.yaml:__meta__.catalog.labels',
+      'fix': f'Add: Brand_Event: {expected_brand_event}',
+    })
+  elif actual_brand_event != expected_brand_event:
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': f'Incorrect Brand_Event label',
+      'location': 'common.yaml:__meta__.catalog.labels.Brand_Event',
+      'current': actual_brand_event,
+      'expected': expected_brand_event,
+      'fix': f'Change Brand_Event to: {expected_brand_event}',
+    })
+  else:
+    passed_checks.append(f"✓ Brand_Event label correct: {actual_brand_event}")
+
+  # --- Event keyword ---
+  if event_context not in keywords:
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': f'Missing event keyword: {event_context}',
+      'location': 'common.yaml:__meta__.catalog.keywords',
+      'fix': f'Add "{event_context}" to keywords list',
+    })
+  else:
+    passed_checks.append(f"✓ Event keyword present: {event_context}")
+
+  # --- Lab ID keyword ---
+  if lab_id and lab_id not in keywords:
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': f'Missing lab ID keyword: {lab_id}',
+      'location': 'common.yaml:__meta__.catalog.keywords',
+      'fix': f'Add "{lab_id}" to keywords list',
+    })
+  elif lab_id:
+    passed_checks.append(f"✓ Lab ID keyword present: {lab_id}")
+
+  # --- No generic keywords ---
+  generic_keywords = ['workshop', 'demo', 'openshift', 'lab', 'sandbox']
+  bad_keywords = [k for k in keywords if k.lower() in generic_keywords]
+
+  if bad_keywords:
+    warnings.append({
+      'check': 'event_catalog',
+      'severity': 'WARNING',
+      'message': f'Generic keywords should not be in event catalogs: {bad_keywords}',
+      'location': 'common.yaml:__meta__.catalog.keywords',
+      'fix': f'Remove generic keywords: {", ".join(bad_keywords)}',
+      'reason': 'Generic keywords add noise to search; event name and lab ID are enough',
+    })
+
+  # --- Directory naming convention ---
+  # Expected: <event-name>/<lab-id>-<short-name>-<cloud_provider>
+  catalog_slug = os.path.basename(catalog_path)
+  if lab_id and not catalog_slug.startswith(lab_id):
+    warnings.append({
+      'check': 'event_catalog',
+      'severity': 'WARNING',
+      'message': f'Directory name does not follow naming convention',
+      'location': catalog_path,
+      'current': catalog_slug,
+      'expected_pattern': f'{lab_id}-<short-name>-<cloud_provider>',
+      'example': f'{lab_id}-ocp-fish-swim-aws',
+      'fix': 'Rename directory to match: <lab-id>-<short-name>-<cloud_provider>',
+    })
+  else:
+    passed_checks.append(f"✓ Directory naming convention followed: {catalog_slug}")
+
+  # --- Showroom repo naming ---
+  showroom_repo = config.get('ocp4_workload_showroom_content_git_repo', '')
+  if showroom_repo:
+    # Extract repo name from URL
+    repo_name = showroom_repo.rstrip('/').split('/')[-1].replace('.git', '')
+    if not repo_name.endswith('-showroom'):
+      warnings.append({
+        'check': 'event_catalog',
+        'severity': 'WARNING',
+        'message': f'Showroom repo name does not follow convention',
+        'location': 'common.yaml:ocp4_workload_showroom_content_git_repo',
+        'current': repo_name,
+        'expected_pattern': '<short-name>-showroom',
+        'example': 'ocp-fish-swim-showroom',
+      })
+    else:
+      passed_checks.append(f"✓ Showroom repo naming correct: {repo_name}")
+
+  # --- Showroom collection version ---
+  collections = config.get('requirements_content', {}).get('collections', [])
+  showroom_coll = next((c for c in collections
+                        if 'agnosticd/showroom' in c.get('name', '')), None)
+
+  if not showroom_coll:
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': 'Showroom collection missing from requirements_content',
+      'location': 'common.yaml:requirements_content.collections',
+      'fix': '''Add:
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.1''',
+    })
+  else:
+    version = showroom_coll.get('version', '')
+    if version != 'v1.5.1':
+      warnings.append({
+        'check': 'event_catalog',
+        'severity': 'WARNING',
+        'message': f'Showroom collection version is not v1.5.1',
+        'location': 'common.yaml:requirements_content.collections',
+        'current': version,
+        'expected': 'v1.5.1',
+        'fix': 'Set version: v1.5.1 for showroom collection',
+      })
+    else:
+      passed_checks.append("✓ Showroom collection version: v1.5.1")
+
+  # --- ocp4_workload_ocp_console_embed present ---
+  workloads = config.get('workloads', [])
+  has_console_embed = any('ocp_console_embed' in w for w in workloads)
+
+  if not has_console_embed:
+    warnings.append({
+      'check': 'event_catalog',
+      'severity': 'WARNING',
+      'message': 'Missing ocp4_workload_ocp_console_embed workload',
+      'location': 'common.yaml:workloads',
+      'fix': 'Add: agnosticd.showroom.ocp4_workload_ocp_console_embed',
+      'reason': 'Required for embedding OCP console and other UIs in Showroom',
+    })
+  else:
+    passed_checks.append("✓ ocp4_workload_ocp_console_embed present")
+
+  # --- category must be Brand_Events for event catalogs ---
+  category = catalog.get('category', '')
+  if category != 'Brand_Events':
+    errors.append({
+      'check': 'event_catalog',
+      'severity': 'ERROR',
+      'message': f'Event catalog must use category: Brand_Events',
+      'location': 'common.yaml:__meta__.catalog.category',
+      'current': category,
+      'expected': 'Brand_Events',
+      'fix': 'Set category: Brand_Events',
+    })
+  else:
+    passed_checks.append("✓ Category correct: Brand_Events")
+```
+
 ### Check 16: AsciiDoc Templates
 
 ```python
@@ -1473,6 +1720,21 @@ Save this checklist for comprehensive review:
 - [ ] PR created with test plan
 - [ ] PR description includes test results
 - [ ] Ready for RHDP team review
+
+## Event Catalog (summit-2026 / rh1-2026 only)
+- [ ] Directory name: <lab-id>-<short-name>-<cloud_provider>
+- [ ] catalog.category: Brand_Events
+- [ ] catalog.labels.Brand_Event: Red_Hat_Summit_2026 or Red_Hat_One_2026
+- [ ] catalog.keywords includes event name (summit-2026 or rh1-2026)
+- [ ] catalog.keywords includes lab ID (lbxxxx)
+- [ ] No generic keywords (workshop, openshift, demo, lab)
+- [ ] anarchy.namespace NOT defined
+- [ ] Showroom repo named: <short-name>-showroom
+- [ ] Showroom repo in github.com/rhpds organization
+- [ ] showroom collection version: v1.5.1
+- [ ] Both workloads present: ocp4_workload_ocp_console_embed + ocp4_workload_showroom
+- [ ] ocp4_workload_showroom_antora_enable_dev_mode: "false" in common.yaml
+- [ ] ocp4_workload_showroom_antora_enable_dev_mode: "true" in dev.yaml
 ```
 
 ---
