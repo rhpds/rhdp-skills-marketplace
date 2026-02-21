@@ -205,6 +205,57 @@ echo "✓ Created and switched to branch: $branch_name"
 
 **When selected:** User chose option 1 (Full Catalog)
 
+### Step 0.5: Event Selection (REQUIRED — ask before anything else)
+
+```
+🎪 Event Context
+
+Is this catalog for a specific Red Hat event?
+
+1. Red Hat Summit 2026   (event-name: summit-2026)
+2. Red Hat One 2026      (event-name: rh1-2026)
+3. No event              (standard workshop, demo, or sandbox)
+
+Choice [1/2/3]:
+```
+
+**If event selected (1 or 2):**
+
+```
+Q: What is the lab ID? (format: lbxxxx, e.g., lb2298)
+
+Lab ID:
+```
+
+Store: `event_name` (summit-2026 or rh1-2026), `lab_id` (lbxxxx).
+
+**Naming standards cheat sheet** — use these throughout all subsequent steps:
+
+| Item | Pattern | Example (short-name = ocp-fish-swim) |
+|---|---|---|
+| AgnosticV directory | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` | `summit-2026/lb1234-ocp-fish-swim-aws` |
+| Showroom repo | `<short-name>-showroom` | `ocp-fish-swim-showroom` |
+| Automation repo | `<short-name>-automation` | `ocp-fish-swim-automation` |
+| Slack channel | `<event-name>-<lab-id>-<short-lab-name>` | `summit-2026-lb1234-ocp-fish-swim` |
+| Event intake form | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
+
+All GitHub repositories must be in the `github.com/rhpds` organization.
+
+**`__meta__` values driven by event** (apply in Step 10):
+
+| Event | `catalog.labels.Brand_Event` | `catalog.keywords` additions |
+|---|---|---|
+| summit-2026 | `Red_Hat_Summit_2026` | `summit-2026`, `<lab-id>` |
+| rh1-2026 | `Red_Hat_One_2026` | `rh1-2026`, `<lab-id>` |
+| No event | _(omit Brand_Event)_ | _(no event keywords)_ |
+
+**If no event (option 3):**
+
+Store: `event_name = none`. Standard naming: `<short-name>` only.
+AgnosticV path: ask user for subdirectory in Step 11 (as before).
+
+---
+
 ### Step 1: Catalog Discovery (Search Existing)
 
 Search for similar catalogs to learn from or use as reference.
@@ -846,7 +897,173 @@ __meta__:
     scm_type: git
 ```
 
-**Note:** dev.yaml is minimal - only overrides scm_ref and sets purpose tag for cost tracking.
+**Note:** dev.yaml is minimal — only overrides scm_ref and sets purpose tag for cost tracking.
+
+#### 10.2a: Generate `__meta__` block (REQUIRED — ask sequentially)
+
+The `__meta__` block is generated based on all information collected. Use the following rules exactly.
+
+**NEVER define `anarchy.namespace`** — it is set at the top level of AgV now. Omit it entirely.
+
+**Ask: deployer actions** (for workloads that touch resources OUTSIDE the cluster/sandbox):
+
+```
+Q: Does any workload in this catalog deploy or configure something
+   outside the OpenShift cluster or sandbox? (e.g., external DNS,
+   cloud resources, external registries) [Y/n]
+
+If YES: which deployer actions should be disabled?
+  - start  (set to true if base component handles start)
+  - stop   (set to true if base component handles stop)
+  - remove_workloads (set to true only if you DON'T want workload cleanup)
+
+All default to false. Only set true to DISABLE that action.
+```
+
+Generate only the actions the user marks true:
+```yaml
+__meta__:
+  deployer:
+    actions:
+      stop:
+        disable: true    # only if user said yes
+      start:
+        disable: true    # only if user said yes
+```
+
+If user says No or unsure → omit `deployer.actions` entirely.
+
+**deployer.ee** — use the current chained EE image (from summit-2026/lb2298-ibm-fusion reference):
+
+```yaml
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-16
+      pull: missing
+```
+
+**Ask: sandbox_api destroy behavior** (only if workload modifies external resources):
+
+```
+Q: Should remove_workloads run when the environment is destroyed?
+   (Default: yes — set catch_all to false only if you want cleanup skipped)
+
+Set catch_all to false? [Y/n]
+```
+
+If yes → add:
+```yaml
+  sandbox_api:
+    actions:
+      destroy:
+        catch_all: false
+```
+If no → omit.
+
+**catalog.reportingLabels** — always ask:
+
+```
+Q: What is the primary business unit (primaryBU)?
+
+Common values:
+- Hybrid_Platforms
+- OpenShift_AI
+- Ansible
+- Edge
+
+primaryBU:
+
+Q: Secondary BU? (optional, press Enter to skip)
+
+secondaryBU:
+```
+
+**catalog.labels.Brand_Event** — auto-set from event selection (Step 0.5):
+
+| Event | Value |
+|---|---|
+| summit-2026 | `Red_Hat_Summit_2026` |
+| rh1-2026 | `Red_Hat_One_2026` |
+| No event | _(omit entirely)_ |
+
+**catalog.keywords** — build from event + lab ID + user input:
+
+```
+Q: What specific keywords describe this catalog?
+   (Do NOT add generic terms like "workshop", "openshift", or words already in the title)
+
+Examples: ibm-fusion, cnv, kubevirt, rag, llm
+
+Keywords:
+```
+
+Auto-add event keywords silently (user should not add these manually):
+- summit-2026 → add `summit-2026` and `<lab-id>`
+- rh1-2026 → add `rh1-2026` and `<lab-id>`
+
+**catalog.workshopLabUiRedirect** — ask if applicable:
+
+```
+Q: Does this catalog define lab_ui_url (e.g., a direct Showroom URL)
+   and should users be taken directly to it when they claim a seat? [Y/n]
+```
+
+If yes → set `workshopLabUiRedirect: true`.
+
+**Full `__meta__` output for an event catalog (summit-2026 example):**
+
+```yaml
+__meta__:
+  asset_uuid: {{ generated_uuid }}
+  owners:
+    maintainer:
+    - name: {{ owner_name }}
+      email: {{ owner_email }}
+    instructions:
+    - name: TBD
+      email: tbd@redhat.com
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-16
+      pull: missing
+    # actions:          # Only add if workload touches external resources
+    #   stop:
+    #     disable: true
+    #   start:
+    #     disable: true
+
+  # sandbox_api:        # Only add if remove_workloads should be skipped
+  #   actions:
+  #     destroy:
+  #       catch_all: false
+
+  catalog:
+    reportingLabels:
+      primaryBU: {{ primary_bu }}
+      # secondaryBU: {{ secondary_bu }}   # uncomment if applicable
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "{{ display_name }}"
+    category: {{ category }}
+    keywords:
+    - {{ event_name }}          # summit-2026 or rh1-2026
+    - {{ lab_id }}              # lbxxxx
+    - {{ user_keyword_1 }}
+    - {{ user_keyword_2 }}
+    labels:
+      Product: {{ product_label }}
+      Product_Family: {{ product_family_label }}
+      Provider: RHDP
+      Brand_Event: {{ brand_event }}    # Red_Hat_Summit_2026 or Red_Hat_One_2026
+    multiuser: {{ true | false }}
+    # workshopLabUiRedirect: true     # uncomment if lab_ui_url is defined
+```
+
+**For no-event catalogs**, omit `Brand_Event` label and event keywords.
 
 #### 10.3: Generate description.adoc
 
@@ -900,6 +1117,27 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/info-message.a
 
 ### Step 11: Determine Catalog Directory Path
 
+**If event was selected (summit-2026 or rh1-2026):**
+
+Auto-generate path from event, lab ID, short name, and cloud provider. No question needed.
+
+```bash
+# Pattern: <event-name>/<lab-id>-<short-name>-<cloud_provider>
+# Example: summit-2026/lb2298-ocp-fish-swim-aws
+directory_name="${lab_id}-${short_name}-${cloud_provider}"
+catalog_path="$AGV_PATH/${event_name}/${directory_name}"
+```
+
+Show the user what will be created:
+```
+📂 Catalog path (from event + naming standards):
+   summit-2026/lb2298-ocp-fish-swim-aws
+
+Using: $catalog_path
+```
+
+**If no event (standard catalog):**
+
 ```
 📂 Catalog Directory Path
 
@@ -910,15 +1148,12 @@ Common options:
 - openshift_cnv (CNV-based catalogs)
 - sandboxes-gpte (sandbox catalogs)
 - published (Virtual CIs)
-- custom path
 
 Enter subdirectory (e.g., agd_v2):
 ```
 
-**Build the path:**
 ```bash
-# User enters subdirectory (e.g., "agd_v2")
-catalog_path="$AGV_PATH/$subdirectory/$directory_name"
+catalog_path="$AGV_PATH/$subdirectory/$short_name"
 ```
 
 **Validate doesn't exist:**
