@@ -713,18 +713,23 @@ The collection needs the agnosticd_user_info plugin to save validation results.
 Note: agnosticd.core is NOT available on Ansible Galaxy, so we need to copy the plugin
 files directly into this collection.
 
-Source: AAP collection has the plugin files
-I can copy from: ~/work/code/rhpds.aap_self_service_portal/plugins/
+The plugin files are in any collection repo that uses agnosticd_user_info.
+Ask the user:
 
-Should I copy it?
+```
+Do you have a local clone of a collection that uses agnosticd_user_info?
+Provide the path to that collection's plugins/ directory, or press Enter to
+install via git instead.
+
+Collection plugins path (or Enter to skip):
 ```
 
-If user says yes, use Bash to copy both files:
+If user provides a path, copy from there:
 ```bash
 mkdir -p {collection_path}/plugins/modules
 mkdir -p {collection_path}/plugins/action
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/action/agnosticd_user_info.py {collection_path}/plugins/action/
+cp {user_provided_plugins_path}/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
+cp {user_provided_plugins_path}/action/agnosticd_user_info.py {collection_path}/plugins/action/
 ```
 
 Verify files were copied:
@@ -971,10 +976,10 @@ The validation role needs agnosticd.core for the agnosticd_user_info plugin.
 Option 1 - Install agnosticd.core from git:
 ansible-galaxy collection install git+https://github.com/redhat-cop/agnosticd.git#/ansible/agnosticd-core/
 
-Option 2 - Copy plugin files to the collection (if you have them locally):
+Option 2 - Copy plugin files from a local collection clone (if you have one):
 mkdir -p plugins/modules plugins/action
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/modules/agnosticd_user_info.py plugins/modules/
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/action/agnosticd_user_info.py plugins/action/
+cp {your_collection_path}/plugins/modules/agnosticd_user_info.py plugins/modules/
+cp {your_collection_path}/plugins/action/agnosticd_user_info.py plugins/action/
 
 Which option do you prefer?
 ```

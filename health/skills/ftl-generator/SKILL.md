@@ -15,7 +15,7 @@ Generate production-quality FTL (Finish The Labs) grader and solver playbooks fo
 ## What You'll Need Before Starting
 
 **Required:**
-- **FTL repository** cloned locally (default: `~/work/code/experiment/ftl/`)
+- **FTL repository** cloned locally (ask for path at runtime)
 - **Showroom workshop content** with `.adoc` module files containing student exercises
 - **SSH access to bastion host** for testing generated playbooks
 
@@ -72,30 +72,16 @@ See @health/docs/FTL-PATTERNS.md for:
 
 ---
 
-### Step 1: Detect FTL Repository
+### Step 1: Locate FTL Repository
 
-Check for the FTL repository:
+Ask directly:
 
-```bash
-ls ~/work/code/experiment/ftl/roles/ 2>/dev/null
-ls ~/work/code/experiment/ftl/labs/ 2>/dev/null
-ls ~/work/code/experiment/ftl/bin/ 2>/dev/null
 ```
-
-**If found:**
-```
-Found FTL repository at ~/work/code/experiment/ftl/
-Available grader roles: [list roles found]
-Existing labs: [list labs found]
-```
-
-**If NOT found, ask:**
-```
-FTL repository not found at the default location.
-
 Where is your FTL repository cloned?
 
-Default: ~/work/code/experiment/ftl/
+Example: ~/work/code/ftl
+
+FTL repo path:
 ```
 
 WAIT for answer.

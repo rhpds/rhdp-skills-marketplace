@@ -4,7 +4,7 @@ description: Run comprehensive quality verification on workshop or demo content 
 ---
 
 ---
-context: fork
+context: main
 model: claude-opus-4-6
 ---
 
@@ -59,86 +59,15 @@ Have these ready before running this skill:
 
 ## Workflow
 
-### Step 1: Detect and Select Verification Prompts (REQUIRED)
+### Step 1: Load Verification Prompts (REQUIRED)
 
-**CRITICAL: Before running verification, detect which prompt sets are available and let user choose.**
-
-**Detection Priority:**
-1. **Current Git Repo**: `showroom/prompts/` in current repository (highest priority)
-2. **Global Home**: `~/showroom/prompts/` (user's global settings)
-
-**Prompt Detection Steps:**
-
-1. **Check current directory for git repo:**
-   ```bash
-   git rev-parse --show-toplevel 2>/dev/null
-   ```
-
-2. **If in git repo, check for local `showroom/prompts/`:**
-   ```bash
-   ls [repo-root]/showroom/prompts/*.txt 2>/dev/null
-   ```
-
-3. **Check global home directory:**
-   ```bash
-   ls ~/showroom/prompts/*.txt 2>/dev/null
-   ```
-
-**If multiple locations found, ask user:**
+Prompts are bundled with the marketplace plugin at `@showroom/prompts/`. Read them directly — no detection or user choice needed.
 
 ```
-🔍 Found verification prompts in multiple locations:
-
-1. Current repo: /Users/psrivast/work/showroom-content/aap-selfserv-intro-showroom/showroom/prompts/
-   └─ Last updated: 13 Jan 16:01 (10 prompts)
-
-2. Global home: ~/showroom/prompts/
-   └─ Last updated: 13 Jan 14:47 (10 prompts)
-
-Which prompts should I use for verification?
-
-Options:
-1. Current repo (use repo-specific prompts) - Recommended if customized
-2. Global home (use your personal defaults)
-
-Your choice: [1/2]
+📋 Verification prompts loaded from marketplace plugin.
 ```
 
-**If only one location found:**
-
-```
-✅ Using verification prompts from: ~/showroom/prompts/
-   Last updated: 13 Jan 14:47
-   Total prompts: 10
-```
-
-**If NO prompts found:**
-
-```
-❌ ERROR: No verification prompts found in any location.
-
-Verification prompts should be in:
-- Current repo: showroom/prompts/ (if repo-specific)
-- Global home: ~/showroom/prompts/ (for all projects)
-
-Please ensure verification prompts are available in one of these locations.
-```
-
-**After user selects, confirm and show which prompts will be used:**
-
-```
-📋 Using prompts from: Current repo (showroom/prompts/)
-
-Will use these validation frameworks:
-✓ enhanced_verification_workshop.txt (43K, updated 16:01)
-✓ redhat_style_guide_validation.txt (5.1K, updated 16:01)
-✓ verify_workshop_structure.txt (14K, updated 16:01)
-✓ verify_technical_accuracy_workshop.txt (9.7K, updated 14:45)
-✓ verify_accessibility_compliance_workshop.txt (10K, updated 14:47)
-✓ verify_content_quality.txt (13K, updated 14:45)
-
-Continue with verification? [Yes/No]
-```
+Proceed immediately to Step 1.5.
 
 ---
 
@@ -597,43 +526,9 @@ Every verification run checks:
 - ✓ Complete documentation
 - ✓ Consistent style
 
-## Prompt Location Strategy
-
-**Why multiple prompt locations?**
-
-Different repositories may need customized verification rules:
-- **Global defaults** (`~/showroom/prompts/`): Your standard verification rules for all projects
-- **Repo-specific** (`showroom/prompts/` in git repo): Custom rules for specific projects
-
-**Recommended workflow:**
-
-1. **Most repos**: Use global defaults from `~/showroom/prompts/`
-   - Consistent verification across all your content
-   - Easy to update centrally
-
-2. **Special repos**: Add `showroom/prompts/` to repo if you need custom rules
-   - Example: Stricter image requirements for partner content
-   - Example: Relaxed rules for internal documentation
-   - Example: Additional industry-specific validation
-
-**How the skill detects prompts:**
-
-1. Checks current git repo for `showroom/prompts/*.txt`
-2. Checks global home `~/showroom/prompts/*.txt`
-3. Asks you which to use if multiple locations found
-4. Shows you which prompts will be used before running verification
-
-**When to customize prompts in repo:**
-- ✅ Partner content with additional requirements
-- ✅ Internal docs with relaxed standards
-- ✅ Testing new verification rules before global rollout
-- ❌ Don't customize just to bypass quality standards
-
----
-
 ## Files Used
 
-**Verification prompts** (in `showroom/prompts/`):
+**Verification prompts** (from marketplace plugin `@showroom/prompts/`):
 - `enhanced_verification_workshop.txt`
 - `enhanced_verification_demo.txt`
 - `redhat_style_guide_validation.txt`
@@ -644,10 +539,10 @@ Different repositories may need customized verification rules:
 - `verify_accessibility_compliance_demo.txt`
 - `verify_content_quality.txt`
 
-**Bundled templates** (quality references):
-- `showroom/templates/workshop/example/` -- Workshop examples
-- `showroom/templates/workshop/templates/` -- Workshop structural templates
-- `showroom/templates/demo/` -- Demo examples
+**Bundled templates** (quality references from marketplace plugin):
+- `@showroom/templates/workshop/example/` -- Workshop examples
+- `@showroom/templates/workshop/templates/` -- Workshop structural templates
+- `@showroom/templates/demo/` -- Demo examples
 
 ## Related Skills
 
