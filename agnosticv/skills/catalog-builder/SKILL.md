@@ -599,19 +599,74 @@ Recommended workloads:
 Select workloads (comma-separated numbers, or 'all'):
 ```
 
-**After workload selection — ask ONE more question:**
+**After workload selection — ask sequentially:**
 
 ```
 Q: Will this catalog use LiteMaaS for AI model inference? [Y/n]
 
-LiteMaaS provides hosted AI models (granite, mistral, codellama, etc.)
+LiteMaaS provides hosted AI models (granite, mistral, qwen, llama, etc.)
 via a shared inference platform.
 ```
 
-- YES → add both to common.yaml includes:
-  - `#include /includes/secrets/litemaas-master_api.yaml`
-  - `#include /includes/parameters/litellm_metadata.yaml`
-- NO → skip
+**If YES — ask two more questions:**
+
+```
+Q: Which models should be available? (comma-separated)
+
+Current models on LiteMaaS (check latest at https://litellm-prod-frontend.apps.maas.redhatworkshops.io/models):
+
+  codellama-7b-instruct          (4K context)
+  deepseek-r1-distill-qwen-14b   (4M context — function calling, tool choice)
+  granite-3-2-8b-instruct        (4M context)
+  granite-4-0-h-tiny             (4M context)
+  llama-guard-3-1b               (4M context — safety/guard model)
+  llama-scout-17b                (400K context — function calling)
+  microsoft-phi-4                (N/A context)
+  nomic-embed-text-v1-5          (embeddings)
+  qwen3-14b                      (4M context — function calling, tool choice)
+
+Models:
+```
+
+```
+Q: Virtual key duration (how long the key is valid)?
+
+Default: 7d
+Examples: 1d, 7d, 30d, 90d
+
+Duration [default: 7d]:
+```
+
+**Generate for common.yaml:**
+```yaml
+# ===================================================================
+# Workload: ocp4_workload_litellm_virtual_keys
+# ===================================================================
+ocp4_workload_litellm_virtual_keys_duration: "7d"       # from question
+ocp4_workload_litellm_virtual_keys_models:
+- qwen3-14b                                              # from question
+- granite-3-2-8b-instruct
+ocp4_workload_litellm_virtual_keys_multi_user: false     # auto from multiuser setting
+ocp4_workload_litellm_virtual_keys_verify_ssl: true
+```
+
+**Add to workloads list:**
+```yaml
+- rhpds.litellm_virtual_keys.ocp4_workload_litellm_virtual_keys
+```
+
+**Add to requirements_content:**
+```yaml
+- name: https://github.com/rhpds/rhpds.litellm_virtual_keys.git
+  type: git
+  version: "{{ tag }}"
+```
+
+**Add includes:**
+- `#include /includes/secrets/litemaas-master_api.yaml`
+- `#include /includes/parameters/litellm_metadata.yaml`
+
+**If NO:** skip all of the above.
 
 ### Step 5.5: Collection Versions *(auto — no question)*
 
