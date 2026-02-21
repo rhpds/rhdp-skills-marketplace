@@ -102,89 +102,49 @@ See `@agnosticv/docs/AGV-COMMON-RULES.md` for the full detection procedure.
 
 ---
 
-## Step 1: Smart Path Detection (FIRST)
+## Step 1: Setup
 
-### Auto-detect Catalog Location
+### Auto-detect AgnosticV Repository Path
 
-**Check current directory for AgV catalog structure:**
+Silently check `~/CLAUDE.md`, `~/claude/*.md`, `~/.claude/*.md` for a line containing `agnosticv` with a path. If found, confirm with user. If not found, ask.
 
-```bash
-# Look for common.yaml in current directory or parent
-if [ -f "common.yaml" ]; then
-  CATALOG_PATH=$(pwd)
-elif [ -f "../common.yaml" ]; then
-  CATALOG_PATH=$(cd .. && pwd)
-elif [ -f "../../common.yaml" ]; then
-  CATALOG_PATH=$(cd ../.. && pwd)
-fi
+See `@agnosticv/docs/AGV-COMMON-RULES.md` for full detection procedure.
 
-# Verify it's an AgV catalog
-if [ -f "$CATALOG_PATH/common.yaml" ]; then
-  # Extract catalog slug from path
-  CATALOG_SLUG=$(basename $CATALOG_PATH)
-  CATALOG_DIR=$(basename $(dirname $CATALOG_PATH))
-fi
-```
-
-### Ask User
+### Ask which catalog to validate
 
 ```
 🔍 AgnosticV Catalog Validator
 
-I'll validate your AgnosticV catalog configuration.
+AgnosticV repo: {{ agv_path }}
 
-Current directory: {{ current_directory }}
+Q: Which catalog do you want to validate?
+   Provide the path relative to the AgV repo root, or full path.
 
-{% if common_yaml_detected %}
-✅ Detected catalog:
-   Path: {{ detected_catalog_path }}
-   Directory: {{ catalog_dir }}/{{ catalog_slug }}
+   Examples:
+   - agd_v2/my-workshop
+   - openshift_cnv/my-demo
+   - summit-2026/lb2298-ibm-fusion-aws
 
-Use this catalog? [Yes/No/Specify different path]
-{% else %}
-No catalog detected in current directory.
-
-Options:
-1. Specify catalog path (e.g., ~/work/code/agnosticv/agd_v2/my-catalog)
-2. Validate entire AgnosticV repository (all catalogs)
-3. Exit
-
-Your choice: [1/2/3]
-{% endif %}
+Catalog path:
 ```
 
-### Path Validation
+**Validate the provided path:**
 
-```python
-import os
+```bash
+full_path="$AGV_PATH/$catalog_input"
 
-if os.path.exists(catalog_path):
-  if os.path.isfile(f"{catalog_path}/common.yaml"):
-    ✅ Valid catalog path
-    Path: {{ catalog_path }}
-    
-    # Extract catalog information
-    catalog_slug = os.path.basename(catalog_path)
-    catalog_dir = os.path.basename(os.path.dirname(catalog_path))
-    
-    Files found:
-    ✓ common.yaml
-    {{ '✓ description.adoc' if os.path.exists(f"{catalog_path}/description.adoc") else '⚠ description.adoc (missing)' }}
-    {{ '✓ dev.yaml' if os.path.exists(f"{catalog_path}/dev.yaml") else 'ℹ dev.yaml (optional, not found)' }}
-    
-  else:
-    ❌ Path exists but no common.yaml found
-    
-    Expected file: {{ catalog_path }}/common.yaml
-    
-    Is this an AgV catalog directory? [Yes - Continue anyway / No - Try different path]
-else:
-  ❌ Path not found: {{ catalog_path }}
-  
-  Try again? [Yes/No]
+if [ -f "$full_path/common.yaml" ]; then
+  echo "✅ Found: $full_path"
+  echo "   common.yaml ✓"
+  [ -f "$full_path/dev.yaml" ] && echo "   dev.yaml ✓" || echo "   dev.yaml (not found)"
+  [ -f "$full_path/description.adoc" ] && echo "   description.adoc ✓" || echo "   ⚠ description.adoc (missing)"
+else
+  echo "❌ No common.yaml found at: $full_path"
+  echo "   Check the path and try again."
+fi
 ```
 
-**Store validated path** for validation checks.
+**Store validated path** for all subsequent checks.
 
 ---
 
