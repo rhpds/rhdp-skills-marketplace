@@ -207,44 +207,47 @@ echo "✓ Created and switched to branch: $branch_name"
 
 ### Step 0.5: Context (REQUIRED — ask before anything else)
 
-Ask these THREE questions sequentially before touching anything else. Answers drive all subsequent steps.
+Ask these TWO questions sequentially before touching anything else.
 
-**Question 1 — Event:**
+**Question 1 — Type and Event (combined):**
 
 ```
-🎪 Is this catalog for a specific Red Hat event?
+🏗️  What type of catalog is this?
 
-1. Red Hat Summit 2026   (event-name: summit-2026)
-2. Red Hat One 2026      (event-name: rh1-2026)
-3. No event              (standard workshop, demo, or sandbox)
+For Red Hat Summit 2026:
+  1. Lab / Workshop   (Brand_Events, multi-user)
+  2. Demo             (Brand_Events, single-user)
 
-Choice [1/2/3]:
+For Red Hat One 2026:
+  3. Lab / Workshop   (Brand_Events, multi-user)
+  4. Demo             (Brand_Events, single-user)
+
+Standard (no event):
+  5. Workshop         (multi-user, hands-on)
+  6. Demo             (single-user, presenter-led)
+  7. Sandbox          (self-service)
+
+Choice [1-7]:
 ```
 
-If event: ask lab ID immediately:
+If 1–4 selected, ask immediately:
 ```
 Q: Lab ID? (e.g., lb2298)
 ```
 
-**Question 2 — Type:**
+Auto-set from choice:
 
-```
-Q: Is this a lab (workshop) or demo?
+| Choice | event_name | category | multiuser |
+|---|---|---|---|
+| 1 | summit-2026 | Brand_Events | true |
+| 2 | summit-2026 | Brand_Events | false |
+| 3 | rh1-2026 | Brand_Events | true |
+| 4 | rh1-2026 | Brand_Events | false |
+| 5 | none | Workshops | true |
+| 6 | none | Demos | false |
+| 7 | none | Sandboxes | false |
 
-1. Lab / Workshop  (hands-on, learners do exercises)
-2. Demo            (presenter-led, single-user)
-3. Sandbox         (self-service environment)
-
-Choice [1/2/3]:
-```
-
-- Event + Lab/Workshop → category: `Brand_Events`, multiuser: true *(auto, no further category question)*
-- Event + Demo → category: `Brand_Events`, multiuser: false *(auto)*
-- No event + Lab → category: `Workshops`
-- No event + Demo → category: `Demos`
-- No event + Sandbox → category: `Sandboxes`
-
-**Question 3 — Technologies:**
+**Question 2 — Technologies:**
 
 ```
 Q: What technologies will users learn or see? (comma-separated)
