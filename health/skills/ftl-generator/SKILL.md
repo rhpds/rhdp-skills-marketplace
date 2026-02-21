@@ -170,26 +170,39 @@ WAIT for answer.
 
 **If multi-user, also ask (CRITICAL for credential handling):**
 ```
-Should the grader check resources using the student's credentials or cluster-admin?
+How should the grader authenticate when checking student resources?
 
-1. Student credentials (recommended for multi-user)
-   The grader logs in as the student user to validate their work.
-   This correctly tests RBAC and ensures students can access their own resources.
-   Requires: OCP_API_URL and PASSWORD environment variables.
+In multi-user labs, passwords are randomly generated per user so the grader
+cannot know individual passwords. Choose the right approach:
 
-2. Cluster-admin (bastion KUBECONFIG)
-   The grader uses admin access. Simpler but doesn't test student's own access.
-   Use only if the lab doesn't test RBAC or the student's login permissions.
+1. oc --as impersonation (recommended)
+   Uses admin kubeconfig + oc --as=<user> to run commands in student context.
+   Tests RBAC correctly without needing student passwords.
+   Works for any number of users.
 
-Your choice: [1/2]
+2. Common workshop password
+   Lab uses a fixed known password (e.g., "redhat") for all students.
+   Grader logs in as student with that password.
+   Requires: ocp4_workload_authentication_user_password set to a known value in AgV.
+
+3. Admin namespace scoping
+   Uses admin kubeconfig, checks resources directly in student namespace.
+   Does NOT test student RBAC — only checks resources exist.
+
+Your choice: [1/2/3]
 ```
 
 WAIT for answer.
 
-**If student credentials (choice 1), read the Showroom module content** to find what credentials the student uses:
-- Look for `{user}`, `{password}`, `{api_url}`, `{console_url}` attributes in `.adoc` files
-- These map to env vars: `LAB_USER`, `PASSWORD`, `OCP_API_URL`
-- The grader will `oc login {{ OCP_API_URL }} -u {{ LAB_USER }} -p {{ PASSWORD }}` before checking resources
+**If impersonation (choice 1) — read Showroom modules** to understand what the student does, then use `--as={{ lab_user }}` on all `oc` commands in the grader.
+
+**If common password (choice 2) — ask:**
+```
+What is the common password used for all student accounts?
+(This must match ocp4_workload_authentication_user_password in common.yaml)
+
+Password:
+```
 
 **Question 3:**
 ```
@@ -301,37 +314,52 @@ For each module, generate `grade_module_XX.yml` following the three-play pattern
 
 **Credential handling — based on Step 3 choice:**
 
-**If student credentials (recommended for multi-user):**
-Add an `oc login` task at the START of Play 2, before any resource checks:
+**Choice 1 — `oc --as` impersonation (recommended for multi-user):**
+No login needed. Add `--as={{ lab_user }}` to every `oc` command:
+```yaml
+- name: "Exercise 1.1: Verify pod running as student"
+  ansible.builtin.command: >
+    oc --as={{ lab_user }}
+    get pods -n {{ student_namespace }}
+    -l app=myapp
+    --field-selector=status.phase=Running
+  register: r_pod_check
+  changed_when: false
+```
 
+For `kubernetes.core` tasks, pass impersonation via module options:
+```yaml
+- name: "Exercise 1.2: Verify route exists"
+  kubernetes.core.k8s_info:
+    kind: Route
+    namespace: "{{ student_namespace }}"
+    name: myapp
+    api_key: "{{ lookup('env', 'CLUSTER_ADMIN_TOKEN') }}"
+    # Note: k8s_info does not support --as natively; use oc --as for RBAC checks
+```
+
+Use `CLUSTER_ADMIN_TOKEN` env var (from bastion KUBECONFIG) for kubernetes.core tasks.
+Use `oc --as={{ lab_user }}` for RBAC-sensitive `oc` commands.
+
+**Choice 2 — common password login:**
+Add `oc login` at START of Play 2:
 ```yaml
 - name: Login as student user
   ansible.builtin.command: >
     oc login {{ lookup('env', 'OCP_API_URL') }}
     -u {{ lab_user }}
-    -p {{ lookup('env', 'PASSWORD') }}
+    -p {{ workshop_password }}
     --insecure-skip-tls-verify=true
   changed_when: false
   no_log: true
-
-- name: Set student kubeconfig context
-  ansible.builtin.set_fact:
-    student_logged_in: true
 ```
+After grading: `oc logout`. The `workshop_password` comes from the known common password in Step 3.
 
-All subsequent `oc` commands and `kubernetes.core` tasks run in the student's context.
-After grading, log back out:
+**Choice 3 — admin namespace scoping:**
+No login, no `--as`. All `oc` commands scoped to student namespace:
 ```yaml
-- name: Log out student session
-  ansible.builtin.command: oc logout
-  changed_when: false
-  ignore_errors: true
+ansible.builtin.command: oc get pods -n {{ student_namespace }} ...
 ```
-
-The `OCP_API_URL` and `PASSWORD` env vars come from Showroom `{api_url}` and `{password}` attributes.
-
-**If cluster-admin (bastion KUBECONFIG):**
-No login tasks needed — grader runs with existing bastion admin context.
 
 **Exercise numbering:** X.Y format (module.checkpoint), e.g., 1.1, 1.2, 2.1, 2.2
 
