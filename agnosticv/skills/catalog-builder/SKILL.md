@@ -258,38 +258,18 @@ AgnosticV path: ask user for subdirectory in Step 11 (as before).
 
 ### Step 1: Catalog Discovery (Search Existing)
 
-Search for similar catalogs to learn from or use as reference.
+Using the category and technologies collected so far, silently search `agd_v2/` in the AgV repo for similar catalogs.
 
-```
-📖 Catalog Discovery
-
-Let me search for existing catalogs to help you.
-
-Q: What keywords describe your catalog?
-   (Examples: ansible, openshift ai, pipelines, gitops)
-
-Keywords:
-```
-
-**Search logic:**
 ```bash
-cd $AGV_PATH
-
-# Search by keywords in:
-# - Directory names
-# - common.yaml display names
-# - description.adoc content
-
-find . -type f -name "common.yaml" | while read file; do
-  dir=$(dirname "$file")
-  name=$(grep "^name:" "$file" | cut -d':' -f2-)
-  echo "$dir: $name"
-done | grep -i "$keywords"
+# Search agd_v2/ by display_name and directory name
+grep -rl "$keywords" "$AGV_PATH/agd_v2/" --include="common.yaml" -l \
+  | xargs -I{} dirname {} | head -5
 ```
 
-**Present results and ask:**
+**Show results and ask ONE question:**
+
 ```
-Found similar catalogs:
+📖 Found similar catalogs in agd_v2/:
 
 1. agd_v2/ansible-aap-workshop/
    └─ Ansible Automation Platform Self-Service
@@ -297,13 +277,17 @@ Found similar catalogs:
 2. agd_v2/openshift-gitops-intro/
    └─ OpenShift GitOps Introduction
 
-Do you want to:
-A. Create new catalog from scratch
-B. Use one as reference (copy structure)
-C. Just browse and continue
-
-Choice [A/B/C]:
+Would you like to use one of these as a reference? [Y/n]
 ```
+
+**If YES:**
+```
+Which one? Enter number:
+```
+
+Read that catalog's `common.yaml` and use it as the structural reference — copy its workloads, collections, and infrastructure settings as defaults for subsequent steps. The user can override anything.
+
+**If NO or none found:** Proceed with fresh catalog from template.
 
 ### Step 2: Category Selection (REQUIRED)
 
@@ -357,115 +341,113 @@ fi
 
 ### Step 4: Infrastructure Selection
 
+Default is **CNV pools** — used for all standard workshops and demos. Ask sequentially.
+
+**Question A — Cluster size:**
+
 ```
-🏗️  Infrastructure Selection
+🏗️  Cluster size
 
-Choose your OpenShift deployment type:
+SNO (Single Node) or Multi-node?
 
-1. CNV Multi-Node (Standard - Recommended for most)
-   └─ Full OpenShift cluster on CNV pools
-   └─ Best for: Multi-user workshops, complex workloads
-   └─ Component: agd-v2/ocp-cluster-cnv-pools/prod
+1. Multi-node (default — for workshops, most demos)
+2. SNO (for lightweight single-user demos, edge content)
 
-2. SNO (Single Node OpenShift)
-   └─ Single-node cluster for lightweight demos
-   └─ Best for: Quick demos, single-user environments, edge demos
-   └─ Component: agd-v2/ocp-cluster-cnv-pools/prod (cluster_size: sno)
-
-3. AWS (Cloud-based VMs)
-   └─ VM-based deployment on AWS
-   └─ Best for: GPU workloads, AWS-specific features, bastion-only demos
-   └─ Component: Custom (requires bastion + instances configuration)
-
-4. CNV VMs (Cloud VMs on CNV)
-   └─ Virtual machines on CNV infrastructure
-   └─ Best for: RHEL demos, edge appliances, non-OpenShift workloads
-   └─ Component: Custom (cloud_provider: openshift_cnv, config: cloud-vms-base)
-
-Q: Infrastructure choice [1-4]:
+Choice [1/2]:
 ```
 
-**Set configuration based on choice:**
+**If Multi-node:**
+```
+Q: Auto-scale workers based on number of users? [Y/n]
 
-1. **CNV Multi-Node:**
+Auto-scale adds workers proportionally as num_users increases.
+Recommended for multi-user workshops.
+```
+
+**Question B — Cloud provider:**
+
+```
+Q: Do you need AWS instead of CNV? [Y/n]
+
+Default is CNV pools. AWS is only needed for GPU workloads
+or specific AWS-feature demos.
+```
+
+**If AWS:**
+```
+Q: Do you have approval for AWS usage? [Y/n]
+
+AWS requires prior approval from the RHDP team due to cost.
+Do not proceed without approval.
+```
+
+If no approval → stop and tell user to request approval before continuing.
+
+---
+
+**Generated config — CNV Multi-node (default):**
+
 ```yaml
 config: openshift-workloads
 cloud_provider: none
-clusters:
-  - default:
-      api_url: "{{ openshift_api_url }}"
-      api_token: "{{ openshift_cluster_admin_token }}"
 
 __meta__:
   components:
-    - name: openshift
-      display_name: OpenShift Cluster
-      item: agd-v2/ocp-cluster-cnv-pools/prod
-      parameter_values:
-        cluster_size: multinode
-        host_ocp4_installer_version: "4.20"
-        ocp4_fips_enable: false
-        num_users: "{{ num_users }}"
+  - name: openshift
+    display_name: OpenShift Cluster
+    item: agd-v2/ocp-cluster-cnv-pools
+    parameter_values:
+      cluster_size: multinode
+      host_ocp4_installer_version: "4.20"
+      ocp4_fips_enable: false
+      num_users: "{{ num_users }}"
+    propagate_provision_data:
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
 ```
 
-2. **SNO:**
+**If auto-scale selected, also add:**
 ```yaml
-config: openshift-workloads
-cloud_provider: none
-clusters:
-  - default:
-      api_url: "{{ openshift_api_url }}"
-      api_token: "{{ openshift_cluster_admin_token }}"
-
-__meta__:
-  components:
-    - name: openshift
-      display_name: OpenShift Cluster
-      item: agd-v2/ocp-cluster-cnv-pools/prod
-      parameter_values:
-        cluster_size: sno
-        host_ocp4_installer_version: "4.20"
-        ocp4_fips_enable: false
+openshift_cnv_scale_cluster: true
+worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
 ```
 
-3. **AWS:**
+**CNV SNO:**
+```yaml
+__meta__:
+  components:
+  - name: openshift
+    display_name: OpenShift Cluster
+    item: agd-v2/ocp-cluster-cnv-pools
+    parameter_values:
+      cluster_size: sno
+      host_ocp4_installer_version: "4.20"
+      ocp4_fips_enable: false
+    propagate_provision_data:
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
+```
+
+**AWS (uses ocp-cluster-aws-pools, same component pattern as CNV):**
 ```yaml
 cloud_provider: aws
-config: cloud-vms-base
+cloud_provider_version: 1.0.0
+config: openshift-cluster
 
-# Define security groups and instances
-security_groups:
-  - name: BastionSG
-    rules:
-      - name: SSH
-        from_port: 22
-        to_port: 22
-        protocol: tcp
-        cidr: "0.0.0.0/0"
-        rule_type: Ingress
-
-instances:
-  - name: bastion
-    count: 1
-    image: RHEL-10.0-GOLD-latest
-    flavor:
-      ec2: t3a.large
-    security_groups:
-      - BastionSG
-```
-
-4. **CNV VMs:**
-```yaml
-cloud_provider: openshift_cnv
-config: cloud-vms-base
-
-instances:
-  - name: bastion
-    count: 1
-    image: rhel-9.6
-    cores: 8
-    memory: 16G
-    image_size: 200Gi
+__meta__:
+  components:
+  - name: openshift_base
+    display_name: OpenShift Container Platform Cluster (AWS-Pools)
+    item: agd-v2/ocp-cluster-aws-pools
+    propagate_provision_data:
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
 ```
 
 ### Step 5: Authentication Setup
