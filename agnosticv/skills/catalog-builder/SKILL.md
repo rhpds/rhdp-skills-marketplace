@@ -205,12 +205,14 @@ echo "✓ Created and switched to branch: $branch_name"
 
 **When selected:** User chose option 1 (Full Catalog)
 
-### Step 0.5: Event Selection (REQUIRED — ask before anything else)
+### Step 0.5: Context (REQUIRED — ask before anything else)
+
+Ask these THREE questions sequentially before touching anything else. Answers drive all subsequent steps.
+
+**Question 1 — Event:**
 
 ```
-🎪 Event Context
-
-Is this catalog for a specific Red Hat event?
+🎪 Is this catalog for a specific Red Hat event?
 
 1. Red Hat Summit 2026   (event-name: summit-2026)
 2. Red Hat One 2026      (event-name: rh1-2026)
@@ -219,50 +221,67 @@ Is this catalog for a specific Red Hat event?
 Choice [1/2/3]:
 ```
 
-**If event selected (1 or 2):**
-
+If event: ask lab ID immediately:
 ```
-Q: What is the lab ID? (format: lbxxxx, e.g., lb2298)
-
-Lab ID:
+Q: Lab ID? (e.g., lb2298)
 ```
 
-Store: `event_name` (summit-2026 or rh1-2026), `lab_id` (lbxxxx).
+**Question 2 — Type:**
 
-**Naming standards cheat sheet** — use these throughout all subsequent steps:
+```
+Q: Is this a lab (workshop) or demo?
 
-| Item | Pattern | Example (short-name = ocp-fish-swim) |
+1. Lab / Workshop  (hands-on, learners do exercises)
+2. Demo            (presenter-led, single-user)
+3. Sandbox         (self-service environment)
+
+Choice [1/2/3]:
+```
+
+- Event + Lab/Workshop → category: `Brand_Events`, multiuser: true *(auto, no further category question)*
+- Event + Demo → category: `Brand_Events`, multiuser: false *(auto)*
+- No event + Lab → category: `Workshops`
+- No event + Demo → category: `Demos`
+- No event + Sandbox → category: `Sandboxes`
+
+**Question 3 — Technologies:**
+
+```
+Q: What technologies will users learn or see? (comma-separated)
+   Examples: ansible, openshift ai, pipelines, gitops, kubevirt
+
+Technologies:
+```
+
+Store: `event_name`, `lab_id`, `catalog_type`, `category`, `technologies`.
+
+**Naming standards** (applied automatically from here):
+
+| Item | Pattern | Example |
 |---|---|---|
 | AgnosticV directory | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` | `summit-2026/lb1234-ocp-fish-swim-aws` |
 | Showroom repo | `<short-name>-showroom` | `ocp-fish-swim-showroom` |
-| Automation repo | `<short-name>-automation` | `ocp-fish-swim-automation` |
-| Slack channel | `<event-name>-<lab-id>-<short-lab-name>` | `summit-2026-lb1234-ocp-fish-swim` |
-| Event intake form | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
+| Slack channel | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
 
-All GitHub repositories must be in the `github.com/rhpds` organization.
+All GitHub repositories must be in `github.com/rhpds`.
 
-**`__meta__` values driven by event** (apply in Step 10):
+**`__meta__` driven by event:**
 
-| Event | `catalog.labels.Brand_Event` | `catalog.keywords` additions |
+| Event | `Brand_Event` label | keywords auto-added |
 |---|---|---|
 | summit-2026 | `Red_Hat_Summit_2026` | `summit-2026`, `<lab-id>` |
 | rh1-2026 | `Red_Hat_One_2026` | `rh1-2026`, `<lab-id>` |
-| No event | _(omit Brand_Event)_ | _(no event keywords)_ |
-
-**If no event (option 3):**
-
-Store: `event_name = none`. Standard naming: `<short-name>` only.
-AgnosticV path: ask user for subdirectory in Step 11 (as before).
+| No event | _(omit)_ | _(none)_ |
 
 ---
 
 ### Step 1: Catalog Discovery (Search Existing)
 
-Using the category and technologies collected so far, silently search `agd_v2/` and `openshift_cnv/` in the AgV repo for similar catalogs.
+Using the type and technologies from Step 0.5, silently search `agd_v2/` and `openshift_cnv/`. No question needed — just search and show results.
 
 ```bash
-# Search agd_v2/ and openshift_cnv/ by display_name and directory name
-grep -rl "$keywords" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
+# Search by technologies keywords in directory names and display_names
+grep -rl "$technologies" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
   --include="common.yaml" -l 2>/dev/null \
   | xargs -I{} dirname {} | head -5
 ```
@@ -281,36 +300,24 @@ grep -rl "$keywords" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
 Would you like to use one of these as a reference? [Y/n]
 ```
 
-**If YES:**
-```
-Which one? Enter number:
-```
-
-Read that catalog's `common.yaml` and use it as the structural reference — copy its workloads, collections, and infrastructure settings as defaults for subsequent steps. The user can override anything.
+**If YES:** `Which one? Enter number:`
+Read that catalog's `common.yaml` — copy its workloads, collections, and infra as defaults. User can override anything.
 
 **If NO or none found:** Proceed with fresh catalog from template.
 
-### Step 2: Category Selection (REQUIRED)
+### Step 2: Category *(auto — no question)*
 
-```
-📂 Category Selection
+Category is already determined from Step 0.5. Confirm internally:
 
-RHDP catalogs MUST have exactly one category:
+| Type answered in Step 0.5 | Event? | Category set |
+|---|---|---|
+| Lab / Workshop | Yes | `Brand_Events` |
+| Demo | Yes | `Brand_Events` |
+| Lab / Workshop | No | `Workshops` |
+| Demo | No | `Demos` |
+| Sandbox | No | `Sandboxes` |
 
-1. Workshops - Multi-user hands-on learning with exercises
-2. Demos - Single-user presenter-led demonstrations
-3. Labs - General learning environments
-4. Sandboxes - Self-service playground environments
-5. Brand_Events - Events like Red Hat Summit, Red Hat One
-
-Q: Which category? [1-5]:
-```
-
-**Validate:** Must be one of: `Workshops`, `Demos`, `Labs`, `Sandboxes`, `Brand_Events` (exact match)
-
-**Important validation rules:**
-- Workshops/Brand_Events → Must set multiuser: true
-- Demos → Must set multiuser: false (single-user only)
+Multiuser auto-set: `Brand_Events` / `Workshops` → `true`, `Demos` → `false`.
 
 ### Step 3: UUID Generation (REQUIRED)
 
@@ -598,105 +605,59 @@ Using these for requirements_content. Press Enter to confirm or type a different
 
 ---
 
-### Step 7: Showroom Repository Detection
+### Step 7: Showroom Configuration
 
-**Ask directly for the Showroom URL or path. DO NOT ask about GitHub org, root folders, or try to find it yourself:**
+**First, show the AgV-side Showroom collection version** (determined in Step 6.5):
 
 ```
-📚 Showroom Content
+📦 Showroom collection version: {{ showroom_version }}
+   (agnosticd/showroom — most recent version found in AgV repo)
+```
 
-Q: Do you have a Showroom repository for this catalog? [Y/n]
+This version will be written to `requirements_content` in common.yaml.
+
+**Then ask for the Showroom repo:**
+
+```
+📚 Showroom repository
+
+Based on naming convention, your Showroom repo should be:
+  https://github.com/rhpds/<short-name>-showroom
+
+Has this repository been created yet? [Y/n]
 ```
 
 **If YES:**
 ```
-Q: What is the URL or path to your Showroom repository?
-
-   Just provide the URL or path - I'll use it as-is.
-
-   Examples:
-   - https://github.com/rhpds/showroom-ansible-ai
-   - /path/to/local/showroom
-
-URL or path:
+Q: URL or local path to the Showroom repository:
 ```
 
-**After receiving the URL or path — automatically enforce Showroom 1.5.1:**
+- Local path → silently check 1.5.1 structure (`default-site.yml`, `supplemental-ui/` at root, `ui-config.yml`)
+  - Pre-1.5.1 → block with migration instructions + `/showroom:create-lab --new`
+- GitHub URL → note 1.5.1 requirement, continue
 
-**If the user provided a local path**, silently check these files:
-
-| File | Expected | Fail condition |
-|---|---|---|
-| `default-site.yml` | repo root | only `site.yml` found → pre-1.5.1 |
-| `supplemental-ui/` | repo root | found under `content/` → pre-1.5.1 |
-| `ui-config.yml` | repo root | missing → pre-1.5.1 |
-
-**If pre-1.5.1 detected**, block immediately — no question asked:
+**If NO (not created yet):**
 
 ```
-❌ Showroom repository is not on version 1.5.1 or above.
+ℹ️  No problem. I'll add the recommended name as a placeholder.
 
-Required structure (Showroom 1.5.1+):
-  ✅ default-site.yml  (at repo root)
-  ✅ supplemental-ui/  (at repo root, NOT content/supplemental-ui/)
-  ✅ ui-config.yml     (at repo root, with view_switcher block)
-
-Found instead:
-  ❌ site.yml          (must be renamed to default-site.yml)
-  ❌ content/supplemental-ui/  (must move to repo root)
-
-This catalog cannot be created until the Showroom repository is
-upgraded to version 1.5.1 or above.
-
-To scaffold all 1.5.1 files automatically:
-  /showroom:create-lab --new
-
-Or migrate manually:
-  1. Rename site.yml → default-site.yml
-  2. Move content/supplemental-ui/ → supplemental-ui/ (repo root)
-  3. Update supplemental_files in default-site.yml to: ./supplemental-ui
-  4. Add view_switcher block to ui-config.yml
-  5. Update .github/workflows/gh-pages.yml: antora generate default-site.yml
-
-⏸️  Pausing — upgrade Showroom repository to 1.5.1+ first.
+Once created, update ocp4_workload_showroom_content_git_repo in common.yaml.
+Remember: repository must be on Showroom 1.5.1+
+Run: /showroom:create-lab --new  to scaffold the correct structure.
 ```
 
-**If the user provided a GitHub URL**, enforce without asking — proceed and note the requirement:
-
-```
-ℹ️  Showroom 1.5.1+ required.
-
-This catalog requires the Showroom repository to use version 1.5.1+
-(default-site.yml, supplemental-ui/ at root, view_switcher in ui-config.yml).
-
-Ensure your repository meets this before publishing.
+Add to common.yaml as placeholder:
+```yaml
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<short-name>-showroom
 ```
 
-Then continue without blocking.
+Continue without blocking.
 
-**After 1.5.1 check passes — ask dev mode (ONE question):**
-
-```
-📋 Dev mode configuration
-
-In AgnosticV, dev mode is always:
-  - common.yaml: ocp4_workload_showroom_antora_enable_dev_mode: "false"
-  - dev.yaml:    ocp4_workload_showroom_antora_enable_dev_mode: "true"
-
-Note to developers: dev mode enables the Antora dev-mode.js extension
-which shows attribute values and other debug info in the Showroom UI.
-It should always be disabled in production (common.yaml) and enabled
-in dev environments (dev.yaml) — this is set automatically.
-
-Press Enter to confirm this default, or type 'skip' to omit dev mode:
-```
-
-Accept Enter → generate dev mode vars in both files.
-User types 'skip' → omit `ocp4_workload_showroom_antora_enable_dev_mode` from output.
+**Dev mode** — set automatically, no question needed:
+- `common.yaml`: `ocp4_workload_showroom_antora_enable_dev_mode: "false"`
+- `dev.yaml`: `ocp4_workload_showroom_antora_enable_dev_mode: "true"`
 
 **Generate complete Showroom section for common.yaml:**
-
-Based on `summit-2026/lb2298-ibm-fusion/common.yaml` as reference:
 
 ```yaml
 # ===================================================================
