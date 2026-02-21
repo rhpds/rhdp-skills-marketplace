@@ -374,24 +374,25 @@ fi
 
 Ask sequentially — ONE question at a time.
 
-**Question A — Infrastructure type:**
+**Question A — Infrastructure type gate:**
 
 **SKIP if infra type was determined from reference catalog in Step 2.**
-
-If no reference was used, ask:
+If no reference, ask once — then go straight to the correct branch:
 
 ```
-🏗️  What type of infrastructure does this catalog need?
+🏗️  What type of infrastructure?
 
-1. OpenShift cluster  (OCP-based — workshops, demos on OpenShift)
-2. RHEL / AAP VMs     (cloud-vms-base — RHEL demos, AAP on VMs, non-OCP workloads)
+1. OpenShift cluster  (OCP — workshops, demos on OpenShift)
+2. RHEL / AAP VMs     (cloud-vms-base — RHEL demos, AAP, non-OCP)
 
 Choice [1/2]:
 ```
 
 ---
 
-**BRANCH 1: OpenShift cluster (choice 1 or determined from reference)**
+**BRANCH 1: OpenShift cluster**
+*(entered when Q10=1 OR infra type determined from reference)*
+*All questions below are OCP-specific only*
 
 **Question B — Cluster size** *(always ask — reference sizing may differ)*:
 ```
@@ -465,7 +466,9 @@ __meta__:
 
 ---
 
-**BRANCH 2: RHEL / AAP VMs (choice 2 or determined from reference) — `cloud-vms-base`**
+**BRANCH 2: RHEL / AAP VMs — `cloud-vms-base`**
+*(entered when Q10=2 OR infra type determined from reference)*
+*All questions below are VM-specific only*
 
 **Always ask CNV or AWS — even if reference used AWS, user may want CNV:**
 
