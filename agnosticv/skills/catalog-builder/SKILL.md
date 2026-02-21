@@ -489,54 +489,60 @@ __meta__:
 
 ### Step 5: Authentication Setup
 
+Single unified workload for all authentication. Ask ONE question:
+
 ```
-🔐 Authentication Method
+🔐 Authentication Provider
 
-How should users authenticate to OpenShift?
+Which authentication provider?
 
-1. htpasswd (Simple username/password - Most common)
-   └─ Workload: agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+1. htpasswd  (simple username/password — default, most common)
+2. Keycloak  (RHBK — Red Hat Build of Keycloak, for multi-user workshops, AAP)
 
-2. Keycloak SSO (Enterprise authentication - For AAP/complex setups)
-   └─ Workload: agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+Note: RHSSO is not supported. Use Keycloak (RHBK) for SSO needs.
 
-Q: Authentication method [1-2]:
+Q: Provider [1/2]:
 ```
 
-**Set workload based on choice:**
+**Workload is always the same — only the provider var changes:**
 
-1. **htpasswd:**
 ```yaml
 workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.core_workloads.ocp4_workload_authentication
   # ... other workloads
-
-# htpasswd configuration
-common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
-ocp4_workload_authentication_htpasswd_admin_user: admin
-ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_base: user
-ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
-ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
 ```
 
-2. **Keycloak:**
+**htpasswd config:**
 ```yaml
-workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication_keycloak
-  # ... other workloads
+# Authentication provider
+ocp4_workload_authentication_provider: htpasswd
 
-# Keycloak configuration
-common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
-ocp4_workload_authentication_keycloak_namespace: keycloak
+# Admin account (password auto-generated if left empty)
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""
+
+# User accounts
+ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
+ocp4_workload_authentication_user_password: ""
+ocp4_workload_authentication_remove_kubeadmin: true
+```
+
+**Keycloak (RHBK) config:**
+```yaml
+# Authentication provider
+ocp4_workload_authentication_provider: keycloak
+
+# Admin account (password auto-generated if left empty)
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""
+
+# User accounts
+ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
+ocp4_workload_authentication_user_password: ""
+ocp4_workload_authentication_remove_kubeadmin: true
+
+# Keycloak-specific settings
 ocp4_workload_authentication_keycloak_channel: stable-v26.2
-ocp4_workload_authentication_keycloak_admin_username: admin
-ocp4_workload_authentication_keycloak_admin_password: "{{ common_password }}"
-ocp4_workload_authentication_keycloak_num_users: "{{ num_users }}"
-ocp4_workload_authentication_keycloak_user_username_base: user
-ocp4_workload_authentication_keycloak_user_password: "{{ common_password }}"
-ocp4_workload_authentication_keycloak_remove_kubeadmin: true
 ```
 
 ### Step 6: Workload Selection

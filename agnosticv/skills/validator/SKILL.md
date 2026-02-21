@@ -724,49 +724,96 @@ def check_authentication(config):
   workloads = config.get('workloads', [])
   
   auth_workloads = [w for w in workloads if 'authentication' in w]
-  
+
+  # --- Deprecated roles: must migrate to unified role ---
+  deprecated_roles = [
+    'ocp4_workload_authentication_htpasswd',
+    'ocp4_workload_authentication_keycloak',
+  ]
+  rhsso_roles = [w for w in workloads if 'rhsso' in w.lower() or 'sso' in w.lower()]
+
+  for w in auth_workloads:
+    role_name = w.split('.')[-1]
+    if role_name in deprecated_roles:
+      errors.append({
+        'check': 'authentication',
+        'severity': 'ERROR',
+        'message': f'Deprecated authentication role: {w}',
+        'location': 'common.yaml:workloads',
+        'fix': f'''Replace with the unified authentication role:
+  - agnosticd.core_workloads.ocp4_workload_authentication
+
+Then set the provider:
+  ocp4_workload_authentication_provider: htpasswd   # or keycloak'''
+      })
+
+  if rhsso_roles:
+    errors.append({
+      'check': 'authentication',
+      'severity': 'ERROR',
+      'message': f'RHSSO is not supported: {rhsso_roles}',
+      'location': 'common.yaml:workloads',
+      'fix': 'Use Keycloak (RHBK) instead: set ocp4_workload_authentication_provider: keycloak'
+    })
+
+  # --- Check for unified role ---
+  unified_role = 'ocp4_workload_authentication'
+  has_unified = any(
+    w.split('.')[-1] == unified_role for w in workloads
+  )
+
   if not auth_workloads:
     errors.append({
       'check': 'authentication',
       'severity': 'ERROR',
       'message': 'No authentication workload configured',
       'location': 'common.yaml:workloads',
-      'fix': 'Add authentication workload (htpasswd or keycloak)',
-      'examples': [
-        'agnosticd.core_workloads.ocp4_workload_authentication_htpasswd',
-        'agnosticd.core_workloads.ocp4_workload_authentication_keycloak'
-      ]
+      'fix': 'Add: agnosticd.core_workloads.ocp4_workload_authentication'
     })
     return
-  
-  if len(auth_workloads) > 1:
+
+  if not has_unified and not any(r in [w.split('.')[-1] for w in workloads] for r in deprecated_roles):
     warnings.append({
       'check': 'authentication',
       'severity': 'WARNING',
-      'message': 'Multiple authentication workloads detected',
-      'workloads': auth_workloads,
-      'recommendation': 'Usually only one authentication method is needed'
+      'message': 'Authentication workload found but not the unified role',
+      'fix': 'Use: agnosticd.core_workloads.ocp4_workload_authentication'
     })
-  
-  # Check authentication variables
-  if 'htpasswd' in auth_workloads[0]:
-    required_vars = [
-      'ocp4_workload_authentication_htpasswd_admin_user',
-      'ocp4_workload_authentication_htpasswd_admin_password',
-      'ocp4_workload_authentication_htpasswd_user_count'
-    ]
-    
-    for var in required_vars:
-      if var not in config:
-        warnings.append({
-          'check': 'authentication',
-          'severity': 'WARNING',
-          'message': f'Missing htpasswd variable: {var}',
-          'location': 'common.yaml',
-          'fix': f'Add {var} configuration'
-        })
-  
-  passed_checks.append(f"✓ Authentication configured: {auth_workloads[0].split('.')[-1]}")
+
+  if has_unified:
+    # Check provider is set and valid
+    provider = config.get('ocp4_workload_authentication_provider', '')
+    valid_providers = ['htpasswd', 'keycloak']
+
+    if not provider:
+      warnings.append({
+        'check': 'authentication',
+        'severity': 'WARNING',
+        'message': 'ocp4_workload_authentication_provider not set — defaults to htpasswd',
+        'location': 'common.yaml',
+        'recommendation': 'Explicitly set: ocp4_workload_authentication_provider: htpasswd  # or keycloak'
+      })
+    elif provider not in valid_providers:
+      errors.append({
+        'check': 'authentication',
+        'severity': 'ERROR',
+        'message': f'Invalid provider: {provider}',
+        'location': 'common.yaml:ocp4_workload_authentication_provider',
+        'valid': valid_providers,
+        'fix': f'Set to one of: {", ".join(valid_providers)}'
+      })
+    else:
+      passed_checks.append(f"✓ Authentication: unified role, provider={provider}")
+
+    # Check admin username is set
+    if 'ocp4_workload_authentication_admin_username' not in config:
+      warnings.append({
+        'check': 'authentication',
+        'severity': 'WARNING',
+        'message': 'ocp4_workload_authentication_admin_username not set — defaults to admin',
+        'location': 'common.yaml',
+        'recommendation': 'Explicitly set: ocp4_workload_authentication_admin_username: admin'
+      })
 ```
 
 ### Check 8: Showroom Integration

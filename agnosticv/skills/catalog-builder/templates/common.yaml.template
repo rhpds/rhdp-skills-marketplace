@@ -84,20 +84,26 @@ requirements_content:
 # Workloads
 # -------------------------------------------------------------------
 workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.core_workloads.ocp4_workload_authentication
   - agnosticd.showroom.ocp4_workload_ocp_console_embed
   - agnosticd.showroom.ocp4_workload_showroom
   # Add technology-specific workloads
 
 # ===================================================================
-# Workload: ocp4_workload_authentication_htpasswd
+# Workload: ocp4_workload_authentication
+# Unified role — supports htpasswd and keycloak (RHBK)
+# Do NOT use ocp4_workload_authentication_htpasswd or _keycloak (deprecated)
+# Do NOT use RHSSO — use keycloak provider instead
 # ===================================================================
-ocp4_workload_authentication_htpasswd_admin_user: admin
-ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_base: user
-ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
-ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+ocp4_workload_authentication_provider: htpasswd   # or: keycloak
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""   # auto-generated if empty
+ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
+ocp4_workload_authentication_user_password: ""    # auto-generated if empty
+ocp4_workload_authentication_remove_kubeadmin: true
+
+# Keycloak-specific (only needed if provider: keycloak)
+# ocp4_workload_authentication_keycloak_channel: stable-v26.2
 
 # ===================================================================
 # Workload: ocp4_workload_showroom
