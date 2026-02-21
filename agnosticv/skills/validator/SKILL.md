@@ -231,6 +231,7 @@ elif choice == 2:
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
                    "anarchy_namespace", "best_practices",
+                   "litemaas", "event_restriction",
                    "event_catalog"]  # event_catalog only runs if event_context != none
 
 elif choice == 3:
@@ -240,6 +241,7 @@ elif choice == 3:
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
                    "anarchy_namespace", "best_practices",
+                   "litemaas", "event_restriction",
                    "event_catalog",   # event_catalog only runs if event_context != none
                    "github_api", "collection_urls", "scm_refs"]
 ```
@@ -821,15 +823,49 @@ Then set the provider:
 ```python
 def check_showroom(config):
   """Showroom workload and configuration validation"""
-  
+
   workloads = config.get('workloads', [])
-  
-  showroom_workloads = [w for w in workloads if 'showroom' in w]
-  
+
+  showroom_workloads = [w for w in workloads if 'ocp4_workload_showroom' in w
+                        and 'ocp_console_embed' not in w]
+  has_console_embed = any('ocp4_workload_ocp_console_embed' in w for w in workloads)
+
   if showroom_workloads:
+
+    # Both showroom workloads must be present together
+    if not has_console_embed:
+      warnings.append({
+        'check': 'showroom',
+        'severity': 'WARNING',
+        'message': 'ocp4_workload_showroom present but ocp4_workload_ocp_console_embed missing',
+        'location': 'common.yaml:workloads',
+        'fix': 'Add: agnosticd.showroom.ocp4_workload_ocp_console_embed alongside ocp4_workload_showroom'
+      })
+
+    # dev_mode must be "false" in common.yaml
+    dev_mode = config.get('ocp4_workload_showroom_antora_enable_dev_mode', None)
+    if dev_mode is None:
+      warnings.append({
+        'check': 'showroom',
+        'severity': 'WARNING',
+        'message': 'ocp4_workload_showroom_antora_enable_dev_mode not set',
+        'location': 'common.yaml',
+        'fix': 'Add: ocp4_workload_showroom_antora_enable_dev_mode: "false"  # dev.yaml sets it to "true"'
+      })
+    elif str(dev_mode).lower() == 'true':
+      errors.append({
+        'check': 'showroom',
+        'severity': 'ERROR',
+        'message': 'ocp4_workload_showroom_antora_enable_dev_mode must be "false" in common.yaml',
+        'location': 'common.yaml',
+        'fix': 'Set to "false" in common.yaml — override to "true" in dev.yaml only'
+      })
+    else:
+      passed_checks.append('✓ Showroom dev mode disabled in common.yaml')
+
     # Check for showroom repo configuration
     showroom_vars = [k for k in config.keys() if 'showroom_content_git_repo' in k]
-    
+
     if not showroom_vars:
       errors.append({
         'check': 'showroom',
@@ -841,7 +877,7 @@ def check_showroom(config):
       })
     else:
       repo_url = config.get(showroom_vars[0], '')
-      
+
       # Check for SSH format (should be HTTPS)
       if repo_url.startswith('git@github.com:'):
         warnings.append({
@@ -1901,6 +1937,81 @@ Save this checklist for comprehensive review:
 - [ ] Both workloads present: ocp4_workload_ocp_console_embed + ocp4_workload_showroom
 - [ ] ocp4_workload_showroom_antora_enable_dev_mode: "false" in common.yaml
 - [ ] ocp4_workload_showroom_antora_enable_dev_mode: "true" in dev.yaml
+```
+
+### Check 17: LiteMaaS Configuration
+
+```python
+def check_litemaas(config):
+  """Validate LiteMaaS workload configuration when present"""
+
+  workloads = config.get('workloads', [])
+  has_litellm_workload = any('litellm_virtual_keys' in w for w in workloads)
+
+  if not has_litellm_workload:
+    return  # Not using LiteMaaS, skip
+
+  # Must have models defined
+  models = config.get('ocp4_workload_litellm_virtual_keys_models', [])
+  if not models:
+    errors.append({
+      'check': 'litemaas',
+      'severity': 'ERROR',
+      'message': 'ocp4_workload_litellm_virtual_keys workload present but no models defined',
+      'location': 'common.yaml',
+      'fix': 'Add ocp4_workload_litellm_virtual_keys_models list with at least one model',
+      'reference': 'https://litellm-prod-frontend.apps.maas.redhatworkshops.io/models'
+    })
+  else:
+    passed_checks.append(f"✓ LiteMaaS models configured: {models}")
+
+  # Must have duration
+  duration = config.get('ocp4_workload_litellm_virtual_keys_duration', '')
+  if not duration:
+    warnings.append({
+      'check': 'litemaas',
+      'severity': 'WARNING',
+      'message': 'ocp4_workload_litellm_virtual_keys_duration not set',
+      'location': 'common.yaml',
+      'recommendation': 'Set duration, e.g.: ocp4_workload_litellm_virtual_keys_duration: "7d"'
+    })
+  else:
+    passed_checks.append(f"✓ LiteMaaS key duration: {duration}")
+```
+
+### Check 17a: Event Restriction Include
+
+```python
+def check_event_restriction_include(catalog_path, event_context):
+  """Warn if event catalog is missing access restriction include"""
+
+  if event_context == 'none':
+    return
+
+  expected_includes = {
+    'summit-2026': 'access-restriction-summit-devs.yaml',
+    'rh1-2026':    'access-restriction-rh1-2026-devs.yaml',
+  }
+  expected = expected_includes.get(event_context)
+  if not expected:
+    return
+
+  try:
+    with open(f"{catalog_path}/common.yaml") as f:
+      content = f.read()
+    if expected not in content:
+      warnings.append({
+        'check': 'event_restriction',
+        'severity': 'WARNING',
+        'message': f'Event catalog missing access restriction include for {event_context}',
+        'location': 'common.yaml',
+        'fix': f'Add: #include /includes/{expected}',
+        'note': 'Stays in common.yaml until event.yaml is created for the event'
+      })
+    else:
+      passed_checks.append(f"✓ Event restriction include present: {expected}")
+  except:
+    pass
 ```
 
 ---
