@@ -3,25 +3,40 @@
 # Replace all <placeholders> with actual values from user input.
 
 ---
+# ---------------------------------------------------------------
+# Standard boilerplate (always include)
+# ---------------------------------------------------------------
 #include /includes/agd-v2-mapping.yaml
 #include /includes/catalog-icon-openshift.yaml  # or catalog-icon-project-dance, catalog-icon-rh-ai-2025
 #include /includes/terms-of-service.yaml
-
-# Event restriction — in common.yaml until event.yaml is created for the event
-# summit-2026: #include /includes/access-restriction-summit-devs.yaml
-# rh1-2026:   #include /includes/access-restriction-rh1-2026-devs.yaml
-
-# AWS only
-# #include /includes/aws-sandbox-meta.yaml
-# #include /includes/parameters/aws-regions-standard.yaml
-
 #include /includes/parameters/purpose.yaml
 #include /includes/parameters/salesforce-id.yaml
 #include /includes/parameters/num-users-salesforce.yaml  # If multi-user
-
 #include /includes/secrets/ocp4_token.yaml
-# Workload-specific secrets — add as needed:
-# #include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml  # cert_manager
+#include /includes/secrets/demosat-rhel-9-10-latest.yaml
+
+# ---------------------------------------------------------------
+# Event restriction — in common.yaml until event.yaml is created
+# ---------------------------------------------------------------
+# summit-2026: #include /includes/access-restriction-summit-devs.yaml
+# rh1-2026:   #include /includes/access-restriction-rh1-2026-devs.yaml
+
+# ---------------------------------------------------------------
+# AWS only (CNV pool handles these — only needed for AWS)
+# ---------------------------------------------------------------
+# #include /includes/aws-sandbox-meta.yaml
+# #include /includes/parameters/aws-regions-standard.yaml
+# #include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml
+
+# ---------------------------------------------------------------
+# LiteMaaS (if catalog uses AI model inference)
+# ---------------------------------------------------------------
+# #include /includes/secrets/litemaas-master_api.yaml    # LiteLLM API URL + master key
+# #include /includes/secrets/maas-models-token.yaml       # individual model tokens (codellama, granite, mistral...)
+
+# ---------------------------------------------------------------
+# Workload-specific secrets not in pool (add as needed)
+# ---------------------------------------------------------------
 # #include /includes/secrets/<workload-specific>.yaml
 
 # -------------------------------------------------------------------
