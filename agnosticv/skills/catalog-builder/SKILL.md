@@ -465,40 +465,51 @@ __meta__:
 
 ---
 
-**BRANCH 2: RHEL / AAP VMs (choice 2) — `cloud-vms-base`**
+**BRANCH 2: RHEL / AAP VMs (choice 2 or determined from reference) — `cloud-vms-base`**
 
-**Question B — Cloud provider for VMs:**
+**Always ask CNV or AWS — even if reference used AWS, user may want CNV:**
+
+**Question B — Cloud provider** *(always ask — reference may differ)*:
 ```
-Q: Where should the VMs run?
+Q: CNV or AWS? Default is CNV.
 
-1. CNV  (OpenShift Virtualization — VMs on CNV infrastructure)
-2. AWS  (EC2 instances on AWS)
+1. CNV  (default — OpenShift Virtualization)
+2. AWS  (requires prior RHDP team approval)
 
 Choice [1/2]:
 ```
-→ If AWS: `Q: Do you have RHDP team approval for AWS? [Y/n]`
+→ If AWS: `Q: Do you have RHDP team approval? [Y/n]` *(No approval → stop)*
 
-**Question C — Bastion / VM image:**
+**Question C — RHEL image:**
 ```
-Q: Which RHEL version for the bastion/VMs?
+Q: Which RHEL image?
 
-1. RHEL 9.6  (default)
-2. RHEL 10   (latest)
+1. rhel-9.6          (default)
+2. RHEL-10-GOLD-latest
 
 Choice [1/2]:
 ```
 
-**Question D — VM sizing:**
+**Question D — Sizing override:**
 ```
-Q: VM cores and memory?
+Q: Use default sizing or override? [default/override]
 
-Common sizes:
-1. Small   — 4 cores, 8Gi   (lightweight demos)
-2. Medium  — 8 cores, 16Gi  (standard)
-3. Large   — 16 cores, 32Gi (AAP, heavy workloads)
-
-Choice [1/2/3]:
+Default: 8 cores, 16Gi memory, 200Gi disk
+(workload defaults apply — only override if you need different)
 ```
+→ If override: ask cores, memory, image_size per VM
+
+**Question E — Ports to expose per VM:**
+```
+Q: Which ports need to be exposed on the bastion?
+
+Common: 22 (SSH), 80 (HTTP), 443 (HTTPS)
+Add custom ports if needed (e.g., 5000 for registry, 8080 for app)
+
+Enter ports (comma-separated, e.g.: 22,80,443):
+```
+
+→ If additional VMs (e.g., worker/node VMs): ask same port question per VM
 
 **Generated config — cloud-vms-base CNV:**
 ```yaml
@@ -510,10 +521,51 @@ bastion_instance_image: rhel-9.6   # from Question C
 instances:
   - name: bastion
     count: 1
+    unique: true
     image: "{{ bastion_instance_image }}"
-    cores: 8         # from Question D
+    cores: 8
     memory: 16G
     image_size: 200Gi
+    tags:
+      - key: AnsibleGroup
+        value: bastions
+      - key: ostype
+        value: linux
+    services:                        # CNV only — from Question E
+      - name: bastion
+        ports:
+          - port: 22
+            protocol: TCP
+            targetPort: 22
+            name: bastion-ssh
+          - port: 443
+            protocol: TCP
+            targetPort: 443
+            name: bastion-https
+    routes:
+      - name: bastion-https
+        host: bastion
+        service: bastion
+        targetPort: 443
+```
+
+**For AWS** — use `security_groups:` instead of `services:`/`routes:`:
+```yaml
+security_groups:
+- name: BastionSG
+  rules:
+  - name: BastionSSH
+    from_port: 22
+    to_port: 22
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+  - name: BastionHTTPS
+    from_port: 443
+    to_port: 443
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
 ```
 
 ### Step 4: Authentication Setup
