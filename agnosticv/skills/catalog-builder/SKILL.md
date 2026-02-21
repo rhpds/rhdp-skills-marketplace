@@ -357,7 +357,22 @@ SNO (Single Node) or Multi-node?
 Choice [1/2]:
 ```
 
-**Question B — Custom pool:**
+**Question B — OCP version:**
+
+```
+Q: Which OpenShift version?
+
+Available pool versions:
+1. 4.18
+2. 4.20
+3. 4.21 (latest)
+
+Choice [1/2/3]:
+```
+
+Set `host_ocp4_installer_version` to the selected version.
+
+**Question C — Custom pool:**
 
 ```
 Q: Do you have a custom CNV pool allocated for this catalog? [Y/n]
@@ -376,7 +391,7 @@ Auto-scale adds workers proportionally as num_users increases.
 Recommended for multi-user workshops.
 ```
 
-**Question B — Cloud provider:**
+**Question D — Cloud provider:**
 
 ```
 Q: Do you need AWS instead of CNV? [Y/n]
