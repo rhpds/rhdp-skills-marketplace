@@ -321,11 +321,12 @@ Would you like to use one of these as a reference? [Y/n]
 **If YES:** `Which one? Enter number:`
 
 Read that catalog's `common.yaml`:
-- Copy workloads, collections, infra as defaults
+- Copy workloads, collections as defaults
 - **Read `config:` field → auto-set infra type** (`openshift-workloads` → OCP, `cloud-vms-base` → VMs)
-- Skip Step 3 Question A entirely — infra type already known
+- Skip Step 3 Question A (OCP or VMs?) — infra type already known
+- **Still ask all sizing questions in Step 3** (SNO vs multinode, OCP version, autoscale, AWS) — reference may be SNO but user may want multinode with scaling
 
-**If NO or none found:** Proceed to Step 3 and ask infra type there.
+**If NO or none found:** Proceed to Step 3 and ask all questions including infra type.
 
 ### Category *(auto — set from Step 1, no question)*
 
@@ -390,9 +391,9 @@ Choice [1/2]:
 
 ---
 
-**BRANCH 1: OpenShift cluster (choice 1)**
+**BRANCH 1: OpenShift cluster (choice 1 or determined from reference)**
 
-**Question B — Cluster size:**
+**Question B — Cluster size** *(always ask — reference sizing may differ)*:
 ```
 Q: SNO or Multi-node?
 
@@ -402,7 +403,7 @@ Q: SNO or Multi-node?
 Choice [1/2]:
 ```
 
-*If SNO selected → force `multiuser: false`, skip Step 9 user count question.*
+*If SNO selected → force `multiuser: false`, skip Step 8 user count question.*
 
 **Question C — OCP version:**
 ```
