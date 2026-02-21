@@ -258,24 +258,25 @@ AgnosticV path: ask user for subdirectory in Step 11 (as before).
 
 ### Step 1: Catalog Discovery (Search Existing)
 
-Using the category and technologies collected so far, silently search `agd_v2/` in the AgV repo for similar catalogs.
+Using the category and technologies collected so far, silently search `agd_v2/` and `openshift_cnv/` in the AgV repo for similar catalogs.
 
 ```bash
-# Search agd_v2/ by display_name and directory name
-grep -rl "$keywords" "$AGV_PATH/agd_v2/" --include="common.yaml" -l \
+# Search agd_v2/ and openshift_cnv/ by display_name and directory name
+grep -rl "$keywords" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
+  --include="common.yaml" -l 2>/dev/null \
   | xargs -I{} dirname {} | head -5
 ```
 
 **Show results and ask ONE question:**
 
 ```
-📖 Found similar catalogs in agd_v2/:
+📖 Found similar catalogs:
 
 1. agd_v2/ansible-aap-workshop/
    └─ Ansible Automation Platform Self-Service
 
-2. agd_v2/openshift-gitops-intro/
-   └─ OpenShift GitOps Introduction
+2. openshift_cnv/ocp-cnv-kubevirt-demo/
+   └─ KubeVirt Virtualization Demo
 
 Would you like to use one of these as a reference? [Y/n]
 ```
