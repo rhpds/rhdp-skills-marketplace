@@ -499,23 +499,19 @@ tabs:
 #   port: 443
 ```
 
-**3. Create `content/lib/`** — copy these 4 files from the reference template at `~/work/showroom-content/lb2298-ibm-fusion/content/lib/` (Showroom 1.5.1+ reference):
+**3. Create `content/lib/`** — read these 4 files from the canonical reference repo `https://github.com/rhpds/lb2298-ibm-fusion` (clone to a temp dir if not available locally) and write them to the new repo unchanged:
 
 - `content/lib/all-attributes-console-extension.js`
 - `content/lib/attributes-page-extension.js`
 - `content/lib/dev-mode.js`
 - `content/lib/unlisted-pages-extension.js`
 
-Read each file from the reference and write it to the new repo. Do not modify the content.
-
-**4. Create `supplemental-ui/`** at repo root — copy these 4 files from `~/work/showroom-content/lb2298-ibm-fusion/supplemental-ui/`:
+**4. Create `supplemental-ui/`** at repo root — same reference repo, write unchanged:
 
 - `supplemental-ui/css/site-extra.css`
 - `supplemental-ui/img/favicon.ico`
 - `supplemental-ui/partials/head-meta.hbs`
 - `supplemental-ui/partials/header-content.hbs`
-
-Read each file from the reference and write it to the new repo. Do not modify the content.
 
 **5. Create `.github/workflows/gh-pages.yml`:**
 
@@ -700,76 +696,9 @@ Now for this specific module:
    - Proof-of-concept content
    - Modules with very straightforward steps
 
-### Step 5: Get UserInfo Variables (if applicable)
+### Step 5: UserInfo Variables
 
-If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
-
-**RECOMMENDED: Get from Deployed Environment (Primary Method)**
-
-I'll ask: "Do you have access to a deployed environment on demo.redhat.com or integration.demo.redhat.com?"
-
-**If YES** (recommended):
-```
-Please share the UserInfo variables from your deployed service:
-
-1. Login to https://integration.demo.redhat.com (or demo.redhat.com)
-2. Go to "My services" → Find your service
-3. Click on "Details" tab
-4. Expand "Advanced settings" section
-5. Copy and paste the output here
-```
-
-This shows all available variables like:
-- `openshift_cluster_console_url`
-- `openshift_api_server_url`
-- `openshift_cluster_admin_username`
-- `openshift_cluster_admin_password`
-- `gitea_console_url`
-- `gitea_admin_username`
-- `gitea_admin_password`
-- Custom workload-specific variables
-
-**If NO** (fallback):
-I'll use common placeholder variables:
-- `{openshift_console_url}`
-- `{openshift_api_url}`
-- `{user}`
-- `{password}`
-- `{bastion_public_hostname}`
-
-**Alternative**: Clone collections from AgV catalog
-- Read `common.yaml` from user-provided AgV path
-- Clone collections from any repository (agnosticd, rhpds, etc.)
-- Read workload roles to find `agnosticd_user_info` tasks
-- Extract variables from `data:` sections
-- Note: Less reliable than deployed environment output
-
-**Map to Showroom attributes**:
-```asciidoc
-{openshift_cluster_console_url}
-{openshift_api_server_url}
-{openshift_cluster_admin_username}
-{gitea_console_url}
-{{ custom_variable }}
-```
-
-**CRITICAL: DO NOT Replace Variables with Actual Values**:
-- ALWAYS keep variables as placeholders: `{openshift_console_url}`
-- NEVER replace with actual values like `https://console-openshift-console.apps.cluster-abc123.abc123.example.opentlc.com`
-- Showroom will replace these at runtime with actual deployment values
-- Each deployment gets different URLs - variables MUST stay dynamic
-- Example in module content:
-  ```asciidoc
-  . Navigate to the OpenShift Console at {openshift_cluster_console_url}
-  . Login with username: {openshift_cluster_admin_username}
-  . Password: {openshift_cluster_admin_password}
-  ```
-
-**What UserInfo variables are for**:
-- Understanding WHICH variables are available
-- Learning the correct variable names
-- Seeing what endpoints/tools exist in the environment
-- NOT for hardcoding actual values in content
+UserInfo variables are collected in Step 4, item 3. If skipped there, use placeholder attributes (`{openshift_console_url}`, `{user}`, `{password}`) and proceed.
 
 ### Step 6: Handle Diagrams, Screenshots, and Code Blocks (if provided)
 

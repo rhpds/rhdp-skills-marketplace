@@ -1275,14 +1275,14 @@ ignore_errors: true
 
 ### Working Validation Roles
 
-Check these for reference patterns:
-- `/Users/psrivast/work/code/rhpds.aap_self_service_portal/roles/ocp4_workload_aap_multiinstance_validation/`
-- `/Users/psrivast/work/code/rhpds.build-secured-dev-workflows/roles/rhads_validation/`
+Check these repos for reference patterns:
+- `rhpds.aap_self_service_portal` → `roles/ocp4_workload_aap_multiinstance_validation/`
+- `rhpds.build-secured-dev-workflows` → `roles/rhads_validation/`
 
 ### Working Info Templates
 
 Check this for reference:
-- `/Users/psrivast/work/code/agnosticv/agd_v2/aap-multiinstance-workshop/info-message-template.adoc`
+- AgnosticV repo → `agd_v2/aap-multiinstance-workshop/info-message-template.adoc`
 
 ## Skill Invocation Summary
 

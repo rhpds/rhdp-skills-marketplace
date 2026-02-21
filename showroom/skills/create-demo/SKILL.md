@@ -448,23 +448,19 @@ tabs:
 #   port: 443
 ```
 
-**3. Create `content/lib/`** — copy these 4 files from the reference template at `~/work/showroom-content/lb2298-ibm-fusion/content/lib/`:
+**3. Create `content/lib/`** — read these 4 files from `https://github.com/rhpds/lb2298-ibm-fusion` (clone to temp dir if not available locally) and write unchanged:
 
 - `content/lib/all-attributes-console-extension.js`
 - `content/lib/attributes-page-extension.js`
 - `content/lib/dev-mode.js`
 - `content/lib/unlisted-pages-extension.js`
 
-Read each file from the reference and write it to the new repo. Do not modify the content.
-
-**4. Create `supplemental-ui/`** at repo root — copy these 4 files from `~/work/showroom-content/lb2298-ibm-fusion/supplemental-ui/`:
+**4. Create `supplemental-ui/`** at repo root — same reference repo, write unchanged:
 
 - `supplemental-ui/css/site-extra.css`
 - `supplemental-ui/img/favicon.ico`
 - `supplemental-ui/partials/head-meta.hbs`
 - `supplemental-ui/partials/header-content.hbs`
-
-Read each file from the reference and write it to the new repo. Do not modify the content.
 
 **5. Create `.github/workflows/gh-pages.yml`:**
 

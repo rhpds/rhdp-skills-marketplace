@@ -733,56 +733,26 @@ fi
 
 ### Step 8a: Repository Setup
 
-```
-📦 Repository Configuration
-```
+**If no Showroom repo was provided in Step 7**, show creation instructions and pause:
 
-**Ask about Showroom repository:**
-```
-Q: Do you have a Showroom repository created for this catalog? [Y/n]
-```
-
-**If NO:**
 ```
 📚 Create Showroom Repository (Showroom 1.5.1+ REQUIRED)
 
-New Showroom repositories MUST use Showroom 1.5.1 or above.
+1. Create a new empty GitHub repo in github.com/rhpds
+   Naming: {short-name}-showroom
 
-Step 1: Create a new empty GitHub repository
-  Recommended naming: {short-name}-showroom
-  Create in: github.com/rhpds organization
+2. Clone it locally and run: /showroom:create-lab --new
+   Creates: default-site.yml, ui-config.yml, supplemental-ui/,
+            content/lib/, .github/workflows/gh-pages.yml
 
-Step 2: Clone it locally and scaffold the 1.5.1 structure
-  Run: /showroom:create-lab --new
-  This creates all required files:
-    - default-site.yml
-    - ui-config.yml (with view_switcher)
-    - supplemental-ui/ (at repo root)
-    - content/lib/ (4 JS extension files)
-    - .github/workflows/gh-pages.yml
+   Reference: https://github.com/rhpds/lb2298-ibm-fusion
 
-  Reference template: https://github.com/rhpds/lb2298-ibm-fusion
-  (This is the canonical 1.5.1+ example)
+⚠️  Do NOT use showroom_template_nookbag — it is pre-1.5.1.
 
-⚠️  Do NOT use showroom_template_nookbag as your base — it uses the
-    pre-1.5.1 structure (site.yml, content/supplemental-ui/).
-
-Once your Showroom repo has the 1.5.1+ structure, come back and
-re-run this skill with the repository URL.
-
-⏸️  Pausing — create and scaffold your Showroom repository first.
+⏸️  Re-run this skill once the Showroom repo is ready.
 ```
 
-**If YES:**
-```
-Q: What is the URL or path to your Showroom repository?
-
-   Examples:
-   - https://github.com/rhpds/ansible-aap-ai-showroom
-   - /path/to/local/showroom
-
-Showroom URL or path:
-```
+**If Showroom repo URL was already provided in Step 7**, skip this step.
 
 **Ask about custom Ansible collection:**
 ```
