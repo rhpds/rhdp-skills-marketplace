@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.6.0-tech-preview] - 2026-02-21
+
+Major overhaul of Showroom skills (Showroom 1.5.1 support), complete AgnosticV catalog-builder redesign, and validator alignment to new standards.
+
+### Added - Showroom 1.5.1 Scaffold
+
+- **create-lab / create-demo Step 3.1**: Skills now scaffold full Showroom 1.5.1 structure on first run:
+  - `default-site.yml`, `supplemental-ui/`, `content/lib/`, `gh-pages.yml`
+  - `ui-config.yml` with `view_switcher` pre-configured
+  - Console/tab embedding question asked at setup time
+- **create-lab / create-demo Step 2.5**: Now asks for the path to the RHDP-provided cloned Showroom repository (replaces the old "where to create files?" prompt)
+- **Showroom 1.5.1 requirement note**: Skills surface a developer note that Showroom 1.5.1+ is required for console embedding and split-view; reference template is `lb2298-ibm-fusion`
+
+### Added - AgnosticV Catalog Builder (Major Overhaul)
+
+Complete redesign of the MODE 1 Full Catalog question flow:
+
+- **Step 0**: Setup — AgV repo path auto-detection, branch creation
+- **Step 1**: Single [1-7] context question combining event type (Summit Lab/Demo, RH1 Lab/Demo, Workshop, Demo, Sandbox) + lab ID + technologies
+- **Step 2**: Discovery — searches `agd_v2/` and `openshift_cnv/` for reference catalogs; shows `[OCP cluster]` / `[RHEL/AAP VMs]` labels
+- **Step 3**: Infrastructure gate — OCP branch (SNO/multinode, OCP version 4.18/4.20/4.21, `/prod` pool suffix, autoscale, AWS) or VM branch (cloud-vms-base: CNV/AWS, RHEL image, sizing, ports per VM)
+- **Step 4**: Auth — unified `ocp4_workload_authentication` role with `htpasswd` or `keycloak` (RHBK) provider; RHSSO removed entirely
+- **Step 5**: Workloads + LiteMaaS question (models from live registry, duration, adds 2 includes + workload + collection)
+- **Step 5.5**: `{{ tag }}` pattern applied automatically for all standard collections; showroom pinned to fixed v1.5.1; EE image resolved from AgV grep
+- **Step 6**: Showroom — shows recommended name, asks if already created, adds placeholder if not; `antora_enable_dev_mode` auto-configured
+- **Step 7**: Catalog details — display name, short name, description, maintainer name + email (maintainer email was previously missing)
+- **Step 9**: `__meta__` — deployer actions (start/stop only); `remove_workloads` clarified as `sandbox_api.actions.destroy.catch_all` (not a deployer action); product + family labels; keywords
+- **Step 9.1**: Includes — event restriction in `common.yaml` (summit-devs or rh1-2026-devs), AWS extras, LiteMaaS includes (`litemaas-master_api` + `litellm_metadata`), workload-specific TODO
+- **Step 10**: Event catalogs → auto-generated path (e.g. `summit-2026/lb2298-short-cnv`); no-event catalogs → asks subdirectory
+
+### Added - AgnosticV Validator (Aligned to Builder)
+
+New checks aligned to catalog-builder v2.6.0 standards:
+
+- **Check 6** (Infrastructure): cloud-vms-base branch — instances, bastion image, multiuser warning; OCP branch — `/prod` suffix required, OCP version in known pools (4.18/4.20/4.21), AWS approval path
+- **Check 7** (Auth): ERROR for deprecated `_htpasswd` and `_keycloak` roles; ERROR for RHSSO; validates unified `ocp4_workload_authentication` role + provider var
+- **Check 8** (Showroom): Both showroom workloads required together (`ocp_console_embed` + `ocp4_workload_showroom`); `antora_enable_dev_mode: "false"` enforced in `common.yaml`
+- **Check 13** (Collections): `tag:` defined; standard collections use `{{ tag }}`; showroom pinned to fixed version ≥ v1.5.1
+- **Check 15a**: `anarchy.namespace` must never be defined by the catalog item
+- **Check 16a**: Event catalog validation — Brand_Events category, keywords, directory naming convention, Showroom naming, `ocp_console_embed` presence
+- **Check 17**: LiteMaaS workload → models list and duration validated
+- **Check 17a**: Event restriction include present in `common.yaml` when event catalog detected
+- **Step 1.5**: Event auto-detected from directory path (no user prompt needed)
+
+### Changed - verify-content Simplified
+
+- **Step 1**: Prompts now load directly from `showroom/prompts/` in the marketplace plugin; no content-type detection logic needed
+- **Step 1.5**: Silently checks `ui-config.yml` — warns if no consoles are configured, warns if `view_switcher` is missing (Showroom 1.5.1 requirement)
+
+### Changed - common.yaml.template Updated
+
+- All standard collections use `{{ tag }}` pattern for versions
+- Showroom workload uses fixed minimum version (v1.5.1)
+- Unified auth role + provider var replaces old per-provider role pattern
+- `cloud_provider_version: "{{ tag }}"` for AWS OCP catalogs
+- Event restriction added as commented option
+- LiteMaaS both includes added as commented options
+
 ## [v2.5.0-tech-preview] - 2026-02-10
 
 Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.

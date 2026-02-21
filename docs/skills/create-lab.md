@@ -150,24 +150,67 @@ Create hands-on workshop content where customers follow along step-by-step.
   <div class="workflow-step">
     <div class="workflow-icon">1️⃣</div>
     <div class="workflow-content">
-      <h4>Create Module Structure</h4>
+      <h4>Step 1: Invoke Skill</h4>
       <pre><code>/showroom:create-lab
-→ Enter workshop details
-→ Skill generates module files</code></pre>
+→ Skill loads prompts from showroom/prompts/</code></pre>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">2️⃣</div>
     <div class="workflow-content">
-      <h4>Verify Content</h4>
-      <pre><code>/showroom:verify-content
-→ Check quality and standards</code></pre>
+      <h4>Step 2: Workshop Details</h4>
+      <p>Answer prompts for workshop title, abstract, technologies, and number of modules.</p>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">2.5️⃣</div>
+    <div class="workflow-content">
+      <h4>Step 2.5: Provide Showroom Repository Path</h4>
+      <p>Skill asks: <em>"What is the path to your RHDP-provided cloned Showroom repository?"</em></p>
+      <p>This is the repo RHDP already provisioned for you — not where to create files, but the existing repo to write into.</p>
+      <pre><code>Example: ~/work/showroom-content/lb2298-ibm-fusion</code></pre>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">3️⃣</div>
+    <div class="workflow-content">
+      <h4>Step 3.1: Showroom 1.5.1 Scaffold</h4>
+      <p>Skill writes the full Showroom 1.5.1 scaffold into the provided repo path:</p>
+      <pre><code>default-site.yml
+supplemental-ui/
+content/lib/
+gh-pages.yml
+ui-config.yml          # includes view_switcher</code></pre>
+      <p>Skill also asks: <em>"Will this lab embed an OCP console or terminal tab?"</em> — configures console embedding if yes.</p>
+      <div class="info-box" style="margin-top: 1rem;">
+        ℹ️ <strong>Showroom 1.5.1+ required</strong> for console embedding and split-view. Reference template: <code>lb2298-ibm-fusion</code> (not nookbag — that is pre-1.5.1).
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">4️⃣</div>
+    <div class="workflow-content">
+      <h4>Step 4-5: Generate Module Content</h4>
+      <p>Skill generates <code>index.adoc</code> and one file per module using Know/Do/Check structure. UserInfo attributes are written once in <code>_attributes.adoc</code> (no duplicate entries).</p>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">5️⃣</div>
+    <div class="workflow-content">
+      <h4>Verify Content</h4>
+      <pre><code>/showroom:verify-content
+→ Check quality and standards
+→ Checks ui-config.yml for console and view_switcher</code></pre>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">6️⃣</div>
     <div class="workflow-content">
       <h4>Generate Blog Post (Optional)</h4>
       <pre><code>/showroom:blog-generate

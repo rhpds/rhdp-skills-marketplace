@@ -132,6 +132,18 @@ content/modules/ROOT/pages/*.adoc</code></pre>
       <li><strong>URLs:</strong> Valid links to documentation</li>
     </ul>
   </div>
+
+  <div class="check-category">
+    <div class="check-header">
+      <span class="check-icon">🖥️</span>
+      <h3>Showroom 1.5.1 Config</h3>
+    </div>
+    <ul>
+      <li><strong>ui-config.yml:</strong> Checked silently on every run</li>
+      <li><strong>Consoles:</strong> Warning if no OCP console or terminal tabs configured</li>
+      <li><strong>view_switcher:</strong> Warning if missing — required for split-view in Showroom 1.5.1+</li>
+    </ul>
+  </div>
 </div>
 
 ---
@@ -142,16 +154,28 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">1️⃣</div>
     <div class="workflow-content">
-      <h4>Create Content First</h4>
-      <pre><code>/create-lab or /create-demo
-→ Generate initial content</code></pre>
+      <h4>Step 1: Invoke Skill</h4>
+      <pre><code>/showroom:verify-content</code></pre>
+      <p>Prompts load directly from <code>showroom/prompts/</code> in the marketplace plugin. No content-type detection needed — the skill knows the context from the prompt files.</p>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">1.5️⃣</div>
+    <div class="workflow-content">
+      <h4>Step 1.5: ui-config.yml Check (Silent)</h4>
+      <p>Skill silently inspects <code>ui-config.yml</code> and surfaces warnings if needed:</p>
+      <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
+        <li><strong>Warning</strong> if no consoles are configured (OCP console or terminal tabs missing)</li>
+        <li><strong>Warning</strong> if <code>view_switcher</code> is absent — required for Showroom 1.5.1+ split-view</li>
+      </ul>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">2️⃣</div>
     <div class="workflow-content">
-      <h4>Run Verification</h4>
+      <h4>Step 2: Content Quality Report</h4>
       <pre><code>/showroom:verify-content
 → Get quality report
 → See list of issues</code></pre>
@@ -161,13 +185,14 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">3️⃣</div>
     <div class="workflow-content">
-      <h4>Fix Issues</h4>
+      <h4>Step 3: Fix Issues</h4>
       <p>Review each issue and update content:</p>
       <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
         <li>Fix AsciiDoc formatting errors</li>
         <li>Update product terminology</li>
         <li>Correct code examples</li>
         <li>Add missing alt text</li>
+        <li>Add <code>view_switcher</code> to <code>ui-config.yml</code> if warned</li>
       </ul>
     </div>
   </div>
@@ -175,7 +200,7 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">4️⃣</div>
     <div class="workflow-content">
-      <h4>Re-verify</h4>
+      <h4>Step 4: Re-verify</h4>
       <pre><code>/showroom:verify-content
 → Confirm all issues resolved</code></pre>
     </div>

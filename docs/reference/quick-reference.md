@@ -78,22 +78,30 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
       </div>
       <div class="workflow-step-item">
         <span class="step-num">3</span>
-        <span>Review generated content</span>
+        <span>Step 2.5: Provide path to RHDP-provisioned Showroom repo</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">4</span>
-        <code>/showroom:verify-content</code>
+        <span>Step 3.1: Showroom 1.5.1 scaffold written (default-site.yml, ui-config.yml, etc.)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">5</span>
-        <span>Fix any issues</span>
+        <span>Review generated module content</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">6</span>
-        <code>/showroom:blog-generate</code> <span class="optional">(optional)</span>
+        <code>/showroom:verify-content</code>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">7</span>
+        <span>Fix any issues</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">8</span>
+        <code>/showroom:blog-generate</code> <span class="optional">(optional)</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">9</span>
         <span>Publish</span>
       </div>
     </div>
@@ -111,18 +119,26 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
       </div>
       <div class="workflow-step-item">
         <span class="step-num">2</span>
-        <span>Answer prompts (name, abstract, technologies)</span>
+        <span>Answer prompts (name, abstract, technologies, audience level)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">3</span>
-        <span>Review generated content</span>
+        <span>Step 2.5: Provide path to RHDP-provisioned Showroom repo</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">4</span>
-        <code>/showroom:verify-content</code>
+        <span>Step 3.1: Showroom 1.5.1 scaffold written (default-site.yml, ui-config.yml, etc.)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">5</span>
+        <span>Review generated section content</span>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">6</span>
+        <code>/showroom:verify-content</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">7</span>
         <span>Present or publish</span>
       </div>
     </div>
@@ -154,27 +170,35 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
       </div>
       <div class="workflow-step-item">
         <span class="step-num">4</span>
-        <span>Git workflow runs automatically (pulls main, creates branch)</span>
+        <span>Step 0: AgV path auto-detected, branch created from main</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">5</span>
-        <span>Answer prompts (name, infrastructure, workloads)</span>
+        <span>Step 1: Single [1-7] context question (event type + lab ID + tech)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">6</span>
-        <span>Review generated files (auto-committed to branch)</span>
+        <span>Steps 2-9: Discovery, infra gate, auth, workloads, Showroom, __meta__</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">7</span>
-        <code>git push origin &lt;branch-name&gt;</code>
+        <span>Step 10: Path auto-generated (event) or asked (no-event)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">8</span>
-        <code>gh pr create --fill</code>
+        <span>Files generated and auto-committed to branch</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">9</span>
-        <span>Test in RHDP Integration</span>
+        <code>/agnosticv:validator</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">10</span>
+        <code>git push origin &lt;branch-name&gt;</code>
+      </div>
+      <div class="workflow-step-item">
+        <span class="step-num">11</span>
+        <code>gh pr create --fill</code>
       </div>
     </div>
   </div>
@@ -237,13 +261,15 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
   <div class="location-card">
     <h3>AgnosticV Repository</h3>
     <pre><code>~/work/code/agnosticv/
-├── agd_v2/      # Standard catalogs
+├── agd_v2/         # Standard catalogs
 │   └── &lt;catalog-name&gt;/
 │       ├── common.yaml
 │       ├── description.adoc
 │       └── dev.yaml
-├── enterprise/  # Enterprise catalogs
-└── summit-2025/ # Event catalogs</code></pre>
+├── openshift_cnv/  # CNV cluster catalogs
+├── enterprise/     # Enterprise catalogs
+└── summit-2026/    # Event catalogs
+    └── lb####-short-name-cnv/</code></pre>
   </div>
 
   <div class="location-card">
