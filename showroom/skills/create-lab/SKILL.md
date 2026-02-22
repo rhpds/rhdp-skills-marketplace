@@ -463,9 +463,15 @@ ls default-site.yml 2>/dev/null && echo "found default-site.yml"
 | State | Action |
 |---|---|
 | `site.yml` exists | Proceed to check/fix below |
-| `default-site.yml` exists, no `site.yml` | Proceed to check/fix using `default-site.yml` — both are valid, no rename needed |
-| Both exist | Use `site.yml`, note that `default-site.yml` is also present but redundant |
+| `default-site.yml` exists, no `site.yml` | Rename to `site.yml` silently, then check/fix |
+| Both exist | Use `site.yml`, remove `default-site.yml` |
 | Neither exists | Create `site.yml` from scratch |
+
+If renaming:
+```bash
+mv default-site.yml site.yml
+```
+Report: `✓ Renamed default-site.yml → site.yml (new standard)`
 
 *If EXISTS — check and fix:*
 - `site.title` is stale/template → update to `"{{ lab_title }}"`

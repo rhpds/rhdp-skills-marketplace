@@ -89,8 +89,8 @@ Check which file is present and use whichever exists for field validation:
 | State | Severity | Message |
 |---|---|---|
 | `site.yml` present | — | Proceed to field checks on `site.yml` |
-| `default-site.yml` present, no `site.yml` | Info | ℹ️ Using `default-site.yml` — both are valid. New repos use `site.yml` going forward. |
-| Both present | Info | ℹ️ Both `site.yml` and `default-site.yml` exist — role uses `site.yml`. `default-site.yml` is redundant but harmless. |
+| `default-site.yml` present, no `site.yml` | High | ⚠️ Repo uses `default-site.yml` — rename to `site.yml` (new standard). Both work but `site.yml` is going forward. Fix: `mv default-site.yml site.yml` |
+| Both present | High | ⚠️ Both `site.yml` and `default-site.yml` exist — `default-site.yml` is redundant. Remove it: `rm default-site.yml` |
 | Neither present | Critical | ❌ No Antora playbook found. Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
 
 Check fields in whichever playbook file is present:
