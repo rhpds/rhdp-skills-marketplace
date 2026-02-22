@@ -187,12 +187,21 @@ Files checked:
 
 If MISSING:
 ```
-⚠️  .github/workflows/gh-pages.yml not found
+❌  .github/workflows/gh-pages.yml not found
     GitHub Pages auto-deploy won't work.
     Run /showroom:create-lab --new to create.
 ```
 
-If found → confirm present, no further check needed.
+If found — check the `antora generate` command references the correct playbook:
+
+Determine which playbook file the repo uses (`site.yml` or `default-site.yml`), then check the workflow references it:
+
+| Workflow references | Repo has | Severity | Message |
+|---|---|---|---|
+| `site.yml` | `site.yml` | — | ✓ Correct |
+| `default-site.yml` | `site.yml` | Critical | ❌ `gh-pages.yml` runs `antora generate default-site.yml` but repo has `site.yml` — build will fail. Fix: change to `antora generate site.yml` |
+| `default-site.yml` | `default-site.yml` | High | ⚠️ `gh-pages.yml` references `default-site.yml`. If you rename to `site.yml` (recommended), also update the workflow. |
+| `site.yml` | `default-site.yml` | Critical | ❌ `gh-pages.yml` runs `antora generate site.yml` but repo only has `default-site.yml` — build will fail. Fix: rename `default-site.yml` → `site.yml` |
 
 ---
 

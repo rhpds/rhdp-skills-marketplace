@@ -470,8 +470,14 @@ ls default-site.yml 2>/dev/null && echo "found default-site.yml"
 If renaming:
 ```bash
 mv default-site.yml site.yml
+
+# Also update the GitHub Pages workflow if it references the old name
+if grep -q "default-site.yml" .github/workflows/gh-pages.yml 2>/dev/null; then
+  sed -i '' 's/antora generate default-site.yml/antora generate site.yml/g' .github/workflows/gh-pages.yml
+fi
 ```
 Report: `✓ Renamed default-site.yml → site.yml (new standard)`
+Report: `✓ Updated .github/workflows/gh-pages.yml to reference site.yml` (if applicable)
 
 *If EXISTS — check and fix:*
 - `site.title` is stale/template → update to `"{{ lab_title }}"`
@@ -636,7 +642,7 @@ jobs:
       - name: install antora
         run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
       - name: antora generate
-        run: antora generate default-site.yml --stacktrace
+        run: antora generate site.yml --stacktrace
       - name: upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
