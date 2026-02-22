@@ -674,6 +674,22 @@ jobs:
   .github/workflows/    → [created | already present]
 ```
 
+**⚠️ GitHub Pages must be enabled manually** (one-time setup per repo):
+
+```
+1. Go to your GitHub repository
+2. Settings → Pages
+3. Under "Build and deployment", set Source to: GitHub Actions
+4. Save
+
+Without this step the gh-pages.yml workflow will run but GitHub Pages
+will not be published — the Showroom guide URL will return 404.
+
+After enabling, the first push to main will trigger a build.
+Your guide will be available at:
+  https://rhpds.github.io/<repo-name>/
+```
+
 **Note**: These files must exist and have correct values BEFORE generating any content modules (Step 8).
 
 ---
@@ -1231,6 +1247,7 @@ See @showroom/docs/SKILL-COMMON-RULES.md for navigation update rules and conflic
 3. Test commands in your environment
 4. Run: verify-content to check quality
 5. Create next module: create-lab (continuing existing lab)
+6. Enable GitHub Pages (if not done yet): repo Settings → Pages → Source: GitHub Actions
 
 **Note**: All files have been written. Use your editor to review them.
 ```

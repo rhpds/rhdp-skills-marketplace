@@ -192,7 +192,14 @@ If MISSING:
     Run /showroom:create-lab --new to create.
 ```
 
-If found — check the `antora generate` command references the correct playbook:
+If found — check the `antora generate` command references the correct playbook, then remind the user to verify GitHub Pages is enabled:
+
+```
+ℹ️  Remember: GitHub Pages must be enabled in repo Settings → Pages → Source: GitHub Actions
+    Without this, the workflow runs but nothing is published (404 on the guide URL).
+```
+
+
 
 Determine which playbook file the repo uses (`site.yml` or `default-site.yml`), then check the workflow references it:
 
