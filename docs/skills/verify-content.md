@@ -136,12 +136,15 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="check-category">
     <div class="check-header">
       <span class="check-icon">🖥️</span>
-      <h3>Showroom 1.5.1 Config</h3>
+      <h3>Scaffold Files</h3>
     </div>
     <ul>
-      <li><strong>ui-config.yml:</strong> Checked silently on every run</li>
-      <li><strong>Consoles:</strong> Warning if no OCP console or terminal tabs configured</li>
-      <li><strong>view_switcher:</strong> Warning if missing — required for split-view in Showroom 1.5.1+</li>
+      <li><strong>default-site.yml:</strong> Title not stale, start_page, ui-bundle URL, supplemental_files path, runtime.fetch</li>
+      <li><strong>site.yml mismatch:</strong> Warning if repo has site.yml but no default-site.yml (rename to default-site.yml)</li>
+      <li><strong>ui-config.yml:</strong> type: showroom, view_switcher enabled, tabs configured, persist_url_state</li>
+      <li><strong>content/antora.yml:</strong> title not stale, name: modules, start_page, nav, lab_name attribute</li>
+      <li><strong>content/lib/:</strong> All 4 JS extension files present</li>
+      <li><strong>supplemental-ui/:</strong> All 4 UI asset files present</li>
     </ul>
   </div>
 </div>
@@ -163,11 +166,12 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">1.5️⃣</div>
     <div class="workflow-content">
-      <h4>Step 1.5: ui-config.yml Check (Silent)</h4>
-      <p>Skill silently inspects <code>ui-config.yml</code> and surfaces warnings if needed:</p>
+      <h4>Step 1.5: Scaffold file check</h4>
+      <p>Silently checks all scaffold files and surfaces issues grouped by severity:</p>
       <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
-        <li><strong>Warning</strong> if no consoles are configured (OCP console or terminal tabs missing)</li>
-        <li><strong>Warning</strong> if <code>view_switcher</code> is absent — required for Showroom 1.5.1+ split-view</li>
+        <li><strong>Critical:</strong> Missing required files (default-site.yml, ui-config.yml, antora.yml)</li>
+        <li><strong>High:</strong> Stale/template titles in default-site.yml, ui-config.yml, antora.yml; site.yml naming mismatch; missing view_switcher or tabs</li>
+        <li><strong>High:</strong> Wrong paths (supplemental_files), missing content/lib/ JS files</li>
       </ul>
     </div>
   </div>
@@ -175,10 +179,15 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">2️⃣</div>
     <div class="workflow-content">
-      <h4>Step 2: Content Quality Report</h4>
-      <pre><code>/showroom:verify-content
-→ Get quality report
-→ See list of issues</code></pre>
+      <h4>Steps 2–4: Checklist verification (5 passes)</h4>
+      <p>Each pass produces a complete PASS/FAIL/N/A table before the next starts — nothing is silently skipped:</p>
+      <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
+        <li><strong>Pass B:</strong> Structure (index, modules, nav, conclusion, exercises, verify sections)</li>
+        <li><strong>Pass C:</strong> AsciiDoc formatting (images, links, code blocks, lists, headings)</li>
+        <li><strong>Pass D:</strong> Red Hat style (product names, prohibited terms, numerals, Oxford comma)</li>
+        <li><strong>Pass E:</strong> Technical accuracy (commands, variables, hardcoded values, heading hierarchy)</li>
+        <li><strong>Pass F:</strong> Demo-specific (Know/Show, presenter notes — skipped for workshops)</li>
+      </ul>
     </div>
   </div>
 

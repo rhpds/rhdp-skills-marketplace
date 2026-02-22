@@ -71,48 +71,130 @@ Proceed immediately to Step 1.5.
 
 ---
 
-### Step 1.5: Showroom Configuration Check
+### Step 1.5: Showroom Scaffold Check
 
-Check `ui-config.yml` if it exists in the repo. Do not check AgnosticV or any external catalog — external developers do not have access to it. This step checks content configuration only.
+Silently check all scaffold files in the repo root and `content/`. Do not check AgnosticV or any external catalog. Do not block verification — collect all findings and include them in the Step 5 results summary.
 
-**If `ui-config.yml` is found**, read it and check silently:
+**Known stale/template title values** — flag any of these as not updated:
+`Workshop Title`, `Lab Title`, `Showroom Template`, `Red Hat Showroom`, `My Workshop`, `Template`, `showroom_template_nookbag`, empty string, or a value matching the repository directory name.
 
-**Check 1 — Consoles configured:**
-Look at the `tabs:` section. If all entries are commented out or the section is empty:
+---
+
+**`default-site.yml`** (repo root):
+
+**First — check for `site.yml` naming mismatch:**
+
+| State | Severity | Message |
+|---|---|---|
+| `default-site.yml` present | — | Proceed to field checks |
+| `site.yml` present, no `default-site.yml` | High | ⚠️ Repo has `site.yml` but the showroom role looks for `default-site.yml` by default. Rename `site.yml` → `default-site.yml` to match the role default, or set `ocp4_workload_showroom_content_antora_playbook: site.yml` in your AgV catalog. |
+| Both present | High | ⚠️ Both `site.yml` and `default-site.yml` exist. The role uses `default-site.yml`. Remove or archive `site.yml` to avoid confusion. |
+| Neither present | Critical | ❌ No Antora playbook found (`default-site.yml` or `site.yml`). Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
+
+If `default-site.yml` is present — check fields:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `site.title` | Not a stale/template value | ⚠️ `site.title` looks like a template default — update to your actual lab name |
+| `site.start_page` | Equals `modules::index.adoc` | ⚠️ `start_page` is not `modules::index.adoc` — learners may land on wrong page |
+| `ui.bundle.url` | Present and not empty | ⚠️ `ui.bundle.url` missing — Showroom will use default theme |
+| `ui.supplemental_files` | Equals `./supplemental-ui` | ⚠️ `supplemental_files` path is wrong — custom CSS/partials won't load |
+| `runtime.fetch` | Equals `true` | ⚠️ `runtime.fetch` not set to true — remote content sources won't update |
+
+---
+
+**`ui-config.yml`** (repo root):
+
+If MISSING:
+```
+❌  ui-config.yml not found
+    Showroom 1.5.1 requires this file for split-view and tab configuration.
+    Run /showroom:create-lab --new to scaffold.
+```
+
+If found — check:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `type: showroom` | Present at top | ⚠️ `type: showroom` missing — Showroom won't recognize this config |
+| `view_switcher.enabled` | Equals `true` | ⚠️ Split screen not enabled — learners can't switch between split and full-screen modes |
+| `view_switcher.default_mode` | Equals `split` | ⚠️ Default mode is not `split` — learners start in full-screen, may not notice the panel |
+| `tabs:` section | Has at least one uncommented entry | ⚠️ No consoles configured — learners will see no embedded tools in the right panel |
+| `persist_url_state` | Equals `true` | ⚠️ `persist_url_state` not set — browser refresh resets the UI position |
+
+---
+
+**`content/antora.yml`**:
+
+If MISSING:
+```
+❌  content/antora.yml not found
+    Antora cannot build without it.
+```
+
+If found — check:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `title` | Not a stale/template value | ⚠️ `title` in antora.yml looks like a template default — update to your actual lab name |
+| `name` | Equals `modules` | ⚠️ `name` is not `modules` — navigation xrefs will break |
+| `start_page` | Equals `index.adoc` | ⚠️ `start_page` is not `index.adoc` — learners may land on wrong page |
+| `nav` list | Contains `modules/ROOT/nav.adoc` | ⚠️ `nav` does not reference `modules/ROOT/nav.adoc` — sidebar navigation won't render |
+| `asciidoc.attributes.lab_name` | Present and not stale | ⚠️ `lab_name` attribute missing or still a template value — attribute placeholders in content won't resolve |
+
+---
+
+**`content/lib/`** — 4 JS extension files:
+
+Check each file individually. Report any that are missing:
 
 ```
-⚠️  No consoles configured
-
-ui-config.yml has no active tabs. Learners will see no embedded
-consoles or tools in the Showroom right panel.
-
-Add at least one tab to ui-config.yml, for example:
-  tabs:
-  - name: OpenShift Console
-    url: 'https://console-openshift-console.${DOMAIN}'
-  - name: Bastion
-    path: /wetty
-    port: 443
+⚠️  Missing content/lib files:
+    - content/lib/attributes-page-extension.js
+    Dynamic attribute injection will not work.
+    Run /showroom:create-lab --new to copy from reference repo.
 ```
 
-**Check 2 — Split screen enabled:**
-Look for `view_switcher.enabled: true`. If missing or set to false:
+Files checked:
+- `content/lib/all-attributes-console-extension.js`
+- `content/lib/attributes-page-extension.js`
+- `content/lib/dev-mode.js`
+- `content/lib/unlisted-pages-extension.js`
+
+---
+
+**`supplemental-ui/`** — 4 UI asset files:
+
+Check each. Report missing:
 
 ```
-⚠️  Split screen not configured
-
-ui-config.yml does not have view_switcher enabled. Learners will not
-be able to switch between split and full-screen modes.
-
-Add to ui-config.yml:
-  view_switcher:
-    enabled: true
-    default_mode: split
+⚠️  Missing supplemental-ui files:
+    - supplemental-ui/css/site-extra.css
+    Custom styling won't be applied.
 ```
 
-**If `ui-config.yml` is not found**, skip silently — do not block or ask.
+Files checked:
+- `supplemental-ui/css/site-extra.css`
+- `supplemental-ui/img/favicon.ico`
+- `supplemental-ui/partials/head-meta.hbs`
+- `supplemental-ui/partials/header-content.hbs`
 
-Include any warnings found here in the Step 5 results summary. Do not block verification.
+---
+
+**`.github/workflows/gh-pages.yml`**:
+
+If MISSING:
+```
+⚠️  .github/workflows/gh-pages.yml not found
+    GitHub Pages auto-deploy won't work.
+    Run /showroom:create-lab --new to create.
+```
+
+If found → confirm present, no further check needed.
+
+---
+
+Include all scaffold findings in the Step 5 results under a dedicated **"Scaffold Issues"** section, listed before content quality issues. Severity: missing required files = Critical, stale title/missing optional fields = High.
 
 ---
 
@@ -134,45 +216,142 @@ Options:
 - Provide glob pattern (e.g., `content/modules/ROOT/pages/*.adoc`)
 - Or directory path (e.g., `content/modules/ROOT/pages/`)
 
-### Step 4: Run Verification Agents
+### Step 4: Run Verification — Checklist Mode
 
-**IMPORTANT: Use the bundled templates in `showroom/templates/workshop/` and `showroom/templates/demo/` as quality references when comparing content patterns.**
+**Why checklist mode:** Open-ended review produces inconsistent results — the model notices different things each run. A numbered checklist forces an explicit PASS/FAIL for every item, so nothing is silently skipped.
 
-I'll run comprehensive verification using these validation frameworks:
+**Rules:**
+- Run ONE pass at a time. Output its full result table before starting the next pass.
+- Every check item MUST produce exactly one of: `PASS`, `FAIL: <file>:<line> — <detail>`, or `N/A: <reason>`
+- `N/A` is only valid when the check genuinely does not apply (e.g. accessibility checks on a nav.adoc file)
+- Do NOT group items. Do NOT say "several issues found" without listing each one individually.
+- After all passes complete, re-read the checklist and confirm no item was left blank.
 
-**For Workshop Content**:
-1. `enhanced_verification_workshop.txt` - Overall quality assessment
-2. `redhat_style_guide_validation.txt` - Red Hat style compliance
-3. `verify_workshop_structure.txt` - Workshop structure validation
-4. `verify_technical_accuracy_workshop.txt` - Technical accuracy
-5. `verify_accessibility_compliance_workshop.txt` - Accessibility standards
-6. `verify_content_quality.txt` - General content quality
+Use `@showroom/prompts/` files as reference criteria for each pass, but the driver is the explicit numbered list below — not the prompts.
 
-**For Demo Content**:
-1. `enhanced_verification_demo.txt` - Overall demo quality
-2. `redhat_style_guide_validation.txt` - Red Hat style compliance
-3. `verify_technical_accuracy_demo.txt` - Demo technical accuracy
-4. `verify_accessibility_compliance_demo.txt` - Accessibility standards
-5. `verify_content_quality.txt` - General content quality
+---
+
+#### PASS B: Structure and Learning Design
+
+Read all files in `content/modules/ROOT/pages/`. For each check, state which file and line the evidence comes from.
+
+| # | Check | Pass condition |
+|---|---|---|
+| B.1 | `index.adoc` exists | File present |
+| B.2 | `index.adoc` is learner-facing (not facilitator guide) | Does not start with "This guide helps facilitators..." |
+| B.3 | `01-overview.adoc` exists with business scenario | File present, contains company/scenario context |
+| B.4 | `02-details.adoc` exists with technical requirements | File present |
+| B.5 | At least one hands-on module exists (`03-*` or higher) | ≥1 module file |
+| B.6 | `nav.adoc` exists and includes all module files | All `*.adoc` in pages/ listed in nav.adoc |
+| B.7 | Conclusion module exists (`*conclusion*.adoc`) | File present |
+| B.8 | Each module has learning objectives (3+ items) | `== Learning Objectives` or equivalent section with bullets |
+| B.9 | Each module has at least 2 exercises | ≥2 `== Exercise` or equivalent sections |
+| B.10 | Exercise steps use numbered lists (`.`) not bullets (`*`) | Sequential actions use `.` |
+| B.11 | Learning objectives use bullets (`*`) not numbers (`.`) | Concepts/outcomes use `*` |
+| B.12 | Every exercise has a `=== Verify` section with expected output | Present after each major task |
+| B.13 | No individual module has a `== References` section | References only in conclusion |
+| B.14 | Conclusion has `== What You've Learned` section | Present in conclusion |
+| B.15 | Conclusion has `== References` section consolidating all module refs | Present in conclusion |
+
+Output result table for PASS B before continuing.
+
+---
+
+#### PASS C: AsciiDoc Formatting
+
+Scan every `.adoc` file in the content directory.
+
+| # | Check | Pass condition |
+|---|---|---|
+| C.1 | All `image::` macros include `link=self,window=blank` | No image without this parameter |
+| C.2 | All images have non-empty descriptive alt text | Not blank, not "image", not filename |
+| C.3 | All external links use `^` caret (new tab) | `link:https://...[\[text^\]]` pattern |
+| C.4 | Internal `xref:` links do NOT use `^` caret | `xref:file.adoc[text]` (no caret) |
+| C.5 | Code blocks use `[source,<lang>]` with language specified | Not bare `----` blocks |
+| C.6 | No em dashes (`—`) anywhere in content | Zero occurrences |
+| C.7 | Lists have blank line before and after | No lists immediately adjacent to text |
+| C.8 | Document title uses `= ` (single equals, one space) | First line of each file |
+| C.9 | All headings are sentence case (not Title Case) | No mid-word capitals in headings |
+| C.10 | No `include::` referencing files that don't exist | All includes resolve |
+
+Output result table for PASS C before continuing.
+
+---
+
+#### PASS D: Red Hat Style Guide
+
+Scan all content files. Reference `@showroom/prompts/redhat_style_guide_validation.txt` for full criteria.
+
+| # | Check | Pass condition |
+|---|---|---|
+| D.1 | No "the Red Hat OpenShift Platform" — use "Red Hat OpenShift" | Zero occurrences |
+| D.2 | No bare "OCP", "AAP", "RHOAI" without first-use expansion | Acronyms spelled out on first use |
+| D.3 | No prohibited vague terms: "robust", "powerful", "leverage", "synergy", "game-changer" | Zero occurrences |
+| D.4 | No unsupported superlatives: "best", "leading", "most" without citation | Zero bare superlatives |
+| D.5 | No non-inclusive terms: "whitelist/blacklist", "master/slave" | Zero occurrences — use "allowlist/denylist", "primary/replica" |
+| D.6 | Numbers 0-9 written as numerals, not words | "3 steps" not "three steps" |
+| D.7 | Oxford comma used in lists of 3+ items | "X, Y, and Z" pattern |
+| D.8 | No em dashes used (style rule, duplicate of C.6 for completeness) | Zero occurrences |
+| D.9 | No "he/she" — use "they/them" for gender-neutral | Zero gendered pronouns |
+| D.10 | Product version numbers match environment or use `{ocp_version}` placeholder | No hardcoded version mismatches |
+
+Output result table for PASS D before continuing.
+
+---
+
+#### PASS E: Technical Accuracy and Accessibility
+
+| # | Check | Pass condition |
+|---|---|---|
+| E.1 | All `oc` CLI commands use lowercase subcommands | `oc get pods` not `oc Get Pods` |
+| E.2 | YAML code blocks have consistent indentation (2 spaces) | No mixed tabs/spaces |
+| E.3 | Expected command outputs are present after commands | Each `[source,bash]` block followed by expected output |
+| E.4 | No hardcoded cluster URLs, usernames, or passwords | Use `{openshift_console_url}`, `{user}`, `{password}` |
+| E.5 | All `{attribute}` placeholders are defined in `antora.yml` or `_attributes.adoc` | No undefined attributes |
+| E.6 | All images have alt text (WCAG accessibility) | No `image::[,]` with empty first bracket |
+| E.7 | Heading hierarchy has no skipped levels (e.g. `=` then `===` skipping `==`) | Correct nesting throughout |
+| E.8 | No instructions reference UI elements that don't exist in current OCP version | e.g. no deprecated menu paths |
+| E.9 | Code examples are syntactically valid for stated language | YAML/JSON/bash syntax correct |
+
+Output result table for PASS E before continuing.
+
+---
+
+#### PASS F: Demo-specific (skip if workshop content)
+
+| # | Check | Pass condition |
+|---|---|---|
+| F.1 | Each section has Know (context/why) before Show (demonstration) | Know/Show structure present |
+| F.2 | Business value is stated for each demonstration | ROI/outcome framing present |
+| F.3 | Presenter notes present (`[NOTE]` blocks or aside sections) | Guidance for presenter exists |
+| F.4 | No hands-on exercises requiring participant input | Demo is presenter-led only |
+| F.5 | Key talking points highlighted for each section | Callout or note blocks used |
+
+Output result table for PASS F before continuing.
+
+---
+
+**After all passes:** Scan the checklist from B.1 to E.9 (and F.1-F.5 if applicable). Confirm every item has an explicit result. If any item has no result, address it before generating the report.
 
 ### Step 5: Present Results
 
 I'll provide results in this order:
 
-**1. Detailed Issue Sections FIRST** (top of output):
-- Specific file locations and line numbers
-- Before/after examples for each issue
-- Implementation steps showing exactly how to fix
-- Why each issue matters
-- Grouped by issue type with exact counts
+**1. Scaffold Issues FIRST** (from Step 1.5):
+- Missing required files (Critical)
+- Stale/template titles, wrong paths, missing view_switcher (High)
 
-**2. Validation Summary Table LAST** (bottom of output):
-- Clean table with Issue, Priority, and Files columns
-- No time estimates or fix duration
-- Clear priority levels (Critical, High, Medium, Low)
-- Total issue counts
+**2. Checklist FAIL items** (from Step 4 passes B–F):
+- Group by pass (B: Structure, C: AsciiDoc, D: Style, E: Technical, F: Demo)
+- For each FAIL: check ID, file:line, what is wrong, before/after, exact fix
+- Do NOT list PASS items here — only FAILs
 
-**3. Strengths Section** (after summary table):
+**3. Validation Summary Table LAST**:
+- One row per FAIL item: Check ID | Issue | Priority | File:Line
+- Priority: Critical (scaffold missing, broken navigation), High (style, missing verifications), Medium (formatting), Low (suggestions)
+- Total FAIL count by pass
+
+**4. Strengths Section** (after summary table):
 - What your content does exceptionally well
 - Positive highlights to reinforce good practices
 - Recognition of quality work

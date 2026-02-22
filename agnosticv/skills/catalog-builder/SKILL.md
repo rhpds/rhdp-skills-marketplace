@@ -220,47 +220,61 @@ echo "✓ Created and switched to branch: $branch_name"
 
 ### Step 1: Context (REQUIRED — ask before anything else)
 
-Ask these TWO questions sequentially before touching anything else.
+Ask these THREE questions sequentially before touching anything else.
 
-**Question 1 — Type and Event (combined):**
+**Question 1 — Catalog type:**
 
 ```
 🏗️  What type of catalog is this?
 
-For Red Hat Summit 2026:
-  1. Lab / Workshop   (Brand_Events, multi-user)
-  2. Demo             (Brand_Events, single-user)
+1. Workshop  (multi-user, hands-on lab)
+2. Demo      (single-user, presenter-led)
+3. Sandbox   (self-service)
 
-For Red Hat One 2026:
-  3. Lab / Workshop   (Brand_Events, multi-user)
-  4. Demo             (Brand_Events, single-user)
-
-Standard (no event):
-  5. Workshop         (multi-user, hands-on)
-  6. Demo             (single-user, presenter-led)
-  7. Sandbox          (self-service)
-
-Choice [1-7]:
-```
-
-If 1–4 selected, ask immediately:
-```
-Q: Lab ID? (e.g., lb2298)
+Choice [1-3]:
 ```
 
 Auto-set from choice:
 
-| Choice | event_name | category | multiuser |
+| Choice | catalog_type | category | multiuser |
 |---|---|---|---|
-| 1 | summit-2026 | Brand_Events | true |
-| 2 | summit-2026 | Brand_Events | false |
-| 3 | rh1-2026 | Brand_Events | true |
-| 4 | rh1-2026 | Brand_Events | false |
-| 5 | none | Workshops | true |
-| 6 | none | Demos | false |
-| 7 | none | Sandboxes | false |
+| 1 | workshop | Workshops | true |
+| 2 | demo | Demos | false |
+| 3 | sandbox | Sandboxes | false |
 
-**Question 2 — Technologies:**
+**Question 2 — Event:**
+
+```
+Q: Is this for a specific Red Hat event? [Y/n]
+```
+
+If YES:
+```
+Which event?
+
+1. Red Hat Summit 2026  (summit-2026)
+2. Red Hat One 2026     (rh1-2026)
+3. Other — enter event name
+
+Choice [1-3]:
+```
+
+If event selected → category becomes `Brand_Events` (overrides Question 1 category).
+If event selected → ask immediately:
+```
+Q: Lab ID? (e.g., lb2298)
+```
+
+Auto-set from event:
+
+| Event | event_name | category override | Brand_Event label | keywords auto-added |
+|---|---|---|---|---|
+| Summit 2026 | `summit-2026` | `Brand_Events` | `Red_Hat_Summit_2026` | `summit-2026`, `<lab-id>` |
+| RH One 2026 | `rh1-2026` | `Brand_Events` | `Red_Hat_One_2026` | `rh1-2026`, `<lab-id>` |
+| Other | `<entered>` | `Brand_Events` | _(ask user)_ | `<event-name>`, `<lab-id>` |
+| No event | `none` | _(from Q1)_ | _(omit)_ | _(none)_ |
+
+**Question 3 — Technologies:**
 
 ```
 Q: What technologies will users learn or see? (comma-separated)
@@ -275,19 +289,12 @@ Store: `event_name`, `lab_id`, `catalog_type`, `category`, `technologies`.
 
 | Item | Pattern | Example |
 |---|---|---|
-| AgnosticV directory | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` | `summit-2026/lb1234-ocp-fish-swim-aws` |
+| AgnosticV directory (event) | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` | `summit-2026/lb1234-ocp-fish-swim-aws` |
+| AgnosticV directory (no event) | `<subdirectory>/<short-name>` | `agd_v2/ocp-fish-swim` |
 | Showroom repo | `<short-name>-showroom` | `ocp-fish-swim-showroom` |
-| Slack channel | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
+| Slack channel (event) | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
 
 All GitHub repositories must be in `github.com/rhpds`.
-
-**`__meta__` driven by event:**
-
-| Event | `Brand_Event` label | keywords auto-added |
-|---|---|---|
-| summit-2026 | `Red_Hat_Summit_2026` | `summit-2026`, `<lab-id>` |
-| rh1-2026 | `Red_Hat_One_2026` | `rh1-2026`, `<lab-id>` |
-| No event | _(omit)_ | _(none)_ |
 
 ---
 
@@ -330,9 +337,9 @@ Read that catalog's `common.yaml`:
 
 ### Category *(auto — set from Step 1, no question)*
 
-Category is already determined from Step 0.5. Confirm internally:
+Category is already determined from Step 1. Confirm internally:
 
-| Type answered in Step 0.5 | Event? | Category set |
+| Type answered in Step 1 | Event? | Category set |
 |---|---|---|
 | Lab / Workshop | Yes | `Brand_Events` |
 | Demo | Yes | `Brand_Events` |
@@ -377,7 +384,7 @@ Ask sequentially — ONE question at a time.
 **Question A — Infrastructure type gate:**
 
 **SKIP if infra type was determined from reference catalog in Step 2.**
-If no reference, ask once — then go straight to the correct branch:
+If no reference, ask once — then follow the appropriate question file:
 
 ```
 🏗️  What type of infrastructure?
@@ -388,478 +395,15 @@ If no reference, ask once — then go straight to the correct branch:
 Choice [1/2]:
 ```
 
----
-
 **BRANCH 1: OpenShift cluster**
-*(entered when Q10=1 OR infra type determined from reference)*
-*All questions below are OCP-specific only*
-
-**Question B — Cluster size** *(always ask — reference sizing may differ)*:
-```
-Q: SNO or Multi-node?
-
-1. Multi-node  (default — workshops, most demos)
-2. SNO         (lightweight single-user demos, edge content)
-
-Choice [1/2]:
-```
-
-*If SNO selected → force `multiuser: false`, skip Step 8 user count question.*
-
-**Question C — OCP version:**
-```
-Q: Which OpenShift version?
-
-1. 4.18
-2. 4.20
-3. 4.21 (latest)
-
-Choice [1/2/3]:
-```
-
-**Question D — Custom pool:**
-```
-Q: Do you have a custom CNV pool allocated? [Y/n]
-
-Default: agd-v2/ocp-cluster-cnv-pools/prod
-```
-
-**Question E — Auto-scale:** *(multi-node only)*
-```
-Q: Auto-scale workers based on num_users? [Y/n]
-```
-
-**Question F — AWS instead of CNV:** *(optional)*
-```
-Q: Do you need AWS instead of CNV? [Y/n]
-
-AWS is only needed for GPU workloads or specific AWS-feature demos.
-```
-→ If YES: `Q: Do you have RHDP team approval for AWS? [Y/n]`
-*(No approval → stop)*
-
-**Generated config — CNV Multi-node:**
-```yaml
-config: openshift-workloads
-cloud_provider: none
-
-__meta__:
-  components:
-  - name: openshift
-    display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools/prod   # or custom pool / aws-pools
-    parameter_values:
-      cluster_size: multinode                  # or sno
-      host_ocp4_installer_version: "4.21"      # from Question C
-      ocp4_fips_enable: false
-      num_users: "{{ num_users }}"
-    propagate_provision_data:
-    - name: openshift_api_url
-      var: openshift_api_url
-    - name: openshift_cluster_admin_token
-      var: openshift_api_key
-```
-
-*If auto-scale:* add `openshift_cnv_scale_cluster: true` and worker formula.
-
-*If AWS:* change `cloud_provider: aws`, `cloud_provider_version: 1.0.0`, `config: openshift-cluster`, `item: agd-v2/ocp-cluster-aws-pools`.
-
----
+→ Follow `@agnosticv/docs/ocp-catalog-questions.md` for Steps 3B through 8.
+  That file covers: cluster size, OCP version, pool, autoscale, AWS gate, authentication, OCP workloads, LiteMaaS, collection versions, Showroom (with console embed), and multi-user config.
+  Return here for Step 7 when complete.
 
 **BRANCH 2: RHEL / AAP VMs — `cloud-vms-base`**
-*(entered when Q10=2 OR infra type determined from reference)*
-*All questions below are VM-specific only*
-
-**Always ask CNV or AWS — even if reference used AWS, user may want CNV:**
-
-**Question B — Cloud provider** *(always ask — reference may differ)*:
-```
-Q: CNV or AWS? Default is CNV.
-
-1. CNV  (default — OpenShift Virtualization)
-2. AWS  (requires prior RHDP team approval)
-
-Choice [1/2]:
-```
-→ If AWS: `Q: Do you have RHDP team approval? [Y/n]` *(No approval → stop)*
-
-**Question C — RHEL image:**
-```
-Q: Which RHEL image?
-
-1. rhel-9.6          (default)
-2. RHEL-10-GOLD-latest
-
-Choice [1/2]:
-```
-
-**Question D — Sizing override:**
-```
-Q: Use default sizing or override? [default/override]
-
-Default: 8 cores, 16Gi memory, 200Gi disk
-(workload defaults apply — only override if you need different)
-```
-→ If override: ask cores, memory, image_size per VM
-
-**Question E — Ports to expose per VM:**
-```
-Q: Which ports need to be exposed on the bastion?
-
-Common: 22 (SSH), 80 (HTTP), 443 (HTTPS)
-Add custom ports if needed (e.g., 5000 for registry, 8080 for app)
-
-Enter ports (comma-separated, e.g.: 22,80,443):
-```
-
-→ If additional VMs (e.g., worker/node VMs): ask same port question per VM
-
-**Generated config — cloud-vms-base CNV:**
-```yaml
-config: cloud-vms-base
-cloud_provider: openshift_cnv   # or: aws
-
-bastion_instance_image: rhel-9.6   # from Question C
-
-instances:
-  - name: bastion
-    count: 1
-    unique: true
-    image: "{{ bastion_instance_image }}"
-    cores: 8
-    memory: 16G
-    image_size: 200Gi
-    tags:
-      - key: AnsibleGroup
-        value: bastions
-      - key: ostype
-        value: linux
-    services:                        # CNV only — from Question E
-      - name: bastion
-        ports:
-          - port: 22
-            protocol: TCP
-            targetPort: 22
-            name: bastion-ssh
-          - port: 443
-            protocol: TCP
-            targetPort: 443
-            name: bastion-https
-    routes:
-      - name: bastion-https
-        host: bastion
-        service: bastion
-        targetPort: 443
-```
-
-**For AWS** — use `security_groups:` instead of `services:`/`routes:`:
-```yaml
-security_groups:
-- name: BastionSG
-  rules:
-  - name: BastionSSH
-    from_port: 22
-    to_port: 22
-    protocol: tcp
-    cidr: "0.0.0.0/0"
-    rule_type: Ingress
-  - name: BastionHTTPS
-    from_port: 443
-    to_port: 443
-    protocol: tcp
-    cidr: "0.0.0.0/0"
-    rule_type: Ingress
-```
-
-### Step 4: Authentication Setup
-
-Single unified workload for all authentication. Ask ONE question:
-
-```
-🔐 Authentication Provider
-
-Which authentication provider?
-
-1. htpasswd  (simple username/password — default, most common)
-2. Keycloak  (RHBK — Red Hat Build of Keycloak, for multi-user workshops, AAP)
-
-Note: RHSSO is not supported. Use Keycloak (RHBK) for SSO needs.
-
-Q: Provider [1/2]:
-```
-
-**Workload is always the same — only the provider var changes:**
-
-```yaml
-workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication
-  # ... other workloads
-```
-
-**htpasswd config:**
-```yaml
-# Authentication provider
-ocp4_workload_authentication_provider: htpasswd
-
-# Admin account (password auto-generated if left empty)
-ocp4_workload_authentication_admin_username: admin
-ocp4_workload_authentication_admin_password: ""
-
-# User accounts
-ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
-ocp4_workload_authentication_user_password: ""
-ocp4_workload_authentication_remove_kubeadmin: true
-```
-
-**Keycloak (RHBK) config:**
-```yaml
-# Authentication provider
-ocp4_workload_authentication_provider: keycloak
-
-# Admin account (password auto-generated if left empty)
-ocp4_workload_authentication_admin_username: admin
-ocp4_workload_authentication_admin_password: ""
-
-# User accounts
-ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
-ocp4_workload_authentication_user_password: ""
-ocp4_workload_authentication_remove_kubeadmin: true
-
-# Keycloak-specific settings
-ocp4_workload_authentication_keycloak_channel: stable-v26.2
-```
-
-### Step 5: Workload Selection
-
-Using the technologies from Step 0.5, recommend workloads silently. Present recommendations and confirm.
-
-**Workload recommendation engine:**
-
-Based on technologies already provided, suggest from `@agnosticv/docs/workload-mappings.md`:
-- `ansible` or `aap` → `rhpds.aap25.ocp4_workload_aap25`
-- `ai` or `gpu` → `rhpds.nvidia_gpu.ocp4_workload_nvidia_gpu`
-- `gitops` or `argocd` → `rhpds.openshift_gitops.ocp4_workload_openshift_gitops`
-- `pipelines` → `rhpds.openshift_pipelines.ocp4_workload_openshift_pipelines`
-- `showroom` → `agnosticd.showroom.ocp4_workload_ocp_console_embed` + `agnosticd.showroom.ocp4_workload_showroom` (always recommended together)
-
-**Present recommendations:**
-```
-Recommended workloads:
-
-✓ agnosticd.core_workloads.ocp4_workload_authentication (selected - auth)
-✓ agnosticd.showroom.ocp4_workload_ocp_console_embed (recommended - console embedding)
-✓ agnosticd.showroom.ocp4_workload_showroom (recommended - guide)
-  agnosticd.aap25.ocp4_workload_aap25 (suggested - ansible)
-  agnosticd.openshift_gitops.ocp4_workload_openshift_gitops (suggested - gitops)
-
-Select workloads (comma-separated numbers, or 'all'):
-```
-
-**After workload selection — ask sequentially:**
-
-```
-Q: Will this catalog use LiteMaaS for AI model inference? [Y/n]
-
-LiteMaaS provides hosted AI models (granite, mistral, qwen, llama, etc.)
-via a shared inference platform.
-```
-
-**If YES — ask two more questions:**
-
-```
-Q: Which models should be available? (comma-separated)
-
-Current models on LiteMaaS (check latest at https://litellm-prod-frontend.apps.maas.redhatworkshops.io/models):
-
-  codellama-7b-instruct          (4K context)
-  deepseek-r1-distill-qwen-14b   (4M context — function calling, tool choice)
-  granite-3-2-8b-instruct        (4M context)
-  granite-4-0-h-tiny             (4M context)
-  llama-guard-3-1b               (4M context — safety/guard model)
-  llama-scout-17b                (400K context — function calling)
-  microsoft-phi-4                (N/A context)
-  nomic-embed-text-v1-5          (embeddings)
-  qwen3-14b                      (4M context — function calling, tool choice)
-
-Models:
-```
-
-```
-Q: Virtual key duration (how long the key is valid)?
-
-Default: 7d
-Examples: 1d, 7d, 30d, 90d
-
-Duration [default: 7d]:
-```
-
-**Generate for common.yaml:**
-```yaml
-# ===================================================================
-# Workload: ocp4_workload_litellm_virtual_keys
-# ===================================================================
-ocp4_workload_litellm_virtual_keys_duration: "7d"       # from question
-ocp4_workload_litellm_virtual_keys_models:
-- qwen3-14b                                              # from question
-- granite-3-2-8b-instruct
-ocp4_workload_litellm_virtual_keys_multi_user: false     # auto from multiuser setting
-ocp4_workload_litellm_virtual_keys_verify_ssl: true
-```
-
-**Add to workloads list:**
-```yaml
-- rhpds.litellm_virtual_keys.ocp4_workload_litellm_virtual_keys
-```
-
-**Add to requirements_content:**
-```yaml
-- name: https://github.com/rhpds/rhpds.litellm_virtual_keys.git
-  type: git
-  version: "{{ tag }}"
-```
-
-**Add includes:**
-- `#include /includes/secrets/litemaas-master_api.yaml`
-- `#include /includes/parameters/litellm_metadata.yaml`
-
-**If NO:** skip all of the above.
-
-### Step 5.5: Collection Versions *(auto — no question)*
-
-Use the `{{ tag }}` pattern — one variable controls all standard collection versions.
-
-**In `common.yaml`, always generate:**
-```yaml
-# Tag for all repositories used in this config.
-# Override in prod.yaml or event.yaml with a specific release tag.
-tag: main
-```
-
-**All standard collections use `"{{ tag }}"` as version:**
-```yaml
-requirements_content:
-  collections:
-  - name: https://github.com/agnosticd/core_workloads.git
-    type: git
-    version: "{{ tag }}"
-  # Add other collections as needed — all use "{{ tag }}"
-```
-
-**Showroom collection always uses a fixed pinned version — NOT `{{ tag }}`:**
-
-Silently grep AgV repo for the highest pinned showroom version in use:
-```bash
-grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
-  | grep "version:" | grep -v "tag" | sort -V | tail -1
-```
-
-Use that version, or `v1.5.1` as minimum if nothing higher found:
-```yaml
-  - name: https://github.com/agnosticd/showroom.git
-    type: git
-    version: v1.5.1   # fixed — minimum v1.5.1, use highest found in AgV
-```
-
-**EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write directly to `__meta__.deployer.execution_environment.image`.
-
-**In `prod.yaml`**, the developer overrides `tag` to pin a specific release:
-```yaml
-tag: my-catalog-1.0.0   # overrides main → pins all collections to this release
-```
-
-No question asked — all of this is generated automatically.
-
----
-
-### Step 6: Showroom Configuration
-
-**Ask for the Showroom repo:**
-
-```
-📚 Showroom repository
-
-Based on naming convention, your Showroom repo should be:
-  https://github.com/rhpds/<short-name>-showroom
-
-Has this repository been created yet? [Y/n]
-```
-
-**If YES:**
-```
-Q: URL or local path to the Showroom repository:
-```
-
-- Local path → silently check 1.5.1 structure (`default-site.yml`, `supplemental-ui/` at root, `ui-config.yml`)
-  - Pre-1.5.1 → block with migration instructions + `/showroom:create-lab --new`
-- GitHub URL → note 1.5.1 requirement, continue
-
-**If NO (not created yet):**
-
-```
-ℹ️  No problem. I'll add the recommended name as a placeholder.
-
-Once created, update ocp4_workload_showroom_content_git_repo in common.yaml.
-Remember: repository must be on Showroom 1.5.1+
-Run: /showroom:create-lab --new  to scaffold the correct structure.
-```
-
-Add to common.yaml as placeholder:
-```yaml
-ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<short-name>-showroom
-```
-
-Continue without blocking.
-
-**Dev mode** — set automatically, no question needed:
-- `common.yaml`: `ocp4_workload_showroom_antora_enable_dev_mode: "false"`
-- `dev.yaml`: `ocp4_workload_showroom_antora_enable_dev_mode: "true"`
-
-**Generate complete Showroom section for common.yaml:**
-
-```yaml
-# ===================================================================
-# Additional Collections & roles to be installed for this config
-# ===================================================================
-requirements_content:
-  collections:
-  # ... other collections ...
-  # Showroom
-  - name: https://github.com/agnosticd/showroom.git
-    type: git
-    version: v1.5.1
-
-# -------------------------------------------------------------------
-# Workloads
-# -------------------------------------------------------------------
-workloads:
-# ... other workloads ...
-- agnosticd.showroom.ocp4_workload_ocp_console_embed
-- agnosticd.showroom.ocp4_workload_showroom
-
-# -------------------------------------------------------------------
-# Workload: ocp4_workload_showroom
-# -------------------------------------------------------------------
-ocp4_workload_showroom_content_git_repo: {{ showroom_repo_url }}
-ocp4_workload_showroom_content_git_repo_ref: main
-# Default antora playbook is default-site.yml, override here if needed
-# ocp4_workload_showroom_content_antora_playbook: site.yml
-# Dev mode is overridden in dev.yaml
-ocp4_workload_showroom_antora_enable_dev_mode: "false"
-```
-
-**Generate dev.yaml Showroom section:**
-
-```yaml
-# -------------------------------------------------------------------
-# Workload: ocp4_workload_showroom
-# -------------------------------------------------------------------
-ocp4_workload_showroom_antora_enable_dev_mode: "true"
-```
-
-**If NO (no Showroom repo):**
-```
-ℹ️  You can add the Showroom URL later in common.yaml
-```
+→ Follow `@agnosticv/docs/cloud-vms-base-catalog-questions.md` for Steps 3B through 8.
+  That file covers: CNV or AWS gate, RHEL image, sizing, port exposure, authentication skip, VM workloads, VM showroom (no console embed), and multi-user isolation warning.
+  Return here for Step 7 when complete.
 
 ### Step 7: Catalog Details
 
@@ -901,7 +445,7 @@ fi
 
 ### Step 7a: Repository Setup
 
-**If no Showroom repo was provided in Step 7**, show creation instructions and pause:
+**If no Showroom repo was provided in Step 6**, show creation instructions and pause:
 
 ```
 📚 Create Showroom Repository (Showroom 1.5.1+ REQUIRED)
@@ -920,7 +464,7 @@ fi
 ⏸️  Re-run this skill once the Showroom repo is ready.
 ```
 
-**If Showroom repo URL was already provided in Step 7**, skip this step.
+**If Showroom repo URL was already provided in Step 6**, skip this step.
 
 **Ask about custom Ansible collection:**
 ```
@@ -953,64 +497,6 @@ Example structure:
 **If NO:**
 ```
 ✓ Using standard collections only (agnosticd.core_workloads, agnosticd.showroom, etc.)
-```
-
-### Step 8: Multi-User Configuration
-
-```
-👥 Multi-User Setup
-```
-
-**Auto-set based on category:**
-- **Workshops / Brand_Events:** Multiuser REQUIRED
-- **Demos:** Single-user only (multiuser: false)
-- **Labs / Sandboxes:** Ask user
-
-**If multi-user (Workshops/Brand_Events):**
-```
-Q: How many concurrent users (maximum)?
-   Typical range: 10-60
-   Default: 30
-
-Max users [default: 30]:
-```
-
-**Set in common.yaml:**
-```yaml
-__meta__:
-  catalog:
-    multiuser: true
-    workshopLabUiRedirect: true  # Auto-enable for workshops
-    parameters:
-      - name: num_users
-        description: Number of users to provision within the environment
-        formLabel: User Count
-        openAPIV3Schema:
-          type: integer
-          default: 3
-          minimum: 3
-          maximum: 60
-```
-
-**Worker scaling formula (if CNV/SNO):**
-```yaml
-# Auto-scale workers based on num_users
-openshift_cnv_scale_cluster: "{{ (num_users | int) > 3 }}"
-
-# Per-user resource calculation
-# Example: 1 worker per 5 users (adjust based on workload)
-worker_instance_count: "{{ [(num_users | int / 5) | round(0, 'ceil') | int, 1] | max if (num_users | int) > 3 else 0 }}"
-
-ai_workers_cores: 32
-ai_workers_memory: 128Gi
-```
-
-**If single-user (Demos):**
-```yaml
-__meta__:
-  catalog:
-    multiuser: false  # Demos are always single-user
-    # NO workshopLabUiRedirect for demos
 ```
 
 ### Step 9: Generate Files
@@ -1081,8 +567,8 @@ The `__meta__` block is generated based on all information collected. Use the fo
 
 ```
 Q: Does any workload in this catalog deploy or configure something
-   outside the OpenShift cluster or sandbox? (e.g., external DNS,
-   cloud resources, external registries) [Y/n]
+   outside the provisioned environment? (e.g., external DNS,
+   cloud resources, external registries, shared services) [Y/n]
 
 If YES: which lifecycle actions should be disabled?
   - start  (disable if base component already handles cluster start)
@@ -1144,15 +630,13 @@ Run remove_workloads on destroy? [Y/n]  (default: Yes)
 ```
 Q: What is the primary business unit (primaryBU)?
 
-Common values:
+Valid values (from @agnosticv/docs/constants.md):
 - Hybrid_Platforms
 - Application_Services
-- OpenShift_AI
 - Ansible
-- Edge
 - RHEL
-- Middleware
 - Cloud_Services
+- AI
 
 primaryBU:
 
@@ -1204,14 +688,10 @@ Q: Product family?
 Product_Family:
 ```
 
-**catalog.workshopLabUiRedirect** — ask if applicable:
+**catalog.workshopLabUiRedirect** — already set by the infra reference file (Step 8). Do not ask again.
 
-```
-Q: Should users go directly to the Showroom URL when they claim a seat? [Y/n]
-   (Only set if lab_ui_url is defined in the catalog)
-```
-
-If yes → set `workshopLabUiRedirect: true`.
+- OCP multi-user workshops: auto-set to `true` by `ocp-catalog-questions.md`
+- Demos / VM catalogs: omitted by the respective reference file
 
 **Full `__meta__` output:**
 
@@ -1220,8 +700,8 @@ __meta__:
   asset_uuid: <auto-generated>
   owners:
     maintainer:
-    - name: <from Step 8>
-      email: <from Step 8>
+    - name: <maintainer name from Step 7>
+      email: <maintainer email from Step 7>
     instructions:
     - name: TBD
       email: tbd@redhat.com
@@ -1245,22 +725,22 @@ __meta__:
 
   catalog:
     reportingLabels:
-      primaryBU: <from Step 10.2a>
+      primaryBU: <primaryBU from Step 9.2a>
       # secondaryBU: <optional>
     namespace: babylon-catalog-{{ stage | default('?') }}
-    display_name: "<from Step 8>"
-    category: <auto from Step 0.5>
+    display_name: "<display name from Step 7>"
+    category: <auto from Step 1>
     keywords:
     - <event_name>      # auto: summit-2026 or rh1-2026 (event catalogs only)
     - <lab_id>          # auto: lbxxxx (event catalogs only)
     - <user keywords split from comma-separated input>
     labels:
-      Product: <from Step 10.2a>
-      Product_Family: <from Step 10.2a>
+      Product: <Product from Step 9.2a>
+      Product_Family: <Product_Family from Step 9.2a>
       Provider: RHDP
       # Brand_Event: Red_Hat_Summit_2026   # auto-set for event catalogs
-    multiuser: <auto from Step 0.5>
-    # workshopLabUiRedirect: true          # if user confirmed in Step 10.2a
+    multiuser: <auto from Step 1>
+    # workshopLabUiRedirect: true          # auto-set for OCP multi-user workshops
 ```
 
 **For no-event catalogs**: omit `Brand_Event` label and event keywords.
@@ -2072,15 +1552,13 @@ From base component's `common.yaml`, extract **only what exists** — do NOT inv
 
 This field is **required** for reporting and must always be verified.
 
-Known valid values (verify latest in AgV `includes/` directory):
-- Application_Developer
-- Artificial_Intelligence
-- Automation
-- DEMO_Platform
-- Edge
+Known valid values (from `@agnosticv/docs/constants.md`):
 - Hybrid_Platforms
-- RHDP
+- Application_Services
+- Ansible
 - RHEL
+- Cloud_Services
+- AI
 
 **Verification process:**
 

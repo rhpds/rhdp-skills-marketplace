@@ -439,10 +439,48 @@ Available themes (see https://github.com/rhpds/rhdp_showroom_theme/releases):
 Press Enter to use the default, or paste a different URL:
 ```
 
-**Now create all infrastructure files:**
+**Check, fix, or create each infrastructure file — never blindly overwrite.**
 
-**1. Create `default-site.yml`** (at repo root):
+For every file below: silently check if it exists first.
+- **EXISTS** → read it, detect stale/template values, fix only what's wrong, report changes.
+- **MISSING** → create it from scratch, report created.
 
+**Known stale/template title values** (treat as "not updated"):
+`Workshop Title`, `Lab Title`, `Showroom Template`, `Red Hat Showroom`, `My Workshop`, `Template`, `showroom_template_nookbag`, empty string, or any value that exactly matches the repository directory name.
+
+---
+
+**1. `default-site.yml`** (at repo root):
+
+**First — check for `site.yml` naming mismatch:**
+
+```bash
+# Check which playbook file exists
+ls default-site.yml 2>/dev/null && echo "found default-site.yml"
+ls site.yml 2>/dev/null && echo "found site.yml"
+```
+
+| State | Action |
+|---|---|
+| `default-site.yml` exists | Proceed to check/fix below |
+| `site.yml` exists, no `default-site.yml` | Rename to `default-site.yml` silently, then check/fix |
+| Both exist | Use `default-site.yml`, warn user that `site.yml` is unused |
+| Neither exists | Create `default-site.yml` from scratch |
+
+If renaming:
+```bash
+mv site.yml default-site.yml
+```
+Report: `✓ Renamed site.yml → default-site.yml (role default)`
+
+*If EXISTS (or just renamed) — check and fix:*
+- `site.title` is stale/template → update to `"{{ lab_title }}"`
+- `site.start_page` is not `modules::index.adoc` → fix
+- `ui.bundle.url` is the old default nookbag bundle (not the theme from Question B) → update to `{{ ui_bundle_url }}`
+- `ui.supplemental_files` is missing or not `./supplemental-ui` → fix
+- `runtime.fetch` is missing → add `fetch: true`
+
+*If MISSING — create:*
 ```yaml
 site:
   title: "{{ lab_title }}"
@@ -456,8 +494,7 @@ content:
 ui:
   bundle:
     url: {{ ui_bundle_url }}
-    # Themes can be found at https://github.com/rhpds/rhdp_showroom_theme
-    # Summit 2025 url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
+    # Themes: https://github.com/rhpds/rhdp_showroom_theme/releases
     snapshot: true
   supplemental_files: ./supplemental-ui
 
@@ -469,15 +506,22 @@ asciidoc:
     source-highlighter: rouge
 ```
 
-**2. Create `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+---
 
+**2. `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+
+*If EXISTS — check and fix:*
+- `type: showroom` missing → add at top
+- `view_switcher.enabled` is false or missing → set `enabled: true`, `default_mode: split`
+- `tabs:` section is entirely commented out AND user provided tabs in Question A → uncomment/add tabs
+- `persist_url_state` missing → add `persist_url_state: true`
+
+*If MISSING — create:*
 ```yaml
 ---
 type: showroom
 
-# Set the left column width to 30%
 default_width: 30
-# Persist the URL state so browser refresh doesn't reset the UI
 persist_url_state: true
 
 view_switcher:
@@ -485,11 +529,10 @@ view_switcher:
   default_mode: split
 
 tabs:
-{{ generated_tabs_from_Question_B }}
+{{ generated_tabs_from_Question_A }}
 ```
 
-If the user provided tabs in Question B, generate the `tabs:` block. If they pressed Enter, include the common examples as commented-out lines:
-
+If user pressed Enter (no tabs): add common examples as commented lines:
 ```yaml
 tabs:
 # - name: OpenShift Console
@@ -499,22 +542,66 @@ tabs:
 #   port: 443
 ```
 
-**3. Create `content/lib/`** — read these 4 files from the canonical reference repo `https://github.com/rhpds/lb2298-ibm-fusion` (clone to a temp dir if not available locally) and write them to the new repo unchanged:
+---
 
+**3. `content/antora.yml`**:
+
+*If EXISTS — check and fix:*
+- `title:` is stale/template value → update to `"{{ lab_title }}"`
+- `name:` is not `modules` → fix to `modules`
+- `start_page:` is missing or not `index.adoc` → fix
+- `asciidoc.attributes.lab_name` is stale/template or missing → update to `"{{ lab_slug }}"`
+- `nav:` list missing `modules/ROOT/nav.adoc` → add it
+
+*If MISSING — create:*
+```yaml
+name: modules
+title: "{{ lab_title }}"
+version: master
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "{{ lab_slug }}"
+```
+
+---
+
+**4. `content/lib/`** — 4 JS extension files:
+
+Check each file individually. For each that is MISSING, clone reference repo and copy it:
+```bash
+# Clone reference if not already available
+git clone https://github.com/rhpds/lb2298-ibm-fusion /tmp/showroom-reference 2>/dev/null || true
+```
+
+Files to check/copy if missing:
 - `content/lib/all-attributes-console-extension.js`
 - `content/lib/attributes-page-extension.js`
 - `content/lib/dev-mode.js`
 - `content/lib/unlisted-pages-extension.js`
 
-**4. Create `supplemental-ui/`** at repo root — same reference repo, write unchanged:
+If all 4 already exist → confirm present, skip clone.
 
+---
+
+**5. `supplemental-ui/`** — 4 UI asset files:
+
+Same pattern — check each, copy only missing ones:
 - `supplemental-ui/css/site-extra.css`
 - `supplemental-ui/img/favicon.ico`
 - `supplemental-ui/partials/head-meta.hbs`
 - `supplemental-ui/partials/header-content.hbs`
 
-**5. Create `.github/workflows/gh-pages.yml`:**
+---
 
+**6. `.github/workflows/gh-pages.yml`**:
+
+*If EXISTS* → do not modify (workflow is rarely wrong, and changes could break CI). Just confirm it's present.
+
+*If MISSING — create:*
 ```yaml
 name: github pages
 
@@ -566,34 +653,22 @@ jobs:
       uses: actions/deploy-pages@v4
 ```
 
-**6. Update `content/antora.yml`** with lab title and slug:
+---
 
-```yaml
-name: modules
-title: "{{ lab_title }}"
-version: master
-start_page: index.adoc
-nav:
-- modules/ROOT/nav.adoc
-
-asciidoc:
-  attributes:
-    lab_name: "{{ lab_slug }}"
-```
-
-**Confirm scaffold is complete:**
+**Confirm scaffold status:**
 
 ```
-✅ Scaffold created:
-- default-site.yml (ui-bundle: {{ ui_bundle_url }})
-- ui-config.yml ({{ tab_count }} tab(s) configured)
-- content/lib/ (4 JS extension files)
-- supplemental-ui/ (css, favicon, partials)
-- .github/workflows/gh-pages.yml
-- content/antora.yml (updated)
+✅ Scaffold complete:
+
+  default-site.yml      → [created | updated: title, ui-bundle] | no changes
+  ui-config.yml         → [created | updated: view_switcher, tabs] | no changes
+  content/antora.yml    → [created | updated: title, lab_name] | no changes
+  content/lib/          → [all present | copied 2 missing files]
+  supplemental-ui/      → [all present | copied 1 missing file]
+  .github/workflows/    → [created | already present]
 ```
 
-**Note**: These files must exist BEFORE generating any content modules (Step 8).
+**Note**: These files must exist and have correct values BEFORE generating any content modules (Step 8).
 
 ---
 

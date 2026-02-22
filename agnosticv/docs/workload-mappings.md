@@ -17,16 +17,24 @@ Quick reference for mapping workshop/demo keywords to AgnosticV workloads.
 
 ### Authentication
 
-Choose **ONE** authentication method:
+One unified workload — provider selected by variable:
 
-| Workload | Use For | Variables |
-|----------|---------|-----------|
-| `agnosticd.core_workloads.ocp4_workload_authentication_htpasswd` | Multi-user labs | `ocp4_workload_authentication_htpasswd_user_count: 40` |
-| `agnosticd.core_workloads.ocp4_workload_authentication_keycloak` | Demos, SSO required | `ocp4_workload_authentication_keycloak_admin_password` |
+| Workload | Provider var | Use For |
+|----------|-------------|---------|
+| `agnosticd.core_workloads.ocp4_workload_authentication` | `htpasswd` | Multi-user labs (simpler, faster) |
+| `agnosticd.core_workloads.ocp4_workload_authentication` | `keycloak` | Demos, SSO required |
 
-**Recommendation:**
-- Labs → htpasswd (simpler, faster)
-- Demos → Keycloak (better UX, SSO)
+```yaml
+workloads:
+- agnosticd.core_workloads.ocp4_workload_authentication
+
+ocp4_workload_authentication_provider: htpasswd   # or: keycloak
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
+ocp4_workload_authentication_remove_kubeadmin: true
+```
+
+⚠️ The old split roles (`ocp4_workload_authentication_htpasswd`, `ocp4_workload_authentication_keycloak`) are deprecated — the validator will ERROR on them.
 
 ### Showroom (Content Delivery)
 
@@ -61,7 +69,7 @@ ocp4_workload_showroom_content_git_repo_ref: main
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: htpasswd
 - agnosticd.ai_workloads.ocp4_workload_openshift_ai
 - rhpds.litellm_virtual_keys.ocp4_workload_litellm_virtual_keys
 - agnosticd.showroom.ocp4_workload_showroom
@@ -92,7 +100,7 @@ ocp4_workload_openshift_ai_enable_monitoring: true
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: htpasswd
 - agnosticd.core_workloads.ocp4_workload_pipelines
 - agnosticd.core_workloads.ocp4_workload_openshift_gitops
 - agnosticd.core_workloads.ocp4_workload_gitea_operator
@@ -121,7 +129,7 @@ ocp4_workload_pipelines_tekton_chains_enabled: true
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: htpasswd
 - agnosticd.core_workloads.ocp4_workload_openshift_devspaces
 - agnosticd.showroom.ocp4_workload_showroom
 
@@ -143,7 +151,7 @@ ocp4_workload_openshift_devspaces_postgres_pvc_size: 10Gi
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: keycloak
 - agnosticd.core_workloads.ocp4_workload_acs
 - agnosticd.showroom.ocp4_workload_showroom
 
@@ -170,7 +178,7 @@ ocp4_workload_acs_central_admin_password: "{{ common_admin_password }}"
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: htpasswd
 - agnosticd.core_workloads.ocp4_workload_observability
 - agnosticd.core_workloads.ocp4_workload_logging
 - agnosticd.showroom.ocp4_workload_showroom
@@ -189,7 +197,7 @@ workloads:
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: keycloak
 - agnosticd.core_workloads.ocp4_workload_service_mesh
 - agnosticd.showroom.ocp4_workload_showroom
 
@@ -210,7 +218,7 @@ ocp4_workload_service_mesh_control_plane_name: basic
 **Example Configuration:**
 ```yaml
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+- agnosticd.core_workloads.ocp4_workload_authentication  # provider: htpasswd
 - agnosticd.core_workloads.ocp4_workload_serverless
 - agnosticd.showroom.ocp4_workload_showroom
 

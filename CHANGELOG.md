@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0-tech-preview] - 2026-02-22
+
+### AgnosticV Skills — Major Refactor
+
+#### catalog-builder
+- **Step 1 simplified**: Replaced 7-option combined question with 3 sequential questions (type → event → technologies). Event selection auto-sets Brand_Events category and prompts for lab ID.
+- **OCP/VM infra split**: Step 3 now routes to separate @reference files (`ocp-catalog-questions.md`, `cloud-vms-base-catalog-questions.md`) instead of inline branching. Auth, workloads, showroom, and multi-user questions live in the reference files.
+- **cloud-vms-base**: Correct VM showroom variables (`showroom_git_repo`, `showroom_git_ref`). Auth step skipped for VM catalogs. No `ocp_console_embed` for VMs.
+- **Fixed**: primaryBU list consistent across builder, validator, and constants.md. Step reference labels corrected (Step 0.5 → Step 1, Step 7 → Step 6 for Showroom URL).
+- **New agent**: `agnosticv/agents/workflow-reviewer.md` — checks builder/validator consistency after changes.
+
+#### validator
+- **Check 6 gate**: Routes to `ocp-validator-checks.md` or `cloud-vms-base-validator-checks.md` based on `config:` type. Return markers added to both reference files.
+- **Check 7 (auth)**: cloud-vms-base catalogs skip OCP auth check; warns if `ocp4_workload_authentication` accidentally added to VM catalog.
+- **Check 8 (showroom)**: cloud-vms-base uses `vm_workload_showroom` with `showroom_git_repo`/`showroom_git_ref`. ERROR if `ocp_console_embed` present in VM catalog. Dev mode check uses correct variable name per infra type.
+- **Check 3**: Brand_Events + `multiuser: false` no longer warns — event demos are intentionally single-user.
+- **Check 13**: Showroom collection warning suppressed for VM catalogs without showroom workload.
+- **Check 16a**: `ocp_console_embed` check now guarded by `config_type` — VM event catalogs correctly excluded.
+- **Workload mappings**: Deprecated auth roles replaced with unified `ocp4_workload_authentication` throughout.
+
+### Showroom Skills
+
+#### create-lab
+- **Step 3.1 scaffold**: Now checks/fixes existing files instead of always recreating. Detects stale/template titles (Workshop Title, Lab Title, showroom_template_nookbag, etc.) and updates only what's wrong.
+- **site.yml normalisation**: If repo has `site.yml` but no `default-site.yml`, silently renames to `default-site.yml` (role default). Reports action taken.
+- **Scaffold status report**: Shows created/updated/no-changes per file.
+
+#### verify-content
+- **Full scaffold check (Step 1.5)**: Now checks `default-site.yml`, `ui-config.yml`, `content/antora.yml`, `content/lib/` (4 JS files), `supplemental-ui/` (4 assets), `.github/workflows/gh-pages.yml`. Detects stale titles, wrong paths, site.yml/default-site.yml mismatch.
+- **Checklist mode (Step 4)**: Replaced open-ended prompt-based review with 5 explicit passes (B: Structure, C: AsciiDoc, D: Style, E: Technical, F: Demo). Every check item requires PASS/FAIL/N/A — fixes inconsistent results across runs.
+- **Output order**: Scaffold issues first, then content issues by pass, then summary table, then strengths.
+
 ## [v2.6.0-tech-preview] - 2026-02-21
 
 Major overhaul of Showroom skills (Showroom 1.5.1 support), complete AgnosticV catalog-builder redesign, and validator alignment to new standards.

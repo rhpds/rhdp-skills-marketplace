@@ -173,18 +173,21 @@ git pull origin main</code></pre>
 <summary><strong>Check 6: Infrastructure (UPDATED)</strong></summary>
 
 <div class="check-content">
-  <h4>cloud-vms-base branch (VM catalogs):</h4>
+  <p>Check 6 detects <code>config:</code> type and routes to the appropriate check file:</p>
+  <h4>cloud-vms-base → <code>cloud-vms-base-validator-checks.md</code>:</h4>
   <ul>
-    <li>Instances defined with correct count and sizing</li>
-    <li>Bastion image specified (RHEL 9.4+ recommended)</li>
-    <li>Multi-user warning if VM count is unexpectedly low</li>
+    <li>Instances block defined with bastion VM and correct tags</li>
+    <li>Bastion image is supported RHEL version (9.4+)</li>
+    <li>CNV: <code>services:/routes:</code> present; AWS: <code>security_groups:</code> present</li>
+    <li>Multi-user isolation warning (no per-user namespace on VMs)</li>
   </ul>
 
-  <h4>OCP branch (cluster catalogs):</h4>
+  <h4>OCP → <code>ocp-validator-checks.md</code>:</h4>
   <ul>
-    <li><strong>Pool suffix:</strong> ERROR if pool does not end in <code>/prod</code> (e.g. <code>cnv-cluster-4.18/prod</code>)</li>
-    <li><strong>OCP version:</strong> Version must be in known pool list (4.18, 4.20, 4.21)</li>
-    <li><strong>AWS OCP:</strong> Flags for AWS approval path verification</li>
+    <li><strong>Pool suffix:</strong> ERROR if pool does not end in <code>/prod</code></li>
+    <li><strong>OCP version:</strong> Must be 4.18, 4.20, or 4.21 (known pool versions)</li>
+    <li><strong>AWS OCP:</strong> WARNING — confirm RHDP team approval</li>
+    <li><strong>SNO + multiuser:</strong> ERROR — SNO cannot support concurrent users</li>
   </ul>
 </div>
 
@@ -195,10 +198,10 @@ git pull origin main</code></pre>
 
 <div class="check-content">
   <ul>
-    <li><strong>ERROR</strong> if deprecated <code>ocp4_workload_authentication_htpasswd</code> role found</li>
-    <li><strong>ERROR</strong> if deprecated <code>ocp4_workload_authentication_keycloak</code> role found</li>
-    <li><strong>ERROR</strong> if RHSSO configuration detected (replaced by RHBK/Keycloak)</li>
-    <li><strong>PASS</strong> requires unified <code>ocp4_workload_authentication</code> role with valid <code>ocp4_workload_authentication_idp</code> value (<code>htpasswd</code> or <code>keycloak</code>)</li>
+    <li><strong>cloud-vms-base:</strong> Auth check skipped — VM catalogs use OS-level auth, no OCP cluster. Warns if <code>ocp4_workload_authentication</code> accidentally added.</li>
+    <li><strong>OCP:</strong> ERROR if deprecated <code>ocp4_workload_authentication_htpasswd</code> or <code>ocp4_workload_authentication_keycloak</code> roles found</li>
+    <li><strong>OCP:</strong> ERROR if RHSSO detected (use Keycloak/RHBK instead)</li>
+    <li><strong>OCP:</strong> PASS requires unified <code>ocp4_workload_authentication</code> with valid <code>ocp4_workload_authentication_provider</code> value (<code>htpasswd</code> or <code>keycloak</code>)</li>
   </ul>
 </div>
 
@@ -209,9 +212,10 @@ git pull origin main</code></pre>
 
 <div class="check-content">
   <ul>
-    <li><strong>Both workloads required together:</strong> <code>ocp_console_embed</code> AND <code>ocp4_workload_showroom</code> must both be present (ERROR if only one)</li>
-    <li><strong>dev mode:</strong> <code>antora_enable_dev_mode: "false"</code> must be set in <code>common.yaml</code> (WARNING if missing or set to true)</li>
-    <li>Showroom repo name follows <code>lb####-short-name</code> naming convention</li>
+    <li><strong>OCP:</strong> Both <code>ocp4_workload_ocp_console_embed</code> AND <code>ocp4_workload_showroom</code> required together. ERROR if <code>ocp_console_embed</code> missing.</li>
+    <li><strong>OCP:</strong> <code>ocp4_workload_showroom_antora_enable_dev_mode: "false"</code> in common.yaml; <code>"true"</code> in dev.yaml</li>
+    <li><strong>cloud-vms-base:</strong> Uses <code>vm_workload_showroom</code> with <code>showroom_git_repo</code> and <code>showroom_git_ref</code>. ERROR if <code>ocp_console_embed</code> present (requires OCP cluster).</li>
+    <li><strong>cloud-vms-base:</strong> No dev mode variable — <code>vm_workload_showroom</code> does not have Antora dev mode.</li>
   </ul>
 </div>
 
@@ -317,16 +321,7 @@ git pull origin main</code></pre>
 
 </details>
 
-<details>
-<summary><strong>Check 15: Component Propagation</strong></summary>
 
-<ul>
-  <li><strong>Multi-stage catalogs:</strong> Validates data flow between stages</li>
-  <li><strong>propagate_provision_data:</strong> Ensures proper variable passing</li>
-  <li><strong>Component structure:</strong> Validates <code>__meta__.components</code> configuration</li>
-</ul>
-
-</details>
 
 <details>
 <summary><strong>Check 15a: Anarchy Namespace (NEW)</strong></summary>

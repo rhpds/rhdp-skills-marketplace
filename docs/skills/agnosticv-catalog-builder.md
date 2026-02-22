@@ -169,7 +169,7 @@ cd agnosticv</code></pre>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
 → Step 0: AgV path auto-detected, branch created
-→ Step 1: Single [1-7] question (event type + lab ID + tech)
+→ Step 1: Q1=type (Workshop/Demo/Sandbox), Q2=event?, Q3=tech
 → Step 2: Discovery searches agd_v2/ + openshift_cnv/
 → Step 3: Infrastructure gate (OCP cluster or VMs)
 → Step 4: Auth (unified ocp4_workload_authentication)
@@ -227,18 +227,14 @@ cd agnosticv</code></pre>
   <h4>Step-by-step process:</h4>
   <ol>
     <li><strong>Step 0 — Setup:</strong> AgV path auto-detected; branch created from main (no feature/ prefix)</li>
-    <li><strong>Step 1 — Context:</strong> Single [1-7] question combining event type (Summit Lab/Demo, RH1 Lab/Demo, Workshop, Demo, Sandbox) + lab ID + technologies</li>
+    <li><strong>Step 1 — Context:</strong> 3 questions: Q1=Workshop/Demo/Sandbox, Q2=Is this for an event? (Summit 2026 / RH One 2026 / Other), Q3=Technologies. Event selection overrides category to Brand_Events and asks for Lab ID.</li>
     <li><strong>Step 2 — Discovery:</strong> Searches <code>agd_v2/</code> and <code>openshift_cnv/</code>; shows reference catalogs with <code>[OCP cluster]</code> or <code>[RHEL/AAP VMs]</code> labels</li>
-    <li><strong>Step 3 — Infrastructure gate:</strong>
+    <li><strong>Step 3 — Infrastructure gate:</strong> Asks OCP or RHEL/AAP VMs, then routes to a separate @reference file per infra type:
       <ul>
-        <li><strong>OCP branch:</strong> SNO or multinode, OCP version (4.18 / 4.20 / 4.21), pool with <code>/prod</code> suffix, autoscale, AWS (exception path)</li>
-        <li><strong>VM branch (cloud-vms-base):</strong> CNV or AWS always asked, RHEL image, sizing override, ports per VM</li>
+        <li><strong>OCP path (<code>ocp-catalog-questions.md</code>):</strong> SNO or multinode, OCP version (4.18/4.20/4.21), pool with <code>/prod</code> suffix, autoscale, AWS gate; auth (unified <code>ocp4_workload_authentication</code> + provider); OCP workloads + LiteMaaS; Showroom with <code>ocp4_workload_ocp_console_embed</code>; multi-user with worker scaling</li>
+        <li><strong>VM path (<code>cloud-vms-base-catalog-questions.md</code>):</strong> CNV or AWS, RHEL image, sizing, ports; auth skipped (OS-level only); VM workloads; <code>vm_workload_showroom</code> with <code>showroom_git_repo</code>/<code>showroom_git_ref</code>; multi-user isolation warning</li>
       </ul>
     </li>
-    <li><strong>Step 4 — Auth:</strong> Unified <code>ocp4_workload_authentication</code> role; provider: <code>htpasswd</code> or <code>keycloak</code> (RHBK). RHSSO is not supported.</li>
-    <li><strong>Step 5 — Workloads + LiteMaaS:</strong> Workload list + optional LiteMaaS (models from live registry, duration, adds 2 includes + workload + collection)</li>
-    <li><strong>Step 5.5 — Collections:</strong> <code>{{ tag }}</code> pattern applied automatically to all standard collections; showroom pinned to fixed v1.5.1; EE image resolved from AgV grep</li>
-    <li><strong>Step 6 — Showroom:</strong> Recommended name shown (<code>lb2298-short-name</code> format); asks if repo is already created; adds placeholder workload if not; <code>antora_enable_dev_mode</code> set automatically</li>
     <li><strong>Step 7 — Catalog details:</strong> Display name, short name, description (starts with product name), maintainer name and email</li>
     <li><strong>Step 9 — __meta__:</strong> Deployer actions (start/stop only); <code>remove_workloads</code> via <code>sandbox_api.actions.destroy.catch_all</code>; product label + family; keywords</li>
     <li><strong>Step 9.1 — Includes:</strong> Event restriction in <code>common.yaml</code> (summit-devs or rh1-2026-devs); AWS extras; LiteMaaS (<code>litemaas-master_api</code> + <code>litellm_metadata</code>); workload-specific TODO</li>
