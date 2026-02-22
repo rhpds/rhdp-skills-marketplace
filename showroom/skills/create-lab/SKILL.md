@@ -450,37 +450,31 @@ For every file below: silently check if it exists first.
 
 ---
 
-**1. `default-site.yml`** (at repo root):
+**1. `site.yml`** (at repo root — the going-forward standard):
 
-**First — check for `site.yml` naming mismatch:**
+The showroom role supports both `site.yml` and `default-site.yml` via fallback. `site.yml` is the new standard. `default-site.yml` is also valid and silently supported by the role.
 
 ```bash
 # Check which playbook file exists
-ls default-site.yml 2>/dev/null && echo "found default-site.yml"
 ls site.yml 2>/dev/null && echo "found site.yml"
+ls default-site.yml 2>/dev/null && echo "found default-site.yml"
 ```
 
 | State | Action |
 |---|---|
-| `default-site.yml` exists | Proceed to check/fix below |
-| `site.yml` exists, no `default-site.yml` | Rename to `default-site.yml` silently, then check/fix |
-| Both exist | Use `default-site.yml`, warn user that `site.yml` is unused |
-| Neither exists | Create `default-site.yml` from scratch |
+| `site.yml` exists | Proceed to check/fix below |
+| `default-site.yml` exists, no `site.yml` | Proceed to check/fix using `default-site.yml` — both are valid, no rename needed |
+| Both exist | Use `site.yml`, note that `default-site.yml` is also present but redundant |
+| Neither exists | Create `site.yml` from scratch |
 
-If renaming:
-```bash
-mv site.yml default-site.yml
-```
-Report: `✓ Renamed site.yml → default-site.yml (role default)`
-
-*If EXISTS (or just renamed) — check and fix:*
+*If EXISTS — check and fix:*
 - `site.title` is stale/template → update to `"{{ lab_title }}"`
 - `site.start_page` is not `modules::index.adoc` → fix
 - `ui.bundle.url` is the old default nookbag bundle (not the theme from Question B) → update to `{{ ui_bundle_url }}`
 - `ui.supplemental_files` is missing or not `./supplemental-ui` → fix
 - `runtime.fetch` is missing → add `fetch: true`
 
-*If MISSING — create:*
+*If MISSING — create `site.yml`:*
 ```yaml
 site:
   title: "{{ lab_title }}"
@@ -660,7 +654,7 @@ jobs:
 ```
 ✅ Scaffold complete:
 
-  default-site.yml      → [created | updated: title, ui-bundle] | no changes
+  site.yml              → [created | updated: title, ui-bundle] | no changes
   ui-config.yml         → [created | updated: view_switcher, tabs] | no changes
   content/antora.yml    → [created | updated: title, lab_name] | no changes
   content/lib/          → [all present | copied 2 missing files]

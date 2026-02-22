@@ -80,18 +80,20 @@ Silently check all scaffold files in the repo root and `content/`. Do not check 
 
 ---
 
-**`default-site.yml`** (repo root):
+**Antora playbook** (`site.yml` or `default-site.yml`) (repo root):
 
-**First — check for `site.yml` naming mismatch:**
+The showroom role supports both `site.yml` and `default-site.yml` — both are valid. `site.yml` is the going-forward standard. `default-site.yml` is silently supported by the role. You can also override with `ocp4_workload_showroom_content_antora_playbook: custom.yml`.
+
+Check which file is present and use whichever exists for field validation:
 
 | State | Severity | Message |
 |---|---|---|
-| `default-site.yml` present | — | Proceed to field checks |
-| `site.yml` present, no `default-site.yml` | High | ⚠️ Repo has `site.yml` but the showroom role looks for `default-site.yml` by default. Rename `site.yml` → `default-site.yml` to match the role default, or set `ocp4_workload_showroom_content_antora_playbook: site.yml` in your AgV catalog. |
-| Both present | High | ⚠️ Both `site.yml` and `default-site.yml` exist. The role uses `default-site.yml`. Remove or archive `site.yml` to avoid confusion. |
-| Neither present | Critical | ❌ No Antora playbook found (`default-site.yml` or `site.yml`). Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
+| `site.yml` present | — | Proceed to field checks on `site.yml` |
+| `default-site.yml` present, no `site.yml` | Info | ℹ️ Using `default-site.yml` — both are valid. New repos use `site.yml` going forward. |
+| Both present | Info | ℹ️ Both `site.yml` and `default-site.yml` exist — role uses `site.yml`. `default-site.yml` is redundant but harmless. |
+| Neither present | Critical | ❌ No Antora playbook found. Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
 
-If `default-site.yml` is present — check fields:
+Check fields in whichever playbook file is present:
 
 | Field | Check | Message if wrong |
 |---|---|---|
