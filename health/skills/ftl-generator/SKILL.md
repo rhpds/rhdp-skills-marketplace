@@ -70,7 +70,22 @@ See @health/docs/FTL-PATTERNS.md for:
 - Show brief confirmations: "Created: grade_module_01.yml (120 lines, 8 checkpoints)"
 - Keep total output under 5000 tokens
 
-### **4. ONE MODULE AT A TIME — DO NOT DEVIATE FROM THE MODULE CONTENT**
+### **4. ALWAYS USE `grade_lab` AND `solve_lab` — NEVER CREATE YOUR OWN WRAPPERS**
+
+**`grade_lab` and `solve_lab` in `bin/` are the ONLY execution wrappers. Do not create shell scripts, Makefiles, or any other wrapper around ansible-playbook.**
+
+They already handle:
+- `--podman` (container) and `--ansible` (bastion) execution modes
+- Smart argument parsing (`user`, `module`, `all` user discovery)
+- Auto-discovery of modules from `grade_module_*.yml` files
+- Load testing (`all` user parallel execution)
+- Report collection and display
+
+If a developer asks how to run the grader, always answer with `grade_lab <lab> <user> [module] --podman` or `--ansible`. Never suggest `ansible-playbook main.yml ...` or a custom script.
+
+---
+
+### **5. ONE MODULE AT A TIME — DO NOT DEVIATE FROM THE MODULE CONTENT**
 
 **THIS IS A STRICT RULE. NO EXCEPTIONS.**
 
@@ -361,10 +376,54 @@ WAIT for user confirmation or adjustments.
 
 ### Step 5: Generate Lab Files
 
-After user confirms the checkpoint analysis, generate all files:
+After user confirms the checkpoint analysis, generate files for **Module 1 only** (Rule 4).
 
-**Read FTL patterns reference first:**
-Read @health/docs/FTL-PATTERNS.md before generating any playbooks.
+**Step 1 — Copy the lab template:**
+
+```bash
+cp -r {ftl_repo}/labs/lab-template {ftl_repo}/labs/{lab_short_name}
+```
+
+Use this as the starting point. Do NOT create files from scratch. The template already has:
+- Correct three-play pattern with `grader_student_report_file` in all three plays
+- Environment variable validation block
+- Solver pattern with idempotency, `until`/`retries`, no `pause` prompts
+- All notes and conventions pre-filled
+
+**Step 2 — Read FTL patterns reference:**
+Read @health/docs/FTL-PATTERNS.md before modifying the template.
+
+**Rule: Always use generic grader roles. Custom tasks are the last resort.**
+
+Before writing any custom `kubernetes.core.k8s_info` + `set_fact` logic, check whether a generic grader role already covers the checkpoint:
+
+| Need to check | Use this role first |
+|---|---|
+| Pod is running | `grader_check_ocp_pod_running` |
+| Deployment exists | `grader_check_ocp_deployment` |
+| Route exists / has HTTPS | `grader_check_ocp_route_exists` |
+| Service exists | `grader_check_ocp_service_exists` |
+| Secret with keys | `grader_check_ocp_secret_exists` |
+| ConfigMap with keys | `grader_check_ocp_configmap_exists` |
+| PVC bound | `grader_check_ocp_pvc_exists` |
+| S2I build succeeded | `grader_check_ocp_build_completed` |
+| Tekton pipeline ran | `grader_check_ocp_pipeline_run` |
+| Any K8s resource | `grader_check_ocp_resource` |
+| Command output | `grader_check_command_output` |
+| HTTP endpoint | `grader_check_http_endpoint` |
+| JSON response | `grader_check_http_json_response` |
+| AAP job ran | `grader_check_aap_job_completed` |
+| AAP workflow ran | `grader_check_aap_workflow_completed` |
+| File exists | `grader_check_file_exists` |
+| File contains content | `grader_check_file_contains` |
+| systemd service | `grader_check_service_running` |
+| Package installed | `grader_check_package_installed` |
+| Container running | `grader_check_container_running` |
+
+**Only write custom `kubernetes.core.k8s_info` + `set_fact` logic when:**
+- The check requires inspecting a specific field value (e.g., a label value, env var value, replica count, probe configuration) that no generic role covers
+- The check requires cross-referencing two resources (e.g., "route label matches service name")
+- The check requires complex conditional logic across multiple resources
 
 **Generate files in this order:**
 
@@ -380,9 +439,9 @@ Use the template pattern from `labs/lab-template/lab.yml` in the FTL repo. Popul
 Write to: `{ftl_repo}/labs/{lab_short_name}/lab.yml`
 Confirm: "Created: lab.yml (X lines)"
 
-#### 5.2: Grader Playbooks (Per Module)
+#### 5.2: Grader Playbook — Module 1 Only
 
-For each module, generate `grade_module_XX.yml` following the three-play pattern from @health/docs/FTL-PATTERNS.md.
+Edit `{ftl_repo}/labs/{lab_short_name}/grade_module_01.yml` (already copied from template). Replace the `[Lab Name]`, `[Module Name]`, placeholder variables, and placeholder exercises with real content.
 
 **CRITICAL requirements:**
 - `grader_student_report_file` defined in ALL THREE plays
@@ -464,9 +523,9 @@ Generate `grade_lab.yml` that includes all module graders sequentially. Follow t
 Write to: `{ftl_repo}/labs/{lab_short_name}/grade_lab.yml`
 Confirm: "Created: grade_lab.yml (X lines)"
 
-#### 5.4: Solver Playbooks (Per Module)
+#### 5.4: Solver Playbook — Module 1 Only
 
-For each module, generate `solve_module_XX.yml` that programmatically completes all student exercises.
+Edit `{ftl_repo}/labs/{lab_short_name}/solve_module_01.yml` (already copied from template). Replace placeholder tasks with real automation for Module 1 student exercises.
 
 **CRITICAL requirements:**
 - NO `ansible.builtin.pause` prompts (fully automated)
