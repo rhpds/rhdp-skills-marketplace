@@ -623,20 +623,27 @@ def check_best_practices(config):
     suggestions.append({
       'check': 'best_practices',
       'message': 'No keywords defined',
-      'recommendation': 'Add specific technology keywords to help users find this catalog '
-                        '(e.g., "mcp", "leapp", "tekton", "cnpg", "ibm-fusion")'
+      'recommendation': 'Add 3-4 specific technology keywords (e.g., "mcp", "leapp", "tekton", "cnpg")'
     })
   else:
+    if len(keywords) > 4:
+      suggestions.append({
+        'check': 'best_practices',
+        'message': f'Too many keywords ({len(keywords)}) — keep to 3-4 meaningful terms',
+        'current': keywords,
+        'recommendation': 'Trim to 3-4 specific technology keywords. More is not better — '
+                          'dilutes discoverability and search relevance.'
+      })
+
     generic_keywords = {'workshop', 'demo', 'lab', 'sandbox', 'openshift', 'ansible',
                         'rhel', 'tutorial', 'training', 'course', 'test', 'example'}
     generic_found = [k for k in keywords if k.lower() in generic_keywords]
     if generic_found:
       suggestions.append({
         'check': 'best_practices',
-        'message': f'Keywords contain generic terms that add no discriminating value: {generic_found}',
-        'recommendation': 'Replace generic keywords with specific technology or topic terms '
-                          '(e.g., "mcp", "leapp", "tekton") — generic words like "workshop" '
-                          'or "openshift" are already implied by the category and title'
+        'message': f'Keywords contain generic terms that add no value: {generic_found}',
+        'recommendation': 'Replace with specific technology terms (e.g., "mcp", "leapp", "tekton") — '
+                          'generic words like "workshop" or "openshift" are already implied by category and title'
       })
 
   # Check for abstract
