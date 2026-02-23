@@ -85,7 +85,32 @@ If a developer asks how to run the grader, always answer with `grade_lab <lab> <
 
 ---
 
-### **5. ONE MODULE AT A TIME — DO NOT DEVIATE FROM THE MODULE CONTENT**
+### **5. ADMIN IS ONLY FOR READING THE CONFIGMAP — EVERYTHING ELSE RUNS AS THE STUDENT USER**
+
+**This is a core design principle of FTL, not just a preference.**
+
+Admin credentials serve ONE purpose: reading the Showroom `showroom-userdata` ConfigMap to discover the student's password. After that, every check and every solver action runs as the student user.
+
+| What | Who runs it |
+|---|---|
+| Read Showroom ConfigMap | Admin (only to get student's password) |
+| OCP resource checks (`kubernetes.core.k8s_info`) | UserX kubeconfig |
+| OCP resource creation in solvers (`kubernetes.core.k8s`) | UserX kubeconfig |
+| Gitea API — check user's own repos | UserX password |
+| Gitea API — check repo existence before user has logged in | Gitea admin token (from ConfigMap) |
+| AAP API calls | lab-user credentials |
+
+**Why this is non-negotiable:**
+- Tests that the student's namespace RBAC is correctly set up
+- Catches permission issues that admin access would silently bypass
+- Validates the lab from the actual student perspective
+- **If a check passes with admin but fails with userX → it is a lab environment bug, not a grader bug.** The grader should expose that failure, not hide it.
+
+The `grade_lab`/`solve_lab` wrappers handle this automatically: they `oc login -u userX -p PASSWORD` and pass the userX kubeconfig to the container. Lab playbooks receive the user kubeconfig for all `kubernetes.core` calls. Do not override this with admin credentials in grader playbooks.
+
+---
+
+### **6. ONE MODULE AT A TIME — DO NOT DEVIATE FROM THE MODULE CONTENT**
 
 **THIS IS A STRICT RULE. NO EXCEPTIONS.**
 

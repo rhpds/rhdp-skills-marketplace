@@ -227,14 +227,26 @@ body:
 
 ---
 
-## OCP Checks: User Kubeconfig First, Admin Fallback
+## Core Principle: Admin Only for ConfigMap — Everything Else as UserX
 
-`grade_lab` and `solve_lab` attempt `oc login -u userX -p PASSWORD` before running checks:
+Admin credentials serve ONE purpose: reading the Showroom `showroom-userdata` ConfigMap to get the student's password. After that, **everything runs as the student user**.
 
-- **Success** (htpasswd clusters) → mounts userX kubeconfig → checks run as that student (proper RBAC testing)
-- **Failure** (SSO/Keycloak clusters) → falls back to admin kubeconfig silently
+| What | Who |
+|---|---|
+| Read Showroom ConfigMap | Admin (only to get student's password) |
+| OCP resource checks (`kubernetes.core.k8s_info`) | UserX kubeconfig |
+| OCP resource creation in solvers (`kubernetes.core.k8s`) | UserX kubeconfig |
+| Gitea API — check user's own repos | UserX password |
+| Gitea API — check repo before user has logged in | Gitea admin token (from ConfigMap) |
+| AAP API calls | lab-user credentials |
 
-This means graders automatically test RBAC where possible without any special configuration. For `all` user mode, each parallel subshell gets its own isolated temp kubeconfig.
+**If a check passes with admin but fails with userX → lab environment bug, not a grader bug.** The grader must expose that failure, not hide it.
+
+`grade_lab`/`solve_lab` handle this automatically:
+- Attempts `oc login -u userX -p PASSWORD`
+- **Success** (htpasswd) → checks run as userX (proper RBAC testing)
+- **Failure** (SSO/Keycloak) → falls back to admin kubeconfig silently
+- `all` mode: each parallel subshell gets its own isolated temp kubeconfig
 
 **Final working command pattern:**
 ```bash
