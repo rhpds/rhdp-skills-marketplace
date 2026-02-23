@@ -227,6 +227,43 @@ body:
 
 ---
 
+## OCP Checks: User Kubeconfig First, Admin Fallback
+
+`grade_lab` and `solve_lab` attempt `oc login -u userX -p PASSWORD` before running checks:
+
+- **Success** (htpasswd clusters) → mounts userX kubeconfig → checks run as that student (proper RBAC testing)
+- **Failure** (SSO/Keycloak clusters) → falls back to admin kubeconfig silently
+
+This means graders automatically test RBAC where possible without any special configuration. For `all` user mode, each parallel subshell gets its own isolated temp kubeconfig.
+
+**Final working command pattern:**
+```bash
+OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443" \
+OCP_ADMIN_PASSWORD="<admin-pass>" \
+OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io" \
+grade_lab mcp-with-openshift all 1 --podman
+```
+
+`OCP_API_URL` and `OCP_ADMIN_PASSWORD` are used by the wrapper to `oc login` as admin and discover user credentials from the Showroom ConfigMap. `PASSWORD` is auto-discovered per user from the ConfigMap — you do not set it manually when using `all` mode.
+
+---
+
+## `oc login` Output Suppression
+
+Always suppress `oc login` output with `&>/dev/null`. In parallel runs, unredirected login output (`Login successful`, `Using project default`, `401 Unauthorized`) makes terminal output unreadable.
+
+```bash
+# CORRECT
+oc login ... &>/dev/null
+
+# WRONG — pollutes output in parallel runs
+oc login ...
+```
+
+This applies to all credential commands (`oc login`, `oc logout`, kubeconfig writes).
+
+---
+
 ## AAP Template Names — Verify Exactly Against Live Cluster
 
 CaC playbooks sometimes create job templates with typos. Never guess the name — always verify:
@@ -596,6 +633,8 @@ grade_lab <lab> all --podman
 | `AAP_USERNAME` | AAP username (default: `lab-user`) | RIPU lab |
 | `GITEA_ADMIN_USER` | Gitea admin username (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
 | `GITEA_ADMIN_PASSWORD` | Gitea admin password (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
+| `OCP_API_URL` | OCP API server URL (for wrapper auto-login) | `--podman` mode |
+| `OCP_ADMIN_PASSWORD` | OCP admin password (for wrapper auto-login and user discovery) | `--podman` mode |
 | `FTL_IMAGE` | Override container image (default: `quay.io/rhpds/ftl:latest`) | Dev only |
 | `FTL_REPORT_DIR` | Report directory for podman mode (default: `~/ftl-reports`) | `--podman` only |
 

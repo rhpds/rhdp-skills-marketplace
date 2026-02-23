@@ -188,15 +188,22 @@ Paste the response and I'll identify:
 - What fields to check for validation
 - How to authenticate
 
-**⚠️ CRITICAL — kubeconfig context:**
-If running from laptop, always `oc login` to the correct cluster IMMEDIATELY before running grade_lab/solve_lab. Your `~/.kube/config` active context at `podman run` time determines which cluster is used — a wrong context means graders run against the wrong cluster silently.
+**⚠️ CRITICAL — kubeconfig context and recommended command:**
+
+For `--podman` mode, provide `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login, auto-discover users, and read credentials from the Showroom ConfigMap:
 
 ```bash
-# Always do this first
-oc login https://api.cluster-TARGET.dynamic.redhatworkshops.io:6443 -u admin -p <pass>
-# Then immediately run:
-grade_lab <lab> user1 1 --podman
+OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443" \
+OCP_ADMIN_PASSWORD="<admin-pass>" \
+OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io" \
+grade_lab <lab> all 1 --podman   # grades all users module 1 in parallel
 ```
+
+The wrapper auto-discovers each user's `PASSWORD` from their Showroom ConfigMap — you do not set `PASSWORD` manually in `all` mode.
+
+For single user: `grade_lab <lab> user1 1 --podman` — set `PASSWORD` from the Showroom User tab.
+
+**If running from laptop without `OCP_API_URL`:** always `oc login` to the correct cluster first — the active kubeconfig context at `podman run` time determines which cluster is used.
 
 Use the discovery output from above to fill in Step 1.5 (AgV analysis) and Step 2 (service analysis) with real data rather than guesses.
 
