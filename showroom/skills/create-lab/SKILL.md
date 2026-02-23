@@ -906,21 +906,21 @@ ls {showroom_repo_path}/examples/workshop/templates/ # if exists use examples/ 2
 ```
 
 **If `examples/workshop/templates/` exists in the Showroom repo — read from there:**
-- `{showroom_repo_path}/examples/workshop/templates/00-index.adoc` — **Learner-facing index** (output as `index.adoc`)
+- `{showroom_repo_path}/examples/workshop/templates/index.adoc` — **Learner-facing index** (output as `index.adoc`)
 - `{showroom_repo_path}/examples/workshop/templates/03-module-01.adoc` — Module template
 - `{showroom_repo_path}/examples/workshop/example/01-overview.adoc` — Overview example
 - `{showroom_repo_path}/examples/workshop/example/02-details.adoc` — Details example
 - `{showroom_repo_path}/examples/workshop/example/03-module-01.adoc` — Module example
 
 **If `examples/workshop/templates/` does NOT exist — fall back to marketplace templates:**
-- `@showroom/examples/workshop/templates/00-index.adoc`
+- `@showroom/examples/workshop/templates/index.adoc`
 - `@showroom/examples/workshop/templates/03-module-01.adoc`
 - `@showroom/examples/workshop/example/01-overview.adoc`
 - `@showroom/examples/workshop/example/02-details.adoc`
 - `@showroom/examples/workshop/example/03-module-01.adoc`
 
 **Key rules from the templates:**
-- Workshop `index.adoc` is **learner-facing** — NOT a facilitator guide (use `00-index.adoc` template, output as `index.adoc`)
+- Workshop `index.adoc` is **learner-facing** — NOT a facilitator guide (use `index.adoc` template, output as `index.adoc`)
 - Modules use numbered exercises with verification checkpoints
 
 
@@ -987,7 +987,7 @@ Click on the next section to begin the workshop.
 ```
 
 **What NOT to do**:
-- ❌ Don't copy facilitator guide template from workshop/templates/00-index.adoc
+- ❌ Don't copy facilitator guide template from workshop/examples/templates/index.adoc
 - ❌ Don't include facilitator instructions
 - ❌ Don't write "This guide helps workshop facilitators..."
 

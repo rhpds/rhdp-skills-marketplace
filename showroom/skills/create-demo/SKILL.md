@@ -732,14 +732,14 @@ ls {showroom_repo_path}/examples/demo/templates/ # if exists use examples/ 2>/de
 ```
 
 **If `examples/demo/templates/` exists in the Showroom repo — read from there:**
-- `{showroom_repo_path}/examples/demo/templates/00-index.adoc` — **Facilitator/presenter guide** (output as `index.adoc`)
+- `{showroom_repo_path}/examples/demo/templates/index.adoc` — **Facilitator/presenter guide** (output as `index.adoc`)
 - `{showroom_repo_path}/examples/demo/templates/01-overview.adoc`
 - `{showroom_repo_path}/examples/demo/templates/02-details.adoc`
 - `{showroom_repo_path}/examples/demo/templates/03-module-01.adoc` — **Uses Know/Show structure**
 - `{showroom_repo_path}/examples/demo/templates/99-conclusion.adoc`
 
 **If `examples/demo/templates/` does NOT exist — fall back to marketplace templates:**
-- `@showroom/examples/demo/templates/00-index.adoc` — Facilitator/presenter guide
+- `@showroom/examples/demo/templates/index.adoc` — Facilitator/presenter guide
 - `@showroom/examples/demo/templates/01-overview.adoc`
 - `@showroom/examples/demo/templates/02-details.adoc`
 - `@showroom/examples/demo/templates/03-module-01.adoc` — Know/Show structure
@@ -1566,7 +1566,7 @@ Every demo module will have:
 ## Integration Notes
 
 **Templates used** (from Showroom repo `templates/demo/templates/` or marketplace fallback):
-- `00-index.adoc` → `index.adoc` (facilitator/presenter guide)
+- `index.adoc` (facilitator/presenter guide) (facilitator/presenter guide)
 - `01-overview.adoc`, `02-details.adoc`
 - `03-module-01.adoc` (Know/Show structure)
 - `99-conclusion.adoc`
