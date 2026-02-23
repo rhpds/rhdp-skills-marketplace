@@ -137,6 +137,42 @@ For each module file, extract:
 - Technology indicators (OpenShift, AAP, RHEL, Tekton, database, etc.)
 - Whether resources are **pre-deployed** or **created by student** — error messages for pre-deployed resources must NOT say "create it"
 
+**CRITICAL — Identify shared vs per-user services from the URLs and namespaces in module content:**
+
+For every external service students access (Gitea, LibreChat, AAP, dashboards, etc.), determine whether it is shared or per-user by reading how the URL is constructed:
+
+| URL pattern in module | Conclusion |
+|---|---|
+| `https://gitea.apps.{domain}` — no user in hostname | **Shared service** — one instance for all users |
+| `https://gitea-{user}.apps.{domain}` or `https://gitea-mcp-gitea-{user}.apps.{domain}` | **Per-user service** — each user has their own instance |
+| `-n gitea` or `namespace: gitea` — single namespace | **Shared service** |
+| `-n gitea-{user}` or `namespace: "gitea-{{ LAB_USER }}"` | **Per-user service** |
+
+**Why this matters for credential handling:**
+
+- **Shared service**: Student may not have logged in / initialized yet. Use **admin credentials** (from `showroom-userdata` ConfigMap: `gitea_admin_username`, `gitea_admin_password`). Student credentials will fail until they first log in.
+- **Per-user service**: Each user has their own isolated instance. Use the student's own credentials or a per-user admin/service token. The common `PASSWORD` env var may work if the service was provisioned with it.
+
+**Present your service analysis to the developer before proceeding to Step 3:**
+
+```
+📋 Service Analysis
+
+Shared services found (use admin credentials in grader):
+  ✓ Gitea — URL: https://gitea.apps.{domain} (single instance, all users)
+  ✓ AAP   — URL: https://controller.apps.{domain}
+
+Per-user services found (student credentials or per-user token):
+  ✓ LibreChat — https://librechat-librechat-{user}.apps.{domain} (per-user namespace)
+  ✓ MCP server — namespace: mcp-openshift-{user}
+
+Does this look correct? [Y/n]
+```
+
+WAIT for confirmation. Adjust based on developer feedback.
+
+This analysis directly determines which env vars the grader needs (Step 3) and which credential approach to use per service (Step 5).
+
 ---
 
 ### Step 3: Determine Lab Configuration
@@ -205,10 +241,14 @@ Your namespace pattern (from the .adoc files):
 
 WAIT for answer.
 
-**Auto-set from lab type:**
+**Auto-set from lab type + service analysis from Step 2:**
 - OCP multi-user → use admin kubeconfig + `kubernetes.core.k8s_info` scoped to student namespace
-- Grader needs: `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `PASSWORD`
-- If lab uses Gitea: also `GITEA_ADMIN_USER`, `GITEA_ADMIN_PASSWORD`
+- Standard vars always needed: `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `PASSWORD`
+- **Shared services** identified in Step 2 → add their admin credential env vars:
+  - Shared Gitea → `GITEA_ADMIN_USER`, `GITEA_ADMIN_PASSWORD`
+  - Shared AAP → `AAP_HOSTNAME`, `AAP_PASSWORD`, `AAP_USERNAME`
+  - Other shared services → ask developer for admin credentials
+- **Per-user services** → student `PASSWORD` or per-user token (determined case by case)
 
 **If single-user OCP:**
 - No namespace isolation — grader uses whatever namespace the lab creates
@@ -364,11 +404,14 @@ No login needed. The container/bastion uses admin kubeconfig. All resource check
 **Choice 2 — common password login (only if lab uses a known fixed password):**
 Only use when AgV sets `ocp4_workload_authentication_user_password: "redhat"` (or similar known value). Even then, prefer `kubernetes.core.k8s_info` with admin kubeconfig over `oc login`.
 
-**Choice 3 — External service credentials (Gitea, AAP, LibreChat):**
-Use admin credentials from `showroom-userdata` ConfigMap, not student credentials — student may not have initialized the service yet.
+**Choice 3 — External service credentials:**
+
+Use the service analysis from Step 2 to determine the right approach per service:
+
+**Shared service** (e.g., shared Gitea, shared AAP) — use admin credentials from `showroom-userdata` ConfigMap. Student credentials will fail if student hasn't logged into the service yet.
 
 ```yaml
-# Gitea check using admin credentials
+# Shared Gitea — admin token from ConfigMap
 - name: "Exercise 1.5: Verify student Gitea repo exists"
   ansible.builtin.include_role:
     name: grader_check_command_output
@@ -379,6 +422,19 @@ Use admin credentials from `showroom-userdata` ConfigMap, not student credential
       -u "{{ lookup('env', 'GITEA_ADMIN_USER') | default('mcpadmin', true) }}:{{ lookup('env', 'GITEA_ADMIN_PASSWORD') | default(lookup('env', 'PASSWORD'), true) }}"
       https://gitea.{{ ingress_domain }}/api/v1/repos/{{ lab_user }}/myrepo | jq -r '.name'
     expected_output: "myrepo"
+```
+
+**Per-user service** (e.g., per-user Gitea instance, per-user LibreChat) — student's `PASSWORD` or a service-account token provisioned per-user. The service was provisioned specifically for that student, so their credentials work from the start.
+
+```yaml
+# Per-user service — student credentials work
+- name: "Exercise 2.1: Verify per-user service accessible"
+  ansible.builtin.include_role:
+    name: grader_check_http_endpoint
+  vars:
+    task_description_message: "Exercise 2.1: LibreChat accessible for {{ lab_user }}"
+    endpoint_url: "https://librechat-librechat-{{ lab_user }}.{{ ingress_domain }}"
+    expected_status_code: 200
 ```
 
 Note: `default('value', true)` — the `true` argument is required. Without it, Jinja2 `default()` only triggers on `undefined`, not empty string.
