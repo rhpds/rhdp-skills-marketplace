@@ -894,15 +894,32 @@ See @showroom/docs/SKILL-COMMON-RULES.md for reference enforcement patterns.
 
 ### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
-**CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
+**CRITICAL: Read templates BEFORE generating any content.**
 
-**Templates to read:**
-- `showroom/templates/workshop/templates/00-index-learner.adoc` - Learner-facing index template
-- `showroom/templates/workshop/templates/03-module-01.adoc` - Module template
-- `showroom/templates/workshop/example/00-index.adoc` - Example index (but write for LEARNERS, not facilitators)
-- `showroom/templates/workshop/example/01-overview.adoc` - Example overview
-- `showroom/templates/workshop/example/02-details.adoc` - Example details
-- `showroom/templates/workshop/example/03-module-01.adoc` - Example module
+**Template source — check the Showroom repo first:**
+
+The user's Showroom repo may contain a `templates/` directory with up-to-date patterns. Always prefer these over the marketplace's built-in templates.
+
+```bash
+# Check if user's Showroom repo has templates
+ls {showroom_repo_path}/templates/workshop/ 2>/dev/null
+```
+
+**If `templates/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/templates/workshop/templates/00-index-learner.adoc` - Learner index template
+- `{showroom_repo_path}/templates/workshop/templates/03-module-01.adoc` - Module template
+- `{showroom_repo_path}/templates/workshop/example/01-overview.adoc` - Overview example
+- `{showroom_repo_path}/templates/workshop/example/02-details.adoc` - Details example
+- `{showroom_repo_path}/templates/workshop/example/03-module-01.adoc` - Module example
+
+**If `templates/` does NOT exist — fall back to marketplace templates:**
+- `@showroom/templates/workshop/templates/00-index-learner.adoc`
+- `@showroom/templates/workshop/templates/03-module-01.adoc`
+- `@showroom/templates/workshop/example/01-overview.adoc`
+- `@showroom/templates/workshop/example/02-details.adoc`
+- `@showroom/templates/workshop/example/03-module-01.adoc`
+
+The user's `templates/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and how to use them.
 

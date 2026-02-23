@@ -720,14 +720,32 @@ Based on your references, I'll:
 
 ### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
-**CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
+**CRITICAL: Read templates BEFORE generating any content.**
 
-**Templates to read:**
-- `showroom/templates/demo/01-overview.adoc`
-- `showroom/templates/demo/02-details.adoc`
-- `showroom/templates/demo/03-module-01.adoc`
-- `showroom/templates/demo/04-module-02.adoc`
-- `showroom/templates/demo/99-conclusion.adoc`
+**Template source — check the Showroom repo first:**
+
+The user's Showroom repo may contain a `templates/` directory with up-to-date patterns. Always prefer these over the marketplace's built-in templates.
+
+```bash
+# Check if user's Showroom repo has templates
+ls {showroom_repo_path}/templates/demo/ 2>/dev/null
+```
+
+**If `templates/demo/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/templates/demo/01-overview.adoc`
+- `{showroom_repo_path}/templates/demo/02-details.adoc`
+- `{showroom_repo_path}/templates/demo/03-module-01.adoc`
+- `{showroom_repo_path}/templates/demo/04-module-02.adoc`
+- `{showroom_repo_path}/templates/demo/99-conclusion.adoc`
+
+**If `templates/demo/` does NOT exist — fall back to marketplace templates:**
+- `@showroom/templates/demo/01-overview.adoc`
+- `@showroom/templates/demo/02-details.adoc`
+- `@showroom/templates/demo/03-module-01.adoc`
+- `@showroom/templates/demo/04-module-02.adoc`
+- `@showroom/templates/demo/99-conclusion.adoc`
+
+The user's `templates/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
