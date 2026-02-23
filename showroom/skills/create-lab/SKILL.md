@@ -902,22 +902,27 @@ The user's Showroom repo may contain a `templates/` directory with up-to-date pa
 
 ```bash
 # Check if user's Showroom repo has templates
-ls {showroom_repo_path}/templates/workshop/ 2>/dev/null
+ls {showroom_repo_path}/templates/workshop/templates/ 2>/dev/null
 ```
 
-**If `templates/` exists in the Showroom repo — read from there:**
-- `{showroom_repo_path}/templates/workshop/templates/00-index-learner.adoc` - Learner index template
-- `{showroom_repo_path}/templates/workshop/templates/03-module-01.adoc` - Module template
-- `{showroom_repo_path}/templates/workshop/example/01-overview.adoc` - Overview example
-- `{showroom_repo_path}/templates/workshop/example/02-details.adoc` - Details example
-- `{showroom_repo_path}/templates/workshop/example/03-module-01.adoc` - Module example
+**If `templates/workshop/templates/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/templates/workshop/templates/00-index-learner.adoc` — **Learner-facing index** (output as `index.adoc`)
+- `{showroom_repo_path}/templates/workshop/templates/03-module-01.adoc` — Module template
+- `{showroom_repo_path}/templates/workshop/example/01-overview.adoc` — Overview example
+- `{showroom_repo_path}/templates/workshop/example/02-details.adoc` — Details example
+- `{showroom_repo_path}/templates/workshop/example/03-module-01.adoc` — Module example
 
-**If `templates/` does NOT exist — fall back to marketplace templates:**
+**If `templates/workshop/templates/` does NOT exist — fall back to marketplace templates:**
 - `@showroom/templates/workshop/templates/00-index-learner.adoc`
 - `@showroom/templates/workshop/templates/03-module-01.adoc`
 - `@showroom/templates/workshop/example/01-overview.adoc`
 - `@showroom/templates/workshop/example/02-details.adoc`
 - `@showroom/templates/workshop/example/03-module-01.adoc`
+
+**Key rules from the templates:**
+- Workshop `index.adoc` is **learner-facing** — NOT a facilitator guide (use `00-index-learner.adoc` template, output as `index.adoc`)
+- Modules use numbered exercises with verification checkpoints
+- `00-index.adoc` in the templates dir is the facilitator guide — do NOT use it as the learner index
 
 The user's `templates/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
