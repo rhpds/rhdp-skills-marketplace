@@ -728,29 +728,29 @@ The user's Showroom repo may contain a `templates/` directory with up-to-date pa
 
 ```bash
 # Check if user's Showroom repo has demo templates
-ls {showroom_repo_path}/templates/demo/templates/ 2>/dev/null
+ls {showroom_repo_path}/examples/demo/templates/ # if exists use examples/ 2>/dev/null
 ```
 
-**If `templates/demo/templates/` exists in the Showroom repo — read from there:**
-- `{showroom_repo_path}/templates/demo/templates/00-index.adoc` — **Facilitator/presenter guide** (output as `index.adoc`)
-- `{showroom_repo_path}/templates/demo/templates/01-overview.adoc`
-- `{showroom_repo_path}/templates/demo/templates/02-details.adoc`
-- `{showroom_repo_path}/templates/demo/templates/03-module-01.adoc` — **Uses Know/Show structure**
-- `{showroom_repo_path}/templates/demo/templates/99-conclusion.adoc`
+**If `examples/demo/templates/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/examples/demo/templates/00-index.adoc` — **Facilitator/presenter guide** (output as `index.adoc`)
+- `{showroom_repo_path}/examples/demo/templates/01-overview.adoc`
+- `{showroom_repo_path}/examples/demo/templates/02-details.adoc`
+- `{showroom_repo_path}/examples/demo/templates/03-module-01.adoc` — **Uses Know/Show structure**
+- `{showroom_repo_path}/examples/demo/templates/99-conclusion.adoc`
 
-**If `templates/demo/templates/` does NOT exist — fall back to marketplace templates:**
-- `@showroom/templates/demo/templates/00-index.adoc` — Facilitator/presenter guide
-- `@showroom/templates/demo/templates/01-overview.adoc`
-- `@showroom/templates/demo/templates/02-details.adoc`
-- `@showroom/templates/demo/templates/03-module-01.adoc` — Know/Show structure
-- `@showroom/templates/demo/templates/99-conclusion.adoc`
+**If `examples/demo/templates/` does NOT exist — fall back to marketplace templates:**
+- `@showroom/examples/demo/templates/00-index.adoc` — Facilitator/presenter guide
+- `@showroom/examples/demo/templates/01-overview.adoc`
+- `@showroom/examples/demo/templates/02-details.adoc`
+- `@showroom/examples/demo/templates/03-module-01.adoc` — Know/Show structure
+- `@showroom/examples/demo/templates/99-conclusion.adoc`
 
 **Key rules from the templates:**
 - Demo `index.adoc` is a **facilitator/presenter guide** — NOT learner-facing (opposite of workshop)
 - All demo modules follow **Know/Show structure**: `=== Know` (background, business value, why) then `=== Show` (step-by-step presenter actions)
 - Both output files are named `index.adoc` regardless of template source filename
 
-The user's `templates/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
+The user's `examples/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
