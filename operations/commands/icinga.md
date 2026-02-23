@@ -55,31 +55,39 @@ Also check for related context:
 
 ### 0.1. Determine the Deployment Platform
 
-The `attrs.vars` object on the host contains metadata that identifies where and how the cluster is deployed. Call `get_hosts` with a filter for the host name if you don't already have the host vars, then determine the platform using the following signals.
+Our OCP clusters run on different infrastructure. Determine the platform **before** diagnosing so you can tailor troubleshooting appropriately. Use the host name and display name from step 0, then confirm via the config repo.
 
-**Primary signal — `hosttype`:**
+**Step 1 — Infer from the host name and display name:**
 
-| `hosttype` value | Platform | Cloud Provider |
-|---|---|---|
-| `shared_ocp_token_virt` | OCP with OpenShift Virtualization (CNV) | IBM Cloud bare metal |
-| `shared_ocp_naas` | NaaS — OCP deployed as VMs on CNV | IBM Cloud (nested on CNV) |
-| `infra_ocp_babylon` | Babylon control-plane OCP | AWS |
-| `infra_ocp_nonbabylon` | Infrastructure OCP | Varies (check `bastion_user`) |
+| Host name pattern | Display name keywords | Platform | Cloud Provider |
+|---|---|---|---|
+| `ocpvirt*` or `ocpv*-hcp*` | "IBM Cloud" | OCP with OpenShift Virtualization (CNV) | IBM Cloud bare metal |
+| `cnv-*` | "CNV", "NaaS" | NaaS — OCP deployed as VMs on CNV | IBM Cloud (nested on CNV) |
+| `babylon-ocp-*` or `integration-ocp-*` | "Babylon" | Babylon control-plane OCP | AWS |
+| `maas.*` | "maas" | Model as a Service OCP | IBM Cloud |
+| `infra-*` | "Infra" | Infrastructure OCP | Varies |
 
-**Fallback signals** (when `hosttype` is absent or ambiguous):
-- `bastion_user == "ec2-user"` → AWS
-- `bastion_user == "root"` → IBM Cloud bare metal
-- `bastion_user == "cloud-user"` → CNV VM
-- `bastion_user == "lab-user"` → HCP (Hosted Control Plane) on CNV
-- Address containing `.infra.demo.redhat.com` → IBM Cloud
-- Address containing `.infra.open.redhat.com` → AWS
-- Address containing `.rhdp.net` → CNV NaaS
-- Config directory in `monitoring-config`: `virt/` = CNV, `babylon/` = AWS, `naas/` = CNV NaaS, `maas/` = IBM Cloud
+**Step 2 — Confirm from `monitoring-config` repo:**
+
+The `openshift` group in `rhpds/monitoring-config` is split into subdirectories that map directly to platform type. When you search for the host in step 0.75, note which subdirectory it lives in:
+
+| Config path | Platform |
+|---|---|
+| `groups/openshift/virt/` | CNV on IBM Cloud bare metal |
+| `groups/openshift/naas/` | NaaS (OCP VMs on CNV on IBM Cloud) |
+| `groups/openshift/babylon/` | Babylon on AWS |
+| `groups/openshift/maas/` | MaaS on IBM Cloud |
+| `groups/openshift/infra/` | Infrastructure OCP (check `bastion_user` in hosts.yaml for provider) |
+| `groups/openshift/shared/` | Shared workshop clusters (decommissioned) |
+
+The hosts.yaml file in that directory also contains `vars` with `hosttype`, `bastion_user`, and `address` that provide further confirmation:
+- `hosttype: shared_ocp_token_virt` → CNV, `shared_ocp_naas` → NaaS, `infra_ocp_babylon` → AWS
+- `bastion_user: ec2-user` → AWS, `root` → IBM Cloud bare metal, `cloud-user` → CNV VM, `lab-user` → HCP on CNV
 
 **Why this matters for troubleshooting:**
-- **CNV clusters** (`shared_ocp_token_virt`): The OCP cluster runs as VMs on a host OCP cluster (the `ocpvNN` bare-metal hosts on IBM Cloud). Issues may stem from the underlying hypervisor, VM scheduling, or the CNV/OpenShift Virtualization operator. The `bastion_address` pointing to an `ocpvNN` host reveals which parent cluster hosts it.
-- **NaaS clusters** (`shared_ocp_naas`): Nested further — OCP VMs on CNV on IBM Cloud. The `bastion_address` with a non-standard `ssh_port` indicates the jump path through the parent cluster.
-- **AWS clusters** (`infra_ocp_babylon`): Standard IPI-deployed OCP on EC2. Issues may relate to AWS infrastructure (VPCs, EBS, Route53, IAM). Bastion access is via `ec2-user`.
+- **CNV clusters** (`virt/`): The OCP cluster runs as VMs on a host OCP cluster (the `ocpvNN` bare-metal hosts on IBM Cloud). Issues may stem from the underlying hypervisor, VM scheduling, or the CNV/OpenShift Virtualization operator. The `bastion_address` in the config pointing to an `ocpvNN` host reveals which parent cluster hosts it.
+- **NaaS clusters** (`naas/`): Nested further — OCP VMs on CNV on IBM Cloud. The `bastion_address` with a non-standard `ssh_port` indicates the jump path through the parent cluster.
+- **AWS clusters** (`babylon/`): Standard IPI-deployed OCP on EC2. Issues may relate to AWS infrastructure (VPCs, EBS, Route53, IAM). Bastion access is via `ec2-user`.
 - **IBM Cloud bare metal** (the `ocpvNN` hosts themselves): Run directly on IBM Cloud bare-metal servers in datacenters like `dal10`, `wdc06`, `wdc07`, `dal13`. These are the foundation that CNV and NaaS clusters sit on.
 
 Record the platform determination — you will include it in the output.
