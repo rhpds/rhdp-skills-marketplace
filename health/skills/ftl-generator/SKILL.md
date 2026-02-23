@@ -121,7 +121,11 @@ Read every module `.adoc` file and look for:
 
 Also check if vars/attributes files exist (`vars.adoc`, `_attributes.adoc`) — they may define aliases like `:ocp4_starter_project: wksp-{user}`. But these files don't always exist — always read the modules too.
 
-**Do NOT assume or invent namespace names** — `workshop-{user}` and `wksp-{user}` are different. Wrong namespace = grader checks wrong place and always passes or always fails.
+**⚠️ NEVER assume or invent namespace names.** Real examples of how easy it is to get wrong:
+- ocp4-getting-started uses `wksp-{{ LAB_USER }}` NOT `workshop-{{ LAB_USER }}`
+- Wrong namespace = grader checks wrong place and always passes OR always fails silently
+
+**Always verify by finding the actual `oc new-project` or `-n <ns>` commands in the .adoc files. If you cannot find the namespace in the module content, ask the developer.**
 
 Also note: if the module says "A project has already been created for you" — it is **pre-deployed**. Error messages for pre-deployed resources must NOT say "create it".
 
@@ -220,17 +224,22 @@ Password:
 
 **Question 3:**
 ```
-What environment variables does this lab require?
+What environment variables does this lab require beyond the standard ones?
 
-Common examples:
-- OCP_API_URL (OpenShift API URL — required for student credential login)
-- OPENSHIFT_CLUSTER_INGRESS_DOMAIN (OpenShift cluster apps domain)
-- PASSWORD (student password from Showroom {password} attribute)
-- AAP_HOSTNAME (AAP controller URL)
-- AAP_PASSWORD (AAP admin password)
-- GUID (deployment GUID, usually auto-detected)
+Standard (always set these):
+- OPENSHIFT_CLUSTER_INGRESS_DOMAIN — OCP cluster apps domain
+- PASSWORD — user password (from Showroom User tab)
 
-List your required environment variables (one per line):
+OCP labs with Gitea (e.g., MCP):
+- GITEA_ADMIN_USER — admin username from showroom-userdata ConfigMap
+- GITEA_ADMIN_PASSWORD — admin password from showroom-userdata ConfigMap
+
+AAP labs (e.g., RIPU):
+- AAP_HOSTNAME — AAP Controller URL (maps to Showroom {controller_url})
+- AAP_PASSWORD — AAP password (maps to Showroom {controller_password})
+- AAP_USERNAME — AAP username (default: lab-user)
+
+Any additional lab-specific vars?
 ```
 
 WAIT for answer.
@@ -326,54 +335,50 @@ For each module, generate `grade_module_XX.yml` following the three-play pattern
 - Helpful `student_error_message` for each checkpoint (what failed, why, how to fix)
 - Multi-user namespace derivation if Pattern A
 
+**⚠️ Never use `oc` CLI in graders.** The `oc` binary (amd64) crashes silently on arm64 Mac running the linux/amd64 container. Always use `kubernetes.core.k8s_info` instead — it uses the Python kubernetes client which works on all platforms.
+
 **Credential handling — based on Step 3 choice:**
 
-**Choice 1 — `oc --as` impersonation (recommended for multi-user):**
-No login needed. Add `--as={{ lab_user }}` to every `oc` command:
-```yaml
-- name: "Exercise 1.1: Verify pod running as student"
-  ansible.builtin.command: >
-    oc --as={{ lab_user }}
-    get pods -n {{ student_namespace }}
-    -l app=myapp
-    --field-selector=status.phase=Running
-  register: r_pod_check
-  changed_when: false
-```
+**Choice 1 — Admin kubeconfig + namespace scoping (recommended for all labs):**
+No login needed. The container/bastion uses admin kubeconfig. All resource checks are scoped to the student's namespace via `LAB_USER`. This works regardless of whether students use htpasswd or SSO.
 
-For `kubernetes.core` tasks, pass impersonation via module options:
 ```yaml
-- name: "Exercise 1.2: Verify route exists"
+- name: "Exercise 1.1: Verify pod running"
   kubernetes.core.k8s_info:
-    kind: Route
+    kind: Pod
     namespace: "{{ student_namespace }}"
-    name: myapp
-    api_key: "{{ lookup('env', 'CLUSTER_ADMIN_TOKEN') }}"
-    # Note: k8s_info does not support --as natively; use oc --as for RBAC checks
+    label_selectors:
+      - "app=myapp"
+  register: r_pods
+
+- name: Evaluate pod check
+  ansible.builtin.set_fact:
+    grader_output_message: >-
+      {{ 'PASS: ' if r_pods.resources | selectattr('status.phase', 'equalto', 'Running') | list | length > 0
+         else 'FAIL: ' }}{{ task_description_message }}
 ```
 
-Use `CLUSTER_ADMIN_TOKEN` env var (from bastion KUBECONFIG) for kubernetes.core tasks.
-Use `oc --as={{ lab_user }}` for RBAC-sensitive `oc` commands.
+**Choice 2 — common password login (only if lab uses a known fixed password):**
+Only use when AgV sets `ocp4_workload_authentication_user_password: "redhat"` (or similar known value). Even then, prefer `kubernetes.core.k8s_info` with admin kubeconfig over `oc login`.
 
-**Choice 2 — common password login:**
-Add `oc login` at START of Play 2:
+**Choice 3 — External service credentials (Gitea, AAP, LibreChat):**
+Use admin credentials from `showroom-userdata` ConfigMap, not student credentials — student may not have initialized the service yet.
+
 ```yaml
-- name: Login as student user
-  ansible.builtin.command: >
-    oc login {{ lookup('env', 'OCP_API_URL') }}
-    -u {{ lab_user }}
-    -p {{ workshop_password }}
-    --insecure-skip-tls-verify=true
-  changed_when: false
-  no_log: true
+# Gitea check using admin credentials
+- name: "Exercise 1.5: Verify student Gitea repo exists"
+  ansible.builtin.include_role:
+    name: grader_check_command_output
+  vars:
+    task_description_message: "Exercise 1.5: Student Gitea repo exists"
+    command: >
+      curl -s
+      -u "{{ lookup('env', 'GITEA_ADMIN_USER') | default('mcpadmin', true) }}:{{ lookup('env', 'GITEA_ADMIN_PASSWORD') | default(lookup('env', 'PASSWORD'), true) }}"
+      https://gitea.{{ ingress_domain }}/api/v1/repos/{{ lab_user }}/myrepo | jq -r '.name'
+    expected_output: "myrepo"
 ```
-After grading: `oc logout`. The `workshop_password` comes from the known common password in Step 3.
 
-**Choice 3 — admin namespace scoping:**
-No login, no `--as`. All `oc` commands scoped to student namespace:
-```yaml
-ansible.builtin.command: oc get pods -n {{ student_namespace }} ...
-```
+Note: `default('value', true)` — the `true` argument is required. Without it, Jinja2 `default()` only triggers on `undefined`, not empty string.
 
 **Exercise numbering:** X.Y format (module.checkpoint), e.g., 1.1, 1.2, 2.1, 2.2
 
@@ -421,58 +426,66 @@ Confirm: "Created: README.md (X lines)"
 
 ---
 
-### Step 6: Deliver Summary
+### Step 6: Deliver — Module 1 First
+
+**IMPORTANT: Do NOT generate all modules at once. Generate Module 1 only, then ask the developer to test before proceeding.**
+
+This is because:
+- Wrong namespace prefix (e.g., `wksp-` vs `workshop-`) will cause all checks to silently pass or fail
+- Wrong resource names discovered during testing are cheaper to fix before generating 4 modules
+- The developer may want to adjust checkpoint scope after seeing Module 1 output
 
 ```
-FTL Lab Generation Complete
+✅ Module 1 Generated
 
 Lab: {lab_name}
 Location: {ftl_repo}/labs/{lab_short_name}/
 
 Files Created:
-- lab.yml (metadata)
+- lab.yml
 - grade_module_01.yml (X checkpoints)
-- grade_module_02.yml (Y checkpoints)
-- ...
-- grade_lab.yml (orchestrator)
 - solve_module_01.yml
-- solve_module_02.yml
-- ...
-- README.md
 
-Total: Z checkpoints across N modules
+Commit and test Module 1 before I generate the remaining modules:
 
-Testing Instructions:
-1. Commit and push changes:
+1. Commit and push:
    cd {ftl_repo}
    git add labs/{lab_short_name}/
-   git commit -m "Add FTL graders/solvers for {lab_short_name}"
+   git commit -m "Add FTL module 1 for {lab_short_name} (WIP)"
    git push
 
-2. SSH to bastion and pull:
-   ssh lab-user@bastion
-   cd ~/ftl
-   git pull
+2. Set environment variables:
+   export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.example.com"
+   export PASSWORD="<from Showroom User tab>"
+   # Lab-specific vars (see README above)
 
-3. Set environment variables:
-   export {VAR1}="..."
-   export {VAR2}="..."
+3. Test grading — FROM LAPTOP (podman):
+   grade_lab {lab_short_name} {user_arg} 1 --podman
+   Expected: some PASS (pre-deployed resources), some FAIL (student tasks)
 
-4. Test grading (fresh environment):
-   grade_lab {lab_short_name} {user_arg_if_multiuser}
-   Expected: Module 1 may PASS, remaining modules FAIL
+   OR from bastion (ansible):
+   grade_lab {lab_short_name} {user_arg} 1 --ansible
 
-5. Run solver:
-   solve_lab {lab_short_name} {user_arg_if_multiuser}
+4. Run solver — Module 1:
+   solve_lab {lab_short_name} {user_arg} 1 --podman
 
-6. Test grading (after solver):
-   grade_lab {lab_short_name} {user_arg_if_multiuser}
-   Expected: SUCCESS 0 Errors
+5. Grade again — expect all PASS:
+   grade_lab {lab_short_name} {user_arg} 1 --podman
+   Expected: SUCCESS 0 Errors for Module 1
 
-7. Per-module testing:
-   grade_lab {lab_short_name} {user_arg} 1
-   solve_lab {lab_short_name} {user_arg} 2
+6. Report results and let me know if any checkpoints are wrong.
+   I'll then generate Module 2.
 ```
+
+**Load testing (after all modules pass):**
+```bash
+# Grade all discovered users in parallel
+grade_lab {lab_short_name} all --podman
+
+# Grade specific module for all users
+grade_lab {lab_short_name} all 1 --podman
+```
+Users are auto-discovered from `showroom-*-userN` namespaces.
 
 ---
 

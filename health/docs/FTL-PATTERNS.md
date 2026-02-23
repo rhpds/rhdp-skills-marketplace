@@ -1,6 +1,6 @@
 # FTL Framework Patterns Reference
 
-Core patterns and conventions for generating FTL grader and solver playbooks. This document is read by the `/health:ftl-create-lab` skill at runtime.
+Core patterns and conventions for generating FTL grader and solver playbooks. This document is read by the `/health:ftl-generator` skill at runtime.
 
 ---
 
@@ -53,49 +53,78 @@ Every grader playbook MUST follow this exact three-play structure:
 
 ---
 
-## Grader Role Catalog
+## Grader Role Catalog (22 roles)
 
-### Generic System Roles
+### ⚠️ Never Use `oc` CLI — Use `kubernetes.core` Instead
+
+The `oc` binary (amd64) crashes silently on arm64/Apple Silicon Macs running the linux/amd64 container (`lfstack.push` Go runtime bug). Always use `kubernetes.core` modules for portability.
+
+```yaml
+# ❌ WRONG — crashes on arm64 Mac running amd64 container
+- ansible.builtin.command: oc get pods -n {{ namespace }} --no-headers | wc -l
+
+# ✅ CORRECT — works everywhere (uses Python k8s client, not native binary)
+- kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: "{{ namespace }}"
+  register: r_pods
+- ansible.builtin.set_fact:
+    pod_count: "{{ r_pods.resources | length }}"
+```
+
+Common replacements:
+
+| Old `oc` command | Replacement |
+|---|---|
+| `oc get <resource>` | `kubernetes.core.k8s_info` |
+| `oc new-project` (solver) | `kubernetes.core.k8s` with `kind: Namespace` |
+| `oc create secret` (solver) | `kubernetes.core.k8s` with `kind: Secret, stringData:` |
+| `oc policy add-role-to-user` (solver) | `kubernetes.core.k8s` with `kind: RoleBinding` |
+| `oc expose svc` (solver) | `kubernetes.core.k8s` with `kind: Route` |
+
+---
+
+### Generic System Roles (7)
 
 | Role | Purpose | Key Variables |
 |------|---------|---------------|
 | `grader_check_command_output` | Validate command output (exact or regex) | `command`, `expected_output`, `use_regex` |
-| `grader_check_file_exists` | Verify file/directory exists | `file_path` |
+| `grader_check_file_exists` | Verify file/directory exists | `file_path`, `check_file_type` |
 | `grader_check_file_contains` | File exists and contains content | `file_path`, `expected_content`, `use_regex` |
-| `grader_check_service_running` | Check systemd service state | `service_name` |
+| `grader_check_service_running` | Check systemd service state | `service_name`, `check_enabled` |
 | `grader_check_package_installed` | Verify package installed | `package_name` |
-| `grader_check_user_exists` | Check user account exists | `user_name` |
-| `grader_check_container_running` | Verify podman/docker container | `container_name` |
+| `grader_check_user_exists` | Check user account exists | `username`, `check_uid`, `check_groups` |
+| `grader_check_container_running` | Verify podman/docker container | `container_name_pattern`, `container_runtime` |
 
-### OpenShift/Kubernetes Roles
+### OpenShift/Kubernetes Roles (11)
 
 | Role | Purpose | Key Variables |
 |------|---------|---------------|
 | `grader_check_ocp_resource` | Generic K8s resource validation | `resource_kind`, `resource_name`, `resource_namespace` |
-| `grader_check_ocp_pod_running` | Verify pod is Running | `pod_name`, `pod_namespace`, `pod_label_selector` |
-| `grader_check_ocp_route_exists` | Check OpenShift route exists | `route_name`, `route_namespace` |
-| `grader_check_ocp_service_exists` | Verify service exists | `service_name`, `service_namespace` |
-| `grader_check_ocp_deployment` | Verify deployment exists and ready | `deployment_name`, `deployment_namespace` |
-| `grader_check_ocp_build_completed` | Validate BuildConfig and build | `build_config_name`, `build_namespace`, `check_build_success` |
+| `grader_check_ocp_pod_running` | Verify pod is Running | `pod_name` (regex), `pod_namespace`, `min_ready_pods` |
+| `grader_check_ocp_deployment` | Verify deployment exists and ready | `deployment_name`, `deployment_namespace`, `expected_replicas` |
+| `grader_check_ocp_route_exists` | Check OpenShift route exists | `route_name`, `route_namespace`, `check_https` |
+| `grader_check_ocp_service_exists` | Verify service exists | `service_name`, `service_namespace`, `check_port` |
+| `grader_check_ocp_build_completed` | Validate BuildConfig and build | `build_config_name`, `build_config_namespace`, `require_build_execution`, `check_last_n_builds` |
 | `grader_check_ocp_secret_exists` | Validate Secret with keys | `secret_name`, `secret_namespace`, `required_keys` |
 | `grader_check_ocp_configmap_exists` | Validate ConfigMap | `configmap_name`, `configmap_namespace`, `required_keys` |
-| `grader_check_ocp_pvc_exists` | Validate PVC | `pvc_name`, `pvc_namespace`, `check_bound`, `min_storage` |
-| `grader_check_ocp_pipeline_run` | Validate Tekton Pipeline | `pipeline_name`, `pipeline_namespace`, `check_run_success` |
+| `grader_check_ocp_pvc_exists` | Validate PVC | `pvc_name`, `pvc_namespace`, `check_pvc_bound`, `min_storage_size` |
+| `grader_check_ocp_pipeline_run` | Validate Tekton Pipeline + PipelineRun | `pipeline_name`, `pipeline_namespace`, `require_pipeline_run`, `check_last_n_runs` |
 
-### AAP Roles
+### AAP Roles (3)
 
 | Role | Purpose | Key Variables |
 |------|---------|---------------|
-| `grader_check_aap_licensed` | Verify AAP license | `aap_hostname`, `aap_username`, `aap_password` |
-| `grader_check_aap_job_completed` | Validate job template execution | `aap_hostname`, `aap_username`, `aap_password`, `job_template_name` |
-| `grader_check_aap_workflow_completed` | Validate workflow execution | `aap_hostname`, `aap_username`, `aap_password`, `workflow_template_name` |
+| `grader_check_aap_licensed` | Verify AAP 2.6 license | `aap_hostname`, `aap_username`, `aap_password` |
+| `grader_check_aap_job_completed` | Validate job template execution | `job_template_name`, `require_job_execution`, `check_last_n_jobs` |
+| `grader_check_aap_workflow_completed` | Validate workflow execution | `workflow_template_name`, `aap_hostname`, `aap_username`, `aap_password`, `require_job_execution` |
 
-### HTTP Roles
+### HTTP Roles (2)
 
 | Role | Purpose | Key Variables |
 |------|---------|---------------|
 | `grader_check_http_endpoint` | HTTP/HTTPS endpoint validation | `endpoint_url`, `expected_status_code`, `validate_certs` |
-| `grader_check_http_json_response` | JSON response field validation | `endpoint_url`, `expected_fields`, `expected_values` |
+| `grader_check_http_json_response` | JSON response field validation | `endpoint_url`, `json_field_checks`, `json_value_checks` |
 
 ### Common Variables (All Grader Roles)
 
@@ -332,6 +361,61 @@ librechat_url: "https://librechat-librechat-{{ lab_user }}.{{ ingress_domain }}"
 ```
 
 ---
+
+## Execution Modes
+
+`grade_lab` and `solve_lab` support two modes via flags:
+
+```bash
+# Laptop (container-based) — no SSH needed, runs via quay.io/rhpds/ftl:latest
+grade_lab <lab> [user] [module] --podman
+
+# Bastion (direct ansible-playbook)
+grade_lab <lab> [user] [module] --ansible
+
+# Load test — 'all' discovers users from showroom namespaces, runs in parallel
+grade_lab <lab> all [module] --podman
+grade_lab <lab> all --podman
+```
+
+**`--podman` mode:**
+- Pulls `quay.io/rhpds/ftl:latest` (FTL labs cloned at container startup — no rebuild for grader changes)
+- Override image: `export FTL_IMAGE=quay.io/rhpds/ftl:my-tag`
+- Reports saved to: `~/ftl-reports/` (override: `export FTL_REPORT_DIR=...`)
+- OCP auth: mounts `~/.kube/config` (active context must point to correct cluster)
+- `oc login` to the right cluster immediately before running — active context at `podman run` time determines cluster
+
+**`--ansible` mode:**
+- Requires bastion setup: `bash bin/setup_ftl && export PATH="$HOME/ftl/bin:$PATH"`
+- Reports saved to: `/tmp/grading_dir/`
+
+## Environment Variables
+
+| Variable | Description | Required for |
+|---|---|---|
+| `OPENSHIFT_CLUSTER_INGRESS_DOMAIN` | OCP cluster apps domain (e.g., `apps.cluster-xxx.example.com`) | OCP labs |
+| `PASSWORD` | User password (from Showroom → User tab) | All labs |
+| `LAB_USER` | Student username (auto-set from command argument) | Auto |
+| `AAP_HOSTNAME` | AAP Controller URL | RIPU lab |
+| `AAP_PASSWORD` | AAP password | RIPU lab |
+| `AAP_USERNAME` | AAP username (default: `lab-user`) | RIPU lab |
+| `GITEA_ADMIN_USER` | Gitea admin username (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
+| `GITEA_ADMIN_PASSWORD` | Gitea admin password (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
+| `FTL_IMAGE` | Override container image (default: `quay.io/rhpds/ftl:latest`) | Dev only |
+| `FTL_REPORT_DIR` | Report directory for podman mode (default: `~/ftl-reports`) | `--podman` only |
+
+**Showroom ConfigMap — credential source for external services:**
+
+```bash
+oc get configmap showroom-userdata -n showroom-<guid>-1-user1 \
+  -o jsonpath='{.data.user_data\.yml}'
+```
+
+Key fields: `password`, `gitea_admin_username`, `gitea_admin_password`, `gitea_console_url`, `openshift_cluster_ingress_domain`.
+
+**Important:** Use `grep`+`sed` to parse this ConfigMap — it is NOT valid JSON (contains YAML tags like `! "value"`). `json.loads()` will fail silently.
+
+For any external service check (Gitea, LibreChat, AAP), use **admin credentials** from the ConfigMap — student credentials may fail if the student hasn't initialized the service yet.
 
 ## Lab Directory Structure
 
