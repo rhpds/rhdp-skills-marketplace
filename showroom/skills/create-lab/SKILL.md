@@ -400,30 +400,60 @@ Note: If you're not sure, I'll use placeholders that work across versions.
 
 Ask these questions SEQUENTIALLY — one at a time.
 
+**Question 0 — Catalog infrastructure type:**
+
+```
+Is this Showroom for an OCP-based or VM-based catalog?
+
+1. OCP cluster     (OpenShift — uses ocp4_workload_showroom)
+2. VM / RHEL       (cloud-vms-base — uses vm_workload_showroom, no OCP console)
+
+Choice [1/2]:
+```
+
 **Question A — Consoles and tools to embed:**
 
+*If OCP (choice 1):*
 ```
 What consoles or tools should learners see in the Showroom right panel?
 
-Each tab appears as a clickable pane next to the lab instructions.
-
-Common options:
+Common options for OCP catalogs:
 - OpenShift Console  → https://console-openshift-console.${DOMAIN}
 - Bastion terminal   → path: /wetty, port: 443
 - OpenShift AI       → https://rhods-dashboard-redhat-ods-applications.${DOMAIN}
 - AAP dashboard      → https://aap-dashboard.${DOMAIN}
 - External URL       → any https:// URL
 
-List each console as: name | url  (or name | path + port for terminals)
-
 Examples:
   OpenShift Console | https://console-openshift-console.${DOMAIN}
   Bastion | /wetty (port 443)
 
-You can adjust these later by editing ui-config.yml.
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+*If VM / RHEL (choice 2):*
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Common options for VM catalogs (no OCP console available):
+- Bastion terminal   → port: 3000, path: /wetty
+- AAP dashboard      → https://aap.${DOMAIN}
+- RHEL Cockpit       → https://cockpit.${DOMAIN}:9090
+- Grafana            → https://grafana.${DOMAIN}
+- Code Server        → port: 3001, path: /code
+- Custom app         → any port/path on the bastion VM
+- External docs      → any https:// URL (add external: true)
+
+Note: ${DOMAIN} is resolved at runtime from the bastion hostname.
+
+Examples:
+  Terminal | /wetty (port 3000)
+  AAP Dashboard | https://aap.${DOMAIN}
 
 Your consoles (or press Enter to leave as commented-out examples):
 ```
+
+If user presses Enter → add appropriate commented-out examples per infra type in the generated ui-config.yml.
 
 **Question B — ui-bundle theme:**
 
@@ -538,7 +568,9 @@ tabs:
 {{ generated_tabs_from_Question_A }}
 ```
 
-If user pressed Enter (no tabs): add common examples as commented lines:
+If user pressed Enter (no tabs): add commented-out examples appropriate for infra type from Question 0.
+
+*OCP (choice 1):*
 ```yaml
 tabs:
 # - name: OpenShift Console
@@ -546,6 +578,20 @@ tabs:
 # - name: Bastion
 #   path: /wetty
 #   port: 443
+# - name: OpenShift AI
+#   url: 'https://rhods-dashboard-redhat-ods-applications.${DOMAIN}'
+```
+
+*VM / RHEL (choice 2):*
+```yaml
+tabs:
+# - name: Terminal
+#   port: 3000
+#   path: /wetty
+# - name: AAP Dashboard
+#   url: 'https://aap.${DOMAIN}'
+# - name: RHEL Cockpit
+#   url: 'https://cockpit.${DOMAIN}:9090'
 ```
 
 ---

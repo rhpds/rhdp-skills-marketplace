@@ -107,6 +107,15 @@ Check fields in whichever playbook file is present:
 
 **`ui-config.yml`** (repo root):
 
+**First — detect catalog infra type** from ui-config.yml content (silently):
+- Contains `console-openshift-console` or `rhods-dashboard` → OCP catalog
+- Contains `/wetty` with a `port:` entry, or AAP/Cockpit URLs → VM catalog
+- Cannot determine → ask user:
+  ```
+  Q: Is this Showroom for an OCP-based or VM-based (cloud-vms-base) catalog?
+  1. OCP cluster  2. VM / RHEL
+  ```
+
 If MISSING:
 ```
 ❌  ui-config.yml not found
@@ -114,15 +123,27 @@ If MISSING:
     Run /showroom:create-lab --new to scaffold.
 ```
 
-If found — check:
+If found — check common fields:
 
 | Field | Check | Message if wrong |
 |---|---|---|
 | `type: showroom` | Present at top | ⚠️ `type: showroom` missing — Showroom won't recognize this config |
 | `view_switcher.enabled` | Equals `true` | ⚠️ Split screen not enabled — learners can't switch between split and full-screen modes |
 | `view_switcher.default_mode` | Equals `split` | ⚠️ Default mode is not `split` — learners start in full-screen, may not notice the panel |
-| `tabs:` section | Has at least one uncommented entry | ⚠️ No consoles configured — learners will see no embedded tools in the right panel |
 | `persist_url_state` | Equals `true` | ⚠️ `persist_url_state` not set — browser refresh resets the UI position |
+
+Then check `tabs:` section based on detected infra type:
+
+*OCP catalog:*
+| Check | Message if wrong |
+|---|---|
+| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. Expected: OpenShift Console, Bastion terminal, or other OCP-specific URLs |
+
+*VM / RHEL catalog:*
+| Check | Message if wrong |
+|---|---|
+| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. For VM catalogs add: Wetty terminal (port 3000/wetty), AAP dashboard, RHEL Cockpit, or other bastion-accessible URLs |
+| No `console-openshift-console` URL | ⚠️ OCP console URL found in VM catalog — this won't work without an OCP cluster. Use bastion-accessible URLs instead. |
 
 ---
 
