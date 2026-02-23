@@ -161,19 +161,18 @@ Ask the developer to run these and paste the output. This gives us ground truth 
 
 **For OCP labs:**
 ```bash
-# 1. What namespaces exist for this lab user?
+# 1. What namespaces exist? (Showroom namespaces follow showroom-*-userX pattern)
 oc get namespaces --no-headers | awk '{print $1}' | grep -E "user|wksp|workshop|mcp|lab|agent|gitea|librechat"
 
-# 2. What's running in each namespace? (replace with actual namespace from above)
+# 2. What's running per user namespace?
 oc get pods -n <user-namespace> --no-headers
 
-# 3. Get Showroom credentials ConfigMap
-oc get configmap showroom-userdata \
-  -n $(oc get ns --no-headers | awk '{print $1}' | grep showroom | head -1) \
-  -o jsonpath='{.data.user_data\.yml}' 2>/dev/null || \
-oc get configmap showroom-userdata \
-  -n showroom-$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}' | cut -d. -f2)-1-user1 \
-  -o jsonpath='{.data.user_data\.yml}' 2>/dev/null
+# 3. Get Showroom ConfigMap (contains ALL credentials — use grep/sed NOT json.loads)
+SHOW_NS=$(oc get ns --no-headers -o name | grep showroom | grep user1 | head -1 | cut -d/ -f2)
+oc get configmap showroom-userdata -n "$SHOW_NS" -o jsonpath='{.data.user_data\.yml}'
+# Fields available: password, gitea_admin_username, gitea_admin_password,
+# gitea_console_url, openshift_cluster_ingress_domain, openshift_api_server_url,
+# login_command, gitea_user, gitea_password, librechat_user, litellm_virtual_key
 ```
 
 **For AAP labs:**
@@ -594,10 +593,23 @@ curl -sk -u lab-user:$AAP_PASSWORD $AAP_HOSTNAME/api/controller/v2/job_templates
 ```
 Any additional environment variables beyond what's standard for this lab type?
 
-(Standard OCP vars: OPENSHIFT_CLUSTER_INGRESS_DOMAIN, PASSWORD
- Standard AAP vars: AAP_HOSTNAME, AAP_PASSWORD, AAP_USERNAME)
+Standard for --podman mode (set these before running grade_lab/solve_lab):
+  OCP_API_URL                    — OCP API server URL (wrapper auto-logins as admin)
+  OCP_ADMIN_PASSWORD             — OCP admin password (auto-discovers user credentials)
+  OCP_ADMIN_USER                 — defaults to "admin", usually don't need to set
+  OPENSHIFT_CLUSTER_INGRESS_DOMAIN — auto-derived from OCP_API_URL if not set
+  PASSWORD                       — auto-discovered from ConfigMap if OCP_API_URL set
 
-Additional vars (or press Enter if none):
+OCP labs with Gitea: auto-discovered in 'all' mode; set manually for single user:
+  GITEA_ADMIN_USER, GITEA_ADMIN_PASSWORD
+
+AAP labs:
+  AAP_HOSTNAME, AAP_PASSWORD, AAP_USERNAME (default: lab-user)
+
+RHEL labs with remote nodes:
+  BASTION_HOST, BASTION_USER — passed into container for SSH to remote nodes
+
+Additional lab-specific vars (or press Enter if none):
 ```
 
 WAIT for answer.

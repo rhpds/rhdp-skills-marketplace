@@ -645,10 +645,28 @@ grade_lab <lab> all --podman
 | `AAP_USERNAME` | AAP username (default: `lab-user`) | RIPU lab |
 | `GITEA_ADMIN_USER` | Gitea admin username (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
 | `GITEA_ADMIN_PASSWORD` | Gitea admin password (from showroom-userdata ConfigMap) | MCP, labs with Gitea |
-| `OCP_API_URL` | OCP API server URL (for wrapper auto-login) | `--podman` mode |
-| `OCP_ADMIN_PASSWORD` | OCP admin password (for wrapper auto-login and user discovery) | `--podman` mode |
+| `OCP_API_URL` | OCP API server URL — wrapper uses this to `oc login` as admin before discovering users | `--podman` mode |
+| `OCP_ADMIN_PASSWORD` | OCP admin password for wrapper auto-login and user credential discovery | `--podman` mode |
+| `OCP_ADMIN_USER` | OCP admin username (default: `admin`) | `--podman` mode |
+| `BASTION_HOST` | Bastion hostname — passed into container for RHEL labs with remote nodes | RHEL/AAP labs |
+| `BASTION_USER` | Bastion SSH user — passed into container for remote node checks | RHEL/AAP labs |
 | `FTL_IMAGE` | Override container image (default: `quay.io/rhpds/ftl:latest`) | Dev only |
 | `FTL_REPORT_DIR` | Report directory for podman mode (default: `~/ftl-reports`) | `--podman` only |
+
+**How the wrapper auto-discovers credentials (read from actual script):**
+
+1. Admin `oc login` using `OCP_API_URL` + `OCP_ADMIN_USER`/`OCP_ADMIN_PASSWORD`
+2. Find showroom namespace: `oc get namespaces | grep showroom | grep <user>$`
+3. Read ConfigMap: `oc get configmap showroom-userdata -n <ns> -o jsonpath='{.data.user_data\.yml}'`
+4. Extract with grep+sed (NOT json.loads — ConfigMap contains YAML tags):
+   ```bash
+   extract() { echo "$RAW" | grep "\"$1\":" | head -1 | sed "s/.*\"$1\": *\"\\([^\"]*\\)\".*/\\1/"; }
+   PASSWORD=$(extract "password")
+   GITEA_ADMIN_USER=$(extract "gitea_admin_username")
+   GITEA_ADMIN_PASSWORD=$(extract "gitea_admin_password")
+   ```
+5. `PASSWORD` auto-discovery only triggers when `PASSWORD` is **not already set** in the environment
+6. GUID auto-derived from domain: `apps.cluster-xxx.domain.com` → `xxx`
 
 **Showroom ConfigMap — credential source for external services:**
 
