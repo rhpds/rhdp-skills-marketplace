@@ -163,12 +163,23 @@ workloads:
 - agnosticd.showroom.vm_workload_showroom           # → Showroom on bastion VM
 ```
 
-**C. Multi-user detection:**
-Check `__meta__.catalog.multiuser` in common.yaml:
-- `multiuser: true` → multiple students share one cluster, each gets namespaced resources
-- `multiuser: false` or absent → single-user (one environment per student, no namespace isolation)
+**C. Multi-user detection — check for `num_users` parameter:**
 
-For single-user OCP or RHEL/VM labs: no namespace derivation from `LAB_USER` needed. The lab runs as a single user (`$USER` or `lab-user`).
+Look in `__meta__.catalog.parameters` for a parameter named `num_users`:
+
+```yaml
+__meta__:
+  catalog:
+    parameters:
+      - name: num_users        # ← present = multi-user lab
+        openAPIV3Schema:
+          type: integer
+          minimum: 3
+          maximum: 60
+```
+
+- `num_users` parameter **present** → multi-user lab. Students share one cluster, each gets their own namespaced resources derived from `LAB_USER`.
+- `num_users` parameter **absent** → single-user lab. One environment per student, no namespace isolation, `LAB_USER` not needed.
 
 **D. Collections — clone each to read role defaults:**
 From `requirements_content.collections`, find the GitHub URLs. Clone each collection repo (to `/tmp/ftl-collection-<name>/`) and read each workload role's `defaults/main.yml`:
@@ -209,7 +220,7 @@ Keys found here map directly to what's available in `showroom-userdata` ConfigMa
 ```
 📋 AgV Catalog Analysis: summit-2026/lb2298-mcp-with-openshift-cnv
 
-Infrastructure: OCP cluster (multi-user: true)
+Infrastructure: OCP cluster (num_users parameter present → multi-user)
 
 Workloads + resources:
   ✓ ocp4_workload_mcp_servers  → namespace: mcp-openshift-{{ user }} (PER-USER)
@@ -227,7 +238,7 @@ Credential approach:
 ```
 📋 AgV Catalog Analysis: agd_v2/my-single-user-demo-cnv
 
-Infrastructure: OCP cluster (multi-user: false)
+Infrastructure: OCP cluster (no num_users parameter → single-user)
 
 Workloads: ocp4_workload_myapp
   → fixed namespace: my-demo (no per-user isolation)
