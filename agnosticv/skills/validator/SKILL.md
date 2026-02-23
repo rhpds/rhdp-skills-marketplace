@@ -1142,8 +1142,9 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
   elif lab_id:
     passed_checks.append(f"✓ Lab ID keyword present: {lab_id}")
 
-  # --- No generic keywords ---
-  generic_keywords = ['workshop', 'demo', 'openshift', 'lab', 'sandbox']
+  # --- No generic keywords (same list as Check 9) ---
+  generic_keywords = ['workshop', 'demo', 'lab', 'sandbox', 'openshift', 'ansible',
+                      'rhel', 'tutorial', 'training', 'course', 'test', 'example']
   bad_keywords = [k for k in keywords if k.lower() in generic_keywords]
 
   if bad_keywords:

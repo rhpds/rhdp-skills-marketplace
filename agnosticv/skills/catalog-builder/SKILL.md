@@ -670,10 +670,18 @@ secondaryBU:
 **catalog.keywords** — build from event + lab ID + user input:
 
 ```
-Q: What specific keywords describe this catalog?
-   (Do NOT add generic terms like "workshop", "openshift", or words already in the title)
+Q: What specific keywords describe this catalog? (3-4 max)
 
-Examples: ibm-fusion, cnv, kubevirt, rag, llm
+Rules:
+- 3-4 keywords maximum — more dilutes search relevance
+- Use specific technology or topic terms only
+- Do NOT use generic words already implied by category or title:
+  ✗ workshop, demo, lab, sandbox, openshift, ansible, rhel, tutorial
+  ✓ ibm-fusion, cnv, kubevirt, rag, llm, leapp, mcp, cnpg, tekton
+
+Examples: ibm-fusion, cnv, kubevirt
+          leapp, rhel-upgrade
+          mcp, librechat, gitea
 
 Keywords:
 ```
@@ -681,6 +689,8 @@ Keywords:
 Auto-add event keywords silently (user should not add these manually):
 - summit-2026 → add `summit-2026` and `<lab-id>`
 - rh1-2026 → add `rh1-2026` and `<lab-id>`
+
+**Validate before writing:** If user provides more than 4 keywords or includes generic terms, ask them to trim/replace before proceeding.
 
 **catalog.labels.Product and Product_Family** — ask:
 
