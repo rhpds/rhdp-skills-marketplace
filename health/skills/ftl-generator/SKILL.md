@@ -120,6 +120,87 @@ Read the available grader roles from `roles/` directory to know what validation 
 
 ---
 
+### Step 1.5: Read AgnosticV Catalog (Optional — but recommended)
+
+Providing the AgV catalog lets the skill read the deployed workloads, collection roles, and `agnosticd_user_info` data directly — eliminating guesswork about namespace patterns, available credentials, and provisioned services.
+
+Ask:
+
+```
+Do you have the AgnosticV catalog for this lab? [Y/n]
+
+If yes, provide:
+1. AgV repo path (e.g., ~/work/code/agnosticv)
+2. Catalog path relative to AgV root (e.g., summit-2026/lb2298-mcp-with-openshift-cnv)
+```
+
+**If YES — read `common.yaml` and extract:**
+
+**A. Workloads deployed:**
+Read the `workloads:` list. Each workload is `namespace.collection.role_name`. These tell you exactly what was installed.
+
+```yaml
+workloads:
+- agnosticd.showroom.ocp4_workload_showroom        # → Showroom deployed
+- rhpds.mcp.ocp4_workload_mcp_servers              # → MCP servers deployed
+- agnosticd.core_workloads.ocp4_workload_gitea     # → Gitea deployed (shared or per-user?)
+```
+
+**B. Collections — clone each to read role defaults:**
+From `requirements_content.collections`, find the GitHub URLs. Clone each collection repo (to `/tmp/ftl-collection-<name>/`) and read each workload role's `defaults/main.yml`:
+
+```bash
+git clone <collection_url> /tmp/ftl-collection-<name>/
+cat /tmp/ftl-collection-<name>/roles/<role_name>/defaults/main.yml
+```
+
+From `defaults/main.yml`, extract:
+- Namespace patterns (e.g., `ocp4_workload_mcp_namespace: "mcp-openshift-{{ user }}"`)
+- Service URLs (e.g., `gitea_hostname: "gitea.{{ cluster_ingress_domain }}"` — no user = shared)
+- Whether service is shared or per-user (look for `{{ user }}` or `{{ LAB_USER }}` in URL/namespace vars)
+
+**C. agnosticd_user_info — what credentials are available:**
+Search each role's tasks for `agnosticd_user_info` calls:
+
+```bash
+grep -r "agnosticd_user_info" /tmp/ftl-collection-<name>/roles/<role_name>/tasks/
+```
+
+This tells you what keys are available in the Showroom `showroom-userdata` ConfigMap (e.g., `gitea_admin_username`, `gitea_admin_password`, `password`, `openshift_cluster_ingress_domain`).
+
+**D. Showroom repo URL:**
+```yaml
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<name>-showroom
+```
+
+**Present findings to developer:**
+
+```
+📋 AgV Catalog Analysis: summit-2026/lb2298-mcp-with-openshift-cnv
+
+Workloads deployed:
+  ✓ ocp4_workload_mcp_servers     → namespace: mcp-openshift-{{ user }} (per-user)
+  ✓ ocp4_workload_gitea           → hostname: gitea.{{ domain }} (SHARED)
+  ✓ ocp4_workload_showroom        → Showroom repo: github.com/rhpds/mcp-showroom
+
+agnosticd_user_info keys available (from ConfigMap):
+  password, gitea_admin_username, gitea_admin_password,
+  openshift_cluster_ingress_domain, gitea_console_url
+
+Credential approach:
+  Shared Gitea  → use GITEA_ADMIN_USER / GITEA_ADMIN_PASSWORD
+  OCP resources → admin kubeconfig + kubernetes.core.k8s_info
+
+Does this look correct? [Y/n]
+```
+
+This output feeds directly into Step 2 (Showroom content analysis) and Step 3 (configuration). Namespace patterns and service classification are now fact-based, not guessed.
+
+**If NO (AgV not available):**
+Continue to Step 2. Namespace patterns and service types will be extracted from Showroom `.adoc` files only — verify carefully with the developer.
+
+---
+
 ### Step 2: Locate Workshop Content
 
 Ask:
