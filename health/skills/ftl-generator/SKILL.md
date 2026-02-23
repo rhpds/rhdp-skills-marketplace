@@ -70,6 +70,19 @@ See @health/docs/FTL-PATTERNS.md for:
 - Show brief confirmations: "Created: grade_module_01.yml (120 lines, 8 checkpoints)"
 - Keep total output under 5000 tokens
 
+### **4. ONE MODULE AT A TIME — DO NOT DEVIATE FROM THE MODULE CONTENT**
+
+**THIS IS A STRICT RULE. NO EXCEPTIONS.**
+
+- **Generate graders ONLY for what is explicitly written in that module's `.adoc` files.** No more, no less.
+- **Do NOT add checks because they "seem logical" or "would be good to verify".** If a student action is not in the module content, it does not get a grader.
+- **Do NOT invent resource names, namespace names, or workflow steps.** Every graded item must have a direct source in the module text — a command the student runs, a resource they create, an action they take.
+- **Do NOT carry over checks from other modules.** Module 1 graders only check Module 1 exercises. Module 2 graders only check Module 2 exercises.
+- **If you are unsure whether a resource is created in this module, ASK the developer.** Do not assume.
+- **Generate Module 1 only. Stop. Let the developer test it. Only proceed to Module 2 after the developer confirms Module 1 passes.**
+
+The reason this rule exists: invented checks are hard to debug (grader always FAILS for something the student never did), and scope creep across modules causes confusion about what test belongs where. Strict module fidelity is non-negotiable.
+
 ---
 
 ### Step 1: Locate FTL Repository
