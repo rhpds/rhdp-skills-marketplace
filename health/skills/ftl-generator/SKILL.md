@@ -100,6 +100,108 @@ The reason this rule exists: invented checks are hard to debug (grader always FA
 
 ---
 
+### Step 0.5: Order and Access a Deployed Environment (REQUIRED BEFORE ANYTHING ELSE)
+
+**You cannot write accurate graders without a live environment.** Namespace names, API endpoints, job template names, and service URLs must come from the real cluster — not guessed.
+
+Ask the developer:
+
+```
+⚠️  Before we start, do you have a deployed lab environment available?
+
+You need:
+1. A running lab ordered from RHDP (integration.demo.redhat.com or demo.redhat.com)
+2. Access to the cluster — either:
+   - Bastion host SSH access, OR
+   - Laptop with kubeconfig pointing to the right cluster
+3. Lab credentials from the Showroom User tab (password, cluster domain, etc.)
+
+Do you have all of this? [Y/n]
+```
+
+**If NO — stop here:**
+```
+Please order the lab environment first:
+1. Go to https://demo.redhat.com (or integration.demo.redhat.com)
+2. Find the catalog item for this lab and order it
+3. Wait for provisioning (~15-60 minutes depending on lab type)
+4. Come back when you have bastion/kubeconfig access
+
+We cannot write accurate graders without real data from the deployed environment.
+```
+
+**If YES — run discovery commands:**
+
+Ask the developer to run these and paste the output. This gives us ground truth for namespaces, services, and credentials.
+
+**For OCP labs:**
+```bash
+# 1. What namespaces exist for this lab user?
+oc get namespaces --no-headers | awk '{print $1}' | grep -E "user|wksp|workshop|mcp|lab|agent|gitea|librechat"
+
+# 2. What's running in each namespace? (replace with actual namespace from above)
+oc get pods -n <user-namespace> --no-headers
+
+# 3. Get Showroom credentials ConfigMap
+oc get configmap showroom-userdata \
+  -n $(oc get ns --no-headers | awk '{print $1}' | grep showroom | head -1) \
+  -o jsonpath='{.data.user_data\.yml}' 2>/dev/null || \
+oc get configmap showroom-userdata \
+  -n showroom-$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}' | cut -d. -f2)-1-user1 \
+  -o jsonpath='{.data.user_data\.yml}' 2>/dev/null
+```
+
+**For AAP labs:**
+```bash
+# 4. What job templates exist in AAP? (CRITICAL — match names EXACTLY including typos)
+curl -sk -u lab-user:${AAP_PASSWORD} \
+  ${AAP_HOSTNAME}/api/controller/v2/job_templates/ \
+  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]" | sort
+
+# 5. What workflow templates exist?
+curl -sk -u lab-user:${AAP_PASSWORD} \
+  ${AAP_HOSTNAME}/api/controller/v2/workflow_job_templates/ \
+  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]"
+```
+
+**For unknown APIs (RHDH, LibreChat, MCP, custom services):**
+
+If a lab involves an API the skill doesn't know, ask the developer to probe it:
+
+```
+I'm not familiar with the [service name] API.
+Can you run these from the bastion and paste the response?
+
+# Find the route/URL
+oc get routes -n <namespace> --no-headers
+
+# Test the API root
+curl -sk https://<service-url>/api/ | python3 -m json.tool | head -50
+
+# If it needs auth, try with the lab password
+curl -sk -H "Authorization: Bearer ${PASSWORD}" \
+  https://<service-url>/api/ | python3 -m json.tool | head -50
+```
+
+Paste the response and I'll identify:
+- What endpoints exist
+- What fields to check for validation
+- How to authenticate
+
+**⚠️ CRITICAL — kubeconfig context:**
+If running from laptop, always `oc login` to the correct cluster IMMEDIATELY before running grade_lab/solve_lab. Your `~/.kube/config` active context at `podman run` time determines which cluster is used — a wrong context means graders run against the wrong cluster silently.
+
+```bash
+# Always do this first
+oc login https://api.cluster-TARGET.dynamic.redhatworkshops.io:6443 -u admin -p <pass>
+# Then immediately run:
+grade_lab <lab> user1 1 --podman
+```
+
+Use the discovery output from above to fill in Step 1.5 (AgV analysis) and Step 2 (service analysis) with real data rather than guesses.
+
+---
+
 ### Step 1: Locate FTL Repository
 
 Ask directly:

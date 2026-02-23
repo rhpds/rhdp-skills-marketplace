@@ -227,6 +227,201 @@ body:
 
 ---
 
+## AAP Template Names — Verify Exactly Against Live Cluster
+
+CaC playbooks sometimes create job templates with typos. Never guess the name — always verify:
+
+```bash
+curl -sk -u lab-user:${AAP_PASSWORD} \
+  ${AAP_HOSTNAME}/api/controller/v2/job_templates/ \
+  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]" | sort
+```
+
+Match **exactly** what the API returns, including typos. Example:
+- Expected: `"Ansible Leapp Lab Initialization"`
+- Actual:   `"Ansible Leapp Lab initailization"` ← typo in CaC
+
+---
+
+## Pre-Deployed vs Student-Created Resources
+
+If the Showroom module says "A project has been created for you" or "The environment has been pre-configured" — the resource is **pre-deployed**. Error messages for pre-deployed resources must **NOT** say "create it".
+
+```yaml
+# WRONG — project is pre-deployed, student cannot create it
+student_error_message: |
+  Create the project: oc new-project workshop-user1
+
+# CORRECT
+student_error_message: |
+  The project workshop-user1 was pre-created for you by the lab environment.
+  Contact your instructor if it is missing.
+```
+
+---
+
+## S2I Build Order (Critical for Solver Playbooks)
+
+When solving an S2I build exercise, create resources in this EXACT order:
+
+1. Secret (database credentials)
+2. Database Deployment + Service
+3. **ImageStream** ← MUST be before BuildConfig
+4. BuildConfig → triggers S2I build automatically
+5. Wait for build: `until: status.phase in ['Complete', 'Failed']`, `retries: 60`, `delay: 10`
+6. Deployment (full spec — image from internal registry)
+7. Service
+8. Route (with labels for service discovery)
+9. Env vars via strategic-merge (or included in initial Deployment)
+10. Health probes
+
+```yaml
+# ImageStream MUST come before BuildConfig
+- name: Create ImageStream
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: image.openshift.io/v1
+      kind: ImageStream
+      metadata:
+        name: nationalparks
+        namespace: "{{ project_name }}"
+
+- name: Create BuildConfig  # This triggers the S2I build
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      ...
+```
+
+**Why:** If BuildConfig is created first, it gets `InvalidOutputReference` error because the ImageStream doesn't exist yet. The build never starts.
+
+---
+
+## Strategic-Merge Only on Existing Objects
+
+`merge_type: strategic-merge` **only works when the target object already exists.** If the object doesn't exist yet, strategic-merge tries to CREATE it — and fails with `422 Unprocessable Entity` if the spec is partial.
+
+```yaml
+# WRONG — fails if Deployment doesn't exist yet (missing selector, labels, image)
+- kubernetes.core.k8s:
+    merge_type: strategic-merge
+    definition:
+      kind: Deployment
+      spec:
+        template:
+          spec:
+            containers:
+              - name: app
+                env: [...]   # Partial spec fails!
+
+# CORRECT — always create with full spec first
+- kubernetes.core.k8s:
+    state: present
+    definition:
+      kind: Deployment
+      spec:
+        selector:
+          matchLabels: {app: myapp}
+        template:
+          metadata:
+            labels: {app: myapp}
+          spec:
+            containers:
+              - name: myapp
+                image: image-registry.openshift-image-registry.svc:5000/{{ ns }}/myapp:latest
+                env: [...]
+```
+
+---
+
+## Tekton Triggers Pattern
+
+When a module has students create Tekton triggers from a YAML file in Gitea:
+
+```bash
+# Student runs:
+oc create -f {gitea_url}/{user}/repo/raw/branch/master/pipeline/triggers.yaml
+```
+
+The YAML typically creates 3 resources. Solver should create all 3 directly:
+
+```yaml
+- name: Create TriggerTemplate
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: triggers.tekton.dev/v1beta1
+      kind: TriggerTemplate
+      ...
+
+- name: Create TriggerBinding
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: triggers.tekton.dev/v1beta1
+      kind: TriggerBinding
+      ...
+
+- name: Create EventListener
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: triggers.tekton.dev/v1beta1
+      kind: EventListener
+      metadata:
+        name: "{{ pipeline_name }}"
+      spec:
+        serviceAccountName: pipeline
+        triggers:
+          - bindings:
+              - ref: "{{ pipeline_name }}"
+            template:
+              ref: "{{ pipeline_name }}"
+```
+
+Read the actual YAML from the student's Gitea repo to get the exact spec.
+
+---
+
+## Verify Critical Files After Git Merges
+
+After any merge conflict resolution, verify key files aren't empty:
+
+```bash
+find labs/ -name "*.yml" -empty
+```
+
+Empty playbook files = lost content. Recreate from memory or git history.
+
+---
+
+## Unknown APIs — Ask the Developer to Probe Them
+
+For APIs the skill doesn't know (RHDH, LibreChat, MCP servers, custom services), do NOT guess. Ask the developer to run test commands from the deployed environment and share the output.
+
+```bash
+# Find routes in the namespace
+oc get routes -n <namespace> --no-headers
+
+# Probe the API root
+curl -sk https://<route-url>/api/ | python3 -m json.tool | head -60
+
+# If auth needed
+curl -sk -H "Authorization: Bearer ${PASSWORD}" https://<route-url>/api/v1/ | python3 -m json.tool
+```
+
+From the response, identify:
+- Available endpoints to check
+- Fields that indicate health/configuration
+- Auth mechanism
+
+Then write a grader using `grader_check_http_endpoint` or `grader_check_http_json_response` based on actual API structure — never guess.
+
+---
+
 ## Error Message Quality
 
 Good error messages include: what failed, why it failed, how to fix it, and commands to check status.
