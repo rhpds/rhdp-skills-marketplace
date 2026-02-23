@@ -222,21 +222,65 @@ Use that version, or `v1.5.1` as minimum if nothing higher found.
 
 ## Step 6: Showroom Configuration
 
-cloud-vms-base uses bastion-side showroom. The OCP console embed workload (`ocp4_workload_ocp_console_embed`) requires an OCP cluster and **must NOT be added** to a cloud-vms-base catalog.
+cloud-vms-base uses bastion-side showroom (`vm_workload_showroom`). It uses the same **nookbag** frontend as OCP showroom — split view, view_switcher, and tab embedding all work identically. The difference is what you embed: instead of the OCP console, you embed bastion terminals, AAP dashboards, RHEL consoles, or any HTTPS URL.
 
-**Ask:**
+⚠️ **Do NOT add** `ocp4_workload_ocp_console_embed` — it requires an OCP cluster.
+⚠️ **Requires Showroom 1.5.1+** for split view and view_switcher.
+
+**Ask sequentially:**
+
+**Question A — Include a Showroom lab guide?**
 
 ```
 Q: Will this catalog include a Showroom lab guide? [Y/n]
 ```
 
-**If YES:**
+If NO → skip this step entirely.
+
+**Question B — Showroom repository:**
 
 ```
 Q: URL or local path to the Showroom repository:
 ```
 
-Check for Showroom 1.5.1 structure if local path provided.
+Check for Showroom 1.5.1 structure if local path provided (`site.yml` or `default-site.yml`, `ui-config.yml`, `supplemental-ui/`).
+
+**Question C — Consoles and tools to embed in tabs:**
+
+```
+Q: What should learners see in the Showroom right panel?
+
+Each tab appears as a clickable pane next to the lab guide.
+
+Common options for VM catalogs:
+- Bastion terminal  → port: 3000, path: /wetty
+- AAP dashboard     → url: https://aap.${DOMAIN}
+- RHEL Cockpit      → url: https://cockpit.${DOMAIN}:9090
+- Grafana           → url: https://grafana.${DOMAIN}
+- Code Server       → port: 3001, path: /code
+- Custom app        → any https:// URL or port/path on bastion
+- External docs     → url: https://docs.redhat.com/... (external: true)
+
+List each as: name | url  OR  name | port + path
+
+Examples:
+  Terminal | /wetty (port 3000)
+  AAP Dashboard | https://aap.${DOMAIN}
+
+You can also configure this later by editing ui-config.yml in your Showroom repo.
+
+Your tabs (or press Enter to leave as commented-out examples):
+```
+
+**Question D — ui-bundle theme:**
+
+```
+Q: Which ui-bundle theme do you need?
+
+Default: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
+
+Press Enter to use the default, or paste a different URL:
+```
 
 **Generate Showroom section for common.yaml:**
 
@@ -255,9 +299,41 @@ showroom_git_repo: https://github.com/rhpds/<short-name>-showroom
 showroom_git_ref: main
 ```
 
-**No dev_mode variable for VM showroom** — `vm_workload_showroom` has no Antora dev mode toggle. No dev.yaml override needed.
+**Generate `ui-config.yml`** in the Showroom repo root (Showroom 1.5.1 format):
 
-**If NO:** Skip showroom entirely. No showroom workload or collection added.
+```yaml
+---
+type: showroom
+
+default_width: 30
+persist_url_state: true
+
+view_switcher:
+  enabled: true
+  default_mode: split
+
+tabs:
+{{ generated_tabs_from_Question_C }}
+```
+
+If user pressed Enter (no tabs), add common VM examples as commented lines:
+
+```yaml
+tabs:
+# - name: Terminal
+#   port: 3000
+#   path: /wetty
+# - name: AAP Dashboard
+#   url: 'https://aap.${DOMAIN}'
+# - name: RHEL Cockpit
+#   url: 'https://cockpit.${DOMAIN}:9090'
+```
+
+**If tabs use dynamic hostnames**, instruct user that `${DOMAIN}` is resolved at runtime by the showroom role from the bastion hostname — no hardcoding needed.
+
+**No dev_mode variable** — `vm_workload_showroom` has no Antora dev mode toggle. No dev.yaml override needed.
+
+**If NO (no Showroom):** Skip entirely. No showroom workload, collection, or ui-config.yml added.
 
 ---
 
