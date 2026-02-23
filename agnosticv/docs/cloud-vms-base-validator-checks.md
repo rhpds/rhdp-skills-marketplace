@@ -109,6 +109,18 @@ def check_vms_infrastructure(config):
                         'directories, or separate VMs.'
     })
 
+  # Cross-bleed check: OCP scaling vars must not appear in cloud-vms-base
+  ocp_bleed_vars = ['openshift_cnv_scale_cluster', 'worker_instance_count', 'ai_workers_cores', 'ai_workers_memory']
+  for var in ocp_bleed_vars:
+    if var in config:
+      warnings.append({
+        'check': 'infrastructure',
+        'severity': 'WARNING',
+        'message': f'OCP-specific scaling variable found in cloud-vms-base catalog: {var}',
+        'location': f'common.yaml:{var}',
+        'recommendation': 'This variable only applies to OCP CNV clusters — remove it from VM catalogs'
+      })
+
   passed_checks.append(f"✓ Infrastructure type: cloud-vms-base ({cloud_provider or 'cnv'})")
 ```
 

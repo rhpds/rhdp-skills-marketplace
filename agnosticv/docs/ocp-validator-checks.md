@@ -266,7 +266,7 @@ def check_ocp_showroom(config):
         except yaml.YAMLError:
           pass  # YAML syntax errors handled by Check 4
 
-    showroom_vars = [k for k in config.keys() if 'showroom_content_git_repo' in k]
+    showroom_vars = [k for k in config.keys() if k == 'ocp4_workload_showroom_content_git_repo']
     if not showroom_vars:
       errors.append({
         'check': 'showroom',

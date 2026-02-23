@@ -119,12 +119,14 @@ Step 0:   Prerequisites & Scope Selection
   ├─ Full Catalog →
   │    Step 1: Context (event + type + technologies)
   │    Step 2: Discovery (search AgV for reference)
-  │    Step 3: Infrastructure (OCP or VMs, sizing)
-  │    Step 4: Authentication
-  │    Step 5: Workloads  +  Step 5.5: Versions (auto)
-  │    Step 6: Showroom
-  │    Step 7: Catalog Details  +  Step 7a: Repo setup
-  │    Step 8: Multi-user
+  │    Step 3: Infrastructure gate (OCP or VMs?)
+  │            ├─ OCP → @agnosticv/docs/ocp-catalog-questions.md
+  │            │        (Steps 3B-8: cluster size, version, pool, auth,
+  │            │         workloads, LiteMaaS, showroom+console_embed, multi-user)
+  │            └─ VMs → @agnosticv/docs/cloud-vms-base-catalog-questions.md
+  │                     (Steps 3B-8: CNV/AWS, RHEL image, ports, auth skip,
+  │                      VM workloads, vm_workload_showroom, multi-user warning)
+  │    Step 7: Catalog Details  +  Step 7a: Repo setup  ← return point
   │    Step 9: Generate Files (common.yaml, dev.yaml, description, info-message)
   │    Step 10: Directory Path
   │    Step 11: Write Files
@@ -510,9 +512,21 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 **Auto-add `#include` lines at the top — only what's needed:**
 
 **Standard boilerplate** (always):
+
+**Icon include — conditional on infra type:**
+- OCP catalogs: `#include /includes/catalog-icon-openshift.yaml`
+- cloud-vms-base catalogs: Ask user which icon applies:
+  ```
+  Q: Which product icon should this catalog use?
+  1. catalog-icon-openshift.yaml  (OpenShift)
+  2. catalog-icon-rhel.yaml       (RHEL)
+  3. catalog-icon-aap.yaml        (Ansible Automation Platform)
+  ```
+  Use the answer in the include line below.
+
 ```
 #include /includes/agd-v2-mapping.yaml
-#include /includes/catalog-icon-openshift.yaml
+#include /includes/catalog-icon-<chosen>.yaml
 #include /includes/terms-of-service.yaml
 #include /includes/parameters/purpose.yaml
 #include /includes/parameters/salesforce-id.yaml
@@ -557,9 +571,9 @@ __meta__:
 
 **Note:** dev.yaml is minimal — only overrides scm_ref and sets purpose tag for cost tracking.
 
-#### 9.2a: Generate `__meta__` block (REQUIRED — ask sequentially)
+#### 9.2a: Generate `__meta__` block for `common.yaml` (REQUIRED — ask sequentially)
 
-The `__meta__` block is generated based on all information collected. Use the following rules exactly.
+**This block goes into `common.yaml`, not `dev.yaml`.** The `__meta__` block is generated based on all information collected. Use the following rules exactly.
 
 **NEVER define `anarchy.namespace`** — it is set at the top level of AgV now. Omit it entirely.
 
