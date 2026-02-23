@@ -141,9 +141,9 @@ For each module file, extract:
 
 ### Step 3: Determine Lab Configuration
 
-Ask these questions ONE AT A TIME:
+Ask these questions ONE AT A TIME.
 
-**Question 1:**
+**Question 1 — Lab short name:**
 ```
 What short name should this lab use for the grade_lab/solve_lab commands?
 
@@ -156,91 +156,94 @@ Your lab short name:
 
 WAIT for answer.
 
-**Question 2:**
+**Question 2 — Lab type (routes the rest of the questions):**
 ```
-Is this a multi-user or single-user lab?
+What type of lab is this?
 
-1. Multi-user (multiple students share one cluster, each gets their own namespace)
-   Example: workshop-user1, workshop-user2
-   Usage: grade_lab lab-name user1
+1. OpenShift-based  (OCP cluster — pods, routes, builds, pipelines, operators)
+2. RHEL / AAP-based (VMs — systemd services, packages, AAP job templates, RHEL upgrades)
 
-2. Single-user (one student per environment, no namespace isolation needed)
-   Usage: grade_lab lab-name (no user argument)
-
-Your choice: [1/2]
+Choice [1/2]:
 ```
 
 WAIT for answer.
 
-**If multi-user, ask:**
+---
+
+**BRANCH 1: OpenShift-based lab**
+
+**Question 3 — Multi-user or single-user:**
+```
+Is this a multi-user or single-user OpenShift lab?
+
+1. Multi-user — multiple students share one cluster, each gets their own namespace
+   Example: wksp-user1, mcp-openshift-user1
+   Usage: grade_lab lab-name user1
+
+2. Single-user — one student per cluster, no namespace isolation needed
+   Usage: grade_lab lab-name (no user argument)
+
+Choice [1/2]:
+```
+
+WAIT for answer.
+
+**If multi-user — Question 4: namespace pattern:**
 ```
 What namespace pattern do per-user namespaces follow?
 
-Examples:
-- workshop-{{ LAB_USER }} (e.g., workshop-user1)
-- {{ LAB_USER }}-aap-instance (e.g., user1-aap-instance)
-- mcp-openshift-{{ LAB_USER }} (e.g., mcp-openshift-user1)
+⚠️  Get this from the module .adoc files — look for 'oc new-project <name>'
+    or '-n <namespace>' in student commands. Never assume or invent it.
 
-Your namespace pattern:
+Examples found in real labs:
+- wksp-{{ LAB_USER }}              (ocp4-getting-started — NOT workshop-!)
+- mcp-openshift-{{ LAB_USER }}     (mcp-with-openshift)
+- librechat-{{ LAB_USER }}         (mcp-with-openshift, second namespace)
+
+Your namespace pattern (from the .adoc files):
 ```
 
 WAIT for answer.
 
-**If multi-user, also ask (CRITICAL for credential handling):**
+**Auto-set from lab type:**
+- OCP multi-user → use admin kubeconfig + `kubernetes.core.k8s_info` scoped to student namespace
+- Grader needs: `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `PASSWORD`
+- If lab uses Gitea: also `GITEA_ADMIN_USER`, `GITEA_ADMIN_PASSWORD`
+
+**If single-user OCP:**
+- No namespace isolation — grader uses whatever namespace the lab creates
+- `LAB_USER` falls back to `$USER`
+
+---
+
+**BRANCH 2: RHEL / AAP-based lab**
+
+**Auto-set:** Single-user only. No multi-user question needed — RHEL/AAP labs provision one environment per student, no shared cluster.
+
+**Required env vars for AAP labs:**
+- `AAP_HOSTNAME` — AAP Controller URL (maps to Showroom `{controller_url}`)
+- `AAP_PASSWORD` — AAP password (maps to Showroom `{controller_password}`)
+- `AAP_USERNAME` — AAP username (default: `lab-user`)
+
+**Note:** Match job/workflow template names EXACTLY as they appear in AAP — including any typos created by CaC playbooks. Always verify against the live cluster:
+```bash
+curl -sk -u lab-user:$AAP_PASSWORD $AAP_HOSTNAME/api/controller/v2/job_templates/ \
+  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]"
 ```
-How should the grader authenticate when checking student resources?
 
-In multi-user labs, passwords are randomly generated per user so the grader
-cannot know individual passwords. Choose the right approach:
+---
 
-1. oc --as impersonation (recommended)
-   Uses admin kubeconfig + oc --as=<user> to run commands in student context.
-   Tests RBAC correctly without needing student passwords.
-   Works for any number of users.
+**Question 5 — Additional environment variables:**
+```
+Any additional environment variables beyond what's standard for this lab type?
 
-2. Common workshop password
-   Lab uses a fixed known password (e.g., "redhat") for all students.
-   Grader logs in as student with that password.
-   Requires: ocp4_workload_authentication_user_password set to a known value in AgV.
+(Standard OCP vars: OPENSHIFT_CLUSTER_INGRESS_DOMAIN, PASSWORD
+ Standard AAP vars: AAP_HOSTNAME, AAP_PASSWORD, AAP_USERNAME)
 
-3. Admin namespace scoping
-   Uses admin kubeconfig, checks resources directly in student namespace.
-   Does NOT test student RBAC — only checks resources exist.
-
-Your choice: [1/2/3]
+Additional vars (or press Enter if none):
 ```
 
 WAIT for answer.
-
-**If impersonation (choice 1) — read Showroom modules** to understand what the student does, then use `--as={{ lab_user }}` on all `oc` commands in the grader.
-
-**If common password (choice 2) — ask:**
-```
-What is the common password used for all student accounts?
-(This must match ocp4_workload_authentication_user_password in common.yaml)
-
-Password:
-```
-
-**Question 3:**
-```
-What environment variables does this lab require beyond the standard ones?
-
-Standard (always set these):
-- OPENSHIFT_CLUSTER_INGRESS_DOMAIN — OCP cluster apps domain
-- PASSWORD — user password (from Showroom User tab)
-
-OCP labs with Gitea (e.g., MCP):
-- GITEA_ADMIN_USER — admin username from showroom-userdata ConfigMap
-- GITEA_ADMIN_PASSWORD — admin password from showroom-userdata ConfigMap
-
-AAP labs (e.g., RIPU):
-- AAP_HOSTNAME — AAP Controller URL (maps to Showroom {controller_url})
-- AAP_PASSWORD — AAP password (maps to Showroom {controller_password})
-- AAP_USERNAME — AAP username (default: lab-user)
-
-Any additional lab-specific vars?
-```
 
 WAIT for answer.
 
