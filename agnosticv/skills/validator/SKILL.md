@@ -614,8 +614,30 @@ def check_best_practices(config):
       'recommendation': 'Keep display names under 60 characters for better UX'
     })
   
-  # Keywords count check removed — search already indexes display_name and description,
-  # so keyword count is not a meaningful discoverability signal.
+  # Check keywords exist and are meaningful
+  # Count doesn't matter — search indexes display_name and description already.
+  # Keywords must add specific discriminating value beyond what category/title implies.
+  keywords = config.get('__meta__', {}).get('catalog', {}).get('keywords', [])
+
+  if not keywords:
+    suggestions.append({
+      'check': 'best_practices',
+      'message': 'No keywords defined',
+      'recommendation': 'Add specific technology keywords to help users find this catalog '
+                        '(e.g., "mcp", "leapp", "tekton", "cnpg", "ibm-fusion")'
+    })
+  else:
+    generic_keywords = {'workshop', 'demo', 'lab', 'sandbox', 'openshift', 'ansible',
+                        'rhel', 'tutorial', 'training', 'course', 'test', 'example'}
+    generic_found = [k for k in keywords if k.lower() in generic_keywords]
+    if generic_found:
+      suggestions.append({
+        'check': 'best_practices',
+        'message': f'Keywords contain generic terms that add no discriminating value: {generic_found}',
+        'recommendation': 'Replace generic keywords with specific technology or topic terms '
+                          '(e.g., "mcp", "leapp", "tekton") — generic words like "workshop" '
+                          'or "openshift" are already implied by the category and title'
+      })
 
   # Check for abstract
   if 'abstract' not in config.get('__meta__', {}).get('catalog', {}):
