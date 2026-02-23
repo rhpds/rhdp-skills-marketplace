@@ -300,7 +300,8 @@ def check_ocp_multiuser(config):
   multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
 
   if not multiuser:
-    return  # Skip checks for single-user
+    passed_checks.append("✓ Single-user catalog (multiuser: false)")
+    return
 
   parameters = config.get('__meta__', {}).get('catalog', {}).get('parameters', [])
   num_users_param = next((p for p in parameters if p.get('name') == 'num_users'), None)

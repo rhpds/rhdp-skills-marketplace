@@ -1153,12 +1153,13 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
     passed_checks.append(f"✓ Directory naming convention followed: {catalog_slug}")
 
   # --- Showroom repo naming ---
-  # Check both OCP and VM variable names
+  # OCP catalogs use ocp4_workload_showroom_content_git_repo
+  # VM catalogs use showroom_git_repo (verified against real vllm-playground-aws catalog)
   showroom_repo = (config.get('ocp4_workload_showroom_content_git_repo', '') or
-                   config.get('vm_workload_showroom_content_git_repo', ''))
+                   config.get('showroom_git_repo', ''))
   repo_var = ('ocp4_workload_showroom_content_git_repo'
               if config.get('ocp4_workload_showroom_content_git_repo')
-              else 'vm_workload_showroom_content_git_repo')
+              else 'showroom_git_repo')
   if showroom_repo:
     # Extract repo name from URL
     repo_name = showroom_repo.rstrip('/').split('/')[-1].replace('.git', '')
@@ -1181,6 +1182,8 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
                         if 'agnosticd/showroom' in c.get('name', '')), None)
 
   # cloud-vms-base: showroom is optional — only error if a showroom workload is in use
+  # config_type must be assigned before use here
+  config_type = config.get('config', '')
   workloads = config.get('workloads', [])
   showroom_in_use = any('showroom' in w for w in workloads)
 
