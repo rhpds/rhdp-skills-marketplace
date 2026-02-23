@@ -136,17 +136,41 @@ If yes, provide:
 
 **If YES — read `common.yaml` and extract:**
 
-**A. Workloads deployed:**
-Read the `workloads:` list. Each workload is `namespace.collection.role_name`. These tell you exactly what was installed.
+**A. Determine lab infrastructure type from `config:` field:**
 
 ```yaml
-workloads:
-- agnosticd.showroom.ocp4_workload_showroom        # → Showroom deployed
-- rhpds.mcp.ocp4_workload_mcp_servers              # → MCP servers deployed
-- agnosticd.core_workloads.ocp4_workload_gitea     # → Gitea deployed (shared or per-user?)
+config: openshift-workloads    # → OCP cluster lab
+config: cloud-vms-base         # → RHEL/VM lab (AAP, RHEL upgrades, etc.)
 ```
 
-**B. Collections — clone each to read role defaults:**
+This tells you immediately whether you're dealing with OCP resources or RHEL/AAP resources — which determines what grader roles apply.
+
+**B. Workloads deployed:**
+Read the `workloads:` list. Each workload is `namespace.collection.role_name`.
+
+*OCP lab examples:*
+```yaml
+workloads:
+- agnosticd.showroom.ocp4_workload_showroom        # → Showroom on OCP
+- rhpds.mcp.ocp4_workload_mcp_servers              # → MCP servers, per-user namespaces
+- agnosticd.core_workloads.ocp4_workload_gitea     # → Gitea (shared or per-user?)
+```
+
+*RHEL/VM lab examples:*
+```yaml
+workloads:
+- rhpds.ripu.configure_aap                         # → AAP configured on controller
+- agnosticd.showroom.vm_workload_showroom           # → Showroom on bastion VM
+```
+
+**C. Multi-user detection:**
+Check `__meta__.catalog.multiuser` in common.yaml:
+- `multiuser: true` → multiple students share one cluster, each gets namespaced resources
+- `multiuser: false` or absent → single-user (one environment per student, no namespace isolation)
+
+For single-user OCP or RHEL/VM labs: no namespace derivation from `LAB_USER` needed. The lab runs as a single user (`$USER` or `lab-user`).
+
+**D. Collections — clone each to read role defaults:**
 From `requirements_content.collections`, find the GitHub URLs. Clone each collection repo (to `/tmp/ftl-collection-<name>/`) and read each workload role's `defaults/main.yml`:
 
 ```bash
@@ -154,47 +178,86 @@ git clone <collection_url> /tmp/ftl-collection-<name>/
 cat /tmp/ftl-collection-<name>/roles/<role_name>/defaults/main.yml
 ```
 
-From `defaults/main.yml`, extract:
-- Namespace patterns (e.g., `ocp4_workload_mcp_namespace: "mcp-openshift-{{ user }}"`)
-- Service URLs (e.g., `gitea_hostname: "gitea.{{ cluster_ingress_domain }}"` — no user = shared)
-- Whether service is shared or per-user (look for `{{ user }}` or `{{ LAB_USER }}` in URL/namespace vars)
+From `defaults/main.yml`, extract per lab type:
 
-**C. agnosticd_user_info — what credentials are available:**
-Search each role's tasks for `agnosticd_user_info` calls:
+*OCP labs:*
+- Namespace patterns — look for vars containing `namespace` or `project` with `{{ user }}` → per-user; without → shared
+- Service URLs — `{{ user }}` or `{{ LAB_USER }}` in hostname → per-user; domain-only → shared
+
+*RHEL/VM labs:*
+- AAP controller URL var (e.g., `aap_controller_url`) — maps to env var `AAP_HOSTNAME`
+- Job template names created by the workload — match these exactly in graders
+- Node inventory patterns (e.g., `node1`, `node2`, `node3` for RHEL upgrade labs)
+- Service endpoints on the bastion (ports, paths)
+
+**E. agnosticd_user_info — what's available in Showroom ConfigMap:**
+Search each role's tasks for `agnosticd_user_info`:
 
 ```bash
 grep -r "agnosticd_user_info" /tmp/ftl-collection-<name>/roles/<role_name>/tasks/
 ```
 
-This tells you what keys are available in the Showroom `showroom-userdata` ConfigMap (e.g., `gitea_admin_username`, `gitea_admin_password`, `password`, `openshift_cluster_ingress_domain`).
+Keys found here map directly to what's available in `showroom-userdata` ConfigMap (e.g., `password`, `gitea_admin_username`, `aap_hostname`, `controller_password`).
 
-**D. Showroom repo URL:**
-```yaml
-ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<name>-showroom
-```
+**F. Showroom repo (if applicable):**
+- OCP: `ocp4_workload_showroom_content_git_repo:`
+- VM: `showroom_git_repo:`
 
-**Present findings to developer:**
+**Present findings to developer — adapted to lab type:**
 
+*OCP multi-user example:*
 ```
 📋 AgV Catalog Analysis: summit-2026/lb2298-mcp-with-openshift-cnv
 
-Workloads deployed:
-  ✓ ocp4_workload_mcp_servers     → namespace: mcp-openshift-{{ user }} (per-user)
-  ✓ ocp4_workload_gitea           → hostname: gitea.{{ domain }} (SHARED)
-  ✓ ocp4_workload_showroom        → Showroom repo: github.com/rhpds/mcp-showroom
+Infrastructure: OCP cluster (multi-user: true)
 
-agnosticd_user_info keys available (from ConfigMap):
-  password, gitea_admin_username, gitea_admin_password,
-  openshift_cluster_ingress_domain, gitea_console_url
+Workloads + resources:
+  ✓ ocp4_workload_mcp_servers  → namespace: mcp-openshift-{{ user }} (PER-USER)
+  ✓ ocp4_workload_gitea        → hostname: gitea.{{ domain }} (SHARED)
+  ✓ ocp4_workload_showroom     → Showroom: github.com/rhpds/mcp-showroom
+
+agnosticd_user_info keys: password, gitea_admin_username, gitea_admin_password
 
 Credential approach:
-  Shared Gitea  → use GITEA_ADMIN_USER / GITEA_ADMIN_PASSWORD
-  OCP resources → admin kubeconfig + kubernetes.core.k8s_info
-
-Does this look correct? [Y/n]
+  Shared Gitea  → GITEA_ADMIN_USER / GITEA_ADMIN_PASSWORD
+  OCP resources → admin kubeconfig + kubernetes.core.k8s_info scoped to namespace
 ```
 
-This output feeds directly into Step 2 (Showroom content analysis) and Step 3 (configuration). Namespace patterns and service classification are now fact-based, not guessed.
+*OCP single-user example:*
+```
+📋 AgV Catalog Analysis: agd_v2/my-single-user-demo-cnv
+
+Infrastructure: OCP cluster (multi-user: false)
+
+Workloads: ocp4_workload_myapp
+  → fixed namespace: my-demo (no per-user isolation)
+
+Credential approach:
+  Single student per cluster → admin kubeconfig, namespace fixed
+  No LAB_USER namespace derivation needed
+```
+
+*RHEL/VM lab example:*
+```
+📋 AgV Catalog Analysis: agd_v2/automating-ripu-with-ansible
+
+Infrastructure: cloud-vms-base (RHEL VMs, single-user)
+
+Workloads + resources:
+  ✓ configure_aap  → AAP controller at: https://controller.{{ ingress_domain }}
+                     Job templates: "AUTO / 01 Analysis", "AUTO / 02 Upgrade"
+                     Node inventory: node1, node2, node3
+
+agnosticd_user_info keys: controller_url, controller_password, lab-user
+
+Credential approach:
+  AAP graders → AAP_HOSTNAME, AAP_PASSWORD env vars
+  Remote node checks → SSH via bastion inventory
+```
+
+Does this look correct? [Y/n]
+
+This output feeds directly into Step 2 (Showroom content analysis) and Step 3 (configuration). Namespace patterns, service classification, and credential approach are now fact-based from role source code, not guessed.
 
 **If NO (AgV not available):**
 Continue to Step 2. Namespace patterns and service types will be extracted from Showroom `.adoc` files only — verify carefully with the developer.
