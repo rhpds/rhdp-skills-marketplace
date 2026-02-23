@@ -53,6 +53,37 @@ Also check for related context:
 - Call `get_comments` for the host/service to see if there are notes from other engineers.
 - Call `get_downtimes` for the host/service to check for scheduled maintenance.
 
+### 0.1. Determine the Deployment Platform
+
+The `attrs.vars` object on the host contains metadata that identifies where and how the cluster is deployed. Call `get_hosts` with a filter for the host name if you don't already have the host vars, then determine the platform using the following signals.
+
+**Primary signal — `hosttype`:**
+
+| `hosttype` value | Platform | Cloud Provider |
+|---|---|---|
+| `shared_ocp_token_virt` | OCP with OpenShift Virtualization (CNV) | IBM Cloud bare metal |
+| `shared_ocp_naas` | NaaS — OCP deployed as VMs on CNV | IBM Cloud (nested on CNV) |
+| `infra_ocp_babylon` | Babylon control-plane OCP | AWS |
+| `infra_ocp_nonbabylon` | Infrastructure OCP | Varies (check `bastion_user`) |
+
+**Fallback signals** (when `hosttype` is absent or ambiguous):
+- `bastion_user == "ec2-user"` → AWS
+- `bastion_user == "root"` → IBM Cloud bare metal
+- `bastion_user == "cloud-user"` → CNV VM
+- `bastion_user == "lab-user"` → HCP (Hosted Control Plane) on CNV
+- Address containing `.infra.demo.redhat.com` → IBM Cloud
+- Address containing `.infra.open.redhat.com` → AWS
+- Address containing `.rhdp.net` → CNV NaaS
+- Config directory in `monitoring-config`: `virt/` = CNV, `babylon/` = AWS, `naas/` = CNV NaaS, `maas/` = IBM Cloud
+
+**Why this matters for troubleshooting:**
+- **CNV clusters** (`shared_ocp_token_virt`): The OCP cluster runs as VMs on a host OCP cluster (the `ocpvNN` bare-metal hosts on IBM Cloud). Issues may stem from the underlying hypervisor, VM scheduling, or the CNV/OpenShift Virtualization operator. The `bastion_address` pointing to an `ocpvNN` host reveals which parent cluster hosts it.
+- **NaaS clusters** (`shared_ocp_naas`): Nested further — OCP VMs on CNV on IBM Cloud. The `bastion_address` with a non-standard `ssh_port` indicates the jump path through the parent cluster.
+- **AWS clusters** (`infra_ocp_babylon`): Standard IPI-deployed OCP on EC2. Issues may relate to AWS infrastructure (VPCs, EBS, Route53, IAM). Bastion access is via `ec2-user`.
+- **IBM Cloud bare metal** (the `ocpvNN` hosts themselves): Run directly on IBM Cloud bare-metal servers in datacenters like `dal10`, `wdc06`, `wdc07`, `dal13`. These are the foundation that CNV and NaaS clusters sit on.
+
+Record the platform determination — you will include it in the output.
+
 ### 0.5. Locate the Check Script
 
 After identifying the alert, find and read the source of the monitoring script that produced the check result.
@@ -107,6 +138,7 @@ Use the `rhpds/monitoring-config` repo to gather context about how this host, se
 
 ### Alert Status: [STATUS]
 **Host:** `host_name` | **Service:** `service_display_name` (`service_name`)
+**Platform:** [Platform description] (hosttype: `hosttype_value`, provider: AWS/IBM Cloud/CNV)
 **Summary:** One sentence summary.
 **Acknowledged:** Yes/No | **In Downtime:** Yes/No
 

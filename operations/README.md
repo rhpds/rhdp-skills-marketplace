@@ -40,7 +40,7 @@ The Icinga MCP server runs as a container via Podman and provides tools to query
         "ICINGA_PASSWORD",
         "-e",
         "ICINGA_VERIFY_SSL",
-        "quay.io/rhpds/monitoring-mcp:v0.0.1-beta",
+        "quay.io/rhpds/monitoring-mcp:latest",
         "--transport",
         "stdio"
       ],
