@@ -614,17 +614,9 @@ def check_best_practices(config):
       'recommendation': 'Keep display names under 60 characters for better UX'
     })
   
-  # Check for keywords
-  keywords = config.get('__meta__', {}).get('catalog', {}).get('keywords', [])
-  
-  if len(keywords) < 3:
-    suggestions.append({
-      'check': 'best_practices',
-      'message': 'Few keywords defined',
-      'current': len(keywords),
-      'recommendation': 'Add 3-5 keywords for better discoverability'
-    })
-  
+  # Keywords count check removed — search already indexes display_name and description,
+  # so keyword count is not a meaningful discoverability signal.
+
   # Check for abstract
   if 'abstract' not in config.get('__meta__', {}).get('catalog', {}):
     suggestions.append({
