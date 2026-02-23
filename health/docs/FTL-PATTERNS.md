@@ -447,6 +447,61 @@ Empty playbook files = lost content. Recreate from memory or git history.
 
 ---
 
+## GitLab vs Gitea — Different APIs
+
+Some labs use **GitLab** instead of Gitea. Do not assume Gitea patterns.
+
+| | Gitea | GitLab |
+|---|---|---|
+| Repo check | `GET /api/v1/repos/{user}/{repo}` | `GET /api/v4/projects/{user}%2F{repo}` |
+| Auth header | `-u admin:password` | `--header "PRIVATE-TOKEN: <token>"` |
+| Admin token source | `gitea_admin_username` / `gitea_admin_password` from ConfigMap | GitLab root token or personal access token |
+| Namespace | Fixed hostname (shared) | Fixed hostname (shared) |
+
+Always check the AgV `common.yaml` workloads to determine which SCM is deployed — `ocp4_workload_gitea` vs GitLab-related workloads.
+
+---
+
+## Single-User Labs: Fixed Namespaces (No LAB_USER Derivation)
+
+When `num_users` parameter is **absent** from AgV catalog (single-user lab), namespaces are fixed — not derived from `LAB_USER`. The full environment is provisioned for one student.
+
+```yaml
+# Multi-user lab — derive namespace from LAB_USER
+namespace: "{{ 'wksp-' + lookup('env', 'LAB_USER') }}"
+
+# Single-user lab — namespace is fixed
+namespace: "backstage"   # always this, regardless of who's grading
+namespace: "tssc-tpa"
+namespace: "tssc-tas"
+```
+
+For single-user labs: `LAB_USER` still identifies which student is grading (for report naming) but does NOT affect namespace names.
+
+---
+
+## Role Switching Labs (Admin → UserX Mid-Lab)
+
+Some labs have students act as an admin/platform-engineer in early modules and switch to a developer user (`user1`) in later modules.
+
+**Pattern to detect from module content:**
+- Early modules: "Apply this YAML as admin", "oc apply -f ...", CRs in infrastructure namespaces
+- Later modules: "Log into RHDH as user1", "Open Dev Spaces", "Sign your commit"
+
+**Credential approach per module:**
+- Admin-role modules → use admin kubeconfig
+- User-role modules (RHDH, Dev Spaces, Tekton pipelines) → use user1 kubeconfig
+
+**Real example — RHADS/TSSC lab:**
+```
+Modules 1-3: platform engineer → admin kubeconfig
+  namespaces: tssc-tpa, tssc-tas, backstage, openshift-pipelines
+Module 4:    developer (user1) → user1 kubeconfig
+  RHDH login, Dev Spaces, commit signing, pipeline execution
+```
+
+---
+
 ## Unknown APIs — Ask the Developer to Probe Them
 
 For APIs the skill doesn't know (RHDH, LibreChat, MCP servers, custom services), do NOT guess. Ask the developer to run test commands from the deployed environment and share the output.

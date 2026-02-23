@@ -100,13 +100,30 @@ Admin credentials serve ONE purpose: reading the Showroom `showroom-userdata` Co
 | Gitea API — check repo existence before user has logged in | Gitea admin token (from ConfigMap) |
 | AAP API calls | lab-user credentials |
 
-**Why this is non-negotiable:**
+**Why this matters:**
 - Tests that the student's namespace RBAC is correctly set up
 - Catches permission issues that admin access would silently bypass
 - Validates the lab from the actual student perspective
 - **If a check passes with admin but fails with userX → it is a lab environment bug, not a grader bug.** The grader should expose that failure, not hide it.
 
-The `grade_lab`/`solve_lab` wrappers handle this automatically: they `oc login -u userX -p PASSWORD` and pass the userX kubeconfig to the container. Lab playbooks receive the user kubeconfig for all `kubernetes.core` calls. Do not override this with admin credentials in grader playbooks.
+**Important nuance — some labs mix admin-provisioned and user-scoped resources:**
+
+Some labs pre-deploy resources as admin (via AgnosticD) but the student interacts with them as userX. Read the AgV catalog and Showroom modules to determine who owns what:
+
+| Resource type | Check with |
+|---|---|
+| Cluster-wide resources student never touches (operators, CRDs) | admin |
+| Pre-deployed resources in user namespace (Showroom, RHDH) | userX — validates RBAC is correct |
+| Resources student explicitly creates during exercises | userX |
+| External services before student initialises them (Gitea repos) | admin/service token |
+
+**Real example — build-secured-dev-workflows (RHADS lab):**
+- Modules 1-3: student acts as platform engineer applying CRs in fixed admin namespaces (`tssc-tpa`, `tssc-tas`, `backstage`) → check with admin kubeconfig
+- Module 4: student role switches to `user1` — logs into RHDH, Dev Spaces, runs pipelines, signs commits → check those interactions with user1 kubeconfig
+- Single-user lab: namespaces are fixed, NOT derived from `LAB_USER`
+- RHDH and Showroom are pre-deployed by AgnosticD but accessed as `user1` — validate with user1 to confirm RBAC is correct
+
+The `grade_lab`/`solve_lab` wrappers handle this automatically: they `oc login -u userX -p PASSWORD` and pass the userX kubeconfig to the container. Lab playbooks receive the user kubeconfig for all `kubernetes.core` calls.
 
 ---
 
