@@ -998,7 +998,11 @@ export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshop
 bash bin/grade_lab {lab_short_name} {user_arg} 1 --podman --local
 ```
 
-The `--local` flag mounts `~/work/code/experiment/ftl` over `/ftl` inside the container — the entrypoint skips the GitHub clone and uses your local files directly. **Edit a playbook, run again immediately — no commit needed.**
+The `--local` flag mounts the FTL repo over `/ftl` inside the container — entrypoint skips GitHub clone, uses local files directly. **Edit a playbook, run again immediately — no commit needed.**
+
+**⚠️ User arg:** Use the actual OCP username from the Showroom ConfigMap (`user` field), not `student`. For single-user labs this is typically `user1`. The `student` default only works if a `showroom-*-student` namespace exists, which it usually doesn't.
+
+**⚠️ Must use `export`:** Variables set without `export` are not passed into the container. Never use inline `VAR=value command` style — it breaks with `bash bin/grade_lab`.
 
 **Expected on a fresh environment:**
 - Pre-configured checkpoints → PASS
