@@ -144,23 +144,24 @@ The reason this rule exists: invented checks are hard to debug (grader always FA
 
 ### Step 0.5: Read Lab Content and Catalog — Then Confirm Deployed Environment
 
-**Start here — before anything else.** Read the lab instructions and AgV catalog first to understand what you're building graders for. Only then ask the right discovery questions about the deployed environment.
-
----
-
-**Question 1 — Where is the Showroom content?**
+**Ask the developer immediately:**
 
 ```
-Where are the lab instructions for this workshop?
+Before we start, I need two things to write accurate graders:
 
-Either:
-  A) A GitHub URL:  https://github.com/rhpds/my-lab-showroom
-  B) A local path:  ~/work/showroom-content/my-lab/
+1. Where are the lab instructions (Showroom repo or local path)?
+   Example A: https://github.com/rhpds/my-lab-showroom
+   Example B: ~/work/showroom-content/my-lab/
+
+2. Do you have the AgnosticV catalog for this lab? (Y/n)
+   If yes: AgV repo path + catalog path (e.g., ~/work/code/agnosticv, summit-2026/lb2298-mcp-cnv)
 
 Showroom repo or local path:
 ```
 
 WAIT for answer.
+
+**Question 1 — Read Showroom content:**
 
 **If GitHub URL:** clone it:
 ```bash
