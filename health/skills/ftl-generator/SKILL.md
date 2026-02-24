@@ -314,13 +314,13 @@ curl -sk https://<service-url>/api/ | python3 -m json.tool | head -50
 
 **⚠️ CRITICAL — kubeconfig context:**
 
-For `--podman` mode, always set `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login and discover credentials from the Showroom ConfigMap:
+For `--podman` mode, always **export** `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login and discover credentials from the Showroom ConfigMap. Variables set without `export` are not visible inside the container:
 
 ```bash
-OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443" \
-OCP_ADMIN_PASSWORD="<admin-pass>" \
-OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io" \
-grade_lab <lab> all 1 --podman
+export OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443"
+export OCP_ADMIN_PASSWORD="<admin-pass>"
+export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io"
+bash bin/grade_lab <lab> all 1 --podman
 ```
 
 Use the discovery output — combined with the Showroom content and AgV catalog already read above — to fill in Step 1.5 and Step 2 with real data, not guesses.
