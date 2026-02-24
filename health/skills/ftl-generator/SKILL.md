@@ -181,7 +181,7 @@ Read **every** `.adoc` file under `content/modules/ROOT/pages/` — do not skip 
 
 ---
 
-**Question 2 — AgV catalog path (recommended)**
+**Ask the developer (Question 2 — AgV catalog path, recommended):**
 
 ```
 Do you have the AgnosticV catalog for this lab?
@@ -213,7 +213,13 @@ Then read `defaults/main.yml` for each workload role — extract namespace patte
 
 **Do not skip any collection.** Each one may define namespace patterns or credentials that affect grader logic.
 
-Present findings to developer before continuing (see Step 1.5 for the format).
+Ask the developer to confirm before continuing (see Step 1.5 for the format):
+
+```
+Does the analysis above look correct? [Y/n]
+```
+
+WAIT for confirmation.
 
 **If not provided:** continue — namespace patterns and services will be extracted from `.adoc` files only. Verify carefully with the developer.
 
@@ -534,7 +540,7 @@ For every external service students access (Gitea, LibreChat, AAP, dashboards, e
 - **Shared service**: Student may not have logged in / initialized yet. Use **admin credentials** (from `showroom-userdata` ConfigMap: `gitea_admin_username`, `gitea_admin_password`). Student credentials will fail until they first log in.
 - **Per-user service**: Each user has their own isolated instance. Use the student's own credentials or a per-user admin/service token. The common `PASSWORD` env var may work if the service was provisioned with it.
 
-**Present your service analysis to the developer before proceeding to Step 3:**
+**Ask the developer — confirm service analysis before proceeding to Step 3:**
 
 ```
 📋 Service Analysis
@@ -560,7 +566,7 @@ This analysis directly determines which env vars the grader needs (Step 3) and w
 
 Ask these questions ONE AT A TIME.
 
-**Question 1 — Lab short name:**
+**Ask the developer (Question 1 — Lab short name):**
 ```
 What short name should this lab use for the grade_lab/solve_lab commands?
 
@@ -573,7 +579,7 @@ Your lab short name:
 
 WAIT for answer.
 
-**Question 2 — Lab type (routes the rest of the questions):**
+**Ask the developer (Question 2 — Lab type):**
 ```
 What type of lab is this?
 
@@ -589,7 +595,7 @@ WAIT for answer.
 
 **BRANCH 1: OpenShift-based lab**
 
-**Question 3 — Multi-user or single-user:**
+**Ask the developer (Question 3 — Multi-user or single-user):**
 ```
 Is this a multi-user or single-user OpenShift lab?
 
@@ -605,7 +611,7 @@ Choice [1/2]:
 
 WAIT for answer.
 
-**If multi-user — Question 4: namespace pattern:**
+**If multi-user — ask the developer (Question 4 — namespace pattern):**
 ```
 What namespace pattern do per-user namespaces follow?
 
@@ -654,7 +660,7 @@ curl -sk -u lab-user:$AAP_PASSWORD $AAP_HOSTNAME/api/controller/v2/job_templates
 
 ---
 
-**Question 5 — Additional environment variables:**
+**Ask the developer (Question 5 — Additional environment variables):**
 ```
 Any additional environment variables beyond what's standard for this lab type?
 
@@ -676,8 +682,6 @@ RHEL labs with remote nodes:
 
 Additional lab-specific vars (or press Enter if none):
 ```
-
-WAIT for answer.
 
 WAIT for answer.
 
@@ -706,10 +710,13 @@ Module 2: [Module Title]
 
 Total: Z checkpoints across N modules
 
-Does this analysis look correct? Should I add, remove, or change any checkpoints?
 ```
 
-WAIT for user confirmation or adjustments.
+**Ask the developer:**
+
+Does this analysis look correct? Should I add, remove, or change any checkpoints?
+
+WAIT for confirmation before generating any files.
 
 **Checkpoint-to-Role Mapping Guide:**
 
