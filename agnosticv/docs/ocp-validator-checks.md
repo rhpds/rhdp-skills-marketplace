@@ -440,6 +440,33 @@ def check_litemaas(config):
     })
   else:
     passed_checks.append(f"✓ LiteMaaS key duration: {duration}")
+
+  # Both includes are required when using LiteMaaS
+  includes = config.get('__includes__', [])  # list of #include paths from parsed catalog
+  has_master_api = any('litemaas-master_api' in i for i in includes)
+  has_metadata = any('litellm_metadata' in i for i in includes)
+
+  if not has_master_api:
+    errors.append({
+      'check': 'litemaas',
+      'severity': 'ERROR',
+      'message': 'LiteMaaS workload present but litemaas-master_api include is missing',
+      'location': 'common.yaml',
+      'fix': 'Add: #include /includes/secrets/litemaas-master_api.yaml'
+    })
+  else:
+    passed_checks.append("✓ LiteMaaS master API include present")
+
+  if not has_metadata:
+    errors.append({
+      'check': 'litemaas',
+      'severity': 'ERROR',
+      'message': 'LiteMaaS workload present but litellm_metadata include is missing',
+      'location': 'common.yaml',
+      'fix': 'Add: #include /includes/parameters/litellm_metadata.yaml'
+    })
+  else:
+    passed_checks.append("✓ LiteMaaS metadata include present")
 ```
 
 
