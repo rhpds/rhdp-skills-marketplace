@@ -249,7 +249,12 @@ Please order the lab environment first:
 We cannot write accurate graders without real data from the deployed environment.
 ```
 
-**If YES — run discovery commands based on the lab type identified above:**
+**If YES — ask the developer to run these commands on their bastion/cluster and paste the output. Do NOT run them yourself.**
+
+```
+Please run the following on your bastion host or laptop (wherever you have cluster access)
+and paste the output here:
+```
 
 **For OCP labs:**
 ```bash
