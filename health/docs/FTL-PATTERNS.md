@@ -584,6 +584,75 @@ gitea_url: "https://gitea.{{ ingress_domain }}"
 librechat_url: "https://librechat-librechat-{{ lab_user }}.{{ ingress_domain }}"
 ```
 
+### 5. Variable Ordering in Task Lists
+
+Ansible evaluates task conditions top-to-bottom. If a task block uses a variable, it must run **after** that variable is set — even if both are in the same play.
+
+```yaml
+# WRONG — block at line 10 uses base_namespace_prefix defined at line 55
+- name: Discover Gitea creds from ConfigMap   # line 10
+  kubernetes.core.k8s_info:
+    ...
+    field_selectors:
+      - "metadata.name={{ base_namespace_prefix }}-showroom"  # undefined!
+
+- name: Set base_namespace_prefix             # line 55
+  ansible.builtin.set_fact:
+    base_namespace_prefix: "{{ lab_user }}"
+
+# CORRECT — credential discovery placed AFTER variable definition
+- name: Set base_namespace_prefix
+  ansible.builtin.set_fact:
+    base_namespace_prefix: "{{ lab_user }}"
+
+- name: Discover Gitea creds from ConfigMap   # now safe
+  kubernetes.core.k8s_info:
+    ...
+```
+
+**Rule:** When adding a new block to a playbook, scan up from the insertion point to confirm every variable the block references is already defined above it.
+
+### 6. PASSWORD Is Never a Required Variable in OCP Labs
+
+`PASSWORD` is auto-discovered by the `grade_lab`/`solve_lab` wrapper from the Showroom ConfigMap when `OCP_API_URL` is set. Never add it to required variable validation in lab playbooks.
+
+```yaml
+# WRONG — PASSWORD is auto-discovered, not user-supplied
+- name: Validate required environment variables
+  ansible.builtin.assert:
+    that:
+      - lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length > 0
+      - lookup('env', 'PASSWORD') | length > 0   # ← breaks solo module runs
+
+# CORRECT — only validate what cannot be auto-discovered
+- name: Validate required environment variables
+  ansible.builtin.assert:
+    that:
+      - lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length > 0
+```
+
+**Rule:** For OCP labs, `OPENSHIFT_CLUSTER_INGRESS_DOMAIN` is the only variable that truly must be set by the user. `PASSWORD` is always auto-discovered. Including it in required validation causes `solve_lab` to fail when run standalone.
+
+### 7. Kubeconfig Tokens Expire — Refresh Before `--podman`
+
+When running `--podman` mode, the wrapper mounts `~/.kube/config` into the container. If the token in that file has expired (tokens typically last 1 hour), `kubernetes.core.k8s_info` calls fail with `(401) Unauthorized`.
+
+The wrapper handles this automatically when `OCP_API_URL` is set — it runs `oc login` to refresh the token before mounting the kubeconfig. But if you run without `OCP_API_URL`, the stale token is passed through as-is.
+
+```bash
+# SAFE — wrapper refreshes token before mounting kubeconfig
+OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443" \
+OCP_ADMIN_PASSWORD="<admin-pass>" \
+OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx..." \
+grade_lab mcp-with-openshift user1 1 --podman
+
+# RISKY — token in ~/.kube/config may be stale if you ran oc login >1 hour ago
+OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx..." \
+grade_lab mcp-with-openshift user1 1 --podman
+```
+
+**Rule:** Always set `OCP_API_URL` + `OCP_ADMIN_PASSWORD` for `--podman` mode. If you skip them, manually `oc login` immediately before running `grade_lab` to ensure the token is fresh.
+
 ---
 
 ## Grade Lab Orchestrator Pattern
