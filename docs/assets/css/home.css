@@ -143,7 +143,7 @@ body {
   margin-left: var(--sidebar-width);
   flex: 1;
   padding: 3rem 4rem;
-  max-width: 1200px;
+  min-width: 0;
 }
 
 /* Hero Section */
