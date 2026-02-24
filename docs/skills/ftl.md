@@ -1,430 +1,196 @@
 ---
 layout: default
-title: /ftl
+title: /health:ftl-generator
 ---
 
-# /ftl
+# /health:ftl-generator
 
-<div class="skill-badge coming-soon">🎯 FTL - Automated Grading</div>
+<div class="skill-badge">🧪 FTL Lab Generator</div>
 
-Finish The Labs - Automated grader and solver generation for workshop testing and validation.
-
-<div class="coming-soon-notice">
-  <h3>🚧 Coming Soon</h3>
-  <p>This skill is currently in development. The documentation below is a preview of planned functionality.</p>
-  <p>Interested in this skill? Share your feedback in Slack: <a href="https://redhat.enterprise.slack.com/archives/C04MLMA15MX" target="_blank">#forum-demo-developers</a></p>
-</div>
+Generate production-quality FTL (Finish The Labs) grader and solver playbooks for a Showroom workshop by analyzing module content. The skill reads your `.adoc` module files and AgnosticV catalog, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
 
 ---
 
-## 📋 What You'll Need Before Starting
-
-### Prerequisites
+## What You'll Need Before Starting
 
 <div class="prereq-grid">
   <div class="prereq-item">
-    <div class="prereq-icon">📚</div>
-    <h4>Workshop Content Ready</h4>
-    <pre><code># Your Showroom workshop repository with modules:
-content/modules/ROOT/pages/
-├── module-01.adoc
-├── module-02.adoc
-└── module-03.adoc</code></pre>
-  </div>
-
-  <div class="prereq-item">
     <div class="prereq-icon">📖</div>
-    <h4>Understand FTL Grading System</h4>
-    <ul>
-      <li>Review <a href="https://github.com/redhat-gpte-devopsautomation/FTL" target="_blank">FTL documentation</a></li>
-      <li>Know what actions need validation</li>
-      <li>Identify success criteria for each module</li>
-    </ul>
+    <h4>Showroom Workshop Content</h4>
+    <p>A Showroom repo with <code>.adoc</code> module files (GitHub URL or local path)</p>
+    <pre><code>content/modules/ROOT/pages/
+├── 01-overview.adoc
+├── 02-details.adoc
+└── 03-module-01.adoc</code></pre>
   </div>
 
   <div class="prereq-item">
     <div class="prereq-icon">☸️</div>
-    <h4>Test Environment Access</h4>
-    <pre><code># Access to OpenShift cluster for testing
-oc whoami
-oc project <test-namespace></code></pre>
+    <h4>Deployed Lab Environment</h4>
+    <p>A running lab ordered from RHDP — cluster access required to verify real namespace names, service URLs, and credentials</p>
+    <pre><code>export OCP_API_URL="https://api.cluster-xxx..."
+export OCP_ADMIN_PASSWORD="&lt;password&gt;"
+export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx..."</code></pre>
   </div>
-</div>
 
-### What You'll Need
-
-<div class="inputs-grid">
-  <div class="input-card">
-    <div class="input-icon">📝</div>
-    <h4>Module Files</h4>
-    <p>Workshop modules with clear Do/Check sections</p>
-  </div>
-  <div class="input-card">
-    <div class="input-icon">✅</div>
-    <h4>Student Actions</h4>
-    <p>List of expected actions per module</p>
-  </div>
-  <div class="input-card">
-    <div class="input-icon">🎯</div>
-    <h4>Success Criteria</h4>
-    <p>Success criteria for each validation</p>
-  </div>
-  <div class="input-card">
-    <div class="input-icon">🧪</div>
-    <h4>Test Data</h4>
-    <p>Test data or fixtures (if needed)</p>
+  <div class="prereq-item">
+    <div class="prereq-icon">📦</div>
+    <h4>FTL Repository</h4>
+    <p>FTL repo cloned locally with <code>labs/</code>, <code>roles/</code>, and <code>bin/</code> directories</p>
+    <pre><code>git clone https://github.com/rhpds/ftl.git
+~/work/code/experiment/ftl/</code></pre>
   </div>
 </div>
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-<div class="quick-start-steps">
-  <div class="quick-step">
-    <div class="quick-step-number">1</div>
-    <div class="quick-step-content">
-      <h4>Navigate to Repository</h4>
-      <p>Open your workshop repository</p>
-    </div>
-  </div>
+```text
+/health:ftl-generator
+```
 
-  <div class="quick-step">
-    <div class="quick-step-number">2</div>
-    <div class="quick-step-content">
-      <h4>Run FTL</h4>
-      <p><code>/ftl</code></p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">3</div>
-    <div class="quick-step-content">
-      <h4>Specify Modules</h4>
-      <p>Choose modules to generate graders for</p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">4</div>
-    <div class="quick-step-content">
-      <h4>Review & Test</h4>
-      <p>Test validation logic</p>
-    </div>
-  </div>
-</div>
+The skill will walk you through the complete workflow step by step.
 
 ---
 
-## 📁 What It Creates
+## How It Works
 
-<div class="file-structure">
-  <h4>Generated Directory Structure:</h4>
-  <pre><code>ftl/
-├── graders/
-│   ├── grade_module_01.yml     # Grader for module 1
-│   ├── grade_module_02.yml     # Grader for module 2
-│   └── grade_module_03.yml     # Grader for module 3
-├── solvers/
-│   ├── solve_module_01.yml     # Solver for module 1
-│   ├── solve_module_02.yml     # Solver for module 2
-│   └── solve_module_03.yml     # Solver for module 3
-└── tests/
-    └── integration_test.yml    # Full workshop test</code></pre>
-</div>
-
----
-
-## 🔧 How It Works
-
-<div class="how-it-works-grid">
-  <div class="how-card">
-    <h3>✓ Graders</h3>
-    <p>Graders validate that students completed tasks correctly:</p>
-    <ul>
-      <li>Check for created resources (pods, routes, etc.)</li>
-      <li>Verify configuration values</li>
-      <li>Test application functionality</li>
-      <li>Award points for correct completion</li>
-    </ul>
-  </div>
-
-  <div class="how-card">
-    <h3>🤖 Solvers</h3>
-    <p>Solvers automatically complete workshop modules:</p>
-    <ul>
-      <li>Execute all student tasks programmatically</li>
-      <li>Verify each step succeeds</li>
-      <li>Used for testing grader accuracy</li>
-      <li>Ensure workshop is technically sound</li>
-    </ul>
-  </div>
-</div>
-
----
-
-## 🔄 Common Workflow
+The skill follows a structured workflow before generating any code:
 
 <div class="workflow-steps">
   <div class="workflow-step">
-    <div class="workflow-icon">1️⃣</div>
+    <div class="workflow-icon">📖</div>
     <div class="workflow-content">
-      <h4>Create Workshop Content</h4>
-      <pre><code>/showroom:create-lab
-→ Generate workshop modules
-→ Define clear success criteria</code></pre>
+      <h4>Step 0.5 — Read Lab Content First</h4>
+      <p>Reads <strong>every</strong> <code>.adoc</code> module file from the Showroom repo, reads the AgnosticV catalog and collection role defaults, then asks about the deployed environment. All cluster discovery commands are run by you and pasted back — the skill never runs commands itself.</p>
     </div>
   </div>
 
   <div class="workflow-step">
-    <div class="workflow-icon">2️⃣</div>
+    <div class="workflow-icon">🗂️</div>
     <div class="workflow-content">
-      <h4>Generate FTL Graders and Solvers</h4>
-      <pre><code>/ftl
-→ Analyze module tasks
-→ Generate validation logic
-→ Create solver automation</code></pre>
+      <h4>Steps 1–3 — Confirm Configuration</h4>
+      <p>Confirms FTL repo path, lab short name (derived from AgV catalog path), lab type (OCP/RHEL), and multi-user vs single-user — detected from the content already read, not asked cold.</p>
     </div>
   </div>
 
   <div class="workflow-step">
-    <div class="workflow-icon">3️⃣</div>
+    <div class="workflow-icon">✅</div>
     <div class="workflow-content">
-      <h4>Test with Solver</h4>
-      <pre><code># Run solver to complete workshop automatically:
-ansible-playbook ftl/solvers/solve_module_01.yml</code></pre>
+      <h4>Step 4 — Checkpoint Analysis</h4>
+      <p>Presents every checkpoint with its source (<strong>Pre-configured</strong> = deployed by AgnosticD, <strong>Student action</strong> = student must do this) and the grader role to use. You confirm before any files are generated.</p>
     </div>
   </div>
 
   <div class="workflow-step">
-    <div class="workflow-icon">4️⃣</div>
+    <div class="workflow-icon">⚙️</div>
     <div class="workflow-content">
-      <h4>Validate with Grader</h4>
-      <pre><code># Run grader to check if tasks completed correctly:
-ansible-playbook ftl/graders/grade_module_01.yml</code></pre>
+      <h4>Step 5 — Generate Module 1 Only</h4>
+      <p>Copies from <code>labs/lab-template/</code>, generates <code>grade_module_01.yml</code> and <code>solve_module_01.yml</code> using the 22 generic grader roles. Generates Module 2 only after Module 1 passes testing.</p>
     </div>
   </div>
 
   <div class="workflow-step">
-    <div class="workflow-icon">5️⃣</div>
+    <div class="workflow-icon">🧪</div>
     <div class="workflow-content">
-      <h4>Integrate with Workshop</h4>
-      <pre><code># Add grading to workshop deployment:
-ftl_grading_enabled: true
-ftl_graders_path: "{{ workshop_path }}/ftl/graders"</code></pre>
+      <h4>Step 6 — Guided Testing</h4>
+      <p>Walks you through local testing with <code>--local</code> mount (no git push needed), solver testing, then production testing from GitHub.</p>
     </div>
   </div>
 </div>
 
 ---
 
-## 📝 Example Grader
+## What It Creates
 
-<div class="example-box">
-  <h4>For a module that deploys a pod:</h4>
-  <pre><code>---
-# ftl/graders/grade_module_01.yml
-- name: Grade Module 01 - Deploy Application
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Check if namespace exists
-      kubernetes.core.k8s_info:
-        kind: Namespace
-        name: student-app
-      register: ns_check
+Files are generated inside your FTL repo:
 
-    - name: Award points for namespace
-      set_fact:
-        points: "{{ points | default(0) | int + 10 }}"
-      when: ns_check.resources | length > 0
-
-    - name: Check if deployment exists
-      kubernetes.core.k8s_info:
-        kind: Deployment
-        name: myapp
-        namespace: student-app
-      register: deploy_check
-
-    - name: Award points for deployment
-      set_fact:
-        points: "{{ points | default(0) | int + 20 }}"
-      when:
-        - deploy_check.resources | length > 0
-        - deploy_check.resources[0].status.readyReplicas > 0
-
-    - name: Display final score
-      debug:
-        msg: "Module 01 Score: {{ points | default(0) }}/30"</code></pre>
+<div class="file-structure">
+  <h4>Generated files per lab:</h4>
+  <pre><code>labs/
+└── &lt;lab-short-name&gt;/
+    ├── lab.yml                  # Lab metadata
+    ├── grade_module_01.yml      # Module 1 grader (generated first)
+    ├── solve_module_01.yml      # Module 1 solver
+    ├── grade_module_02.yml      # Added after Module 1 passes
+    ├── solve_module_02.yml
+    └── README.md</code></pre>
 </div>
+
+**Note:** `grade_lab.yml` is never generated. The `bin/grade_lab` wrapper auto-discovers `grade_module_*.yml` files automatically.
 
 ---
 
-## 🤖 Example Solver
+## Running Graders
 
-<div class="example-box">
-  <h4>Corresponding solver for the same module:</h4>
-  <pre><code>---
-# ftl/solvers/solve_module_01.yml
-- name: Solve Module 01 - Deploy Application
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Create namespace
-      kubernetes.core.k8s:
-        kind: Namespace
-        name: student-app
-        state: present
+All graders run from the **FTL repo root** using `bash bin/grade_lab`. Always use `export` — variables without it are not passed into the container.
 
-    - name: Create deployment
-      kubernetes.core.k8s:
-        state: present
-        definition:
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: myapp
-            namespace: student-app
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: myapp
-            template:
-              metadata:
-                labels:
-                  app: myapp
-              spec:
-                containers:
-                - name: myapp
-                  image: registry.redhat.io/ubi9/httpd-24:latest
+```bash
+cd ~/work/code/experiment/ftl
 
-    - name: Wait for deployment to be ready
-      kubernetes.core.k8s_info:
-        kind: Deployment
-        name: myapp
-        namespace: student-app
-      register: deploy_status
-      until: deploy_status.resources[0].status.readyReplicas | default(0) > 0
-      retries: 30
-      delay: 10</code></pre>
-</div>
+# Set environment (use export — required for podman)
+export OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443"
+export OCP_ADMIN_PASSWORD="<admin-password>"
+export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io"
+
+# Test locally (no git push needed — mounts local repo into container)
+bash bin/grade_lab <lab> <user> 1 --podman --local
+
+# Run solver then grade again (expect all PASS)
+bash bin/solve_lab <lab> <user> 1 --podman --local
+bash bin/grade_lab <lab> <user> 1 --podman --local
+
+# Production test (pulls from GitHub)
+bash bin/grade_lab <lab> <user> 1 --podman
+
+# Load test all users in parallel
+bash bin/grade_lab <lab> all 1 --podman
+```
+
+The user arg comes from the `"user"` field in the Showroom ConfigMap output — never hardcode `student` or `user1`.
 
 ---
 
-## 💡 Tips & Best Practices
+## Key Rules
 
 <div class="tips-grid">
   <div class="tip-card">
-    <h4>🎯 Start Simple</h4>
-    <p>Basic validation before complex checks</p>
+    <h4>One Module at a Time</h4>
+    <p>Generate Module 1, test it, then proceed to Module 2. Never generate all modules at once.</p>
   </div>
   <div class="tip-card">
-    <h4>🧪 Test Solver First</h4>
-    <p>Ensure workshop tasks actually work</p>
+    <h4>Admin Only for ConfigMap</h4>
+    <p>Admin credentials read the Showroom ConfigMap to get the student's password. All grader checks then run as the student user.</p>
   </div>
   <div class="tip-card">
-    <h4>✅ Clear Success Criteria</h4>
-    <p>Each task needs measurable outcome</p>
+    <h4>Never generate grade_lab.yml</h4>
+    <p>The <code>bin/grade_lab</code> wrapper auto-discovers <code>grade_module_*.yml</code> files — no orchestrator needed.</p>
   </div>
   <div class="tip-card">
-    <h4>📊 Partial Credit</h4>
-    <p>Award points for partial completion</p>
+    <h4>No oc CLI in graders</h4>
+    <p>Use <code>kubernetes.core.k8s_info</code> — <code>oc</code> crashes silently on arm64 Mac running linux/amd64 containers.</p>
   </div>
   <div class="tip-card">
-    <h4>💬 Helpful Feedback</h4>
-    <p>Graders should explain what's missing</p>
+    <h4>Generic roles first</h4>
+    <p>22 built-in grader roles cover most checks. Write custom tasks only when no generic role applies.</p>
   </div>
   <div class="tip-card">
-    <h4>🔄 Idempotent Solvers</h4>
-    <p>Should be safe to run multiple times</p>
+    <h4>Read real environment</h4>
+    <p>Namespace names, API endpoints, and job template names must come from the live cluster — never guessed.</p>
   </div>
 </div>
 
 ---
 
-## 🔗 Integration with Health Namespace
-
-<div class="integration-box">
-  <h4>FTL graders integrate with RHDP Health validation:</h4>
-  <pre><code># In AgnosticV catalog:
-health_ftl:
-  enabled: true
-  graders_path: "{{ workshop_ftl_path }}/graders"
-  schedule: "*/15 * * * *"  # Run every 15 minutes
-  alert_on_failure: true
-  min_score_threshold: 80  # Alert if score < 80%</code></pre>
-
-  <h4 style="margin-top: 1.5rem;">This enables:</h4>
-  <ul>
-    <li>Continuous workshop validation</li>
-    <li>Automated testing of workshop functionality</li>
-    <li>Early detection of broken labs</li>
-    <li>Student progress tracking</li>
-  </ul>
-</div>
-
----
-
-## 🆘 Troubleshooting
-
-<details>
-<summary><strong>Skill not found?</strong></summary>
-
-<ul>
-  <li>Restart Claude Code or VS Code</li>
-  <li>Verify installation: <code>ls ~/.claude/skills/ftl</code></li>
-  <li>Check the <a href="../reference/troubleshooting.html">Troubleshooting Guide</a></li>
-</ul>
-
-</details>
-
-<details>
-<summary><strong>Grader fails but solver works?</strong></summary>
-
-<ul>
-  <li>Check grader logic matches solver actions</li>
-  <li>Verify validation criteria are correct</li>
-  <li>Add debug output to see what grader finds</li>
-  <li>Compare expected vs actual resource states</li>
-</ul>
-
-</details>
-
-<details>
-<summary><strong>Solver fails on valid workshop?</strong></summary>
-
-<ul>
-  <li>Review module instructions for accuracy</li>
-  <li>Check for timing issues (add waits)</li>
-  <li>Verify resource names match exactly</li>
-  <li>Test solver steps manually first</li>
-</ul>
-
-</details>
-
-<details>
-<summary><strong>Points don't add up correctly?</strong></summary>
-
-<ul>
-  <li>Initialize points variable at start</li>
-  <li>Use <code>| default(0)</code> for safety</li>
-  <li>Debug each scoring section</li>
-  <li>Verify conditional logic for point awards</li>
-</ul>
-
-</details>
-
----
-
-## 🔗 Related Skills
+## Related Skills
 
 <div class="related-skills">
   <a href="create-lab.html" class="related-skill-card">
     <div class="related-skill-icon">📝</div>
     <div class="related-skill-content">
       <h4>/showroom:create-lab</h4>
-      <p>Create workshop content first</p>
+      <p>Create workshop content first, then generate graders</p>
     </div>
   </a>
 
@@ -432,7 +198,7 @@ health_ftl:
     <div class="related-skill-icon">🏥</div>
     <div class="related-skill-content">
       <h4>/health:deployment-validator</h4>
-      <p>Create deployment validators</p>
+      <p>Create deployment health check validation roles</p>
     </div>
   </a>
 
@@ -440,21 +206,20 @@ health_ftl:
     <div class="related-skill-icon">✓</div>
     <div class="related-skill-content">
       <h4>/showroom:verify-content</h4>
-      <p>Validate workshop quality</p>
+      <p>Validate workshop content quality before grading</p>
     </div>
   </a>
 </div>
 
 ---
 
-## 📚 FTL Resources
+## Resources
 
 <div class="resources-box">
   <h4>Helpful Links:</h4>
   <ul>
-    <li><a href="https://github.com/redhat-gpte-devopsautomation/FTL" target="_blank">FTL Grading System</a></li>
-    <li><a href="https://github.com/redhat-gpte-devopsautomation/FTL/blob/main/docs/best-practices.md" target="_blank">FTL Best Practices</a></li>
-    <li>Health Namespace Documentation (coming soon)</li>
+    <li><a href="https://github.com/rhpds/ftl" target="_blank">FTL Repository (rhpds/ftl)</a></li>
+    <li><a href="https://redhat.enterprise.slack.com/archives/C04MLMA15MX" target="_blank">#forum-demo-developers</a></li>
   </ul>
 </div>
 
@@ -468,39 +233,12 @@ health_ftl:
 <style>
 .skill-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 600;
   margin: 1rem 0;
-}
-
-.skill-badge.coming-soon {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-}
-
-.coming-soon-notice {
-  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-  border: 2px solid #F59E0B;
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2rem 0;
-}
-
-.coming-soon-notice h3 {
-  margin-top: 0;
-  color: #92400E;
-}
-
-.coming-soon-notice p {
-  margin: 0.5rem 0;
-  color: #78350F;
-}
-
-.coming-soon-notice a {
-  color: #0969da;
-  text-decoration: underline;
 }
 
 .prereq-grid {
@@ -517,158 +255,12 @@ health_ftl:
   padding: 1.5rem;
 }
 
-.prereq-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
+.prereq-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.prereq-item h4 { margin: 0.5rem 0; color: #24292e; }
+.prereq-item p { color: #586069; font-size: 0.875rem; margin: 0.5rem 0; }
+.prereq-item pre { background: #f6f8fa; padding: 0.75rem; border-radius: 4px; margin: 0.5rem 0 0 0; font-size: 0.8rem; }
 
-.prereq-item h4 {
-  margin: 0.5rem 0;
-  color: #24292e;
-}
-
-.prereq-item pre {
-  background: #f6f8fa;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin: 0.5rem 0 0 0;
-}
-
-.prereq-item ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.25rem;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.inputs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.input-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.input-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.input-card h4 {
-  margin: 0.5rem 0;
-  color: #24292e;
-  font-size: 1rem;
-}
-
-.input-card p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.quick-start-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.quick-step {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.quick-step-number {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-  color: white;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.quick-step-content h4 {
-  margin: 0.5rem 0;
-  color: #24292e;
-}
-
-.quick-step-content p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.file-structure {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 1rem 0;
-}
-
-.file-structure h4 {
-  margin-top: 0;
-  color: #24292e;
-}
-
-.file-structure pre {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0 0 0;
-}
-
-.how-it-works-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.how-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.how-card h3 {
-  margin-top: 0;
-  color: #6366F1;
-  font-size: 1.125rem;
-}
-
-.how-card p {
-  color: #586069;
-  margin: 0.5rem 0;
-}
-
-.how-card ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.25rem;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.workflow-steps {
-  margin: 2rem 0;
-}
-
+.workflow-steps { margin: 2rem 0; }
 .workflow-step {
   display: flex;
   gap: 1.5rem;
@@ -678,48 +270,20 @@ health_ftl:
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
+.workflow-icon { font-size: 2rem; flex-shrink: 0; }
+.workflow-content { flex: 1; }
+.workflow-content h4 { margin-top: 0; margin-bottom: 0.5rem; color: #24292e; }
+.workflow-content p { color: #586069; margin: 0; font-size: 0.9rem; }
 
-.workflow-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.workflow-content {
-  flex: 1;
-}
-
-.workflow-content h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #24292e;
-}
-
-.workflow-content pre {
+.file-structure {
   background: #f6f8fa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0 0 0;
-}
-
-.example-box {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
   padding: 1.5rem;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
-
-.example-box h4 {
-  margin-top: 0;
-  color: #24292e;
-}
-
-.example-box pre {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0 0 0;
-}
+.file-structure h4 { margin-top: 0; color: #24292e; }
+.file-structure pre { background: white; padding: 1rem; border-radius: 6px; margin: 0.5rem 0 0 0; }
 
 .tips-grid {
   display: grid;
@@ -727,52 +291,14 @@ health_ftl:
   gap: 1rem;
   margin: 1.5rem 0;
 }
-
 .tip-card {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border: 1px solid #e1e4e8;
   border-radius: 8px;
   padding: 1.5rem;
 }
-
-.tip-card h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #24292e;
-  font-size: 0.875rem;
-}
-
-.tip-card p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.integration-box {
-  background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
-  border: 2px solid #6366F1;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 2rem 0;
-}
-
-.integration-box h4 {
-  margin-top: 0;
-  color: #3730A3;
-}
-
-.integration-box pre {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0;
-}
-
-.integration-box ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.25rem;
-  color: #3730A3;
-}
+.tip-card h4 { margin-top: 0; margin-bottom: 0.5rem; color: #24292e; font-size: 0.9rem; }
+.tip-card p { margin: 0; color: #586069; font-size: 0.875rem; }
 
 .related-skills {
   display: grid;
@@ -780,7 +306,6 @@ health_ftl:
   gap: 1rem;
   margin: 1.5rem 0;
 }
-
 .related-skill-card {
   display: flex;
   gap: 1rem;
@@ -792,29 +317,10 @@ health_ftl:
   color: inherit;
   transition: all 0.2s ease;
 }
-
-.related-skill-card:hover {
-  border-color: #6366F1;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.related-skill-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.related-skill-content h4 {
-  margin: 0 0 0.25rem 0;
-  color: #24292e;
-  font-size: 1rem;
-}
-
-.related-skill-content p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
+.related-skill-card:hover { border-color: #10b981; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.related-skill-icon { font-size: 2rem; flex-shrink: 0; }
+.related-skill-content h4 { margin: 0 0 0.25rem 0; color: #24292e; font-size: 1rem; }
+.related-skill-content p { margin: 0; color: #586069; font-size: 0.875rem; }
 
 .resources-box {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -823,15 +329,8 @@ health_ftl:
   padding: 1.5rem;
   margin: 1rem 0;
 }
-
-.resources-box h4 {
-  margin-top: 0;
-  color: #24292e;
-}
-
-.resources-box a {
-  color: #0969da;
-}
+.resources-box h4 { margin-top: 0; color: #24292e; }
+.resources-box a { color: #0969da; }
 
 .navigation-footer {
   display: flex;
@@ -841,7 +340,6 @@ health_ftl:
   padding-top: 2rem;
   border-top: 1px solid #e1e4e8;
 }
-
 .nav-button {
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -852,38 +350,5 @@ health_ftl:
   font-weight: 600;
   transition: all 0.2s ease;
 }
-
-.nav-button:hover {
-  border-color: #6366F1;
-  color: #6366F1;
-  transform: translateY(-2px);
-}
-
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-
-summary:hover {
-  color: #6366F1;
-}
-
-details[open] {
-  padding-bottom: 1rem;
-}
-
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
+.nav-button:hover { border-color: #10b981; color: #10b981; transform: translateY(-2px); }
 </style>

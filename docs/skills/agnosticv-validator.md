@@ -354,7 +354,7 @@ git pull origin main</code></pre>
   <ul>
     <li><strong>Category:</strong> Event catalogs must use <code>Brand_Events</code> category</li>
     <li><strong>Keywords:</strong> Event-specific keywords required (e.g. <code>summit-2026</code>)</li>
-    <li><strong>Directory naming:</strong> Must follow <code>summit-2026/lb####-short-name-cloud</code> convention</li>
+    <li><strong>Directory naming:</strong> Must follow <code>summit-2026/lb####-short-name-cloud_provider</code> convention. WARNING if directory doesn't start with the lab ID. WARNING if directory doesn't end with <code>-aws</code> (AWS pools) or <code>-cnv</code> (CNV/OpenStack pools)</li>
     <li><strong>Showroom naming:</strong> Showroom repo name must match lab ID pattern</li>
     <li><strong>Console embed:</strong> <code>ocp_console_embed</code> workload presence validated for OCP-based event labs</li>
   </ul>
@@ -363,14 +363,15 @@ git pull origin main</code></pre>
 </details>
 
 <details>
-<summary><strong>Check 17: LiteMaaS Validation (NEW)</strong></summary>
+<summary><strong>Check 17: LiteMaaS Validation</strong></summary>
 
 <div class="check-content">
   <ul>
-    <li>Triggered when <code>ocp4_workload_litemaas</code> workload is detected</li>
-    <li><strong>Models list:</strong> ERROR if no models defined or models list is empty</li>
-    <li><strong>Duration:</strong> ERROR if <code>litemaas_duration</code> is not set</li>
-    <li><strong>Includes:</strong> Both <code>litemaas-master_api.yaml</code> and <code>litellm_metadata.yaml</code> must be present in includes list</li>
+    <li>Triggered when <code>ocp4_workload_litellm_virtual_keys</code> workload is present, OR any <code>litellm</code>/<code>litemaas</code> variable is set, OR either include is already present</li>
+    <li><strong>Models list (OCP only):</strong> ERROR if <code>ocp4_workload_litellm_virtual_keys_models</code> is empty</li>
+    <li><strong>Duration (OCP only):</strong> WARNING if <code>ocp4_workload_litellm_virtual_keys_duration</code> is not set</li>
+    <li><strong>Includes (OCP and cloud-vms-base):</strong> ERROR if <code>#include /includes/secrets/litemaas-master_api.yaml</code> is missing</li>
+    <li><strong>Includes (OCP and cloud-vms-base):</strong> ERROR if <code>#include /includes/parameters/litellm_metadata.yaml</code> is missing</li>
   </ul>
 </div>
 

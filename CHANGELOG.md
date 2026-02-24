@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.7.0] - 2026-02-24
+
+### AgnosticV Skills
+
+#### validator
+- Removed false `abstract` check — RHDP catalogs never use `__meta__.catalog.abstract`
+- Removed false `Workshops + multiuser` warning — workshops can be single or multi-user
+- Added LiteMaaS includes check (shared, runs for OCP and cloud-vms-base): ERROR if `litemaas-master_api.yaml` or `litellm_metadata.yaml` include is missing when LiteMaaS is in use
+- Added cloud provider suffix check to directory naming: WARNING if directory doesn't end with `-aws` or `-cnv` based on component reference
+- Keyword rules: 3-4 max, no generic terms — enforced in Check 9 and Check 16a
+
+#### catalog-builder
+- Keyword rules aligned: 3-4 max, no generic terms, consistent across builder and validator
+
+### Health Skills (FTL Generator)
+
+- **Step 0.5 rewrite**: Skill now reads Showroom content and AgV catalog first, then asks about deployed environment — no longer jumps straight to cluster commands
+- **All 9 buried questions fixed**: Questions formatted as `**Question N —**` headers were skipped; all converted to `**Ask the developer:**` imperative pattern
+- **Auto-detect from content**: Lab type, multi/single user, and lab short name all derived from already-read content and confirmed, not asked cold
+- **Collections**: Reads `~/CLAUDE.md` for declared work dirs, announces what it found, asks before reading — no silent filesystem browsing
+- **Step 4 checkpoint analysis**: Each checkpoint labelled `Source: Pre-configured` or `Source: Student action — Module X, Exercise Y`
+- **Step 6 testing guide**: 4 explicit steps (local `--local` podman mount, solver + re-grade, push + production test, load test all users)
+- **Solver rules**: Only validate `OPENSHIFT_CLUSTER_INGRESS_DOMAIN` as env var; ConfigMap credentials read inside playbook via `kubernetes.core.k8s_info`
+- **User arg**: Derived from `user` field in pasted Showroom ConfigMap output, never hardcoded
+- **Never generate `grade_lab.yml`**: `bin/grade_lab` auto-discovers `grade_module_*.yml` files
+- **FTL-PATTERNS.md**: Added variable ordering rule, PASSWORD never required in OCP labs, token expiry / `oc login` before `--podman`
+
+### Docs
+- `testing-tech-preview.md`: Added `plugin-sync` step — `/plugin update` updates `marketplaces/` but skills serve from `cache/`; must run `plugin-sync` in regular terminal after updates
+- `create-your-own-skill.md`: Fixed stale `technical-writer.md` reference → `style-enforcer.md`
+
+### Cleanup
+- Deleted `.archive/` backup directory
+- README badge updated to v2.7.0
+
 ## [2.7.0-tech-preview] - 2026-02-22
 
 ### AgnosticV Skills — Major Refactor
