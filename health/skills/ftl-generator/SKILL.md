@@ -142,21 +142,93 @@ The reason this rule exists: invented checks are hard to debug (grader always FA
 
 ---
 
-### Step 0.5: Order and Access a Deployed Environment (REQUIRED BEFORE ANYTHING ELSE)
+### Step 0.5: Read Lab Content and Catalog — Then Confirm Deployed Environment
 
-**You cannot write accurate graders without a live environment.** Namespace names, API endpoints, job template names, and service URLs must come from the real cluster — not guessed.
+**Start here — before anything else.** Read the lab instructions and AgV catalog first to understand what you're building graders for. Only then ask the right discovery questions about the deployed environment.
 
-Ask the developer:
+---
+
+**Question 1 — Where is the Showroom content?**
 
 ```
-⚠️  Before we start, do you have a deployed lab environment available?
+Where are the lab instructions for this workshop?
+
+Either:
+  A) A GitHub URL:  https://github.com/rhpds/my-lab-showroom
+  B) A local path:  ~/work/showroom-content/my-lab/
+
+Showroom repo or local path:
+```
+
+WAIT for answer.
+
+**If GitHub URL:** clone it:
+```bash
+git clone <url> /tmp/ftl-showroom-content/
+```
+
+**If local path:** read directly from there.
+
+Read **every** `.adoc` file under `content/modules/ROOT/pages/` — do not skip any. Read each module fully, including all exercises, commands, and notes. From them, extract:
+- Lab type (OCP cluster? RHEL/AAP VMs? Both?)
+- All services students interact with (Gitea, AAP, LibreChat, RHDH, etc.)
+- All namespaces/projects in student commands (`oc new-project`, `-n <ns>`, `oc project`)
+- Which resources are pre-deployed vs student-created
+- All student actions per module that could become checkpoints
+
+**Do not summarise or skim.** If a module is long, read the whole thing. Missing an exercise means a missing grader.
+
+---
+
+**Question 2 — AgV catalog path (recommended)**
+
+```
+Do you have the AgnosticV catalog for this lab?
+
+Providing it lets me read the deployed workloads, collection roles,
+and agnosticd_user_info data directly — no guesswork about namespace
+patterns or credentials.
+
+If yes, provide:
+1. AgV repo path (e.g., ~/work/code/agnosticv)
+2. Catalog path (e.g., summit-2026/lb2298-mcp-with-openshift-cnv)
+```
+
+WAIT for answer.
+
+**If provided — read common.yaml, then clone and read every collection role:**
+
+From `common.yaml`:
+- `config:` field → OCP or cloud-vms-base
+- `workloads:` list → every role deployed
+- `num_users` parameter → multi-user or single-user
+- `requirements_content.collections` → GitHub URLs for each collection
+
+For every collection URL in `requirements_content.collections`:
+```bash
+git clone <collection_url> /tmp/ftl-collection-<name>/
+```
+Then read `defaults/main.yml` for each workload role — extract namespace patterns, service URLs, and `agnosticd_user_info` keys.
+
+**Do not skip any collection.** Each one may define namespace patterns or credentials that affect grader logic.
+
+Present findings to developer before continuing (see Step 1.5 for the format).
+
+**If not provided:** continue — namespace patterns and services will be extracted from `.adoc` files only. Verify carefully with the developer.
+
+---
+
+**Question 3 — Do you have a deployed environment?**
+
+You cannot write accurate graders without a live environment. Namespace names, API endpoint paths, job template names (including typos), and service URLs must come from the real cluster.
+
+```
+Do you have a deployed lab environment available?
 
 You need:
 1. A running lab ordered from RHDP (integration.demo.redhat.com or demo.redhat.com)
-2. Access to the cluster — either:
-   - Bastion host SSH access, OR
-   - Laptop with kubeconfig pointing to the right cluster
-3. Lab credentials from the Showroom User tab (password, cluster domain, etc.)
+2. Cluster access — bastion SSH or laptop kubeconfig
+3. Lab credentials from the Showroom User tab
 
 Do you have all of this? [Y/n]
 ```
@@ -166,87 +238,64 @@ Do you have all of this? [Y/n]
 Please order the lab environment first:
 1. Go to https://demo.redhat.com (or integration.demo.redhat.com)
 2. Find the catalog item for this lab and order it
-3. Wait for provisioning (~15-60 minutes depending on lab type)
+3. Wait for provisioning (~15-60 minutes)
 4. Come back when you have bastion/kubeconfig access
 
 We cannot write accurate graders without real data from the deployed environment.
 ```
 
-**If YES — run discovery commands:**
-
-Ask the developer to run these and paste the output. This gives us ground truth for namespaces, services, and credentials.
+**If YES — run discovery commands based on the lab type identified above:**
 
 **For OCP labs:**
 ```bash
-# 1. What namespaces exist? (Showroom namespaces follow showroom-*-userX pattern)
+# 1. What namespaces exist?
 oc get namespaces --no-headers | awk '{print $1}' | grep -E "user|wksp|workshop|mcp|lab|agent|gitea|librechat"
 
-# 2. What's running per user namespace?
+# 2. What's running in the user namespace?
 oc get pods -n <user-namespace> --no-headers
 
-# 3. Get Showroom ConfigMap (contains ALL credentials — use grep/sed NOT json.loads)
+# 3. Get Showroom ConfigMap (ALL credentials — use grep/sed NOT json.loads)
 SHOW_NS=$(oc get ns --no-headers -o name | grep showroom | grep user1 | head -1 | cut -d/ -f2)
 oc get configmap showroom-userdata -n "$SHOW_NS" -o jsonpath='{.data.user_data\.yml}'
-# Fields available: password, gitea_admin_username, gitea_admin_password,
+# Fields: password, gitea_admin_username, gitea_admin_password,
 # gitea_console_url, openshift_cluster_ingress_domain, openshift_api_server_url,
 # login_command, gitea_user, gitea_password, librechat_user, litellm_virtual_key
 ```
 
 **For AAP labs:**
 ```bash
-# 4. What job templates exist in AAP? (CRITICAL — match names EXACTLY including typos)
+# What job templates exist? (CRITICAL — match names EXACTLY including typos)
 curl -sk -u lab-user:${AAP_PASSWORD} \
   ${AAP_HOSTNAME}/api/controller/v2/job_templates/ \
   | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]" | sort
 
-# 5. What workflow templates exist?
+# What workflow templates exist?
 curl -sk -u lab-user:${AAP_PASSWORD} \
   ${AAP_HOSTNAME}/api/controller/v2/workflow_job_templates/ \
   | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]"
 ```
 
 **For unknown APIs (RHDH, LibreChat, MCP, custom services):**
-
-If a lab involves an API the skill doesn't know, ask the developer to probe it:
-
 ```
 I'm not familiar with the [service name] API.
 Can you run these from the bastion and paste the response?
 
-# Find the route/URL
 oc get routes -n <namespace> --no-headers
-
-# Test the API root
 curl -sk https://<service-url>/api/ | python3 -m json.tool | head -50
-
-# If it needs auth, try with the lab password
-curl -sk -H "Authorization: Bearer ${PASSWORD}" \
-  https://<service-url>/api/ | python3 -m json.tool | head -50
 ```
 
-Paste the response and I'll identify:
-- What endpoints exist
-- What fields to check for validation
-- How to authenticate
+**⚠️ CRITICAL — kubeconfig context:**
 
-**⚠️ CRITICAL — kubeconfig context and recommended command:**
-
-For `--podman` mode, provide `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login, auto-discover users, and read credentials from the Showroom ConfigMap:
+For `--podman` mode, always set `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login and discover credentials from the Showroom ConfigMap:
 
 ```bash
 OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443" \
 OCP_ADMIN_PASSWORD="<admin-pass>" \
 OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io" \
-grade_lab <lab> all 1 --podman   # grades all users module 1 in parallel
+grade_lab <lab> all 1 --podman
 ```
 
-The wrapper auto-discovers each user's `PASSWORD` from their Showroom ConfigMap — you do not set `PASSWORD` manually in `all` mode.
-
-For single user: `grade_lab <lab> user1 1 --podman` — set `PASSWORD` from the Showroom User tab.
-
-**If running from laptop without `OCP_API_URL`:** always `oc login` to the correct cluster first — the active kubeconfig context at `podman run` time determines which cluster is used.
-
-Use the discovery output from above to fill in Step 1.5 (AgV analysis) and Step 2 (service analysis) with real data rather than guesses.
+Use the discovery output — combined with the Showroom content and AgV catalog already read above — to fill in Step 1.5 and Step 2 with real data, not guesses.
 
 ---
 
