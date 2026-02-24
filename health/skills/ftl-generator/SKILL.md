@@ -564,17 +564,19 @@ This analysis directly determines which env vars the grader needs (Step 3) and w
 
 ### Step 3: Determine Lab Configuration
 
-Ask these questions ONE AT A TIME.
+**Auto-detect lab short name — confirm, do not ask cold:**
 
-**Ask the developer (Question 1 — Lab short name):**
+Derive the short name from what you already have:
+- **If AgV catalog provided:** use the last path segment of the catalog directory (e.g., `summit-2026/lb2298-mcp-with-openshift-cnv` → `mcp-with-openshift-cnv`, or strip the `lb####-` prefix if present → `mcp-with-openshift-cnv`)
+- **If only Showroom repo:** use the repo name (e.g., `rhpds/lb1726-mcp-showroom` → `mcp-showroom`)
+
+**Ask the developer to confirm:**
+
 ```
-What short name should this lab use for the grade_lab/solve_lab commands?
+Lab short name detected: [derived-name]
 
-This becomes the directory name under labs/ and the argument to grade_lab.
-
-Examples: mcp-with-openshift, ocp4-getting-started, automating-ripu-with-ansible
-
-Your lab short name:
+This becomes the directory under labs/ and the argument to grade_lab/solve_lab.
+Is this correct, or do you want a different name? [Y / enter preferred name]
 ```
 
 WAIT for answer.
