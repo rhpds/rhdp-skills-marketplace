@@ -682,7 +682,9 @@ WAIT for answer.
 
 ### Step 4: Analyze Modules and Identify Checkpoints
 
-Based on the workshop content read in Step 2, analyze each module and present the checkpoint analysis:
+Based on the workshop content read in Step 0.5/Step 2, analyze each module and present the checkpoint analysis.
+
+For every checkpoint, explicitly mark whether it is **pre-configured** (deployed by AgnosticD — student does nothing, a FAIL means broken environment) or a **student action** (student must do this as per lab instructions — a FAIL means not done yet).
 
 ```
 Module Analysis
@@ -690,24 +692,35 @@ Module Analysis
 
 Module 1: [Module Title]
   Checkpoints identified: X
-  1.1: [Description] -> grader_check_ocp_pod_running
-  1.2: [Description] -> grader_check_ocp_route_exists
-  1.3: [Description] -> grader_check_ocp_service_exists
+
+  1.1: [Description]
+       Source: Pre-configured (deployed by AgnosticD, not a student task)
+       Role:   grader_check_ocp_pod_running
+
+  1.2: [Description]
+       Source: Student action — Module 1, Exercise 2 ("Upload the SBOM")
+       Role:   grader_check_http_json_response
+
   ...
 
 Module 2: [Module Title]
   Checkpoints identified: Y
-  2.1: [Description] -> grader_check_ocp_deployment
-  2.2: [Description] -> grader_check_http_endpoint
+
+  2.1: [Description]
+       Source: Student action — Module 2, Exercise 1 ("Configure the realm")
+       Role:   grader_check_http_json_response
+
   ...
 
 Total: Z checkpoints across N modules
+  Pre-configured: A  (FAIL = environment broken, not student fault)
+  Student actions: B (FAIL = student hasn't done this step yet)
 
 ```
 
 **Ask the developer:**
 
-Does this analysis look correct? Should I add, remove, or change any checkpoints?
+Does this analysis look correct? Are the pre-configured vs student action labels right? Should I add, remove, or change any checkpoints?
 
 WAIT for confirmation before generating any files.
 
