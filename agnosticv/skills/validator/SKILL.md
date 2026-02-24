@@ -432,17 +432,8 @@ def check_category(config):
   # Validate category alignment with configuration
   multiuser = config['__meta__']['catalog'].get('multiuser', False)
 
-  # Brand_Events covers both event workshops (multiuser) and event demos (single-user)
-  # Only warn if it's a Workshop-type that should be multi-user
-  # Demos with Brand_Events (e.g. summit demo) are intentionally single-user
-  if category == "Workshops" and not multiuser:
-    warnings.append({
-      'check': 'category',
-      'severity': 'WARNING',
-      'message': 'Category "Workshops" typically requires multiuser: true',
-      'location': 'common.yaml:__meta__.catalog',
-      'recommendation': 'Set multiuser: true for workshop catalogs'
-    })
+  # Workshops can be single-user or multi-user — no restriction enforced
+  # Only Demos are always single-user
 
   if category == "Demos" and multiuser:
     errors.append({
