@@ -942,11 +942,13 @@ Skipped: solve_module_01.yml (environment validation only, no student actions to
 
 Generate a comprehensive README with:
 - Lab overview and modules
-- Checkpoint list per module
+- Checkpoint list per module (noting pre-configured vs student action)
 - Environment setup instructions
-- Usage examples (grade and solve commands)
+- Usage examples using `bash bin/grade_lab` and `bash bin/solve_lab` (always run from FTL repo root)
 - Multi-user testing examples if applicable
 - Expected results on fresh vs completed environment
+
+**Check first:** if the FTL repo root already has a `README.adoc` or `README.md` with `bin/grade_lab` usage docs, do NOT overwrite it. Only generate the per-lab README at `labs/{lab_short_name}/README.md`.
 
 Write to: `{ftl_repo}/labs/{lab_short_name}/README.md`
 Confirm: "Created: README.md (X lines)"
@@ -984,8 +986,7 @@ Files created:
 No git push needed. Mount the local FTL repo directly into the container:
 
 ```bash
-# From your FTL repo directory: ~/work/code/experiment/ftl
-cd ~/work/code/experiment/ftl
+cd {ftl_repo}  # must run from FTL repo root
 
 # Set environment (from Showroom User tab + cluster credentials)
 export OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443"
@@ -994,7 +995,7 @@ export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshop
 # Lab-specific vars if any (e.g., AAP_HOSTNAME, GITEA_ADMIN_USER)
 
 # Grade Module 1 — mounts local repo into container, no push needed
-grade_lab {lab_short_name} {user_arg} 1 --podman --local
+bash bin/grade_lab {lab_short_name} {user_arg} 1 --podman --local
 ```
 
 The `--local` flag mounts `~/work/code/experiment/ftl` over `/ftl` inside the container — the entrypoint skips the GitHub clone and uses your local files directly. **Edit a playbook, run again immediately — no commit needed.**
@@ -1011,10 +1012,10 @@ If you see unexpected results (everything PASS, everything FAIL, 401 errors), te
 
 ```bash
 # Solve Module 1 (automates all student exercises)
-solve_lab {lab_short_name} {user_arg} 1 --podman --local
+bash bin/solve_lab {lab_short_name} {user_arg} 1 --podman --local
 
 # Grade again — expect all PASS
-grade_lab {lab_short_name} {user_arg} 1 --podman --local
+bash bin/grade_lab {lab_short_name} {user_arg} 1 --podman --local
 # Expected: SUCCESS 0 Errors for Module 1
 ```
 
@@ -1025,13 +1026,13 @@ If any checkpoint still FAILs after the solver — tell me. That means either th
 **Step C — Push and test from GitHub (when Module 1 is solid)**
 
 ```bash
-cd ~/work/code/experiment/ftl
+cd {ftl_repo}  # must run from FTL repo root
 git add labs/{lab_short_name}/
 git commit -m "Add FTL module 1 for {lab_short_name} (WIP)"
 git push
 
 # Now run without --local (pulls from GitHub, same as production)
-grade_lab {lab_short_name} {user_arg} 1 --podman
+bash bin/grade_lab {lab_short_name} {user_arg} 1 --podman
 ```
 
 ---
@@ -1040,7 +1041,7 @@ grade_lab {lab_short_name} {user_arg} 1 --podman
 
 ```bash
 # After single-user passes, test all users at once
-grade_lab {lab_short_name} all 1 --podman
+bash bin/grade_lab {lab_short_name} all 1 --podman
 ```
 
 Users are auto-discovered from `showroom-*-userN` namespaces. All run in parallel.
