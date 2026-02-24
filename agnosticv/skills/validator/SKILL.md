@@ -646,14 +646,6 @@ def check_best_practices(config):
                           'generic words like "workshop" or "openshift" are already implied by category and title'
       })
 
-  # Check for abstract
-  if 'abstract' not in config.get('__meta__', {}).get('catalog', {}):
-    suggestions.append({
-      'check': 'best_practices',
-      'message': 'No abstract defined in catalog metadata',
-      'recommendation': 'Add abstract for catalog description'
-    })
-  
   # Check for owners/maintainers
   if 'owners' not in config.get('__meta__', {}):
     suggestions.append({
@@ -1552,7 +1544,6 @@ Save this checklist for comprehensive review:
 - [ ] All required workloads included
 - [ ] Authentication workload present
 - [ ] Showroom workload for content delivery
-- [ ] Technology-specific workloads match abstract
 - [ ] All workload collections in requirements
 
 ## Configuration
