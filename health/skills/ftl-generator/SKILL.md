@@ -579,37 +579,28 @@ Your lab short name:
 
 WAIT for answer.
 
-**Ask the developer (Question 2 — Lab type):**
+**Auto-detect lab type and user model — confirm, do not ask cold:**
+
+By this point you have already read the Showroom content and AgV catalog. Detect from what you read:
+
+- **Lab type** → `config:` in `common.yaml`: `openshift-workloads` = OCP, `cloud-vms-base` = RHEL/AAP. If no AgV: `oc`/`kubectl` commands in `.adoc` = OCP; `ansible-playbook`/systemd = RHEL/AAP.
+- **Multi/single user** → `num_users` parameter in `__meta__.catalog.parameters` = multi-user; absent = single-user. If no AgV: `{user}` in namespace patterns in `.adoc` = multi-user.
+
+**Ask the developer to confirm:**
+
 ```
-What type of lab is this?
+Based on what I read:
+  Lab type:   [OCP cluster / RHEL+AAP VMs]
+  User model: [Multi-user — num_users parameter found / Single-user]
 
-1. OpenShift-based  (OCP cluster — pods, routes, builds, pipelines, operators)
-2. RHEL / AAP-based (VMs — systemd services, packages, AAP job templates, RHEL upgrades)
-
-Choice [1/2]:
+Does this look correct? [Y/n]
 ```
 
-WAIT for answer.
+WAIT for confirmation. Adjust if the developer corrects either value.
 
 ---
 
 **BRANCH 1: OpenShift-based lab**
-
-**Ask the developer (Question 3 — Multi-user or single-user):**
-```
-Is this a multi-user or single-user OpenShift lab?
-
-1. Multi-user — multiple students share one cluster, each gets their own namespace
-   Example: wksp-user1, mcp-openshift-user1
-   Usage: grade_lab lab-name user1
-
-2. Single-user — one student per cluster, no namespace isolation needed
-   Usage: grade_lab lab-name (no user argument)
-
-Choice [1/2]:
-```
-
-WAIT for answer.
 
 **If multi-user — ask the developer (Question 4 — namespace pattern):**
 ```
