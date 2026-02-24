@@ -1582,8 +1582,50 @@ Save this checklist for comprehensive review:
 
 ### Check 17: LiteMaaS Configuration
 
-OCP-specific check (`ocp4_workload_litellm_virtual_keys` requires an OCP cluster) — handled by `@agnosticv/docs/ocp-validator-checks.md` (Check 17).
-Not applicable to cloud-vms-base catalogs.
+Workload validation (models, duration) is OCP-specific — handled by `@agnosticv/docs/ocp-validator-checks.md` (Check 17).
+
+**Required includes — applies to ALL catalog types (OCP and cloud-vms-base):**
+
+If any LiteMaaS usage is detected (workload `litellm_virtual_keys` present, OR any `litellm`/`litemaas` variable set, OR one of the two includes already present), both includes are required:
+
+```python
+def check_litemaas_includes(config, includes):
+  """Both LiteMaaS includes required for any catalog using LiteMaaS — OCP or VM"""
+
+  has_workload = any('litellm_virtual_keys' in w for w in config.get('workloads', []))
+  has_vars = any(k.startswith('ocp4_workload_litellm') or 'litemaas' in k.lower()
+                 for k in config.keys())
+  has_either_include = any('litemaas-master_api' in i or 'litellm_metadata' in i
+                           for i in includes)
+
+  if not (has_workload or has_vars or has_either_include):
+    return  # Not using LiteMaaS
+
+  has_master_api = any('litemaas-master_api' in i for i in includes)
+  has_metadata = any('litellm_metadata' in i for i in includes)
+
+  if not has_master_api:
+    errors.append({
+      'check': 'litemaas',
+      'severity': 'ERROR',
+      'message': 'LiteMaaS in use but litemaas-master_api include is missing',
+      'location': 'common.yaml',
+      'fix': 'Add: #include /includes/secrets/litemaas-master_api.yaml'
+    })
+  else:
+    passed_checks.append("✓ LiteMaaS master API include present")
+
+  if not has_metadata:
+    errors.append({
+      'check': 'litemaas',
+      'severity': 'ERROR',
+      'message': 'LiteMaaS in use but litellm_metadata include is missing',
+      'location': 'common.yaml',
+      'fix': 'Add: #include /includes/parameters/litellm_metadata.yaml'
+    })
+  else:
+    passed_checks.append("✓ LiteMaaS metadata include present")
+```
 
 ### Check 17a: Event Restriction Include
 
