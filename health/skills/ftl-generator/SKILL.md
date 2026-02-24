@@ -197,7 +197,7 @@ If yes, provide:
 
 WAIT for answer.
 
-**If provided — read common.yaml, then clone and read every collection role:**
+**If provided — read common.yaml, then ask about collections before cloning:**
 
 From `common.yaml`:
 - `config:` field → OCP or cloud-vms-base
@@ -205,11 +205,20 @@ From `common.yaml`:
 - `num_users` parameter → multi-user or single-user
 - `requirements_content.collections` → GitHub URLs for each collection
 
-For every collection URL in `requirements_content.collections`:
-```bash
-git clone <collection_url> /tmp/ftl-collection-<name>/
+List the collections from `requirements_content.collections`, then **ask the developer:**
+
 ```
-Then read `defaults/main.yml` for each workload role — extract namespace patterns, service URLs, and `agnosticd_user_info` keys.
+I need to read these collections to extract namespace patterns and credentials:
+
+  - <collection-name-1>  (github.com/...)
+  - <collection-name-2>  (github.com/...)
+
+Do you already have any of these cloned locally?
+If yes: provide the local path(s).
+If no: I'll clone them to /tmp/ftl-collection-<name>/
+```
+
+WAIT for answer. Use local paths if provided. Only clone to `/tmp/` what isn't already available locally.
 
 **Do not skip any collection.** Each one may define namespace patterns or credentials that affect grader logic.
 
@@ -390,12 +399,24 @@ __meta__:
 - `num_users` parameter **present** → multi-user lab. Students share one cluster, each gets their own namespaced resources derived from `LAB_USER`.
 - `num_users` parameter **absent** → single-user lab. One environment per student, no namespace isolation, `LAB_USER` not needed.
 
-**D. Collections — clone each to read role defaults:**
-From `requirements_content.collections`, find the GitHub URLs. Clone each collection repo (to `/tmp/ftl-collection-<name>/`) and read each workload role's `defaults/main.yml`:
+**D. Collections — ask before cloning:**
+From `requirements_content.collections`, list the GitHub URLs, then ask the developer:
 
+```
+To read namespace patterns and credentials I need access to these collections:
+
+  - <collection-name>  (github.com/...)
+
+Do you have any of these cloned locally already?
+If yes: provide the path (e.g., ~/work/code/agnosticd).
+If no: I'll clone to /tmp/ftl-collection-<name>/
+```
+
+WAIT for answer. Use local paths where available, clone to `/tmp/` only what's missing.
+
+Then read each workload role's `defaults/main.yml`:
 ```bash
-git clone <collection_url> /tmp/ftl-collection-<name>/
-cat /tmp/ftl-collection-<name>/roles/<role_name>/defaults/main.yml
+cat <path>/roles/<role_name>/defaults/main.yml
 ```
 
 From `defaults/main.yml`, extract per lab type:
