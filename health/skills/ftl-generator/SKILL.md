@@ -205,21 +205,24 @@ From `common.yaml`:
 - `num_users` parameter → multi-user or single-user
 - `requirements_content.collections` → GitHub URLs for each collection
 
-Before looking for collections anywhere, read `~/CLAUDE.md` to find the developer's declared repository locations (the `### Repository Locations` section). Then **ask the developer:**
+Before looking for collections anywhere, read `~/CLAUDE.md` to find the developer's declared repository locations (the `### Repository Locations` section). Then **tell the developer what you found and ask:**
 
 ```
+📖 I read your ~/CLAUDE.md to find your local work directories.
+
+From it I can see:
+  - ~/work/code/agnosticd/     (AgnosticD v2)
+  - ~/work/code/agnosticv/     (AgnosticV)
+  (etc. — list exactly what CLAUDE.md says)
+
 I need to read these collections to extract namespace patterns and credentials:
 
   - <collection-name-1>  (github.com/...)
   - <collection-name-2>  (github.com/...)
 
-From your CLAUDE.md I can see your work directories are:
-  - ~/work/code/agnosticd/
-  - ~/work/code/agnosticv/
-  (etc.)
-
-Should I look for these collections there? Or do you have them cloned elsewhere?
-If none of them are available locally, I'll clone what I need to /tmp/
+Should I look for them in your work directories above?
+Or do you have them cloned elsewhere?
+If none are available locally, I'll clone what I need to /tmp/
 ```
 
 WAIT for answer. Only read paths the developer confirms. Never silently browse the filesystem.
