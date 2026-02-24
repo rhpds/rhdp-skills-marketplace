@@ -927,8 +927,32 @@ Edit `{ftl_repo}/labs/{lab_short_name}/solve_module_01.yml` (already copied from
 - NO `ansible.builtin.pause` prompts (fully automated)
 - Idempotent (safe to run multiple times)
 - Use `until`/`retries`/`delay` for async resources
-- Environment variable validation at start
 - Multi-user namespace handling if Pattern A
+
+**Environment variable validation in solvers — only check what can't be auto-discovered:**
+
+```yaml
+# CORRECT — only OPENSHIFT_CLUSTER_INGRESS_DOMAIN is truly required
+- assert:
+    that: lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length > 0
+    msg: "export OPENSHIFT_CLUSTER_INGRESS_DOMAIN=apps.cluster-xxx..."
+
+# WRONG — passwords, tokens, URLs from ConfigMap must NOT be in env var validation
+# tpa_cli_client_secret, keycloak_admin_password, etc. come from the Showroom ConfigMap
+# Read them inside the playbook with kubernetes.core.k8s_info, not from env vars
+```
+
+Credentials from the Showroom ConfigMap (`tpa_cli_client_secret`, `keycloak_admin_password`, service URLs, etc.) must be read inside the playbook using `kubernetes.core.k8s_info` on the `showroom-userdata` ConfigMap — never required as env vars.
+
+**User arg — always derive from the Showroom ConfigMap output the developer pasted:**
+
+The `user` field in the pasted Showroom ConfigMap output is the correct user arg. Use that exact value — do not assume `user1`, `student`, or any other default.
+
+```
+"user": "user1"      ← use this as the user arg
+```
+
+If the developer hasn't pasted ConfigMap output yet, ask them to run the discovery commands from Step 0.5 before proceeding.
 
 Write to: `{ftl_repo}/labs/{lab_short_name}/solve_module_XX.yml`
 Confirm: "Created: solve_module_01.yml (X lines)"
