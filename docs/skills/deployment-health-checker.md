@@ -14,8 +14,8 @@ Create Ansible validation roles for post-deployment health checks and verificati
 ## 📋 What You'll Need Before Starting
 
 <div class="workflow-diagram">
-  <a href="workflow.svg" target="_blank">
-    <img src="workflow.svg" alt="deployment-validator workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
+  <a href="deployment-validator-workflow.svg" target="_blank">
+    <img src="deployment-validator-workflow.svg" alt="deployment-validator workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
   </a>
   <p style="text-align: center; color: #586069; font-size: 0.875rem; margin-top: 0.5rem;">Click to view full workflow diagram</p>
 </div>

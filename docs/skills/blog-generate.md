@@ -14,8 +14,8 @@ Transform Red Hat Showroom workshop content into Red Hat Developer blog post for
 ## 📋 What You'll Need Before Starting
 
 <div class="workflow-diagram">
-  <a href="workflow.svg" target="_blank">
-    <img src="workflow.svg" alt="blog-generate workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
+  <a href="blog-generate-workflow.svg" target="_blank">
+    <img src="blog-generate-workflow.svg" alt="blog-generate workflow diagram" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #e1e4e8;" />
   </a>
   <p style="text-align: center; color: #586069; font-size: 0.875rem; margin-top: 0.5rem;">Click to view full workflow diagram</p>
 </div>
