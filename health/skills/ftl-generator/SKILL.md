@@ -219,12 +219,10 @@ Present findings to developer before continuing (see Step 1.5 for the format).
 
 ---
 
-**Question 3 — Do you have a deployed environment?**
-
-You cannot write accurate graders without a live environment. Namespace names, API endpoint paths, job template names (including typos), and service URLs must come from the real cluster.
+**Ask the developer (Question 3 — deployed environment):**
 
 ```
-Do you have a deployed lab environment available?
+Last question before we start: do you have a deployed lab environment?
 
 You need:
 1. A running lab ordered from RHDP (integration.demo.redhat.com or demo.redhat.com)
