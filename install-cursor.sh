@@ -26,7 +26,7 @@ mkdir -p "$SKILLS_DIR"
 mkdir -p "$DOCS_DIR"
 
 # Copy all skills
-echo "📦 Installing 7 skills..."
+echo "📦 Installing 8 skills..."
 for skill_dir in skills/*; do
   if [ -d "$skill_dir" ]; then
     cp -r "$skill_dir" "$SKILLS_DIR/"
@@ -48,7 +48,13 @@ done
 
 for skill in "$SKILLS_DIR"/agnosticv-*; do
   mkdir -p "$skill"/.claude/docs
-  cp -r agnosticv/.claude/docs/* "$skill/.claude/docs/" 2>/dev/null || true
+  cp -r agnosticv/docs/* "$skill/.claude/docs/" 2>/dev/null || true
+done
+
+# Bundle FTL patterns reference for health skills
+for skill in "$SKILLS_DIR"/health-*; do
+  mkdir -p "$skill"/.claude/docs
+  cp -r health/docs/* "$skill/.claude/docs/" 2>/dev/null || true
 done
 
 # Cleanup
@@ -66,6 +72,7 @@ echo "  • showroom-verify-content"
 echo "  • agnosticv-catalog-builder"
 echo "  • agnosticv-validator"
 echo "  • health-deployment-validator"
+echo "  • health-ftl-generator"
 echo ""
 echo "Next steps:"
 echo "  1. Restart Cursor completely (Cmd+Q / Ctrl+Q)"

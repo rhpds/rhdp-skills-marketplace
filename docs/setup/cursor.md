@@ -5,9 +5,13 @@ title: Cursor Setup
 
 # Cursor Setup
 
-<div class="setup-badge" style="background: #e7f3ff; color: #0969da;">⚡ Cursor 2.4+ Workaround</div>
+<div class="setup-badge" style="background: #fff3cd; color: #856404;">🧪 Experimental</div>
 
-Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io) but **does not support Claude Code plugin marketplace**. This installation uses a direct install script as a workaround.
+<div style="background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%); border-left: 4px solid #ffc107; border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0;">
+  <strong>⚠️ Experimental support.</strong> Cursor does not have a native plugin marketplace, so skills are installed manually via a script. Updates require re-running the install. For the best experience with automatic updates and full skill support, use <a href="claude-code.html"><strong>Claude Code</strong></a> — the primary supported platform.
+</div>
+
+Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io) but **does not support Claude Code plugin marketplace**. This installation uses a direct install script as a workaround. All Showroom skill content (templates, prompts, docs) is the same as the Claude Code version.
 
 <div class="platform-info">
   <div class="info-card">
@@ -21,14 +25,10 @@ Cursor 2.4+ supports the [Agent Skills open standard](https://agentskills.io) bu
     <h3>📦 What You Get</h3>
     <ul>
       <li>One-command installation</li>
-      <li>All 7 skills bundled</li>
-      <li>Templates & docs included</li>
+      <li>All 8 skills bundled</li>
+      <li>Same templates &amp; docs as Claude Code</li>
     </ul>
   </div>
-</div>
-
-<div class="install-note" style="background: #fff3cd; border-left: 4px solid #ffc107;">
-💡 <strong>Want automatic updates?</strong> For full plugin marketplace support with automatic updates, use <a href="claude-code.html">Claude Code</a> instead.
 </div>
 
 ---
