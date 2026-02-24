@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-badge">v2.4.4</div>
+  <div class="hero-badge">v2.7.0</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
   <div class="hero-actions">
@@ -36,7 +36,7 @@ title: Home
       <h3>Cursor</h3>
       <p>One-command install script with bundled dependencies for Agent Skills 2.4+</p>
       <div class="platform-meta">
-        <span class="badge badge-new">New in v2.4</span>
+        <span class="badge badge-new">New in v2.7</span>
         <span class="badge">One-command</span>
       </div>
       <div class="platform-action">Install with bash →</div>
