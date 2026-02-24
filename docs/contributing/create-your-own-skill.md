@@ -298,7 +298,7 @@ my-plugin/
 
 | Directory | Purpose | Real example |
 |-----------|---------|-------------|
-| `agents/` | AI personas with specific expertise (editor, reviewer, style checker) | `showroom/agents/technical-writer.md` |
+| `agents/` | AI personas with specific expertise (editor, reviewer, style checker) | `showroom/agents/style-enforcer.md` |
 | `docs/` | Shared rules and reference docs that multiple skills use | `showroom/docs/SKILL-COMMON-RULES.md` |
 | `prompts/` | Validation criteria files read before generating content | `showroom/prompts/redhat_style_guide_validation.txt` |
 | `templates/` | Starter templates for file generation | `showroom/templates/workshop/` |

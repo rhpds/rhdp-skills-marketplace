@@ -168,11 +168,17 @@ cd agnosticv</code></pre>
       <h4>Workflow 1: Create Full Catalog from Scratch</h4>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
-→ Git: Pull main, create branch (no feature/ prefix)
-→ Search similar catalogs
-→ Select infrastructure and workloads
-→ Generate all 4 files
-→ Auto-commit to branch</code></pre>
+→ Step 0: AgV path auto-detected, branch created
+→ Step 1: Q1=type (Workshop/Demo/Sandbox), Q2=event?, Q3=tech
+→ Step 2: Discovery searches agd_v2/ + openshift_cnv/
+→ Step 3: Infrastructure gate (OCP cluster or VMs)
+→ Step 4: Auth (unified ocp4_workload_authentication)
+→ Step 5: Workloads + LiteMaaS
+→ Step 6: Showroom (recommended name shown)
+→ Step 7: Catalog details (name, description, maintainer)
+→ Step 9: __meta__, includes, event restrictions
+→ Step 10: Path auto-generated (event) or asked (no-event)
+→ Generate all 4 files, auto-commit to branch</code></pre>
     </div>
   </div>
 
@@ -212,7 +218,7 @@ cd agnosticv</code></pre>
 <div class="detail-content">
   <h4>What it creates:</h4>
   <ul>
-    <li><strong>common.yaml</strong> - Main configuration (infrastructure and workloads)</li>
+    <li><strong>common.yaml</strong> - Main configuration (infrastructure, auth, workloads, includes)</li>
     <li><strong>dev.yaml</strong> - Development environment overrides</li>
     <li><strong>description.adoc</strong> - UI description following RHDP structure</li>
     <li><strong>info-message-template.adoc</strong> - User notification template</li>
@@ -220,17 +226,29 @@ cd agnosticv</code></pre>
 
   <h4>Step-by-step process:</h4>
   <ol>
-    <li>Select Full Catalog mode</li>
-    <li>Git workflow (automatic pull/branch creation - NO feature/ prefix)</li>
-    <li>Search for similar catalogs (optional, for reference)</li>
-    <li>Enter catalog name (slug format: lowercase-with-dashes)</li>
-    <li>Specify display name and category</li>
-    <li>Choose infrastructure (CNV multi-node, AWS, SNO, HCP)</li>
-    <li>Configure multi-user support</li>
-    <li>Specify technologies and workloads</li>
-    <li>UUID auto-generated and validated for uniqueness</li>
-    <li>Files generated and auto-committed</li>
+    <li><strong>Step 0 — Setup:</strong> AgV path auto-detected; branch created from main (no feature/ prefix)</li>
+    <li><strong>Step 1 — Context:</strong> 3 questions: Q1=Workshop/Demo/Sandbox, Q2=Is this for an event? (Summit 2026 / RH One 2026 / Other), Q3=Technologies. Event selection overrides category to Brand_Events and asks for Lab ID.</li>
+    <li><strong>Step 2 — Discovery:</strong> Searches <code>agd_v2/</code> and <code>openshift_cnv/</code>; shows reference catalogs with <code>[OCP cluster]</code> or <code>[RHEL/AAP VMs]</code> labels</li>
+    <li><strong>Step 3 — Infrastructure gate:</strong> Asks OCP or RHEL/AAP VMs, then routes to a separate @reference file per infra type:
+      <ul>
+        <li><strong>OCP path (<code>ocp-catalog-questions.md</code>):</strong> SNO or multinode, OCP version (4.18/4.20/4.21), pool with <code>/prod</code> suffix, autoscale, AWS gate; auth (unified <code>ocp4_workload_authentication</code> + provider); OCP workloads + LiteMaaS; Showroom with <code>ocp4_workload_ocp_console_embed</code>; multi-user with worker scaling</li>
+        <li><strong>VM path (<code>cloud-vms-base-catalog-questions.md</code>):</strong> CNV or AWS, RHEL image, sizing, ports; auth skipped (OS-level only); VM workloads; <code>vm_workload_showroom</code> with <code>showroom_git_repo</code>/<code>showroom_git_ref</code>; multi-user isolation warning</li>
+      </ul>
+    </li>
+    <li><strong>Step 7 — Catalog details:</strong> Display name, short name, description (starts with product name), maintainer name and email</li>
+    <li><strong>Step 9 — __meta__:</strong> Deployer actions (start/stop only); <code>remove_workloads</code> via <code>sandbox_api.actions.destroy.catch_all</code>; product label + family; keywords</li>
+    <li><strong>Step 9.1 — Includes:</strong> Event restriction in <code>common.yaml</code> (summit-devs or rh1-2026-devs); AWS extras; LiteMaaS (<code>litemaas-master_api</code> + <code>litellm_metadata</code>); workload-specific TODO</li>
+    <li><strong>Step 10 — Path:</strong> Event catalogs → auto-generated path (e.g. <code>summit-2026/lb2298-short-cnv</code>); no-event → asks subdirectory</li>
+    <li>UUID auto-generated and validated for uniqueness; files committed to branch</li>
   </ol>
+
+  <h4>Naming Standards Cheat Sheet:</h4>
+  <ul>
+    <li>Event catalog: <code>summit-2026/lb2298-short-name-cnv</code> or <code>summit-2026/lb2298-short-name-aws</code></li>
+    <li>OCP pool (common.yaml): <code>cnv-cluster-4.18/prod</code> (always <code>/prod</code> suffix)</li>
+    <li>Showroom repo name: <code>lb2298-short-name</code> (no cloud suffix)</li>
+    <li>Collections: <code>tag: "{{ tag }}"</code> for standard; fixed tag <code>≥ v1.5.1</code> for showroom</li>
+  </ul>
 </div>
 
 </details>

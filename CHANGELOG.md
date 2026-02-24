@@ -7,9 +7,156 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v2.5.0-tech-preview] - 2026-02-07
+## [v2.7.0] - 2026-02-24
+
+### AgnosticV Skills
+
+#### validator
+- Removed false `abstract` check — RHDP catalogs never use `__meta__.catalog.abstract`
+- Removed false `Workshops + multiuser` warning — workshops can be single or multi-user
+- Added LiteMaaS includes check (shared, runs for OCP and cloud-vms-base): ERROR if `litemaas-master_api.yaml` or `litellm_metadata.yaml` include is missing when LiteMaaS is in use
+- Added cloud provider suffix check to directory naming: WARNING if directory doesn't end with `-aws` or `-cnv` based on component reference
+- Keyword rules: 3-4 max, no generic terms — enforced in Check 9 and Check 16a
+
+#### catalog-builder
+- Keyword rules aligned: 3-4 max, no generic terms, consistent across builder and validator
+
+### Health Skills (FTL Generator)
+
+- **Step 0.5 rewrite**: Skill now reads Showroom content and AgV catalog first, then asks about deployed environment — no longer jumps straight to cluster commands
+- **All 9 buried questions fixed**: Questions formatted as `**Question N —**` headers were skipped; all converted to `**Ask the developer:**` imperative pattern
+- **Auto-detect from content**: Lab type, multi/single user, and lab short name all derived from already-read content and confirmed, not asked cold
+- **Collections**: Reads `~/CLAUDE.md` for declared work dirs, announces what it found, asks before reading — no silent filesystem browsing
+- **Step 4 checkpoint analysis**: Each checkpoint labelled `Source: Pre-configured` or `Source: Student action — Module X, Exercise Y`
+- **Step 6 testing guide**: 4 explicit steps (local `--local` podman mount, solver + re-grade, push + production test, load test all users)
+- **Solver rules**: Only validate `OPENSHIFT_CLUSTER_INGRESS_DOMAIN` as env var; ConfigMap credentials read inside playbook via `kubernetes.core.k8s_info`
+- **User arg**: Derived from `user` field in pasted Showroom ConfigMap output, never hardcoded
+- **Never generate `grade_lab.yml`**: `bin/grade_lab` auto-discovers `grade_module_*.yml` files
+- **FTL-PATTERNS.md**: Added variable ordering rule, PASSWORD never required in OCP labs, token expiry / `oc login` before `--podman`
+
+### Docs
+- `testing-tech-preview.md`: Added `plugin-sync` step — `/plugin update` updates `marketplaces/` but skills serve from `cache/`; must run `plugin-sync` in regular terminal after updates
+- `create-your-own-skill.md`: Fixed stale `technical-writer.md` reference → `style-enforcer.md`
+
+### Cleanup
+- Deleted `.archive/` backup directory
+- README badge updated to v2.7.0
+
+## [2.7.0-tech-preview] - 2026-02-22
+
+### AgnosticV Skills — Major Refactor
+
+#### catalog-builder
+- **Step 1 simplified**: Replaced 7-option combined question with 3 sequential questions (type → event → technologies). Event selection auto-sets Brand_Events category and prompts for lab ID.
+- **OCP/VM infra split**: Step 3 now routes to separate @reference files (`ocp-catalog-questions.md`, `cloud-vms-base-catalog-questions.md`) instead of inline branching. Auth, workloads, showroom, and multi-user questions live in the reference files.
+- **cloud-vms-base**: Correct VM showroom variables (`showroom_git_repo`, `showroom_git_ref`). Auth step skipped for VM catalogs. No `ocp_console_embed` for VMs.
+- **Fixed**: primaryBU list consistent across builder, validator, and constants.md. Step reference labels corrected (Step 0.5 → Step 1, Step 7 → Step 6 for Showroom URL).
+- **New agent**: `agnosticv/agents/workflow-reviewer.md` — checks builder/validator consistency after changes.
+
+#### validator
+- **Check 6 gate**: Routes to `ocp-validator-checks.md` or `cloud-vms-base-validator-checks.md` based on `config:` type. Return markers added to both reference files.
+- **Check 7 (auth)**: cloud-vms-base catalogs skip OCP auth check; warns if `ocp4_workload_authentication` accidentally added to VM catalog.
+- **Check 8 (showroom)**: cloud-vms-base uses `vm_workload_showroom` with `showroom_git_repo`/`showroom_git_ref`. ERROR if `ocp_console_embed` present in VM catalog. Dev mode check uses correct variable name per infra type.
+- **Check 3**: Brand_Events + `multiuser: false` no longer warns — event demos are intentionally single-user.
+- **Check 13**: Showroom collection warning suppressed for VM catalogs without showroom workload.
+- **Check 16a**: `ocp_console_embed` check now guarded by `config_type` — VM event catalogs correctly excluded.
+- **Workload mappings**: Deprecated auth roles replaced with unified `ocp4_workload_authentication` throughout.
+
+### Showroom Skills
+
+#### create-lab
+- **Step 3.1 scaffold**: Now checks/fixes existing files instead of always recreating. Detects stale/template titles (Workshop Title, Lab Title, showroom_template_nookbag, etc.) and updates only what's wrong.
+- **site.yml normalisation**: If repo has `site.yml` but no `default-site.yml`, silently renames to `default-site.yml` (role default). Reports action taken.
+- **Scaffold status report**: Shows created/updated/no-changes per file.
+
+#### verify-content
+- **Full scaffold check (Step 1.5)**: Now checks `default-site.yml`, `ui-config.yml`, `content/antora.yml`, `content/lib/` (4 JS files), `supplemental-ui/` (4 assets), `.github/workflows/gh-pages.yml`. Detects stale titles, wrong paths, site.yml/default-site.yml mismatch.
+- **Checklist mode (Step 4)**: Replaced open-ended prompt-based review with 5 explicit passes (B: Structure, C: AsciiDoc, D: Style, E: Technical, F: Demo). Every check item requires PASS/FAIL/N/A — fixes inconsistent results across runs.
+- **Output order**: Scaffold issues first, then content issues by pass, then summary table, then strengths.
+
+## [v2.6.0-tech-preview] - 2026-02-21
+
+Major overhaul of Showroom skills (Showroom 1.5.1 support), complete AgnosticV catalog-builder redesign, and validator alignment to new standards.
+
+### Added - Showroom 1.5.1 Scaffold
+
+- **create-lab / create-demo Step 3.1**: Skills now scaffold full Showroom 1.5.1 structure on first run:
+  - `default-site.yml`, `supplemental-ui/`, `content/lib/`, `gh-pages.yml`
+  - `ui-config.yml` with `view_switcher` pre-configured
+  - Console/tab embedding question asked at setup time
+- **create-lab / create-demo Step 2.5**: Now asks for the path to the RHDP-provided cloned Showroom repository (replaces the old "where to create files?" prompt)
+- **Showroom 1.5.1 requirement note**: Skills surface a developer note that Showroom 1.5.1+ is required for console embedding and split-view; reference template is `lb2298-ibm-fusion`
+
+### Added - AgnosticV Catalog Builder (Major Overhaul)
+
+Complete redesign of the MODE 1 Full Catalog question flow:
+
+- **Step 0**: Setup — AgV repo path auto-detection, branch creation
+- **Step 1**: Single [1-7] context question combining event type (Summit Lab/Demo, RH1 Lab/Demo, Workshop, Demo, Sandbox) + lab ID + technologies
+- **Step 2**: Discovery — searches `agd_v2/` and `openshift_cnv/` for reference catalogs; shows `[OCP cluster]` / `[RHEL/AAP VMs]` labels
+- **Step 3**: Infrastructure gate — OCP branch (SNO/multinode, OCP version 4.18/4.20/4.21, `/prod` pool suffix, autoscale, AWS) or VM branch (cloud-vms-base: CNV/AWS, RHEL image, sizing, ports per VM)
+- **Step 4**: Auth — unified `ocp4_workload_authentication` role with `htpasswd` or `keycloak` (RHBK) provider; RHSSO removed entirely
+- **Step 5**: Workloads + LiteMaaS question (models from live registry, duration, adds 2 includes + workload + collection)
+- **Step 5.5**: `{{ tag }}` pattern applied automatically for all standard collections; showroom pinned to fixed v1.5.1; EE image resolved from AgV grep
+- **Step 6**: Showroom — shows recommended name, asks if already created, adds placeholder if not; `antora_enable_dev_mode` auto-configured
+- **Step 7**: Catalog details — display name, short name, description, maintainer name + email (maintainer email was previously missing)
+- **Step 9**: `__meta__` — deployer actions (start/stop only); `remove_workloads` clarified as `sandbox_api.actions.destroy.catch_all` (not a deployer action); product + family labels; keywords
+- **Step 9.1**: Includes — event restriction in `common.yaml` (summit-devs or rh1-2026-devs), AWS extras, LiteMaaS includes (`litemaas-master_api` + `litellm_metadata`), workload-specific TODO
+- **Step 10**: Event catalogs → auto-generated path (e.g. `summit-2026/lb2298-short-cnv`); no-event catalogs → asks subdirectory
+
+### Added - AgnosticV Validator (Aligned to Builder)
+
+New checks aligned to catalog-builder v2.6.0 standards:
+
+- **Check 6** (Infrastructure): cloud-vms-base branch — instances, bastion image, multiuser warning; OCP branch — `/prod` suffix required, OCP version in known pools (4.18/4.20/4.21), AWS approval path
+- **Check 7** (Auth): ERROR for deprecated `_htpasswd` and `_keycloak` roles; ERROR for RHSSO; validates unified `ocp4_workload_authentication` role + provider var
+- **Check 8** (Showroom): Both showroom workloads required together (`ocp_console_embed` + `ocp4_workload_showroom`); `antora_enable_dev_mode: "false"` enforced in `common.yaml`
+- **Check 13** (Collections): `tag:` defined; standard collections use `{{ tag }}`; showroom pinned to fixed version ≥ v1.5.1
+- **Check 15a**: `anarchy.namespace` must never be defined by the catalog item
+- **Check 16a**: Event catalog validation — Brand_Events category, keywords, directory naming convention, Showroom naming, `ocp_console_embed` presence
+- **Check 17**: LiteMaaS workload → models list and duration validated
+- **Check 17a**: Event restriction include present in `common.yaml` when event catalog detected
+- **Step 1.5**: Event auto-detected from directory path (no user prompt needed)
+
+### Changed - verify-content Simplified
+
+- **Step 1**: Prompts now load directly from `showroom/prompts/` in the marketplace plugin; no content-type detection logic needed
+- **Step 1.5**: Silently checks `ui-config.yml` — warns if no consoles are configured, warns if `view_switcher` is missing (Showroom 1.5.1 requirement)
+
+### Changed - common.yaml.template Updated
+
+- All standard collections use `{{ tag }}` pattern for versions
+- Showroom workload uses fixed minimum version (v1.5.1)
+- Unified auth role + provider var replaces old per-provider role pattern
+- `cloud_provider_version: "{{ tag }}"` for AWS OCP catalogs
+- Event restriction added as commented option
+- LiteMaaS both includes added as commented options
+
+## [v2.5.0-tech-preview] - 2026-02-10
 
 Full skills optimization: 29% total reduction (~12,230 → ~8,644 lines) without losing any functionality.
+
+### Changed - Remove Redundant Step 0 from Showroom Skills
+
+Removed "Step 0: Reference Repository Setup" from create-lab, create-demo, and verify-content.
+The plugin already bundles quality templates in `showroom/templates/demo/` and `showroom/templates/workshop/`
+making the external reference repo prompt redundant. Skills now use bundled templates automatically.
+
+- Removed ~382 lines of Step 0 interactive prompts across 3 skills
+- Updated Step 9 (create-lab, create-demo) and Step 4 (verify-content) to reference bundled templates
+- Expanded create-demo Step 8 to read 5 of 7 demo templates (was only reading 2)
+- Marked TODO-SKILL-IMPROVEMENTS.md Step 0 task as done
+
+### Fixed - Broken `.claude/` Path References
+
+All `.claude/templates/` and `.claude/docs/` paths were broken (no `.claude/` directory exists in repo).
+Fixed across all Showroom skills and docs.
+
+- Replaced `.claude/templates/` → `showroom/templates/` in create-lab, create-demo, verify-content, SKILL-COMMON-RULES.md
+- Replaced `.claude/docs/` → `@showroom/docs/` in create-demo, blog-generate
+- Added missing `context: main` and `model: claude-opus-4-6` frontmatter to blog-generate
+- Updated templates README.md to reflect plugin-based installation
+- Deleted 136 duplicate prompt/template files from `skills/showroom-*/.claude/` (old standalone format, 29,004 lines)
 
 ### Changed - AgV Skills Optimization (30% Reduction)
 
@@ -2094,7 +2241,8 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 - Namespace Architecture: showroom (public) / agnosticv (internal)
 - Installation Method: One-command curl script with interactive prompts
 
-[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.8...HEAD
+[Unreleased]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.5.0-tech-preview...HEAD
+[v2.5.0-tech-preview]: https://github.com/rhpds/rhdp-skills-marketplace/compare/v2.4.8...v2.5.0-tech-preview
 [v2.4.8]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.8
 [v2.4.7]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v2.4.7
 [v1.8.0]: https://github.com/rhpds/rhdp-skills-marketplace/releases/tag/v1.8.0

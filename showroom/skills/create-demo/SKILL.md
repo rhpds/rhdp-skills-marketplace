@@ -44,7 +44,7 @@ Use this skill to create presenter-led demo content, transform technical documen
 
 ## Shared Rules
 
-**IMPORTANT**: This skill follows shared contracts defined in `.claude/docs/SKILL-COMMON-RULES.md`:
+**IMPORTANT**: This skill follows shared contracts defined in `@showroom/docs/SKILL-COMMON-RULES.md`:
 - Version pinning or attribute placeholders (REQUIRED)
 - Reference enforcement (REQUIRED)
 - Attribute file location (REQUIRED)
@@ -131,129 +131,6 @@ Step 3.2: Reference materials?
 
 etc.
 ```
-
----
-
-### Step 0: Reference Repository Setup (IMPORTANT)
-
-**Before generating content, we need access to real Showroom demo examples for quality reference.**
-
-**CRITICAL: This step MUST happen before any content generation to ensure quality matches real Showroom demo standards.**
-
-**Ask the user:**
-
-```
-📚 Reference Repository Check
-
-To generate high-quality demo content that matches Showroom standards, I need access to real Showroom demo examples.
-
-Do you have a Showroom repository cloned locally that I can reference for patterns and examples?
-
-Options:
-1. Yes - I have a local Showroom repo (Recommended - best quality)
-2. No - Clone template to /tmp/ for me
-3. Skip - Generate without reference (Not recommended - may need manual rewrites)
-
-Your choice: [1/2/3]
-```
-
-**If Option 1 (YES - Local repo):**
-
-```
-Great! Please provide the path to your Showroom repository:
-
-Example: ~/work/showroom-content/my-demo
-
-Path:
-```
-
-**Validation:**
-- Check if path exists using Read tool
-- Verify it contains demo content in `content/modules/ROOT/pages/*.adoc` files
-- If invalid, ask again or offer Option 2
-
-**Once valid path provided:**
-1. Read 2-3 example demo modules from `content/modules/ROOT/pages/*.adoc`
-2. Analyze and learn from:
-   - Know/Show structure and separation
-   - Business value messaging patterns
-   - Presenter guidance formatting
-   - Talk track examples ("What I say", "What I do", "What they should notice")
-   - Code block formatting and syntax highlighting
-   - Image and diagram patterns (link=self,window=blank usage)
-   - Navigation includes and xrefs
-   - List formatting (blank lines before/after lists)
-   - External link patterns (^ caret usage)
-   - Business metrics and ROI presentation
-3. Use these patterns as templates for generating new demo content
-
-**If Option 2 (NO - Clone template):**
-
-```
-I'll clone the Showroom template repository to /tmp/showroom-reference for you.
-
-This provides standard Showroom demo examples to ensure quality output.
-
-Proceed? [Yes/No]
-```
-
-**If Yes:**
-```bash
-git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
-```
-
-Then:
-1. Read example demo modules from `/tmp/showroom-reference/content/modules/ROOT/pages/*.adoc`
-2. Analyze demo patterns (same as Option 1)
-3. Use for content generation
-
-**If No or clone fails:**
-- Warn user: "⚠️  Without reference examples, generated demo content quality may require significant manual rewrites"
-- Ask: "Continue anyway? [Yes/No]"
-- If Yes, proceed with generic templates (lower quality expected)
-- If No, exit skill
-
-**If Option 3 (Skip):**
-
-```
-⚠️  WARNING: Generating without reference repository
-
-Without real Showroom demo examples, the generated content:
-- May not match Showroom demo quality standards
-- Will likely need manual rewrites
-- May miss important Know/Show separation patterns
-- Could lack effective business messaging
-- May take 5x longer to finalize
-
-This is the issue reported: "Module 2 is crap, requires manual rewrite with actual showroom docs"
-
-Are you sure you want to skip reference repository? [Yes/No]
-```
-
-**If Yes:** Proceed with generic templates, but add note in final output warning about potential quality issues
-**If No:** Go back to Option 1 or 2
-
-**Why This Step Matters:**
-
-Before this fix:
-- ❌ Demo modules were "crap"
-- ❌ Required manual rewrite using actual Showroom docs
-- ❌ 5 days of rework time
-- ❌ Business messaging didn't match Showroom quality
-- ❌ Know/Show structure was inconsistent
-
-After this fix:
-- ✅ Demos generated with quality matching real Showroom content from first iteration
-- ✅ Know/Show separation follows proven patterns
-- ✅ Business messaging matches professional standards
-- ✅ Reduces manual rewrites from days to hours
-- ✅ AI learns from actual examples, not generic patterns
-
-**Store reference path for later use:**
-- Save reference repository path to use throughout demo generation
-- When generating demo modules, read reference examples to match quality
-- Apply learned Know/Show patterns to new content
-- Follow business messaging style from references
 
 ---
 
@@ -349,23 +226,23 @@ What's your situation? [1/2/3]
 
 **ONLY AFTER user answers, proceed based on their response.**
 
-### Step 2.5: Ask for Target Directory (if not provided as argument)
+### Step 2.5: Ask for Showroom Repository Path (if not provided as argument)
 
 **SKIP THIS STEP IF**: User provided `<directory>` as argument
 
 **Ask the user**:
 ```
-Where should I create the demo files?
+What is the path to your cloned Showroom repository?
 
-Default location: content/modules/ROOT/pages/
+The RHDP team will have provided you with a Showroom repository to clone.
+Provide the local path to that cloned repo.
 
-Press Enter to use default, or type a different path:
+Example: /Users/yourname/work/showroom-content/my-demo-showroom
+
+Repo path:
 ```
 
-**Validation**:
-- If directory doesn't exist, ask: "Directory not found. Create it? [Yes/No]"
-- If Yes, create the directory
-- If No, ask again for directory
+Use `content/modules/ROOT/pages/` within that path as the target for demo files.
 
 **If continuing existing demo**:
 - Provide path to previous module (I'll read and auto-detect the story)
@@ -461,6 +338,211 @@ Your target duration:
 - Accept the recommended flow
 - Adjust sections and messaging
 - Change business emphasis
+
+---
+
+### Step 3.1: Showroom Setup (Recommended for new demos)
+
+**For NEW demos only. Skip if adding a module to an existing demo.**
+
+**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.1 or above. Contact your RHDP administrator to confirm the version before publishing.
+
+Ask these questions SEQUENTIALLY — one at a time.
+
+**Question A — Consoles and tools to embed:**
+
+```
+What consoles or tools should the presenter see in the Showroom right panel?
+
+Each tab appears as a clickable pane next to the demo script.
+
+Common options:
+- OpenShift Console  → https://console-openshift-console.${DOMAIN}
+- Bastion terminal   → path: /wetty, port: 443
+- OpenShift AI       → https://rhods-dashboard-redhat-ods-applications.${DOMAIN}
+- AAP dashboard      → https://aap-dashboard.${DOMAIN}
+- External URL       → any https:// URL
+
+List each console as: name | url  (or name | path + port for terminals)
+
+Examples:
+  OpenShift Console | https://console-openshift-console.${DOMAIN}
+  Bastion | /wetty (port 443)
+
+You can adjust these later by editing ui-config.yml.
+
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+**Question B — ui-bundle theme:**
+
+```
+Which ui-bundle theme do you need?
+
+Default: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
+
+Available themes (see https://github.com/rhpds/rhdp_showroom_theme/releases):
+- rh-one-2025 (default — Red Hat One 2025 theme)
+- rh-summit-2025 (Red Hat Summit 2025 theme)
+
+Press Enter to use the default, or paste a different URL:
+```
+
+**Now create all infrastructure files:**
+
+**1. Create `default-site.yml`** (at repo root):
+
+```yaml
+site:
+  title: "{{ demo_title }}"
+  start_page: modules::index.adoc
+
+content:
+  sources:
+  - url: ./
+    start_path: content
+
+ui:
+  bundle:
+    url: {{ ui_bundle_url }}
+    # Themes can be found at https://github.com/rhpds/rhdp_showroom_theme
+    # Summit 2025 url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+
+runtime:
+  fetch: true
+
+asciidoc:
+  attributes:
+    source-highlighter: rouge
+```
+
+**2. Create `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+
+```yaml
+---
+type: showroom
+
+# Set the left column width to 30%
+default_width: 30
+# Persist the URL state so browser refresh doesn't reset the UI
+persist_url_state: true
+
+view_switcher:
+  enabled: true
+  default_mode: split
+
+tabs:
+{{ generated_tabs_from_Question_B }}
+```
+
+If the user provided tabs in Question B, generate the `tabs:` block. If they pressed Enter, include the common examples as commented-out lines:
+
+```yaml
+tabs:
+# - name: OpenShift Console
+#   url: 'https://console-openshift-console.${DOMAIN}'
+# - name: Bastion
+#   path: /wetty
+#   port: 443
+```
+
+**3. Create `content/lib/`** — read these 4 files from `https://github.com/rhpds/lb2298-ibm-fusion` (clone to temp dir if not available locally) and write unchanged:
+
+- `content/lib/all-attributes-console-extension.js`
+- `content/lib/attributes-page-extension.js`
+- `content/lib/dev-mode.js`
+- `content/lib/unlisted-pages-extension.js`
+
+**4. Create `supplemental-ui/`** at repo root — same reference repo, write unchanged:
+
+- `supplemental-ui/css/site-extra.css`
+- `supplemental-ui/img/favicon.ico`
+- `supplemental-ui/partials/head-meta.hbs`
+- `supplemental-ui/partials/header-content.hbs`
+
+**5. Create `.github/workflows/gh-pages.yml`:**
+
+```yaml
+name: github pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.adoc"
+      - ".gitignore"
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: configure pages
+        uses: actions/configure-pages@v5
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.13.1
+      - name: install antora
+        run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
+      - name: antora generate
+        run: antora generate default-site.yml --stacktrace
+      - name: upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: www
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: deploy github pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+```
+
+**6. Update `content/antora.yml`** with demo title and slug:
+
+```yaml
+name: modules
+title: "{{ demo_title }}"
+version: master
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "{{ demo_slug }}"
+```
+
+**Confirm scaffold is complete:**
+
+```
+✅ Scaffold created:
+- default-site.yml (ui-bundle: {{ ui_bundle_url }})
+- ui-config.yml ({{ tab_count }} tab(s) configured)
+- content/lib/ (4 JS extension files)
+- supplemental-ui/ (css, favicon, partials)
+- .github/workflows/gh-pages.yml
+- content/antora.yml (updated)
+```
+
+**Note**: These files must exist BEFORE generating any content modules (Step 8).
 
 ---
 
@@ -638,31 +720,52 @@ Based on your references, I'll:
 
 ### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
-**CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
+**CRITICAL: Read templates BEFORE generating any content.**
 
-**Templates to read:**
-- `.claude/templates/demo/03-module-01.adoc`
-- `.claude/templates/demo/01-overview.adoc`
+**Template source — check the Showroom repo first:**
+
+The user's Showroom repo may contain a `templates/` directory with up-to-date patterns. Always prefer these over the marketplace's built-in templates.
+
+```bash
+# Check if user's Showroom repo has demo templates
+ls {showroom_repo_path}/examples/demo/templates/ # if exists use examples/ 2>/dev/null
+```
+
+**If `examples/demo/templates/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/examples/demo/templates/index.adoc` — **Facilitator/presenter guide** (output as `index.adoc`)
+- `{showroom_repo_path}/examples/demo/templates/01-overview.adoc`
+- `{showroom_repo_path}/examples/demo/templates/02-details.adoc`
+- `{showroom_repo_path}/examples/demo/templates/03-module-01.adoc` — **Uses Know/Show structure**
+- `{showroom_repo_path}/examples/demo/templates/99-conclusion.adoc`
+
+**If `examples/demo/templates/` does NOT exist — fall back to marketplace templates:**
+- `@showroom/examples/demo/templates/index.adoc` — Facilitator/presenter guide
+- `@showroom/examples/demo/templates/01-overview.adoc`
+- `@showroom/examples/demo/templates/02-details.adoc`
+- `@showroom/examples/demo/templates/03-module-01.adoc` — Know/Show structure
+- `@showroom/examples/demo/templates/99-conclusion.adoc`
+
+**Key rules from the templates:**
+- Demo `index.adoc` is a **facilitator/presenter guide** — NOT learner-facing (opposite of workshop)
+- All demo modules follow **Know/Show structure**: `=== Know` (background, business value, why) then `=== Show` (step-by-step presenter actions)
+- Both output files are named `index.adoc` regardless of template source filename
+
+The user's `examples/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and usage.
 
 ### Step 9: Generate Demo Module (Using Verification Criteria)
 
-**IMPORTANT: Use Reference Repository from Step 0**
+**IMPORTANT: Use the bundled demo templates read in Step 8 as quality references.**
 
-Before generating ANY demo content, refer back to the reference repository demo examples from Step 0:
-
-1. **Read reference demo examples again** if needed to refresh patterns
-2. **Match Know/Show structure** from real Showroom demos
-3. **Apply learned patterns** to new demo content:
-   - Know sections match reference business messaging style
-   - Show sections follow reference presenter guidance patterns
-   - Talk tracks ("What I say", "What I do") match reference format
-   - Business metrics and ROI presentation follows reference examples
-   - Code block formatting follows reference style
-   - Image references use same patterns (link=self,window=blank)
-   - List formatting matches reference (blank lines before/after)
-   - External links follow reference pattern (^ caret for new tabs)
+Apply patterns from the bundled templates to new demo content:
+- Know/Show structure and separation
+- Business value messaging style
+- Presenter guidance and talk track format ("What I say", "What I do")
+- Code block formatting and syntax highlighting
+- Image references (link=self,window=blank)
+- List formatting (blank lines before/after)
+- External links (^ caret for new tabs)
 
 **This ensures generated demo content matches real Showroom demo quality instead of generic templates.**
 
@@ -1462,9 +1565,11 @@ Every demo module will have:
 
 ## Integration Notes
 
-**Templates used**:
-- `.claude/templates/demo/03-module-01.adoc`
-- `.claude/templates/demo/01-overview.adoc`
+**Templates used** (from Showroom repo `templates/demo/templates/` or marketplace fallback):
+- `index.adoc` (facilitator/presenter guide) (facilitator/presenter guide)
+- `01-overview.adoc`, `02-details.adoc`
+- `03-module-01.adoc` (Know/Show structure)
+- `99-conclusion.adoc`
 
 **Agents invoked**:
 - `workshop-reviewer` - Validates structure

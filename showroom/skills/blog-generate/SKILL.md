@@ -3,6 +3,11 @@ name: showroom:blog-generate
 description: Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms.
 ---
 
+---
+context: main
+model: claude-opus-4-6
+---
+
 # Blog Generator
 
 Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms.
@@ -58,7 +63,7 @@ Have these ready before running this skill:
 
 ## Shared Rules
 
-**IMPORTANT**: This skill follows shared contracts defined in `.claude/docs/SKILL-COMMON-RULES.md`:
+**IMPORTANT**: This skill follows shared contracts defined in `@showroom/docs/SKILL-COMMON-RULES.md`:
 - Reference enforcement (REQUIRED)
 - **Source traceability** (REQUIRED for trust and attribution)
 - Failure-mode behavior (stop if cannot proceed safely)

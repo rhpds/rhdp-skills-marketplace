@@ -45,7 +45,7 @@ This updates all installed plugins to their latest versions.
 
 ## Available Plugins
 
-### AgnosticV Plugin (v2.2.0)
+### AgnosticV Plugin (v2.7.0)
 
 **Plugin:** `agnosticv@rhdp-marketplace`
 
@@ -90,7 +90,7 @@ This updates all installed plugins to their latest versions.
 
 ---
 
-### Health Plugin (v1.0.0)
+### Health Plugin (v2.7.0)
 
 **Plugin:** `health@rhdp-marketplace`
 
@@ -99,7 +99,13 @@ This updates all installed plugins to their latest versions.
   - Post-deployment validation
   - Ansible-based health checks
 
-**Tags:** `ansible`, `validation`, `health-check`, `deployment`
+- `/health:ftl-generator` - Generate FTL grader and solver playbooks for Showroom workshops
+  - Reads .adoc module files to auto-detect checkpoints
+  - Generates per-module grader and solver playbooks
+  - Follows FTL three-play pattern with full grader role catalog
+  - Supports multi-user and single-user lab patterns
+
+**Tags:** `ansible`, `validation`, `health-check`, `deployment`, `ftl`, `grading`, `testing`
 
 ---
 

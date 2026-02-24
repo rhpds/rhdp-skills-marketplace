@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.4.8-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.7.0--tech--preview-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -88,8 +88,9 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 - `/agnosticv:catalog-builder` - Create/update AgnosticV catalog items & Virtual CIs
 - `/agnosticv:validator` - Validate catalog configurations
 
-**Health Plugin** (`health@rhdp-marketplace`) - Deployment validation:
+**Health Plugin** (`health@rhdp-marketplace`) - Deployment validation and testing:
 - `/health:deployment-validator` - Create Ansible validation roles
+- `/health:ftl-generator` - Generate FTL grader/solver playbooks for workshop testing
 
 ---
 
@@ -145,11 +146,13 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `deployment-health-checker` | Create validation roles | Automated post-deploy health checks |
+| `deployment-validator` | Create validation roles | Automated post-deploy health checks |
+| `ftl-generator` | Generate FTL grader/solver playbooks | Automated workshop grading and testing |
 
 **Workflow:**
 ```
-Deploy catalog → /deployment-health-checker → Health checks → Verify readiness
+Deploy catalog → /deployment-validator → Health checks → Verify readiness
+/create-lab → /ftl-generator → Generate graders/solvers → Test workshop
 ```
 
 **Documentation:** [health/README.md](health/README.md)
@@ -164,13 +167,12 @@ Deploy catalog → /deployment-health-checker → Health checks → Verify readi
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `ftl` (future) | Finish The Labs | Automated grader/solver generation for workshop testing |
 | `automation` (future) | Workflow automation | Automated RHDP operations and orchestration |
 | `field-automation-builder` (future) | Field content integration | Import field-sourced content to RHDP catalog |
 
 **Workflow:**
 ```
-/create-lab → /ftl (generate grader/solver) → Test workshop → Deploy to RHDP
+/create-lab → /health:ftl-generator (generate grader/solver) → Test workshop → Deploy to RHDP
 ```
 
 **Documentation:** [automation/README.md](automation/README.md)

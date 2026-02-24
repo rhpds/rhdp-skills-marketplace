@@ -477,10 +477,11 @@ All skills must pass these gates before delivering content:
 
 All skills reference these files:
 
-**Templates**:
-- `content/modules/ROOT/pages/workshop/templates/03-module-01.adoc`
-- `content/modules/ROOT/pages/demo/03-module-01.adoc`
-- `content/modules/ROOT/pages/workshop/templates/README-TEMPLATE-GUIDE.adoc`
+**Templates** (bundled with plugin):
+- `showroom/templates/workshop/templates/03-module-01.adoc`
+- `showroom/templates/workshop/templates/README-TEMPLATE-GUIDE.adoc`
+- `showroom/templates/workshop/example/03-module-01.adoc`
+- `showroom/templates/demo/03-module-01.adoc`
 
 **Style Guides**:
 - `showroom/prompts/redhat_style_guide_validation.txt`

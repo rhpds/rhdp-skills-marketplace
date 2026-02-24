@@ -4,7 +4,7 @@ description: Run comprehensive quality verification on workshop or demo content 
 ---
 
 ---
-context: fork
+context: main
 model: claude-opus-4-6
 ---
 
@@ -59,184 +59,181 @@ Have these ready before running this skill:
 
 ## Workflow
 
-### Step 0: Reference Repository Setup (OPTIONAL but Recommended)
+### Step 1: Load Verification Prompts (REQUIRED)
 
-**For enhanced verification quality, access to real Showroom examples helps compare content against proven patterns.**
-
-**Ask the user:**
+Prompts are bundled with the marketplace plugin at `@showroom/prompts/`. Read them directly — no detection or user choice needed.
 
 ```
-📚 Reference Repository Check (Optional)
-
-For more comprehensive verification, I can compare your content against real Showroom examples.
-
-Do you have a Showroom repository with quality content that I can use as a reference?
-
-Options:
-1. Yes - I have a local Showroom repo (Better verification quality)
-2. No - Clone template to /tmp/ for me
-3. Skip - Verify without reference (Standard verification only)
-
-Your choice: [1/2/3]
+📋 Verification prompts loaded from marketplace plugin.
 ```
 
-**If Option 1 (YES - Local repo):**
-
-```
-Please provide the path to your reference Showroom repository:
-
-Example: ~/work/showroom-content/high-quality-workshop
-
-Path:
-```
-
-**Validation:**
-- Check if path exists using Read tool
-- Verify it contains quality content in `content/modules/ROOT/pages/*.adoc` files
-- If invalid, ask again or offer Option 2
-
-**Once valid path provided:**
-1. Read 2-3 example modules from reference repo
-2. Use as comparison baseline for:
-   - Section structure quality
-   - Code block patterns
-   - Image reference formatting
-   - List formatting (blank lines)
-   - External link patterns (^ caret usage)
-   - Business scenario quality
-   - Verification command patterns
-3. Enhanced verification can flag deviations from proven patterns
-
-**If Option 2 (NO - Clone template):**
-
-```
-I'll clone the Showroom template repository to /tmp/showroom-reference for you.
-
-This provides standard Showroom examples to enhance verification quality.
-
-Proceed? [Yes/No]
-```
-
-**If Yes:**
-```bash
-git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
-```
-
-Then:
-1. Read example modules from template
-2. Use as comparison baseline
-3. Enhanced verification against proven patterns
-
-**If No or clone fails:**
-- Continue with standard verification (no reference comparison)
-
-**If Option 3 (Skip):**
-- Proceed with standard verification
-- No comparison against reference examples
-- Still validates against Red Hat style guide and accessibility standards
-
-**Why Reference Repository Helps Verification:**
-
-With reference examples:
-- ✅ Can compare structure against proven high-quality modules
-- ✅ Identify deviations from successful patterns
-- ✅ Suggest improvements based on real examples
-- ✅ More specific feedback ("Reference example uses X pattern, your content uses Y")
-
-Without reference examples:
-- ✓ Still validates Red Hat style guide compliance
-- ✓ Still checks accessibility standards
-- ✓ Still validates technical accuracy
-- ⚠️  Can't compare against proven Showroom patterns
-- ⚠️  Feedback is more generic
-
-**Store reference path for verification steps:**
-- Save reference repository path if provided
-- During verification, compare content patterns against reference examples
-- Include comparison findings in verification report
+Proceed immediately to Step 1.5.
 
 ---
 
-### Step 1: Detect and Select Verification Prompts (REQUIRED)
+### Step 1.5: Showroom Scaffold Check
 
-**CRITICAL: Before running verification, detect which prompt sets are available and let user choose.**
+Silently check all scaffold files in the repo root and `content/`. Do not check AgnosticV or any external catalog. Do not block verification — collect all findings and include them in the Step 5 results summary.
 
-**Detection Priority:**
-1. **Current Git Repo**: `showroom/prompts/` in current repository (highest priority)
-2. **Global Home**: `~/showroom/prompts/` (user's global settings)
+**Known stale/template title values** — flag any of these as not updated:
+`Workshop Title`, `Lab Title`, `Showroom Template`, `Red Hat Showroom`, `My Workshop`, `Template`, `showroom_template_nookbag`, empty string, or a value matching the repository directory name.
 
-**Prompt Detection Steps:**
+---
 
-1. **Check current directory for git repo:**
-   ```bash
-   git rev-parse --show-toplevel 2>/dev/null
-   ```
+**Antora playbook** (`site.yml` or `default-site.yml`) (repo root):
 
-2. **If in git repo, check for local `showroom/prompts/`:**
-   ```bash
-   ls [repo-root]/showroom/prompts/*.txt 2>/dev/null
-   ```
+The showroom role supports both `site.yml` and `default-site.yml` — both are valid. `site.yml` is the going-forward standard. `default-site.yml` is silently supported by the role. You can also override with `ocp4_workload_showroom_content_antora_playbook: custom.yml`.
 
-3. **Check global home directory:**
-   ```bash
-   ls ~/showroom/prompts/*.txt 2>/dev/null
-   ```
+Check which file is present and use whichever exists for field validation:
 
-**If multiple locations found, ask user:**
+| State | Severity | Message |
+|---|---|---|
+| `site.yml` present | — | Proceed to field checks on `site.yml` |
+| `default-site.yml` present, no `site.yml` | High | ⚠️ Repo uses `default-site.yml` — rename to `site.yml` (new standard). Both work but `site.yml` is going forward. Fix: `mv default-site.yml site.yml` |
+| Both present | High | ⚠️ Both `site.yml` and `default-site.yml` exist — `default-site.yml` is redundant. Remove it: `rm default-site.yml` |
+| Neither present | Critical | ❌ No Antora playbook found. Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
 
+Check fields in whichever playbook file is present:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `site.title` | Not a stale/template value | ⚠️ `site.title` looks like a template default — update to your actual lab name |
+| `site.start_page` | Equals `modules::index.adoc` | ⚠️ `start_page` is not `modules::index.adoc` — learners may land on wrong page |
+| `ui.bundle.url` | Present and not empty | ⚠️ `ui.bundle.url` missing — Showroom will use default theme |
+| `ui.supplemental_files` | Equals `./supplemental-ui` | ⚠️ `supplemental_files` path is wrong — custom CSS/partials won't load |
+| `runtime.fetch` | Equals `true` | ⚠️ `runtime.fetch` not set to true — remote content sources won't update |
+
+---
+
+**`ui-config.yml`** (repo root):
+
+**First — detect catalog infra type** from ui-config.yml content (silently):
+- Contains `console-openshift-console` or `rhods-dashboard` → OCP catalog
+- Contains `/wetty` with a `port:` entry, or AAP/Cockpit URLs → VM catalog
+- Cannot determine → ask user:
+  ```
+  Q: Is this Showroom for an OCP-based or VM-based (cloud-vms-base) catalog?
+  1. OCP cluster  2. VM / RHEL
+  ```
+
+If MISSING:
 ```
-🔍 Found verification prompts in multiple locations:
-
-1. Current repo: /Users/psrivast/work/showroom-content/aap-selfserv-intro-showroom/showroom/prompts/
-   └─ Last updated: 13 Jan 16:01 (10 prompts)
-
-2. Global home: ~/showroom/prompts/
-   └─ Last updated: 13 Jan 14:47 (10 prompts)
-
-Which prompts should I use for verification?
-
-Options:
-1. Current repo (use repo-specific prompts) - Recommended if customized
-2. Global home (use your personal defaults)
-
-Your choice: [1/2]
-```
-
-**If only one location found:**
-
-```
-✅ Using verification prompts from: ~/showroom/prompts/
-   Last updated: 13 Jan 14:47
-   Total prompts: 10
-```
-
-**If NO prompts found:**
-
-```
-❌ ERROR: No verification prompts found in any location.
-
-Verification prompts should be in:
-- Current repo: showroom/prompts/ (if repo-specific)
-- Global home: ~/showroom/prompts/ (for all projects)
-
-Please ensure verification prompts are available in one of these locations.
+❌  ui-config.yml not found
+    Showroom 1.5.1 requires this file for split-view and tab configuration.
+    Run /showroom:create-lab --new to scaffold.
 ```
 
-**After user selects, confirm and show which prompts will be used:**
+If found — check common fields:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `type: showroom` | Present at top | ⚠️ `type: showroom` missing — Showroom won't recognize this config |
+| `view_switcher.enabled` | Equals `true` | ⚠️ Split screen not enabled — learners can't switch between split and full-screen modes |
+| `view_switcher.default_mode` | Equals `split` | ⚠️ Default mode is not `split` — learners start in full-screen, may not notice the panel |
+| `persist_url_state` | Equals `true` | ⚠️ `persist_url_state` not set — browser refresh resets the UI position |
+
+Then check `tabs:` section based on detected infra type:
+
+*OCP catalog:*
+| Check | Message if wrong |
+|---|---|
+| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. Expected: OpenShift Console, Bastion terminal, or other OCP-specific URLs |
+
+*VM / RHEL catalog:*
+| Check | Message if wrong |
+|---|---|
+| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. For VM catalogs add: Wetty terminal (port 3000/wetty), AAP dashboard, RHEL Cockpit, or other bastion-accessible URLs |
+| No `console-openshift-console` URL | ⚠️ OCP console URL found in VM catalog — this won't work without an OCP cluster. Use bastion-accessible URLs instead. |
+
+---
+
+**`content/antora.yml`**:
+
+If MISSING:
+```
+❌  content/antora.yml not found
+    Antora cannot build without it.
+```
+
+If found — check:
+
+| Field | Check | Message if wrong |
+|---|---|---|
+| `title` | Not a stale/template value | ⚠️ `title` in antora.yml looks like a template default — update to your actual lab name |
+| `name` | Equals `modules` | ⚠️ `name` is not `modules` — navigation xrefs will break |
+| `start_page` | Equals `index.adoc` | ⚠️ `start_page` is not `index.adoc` — learners may land on wrong page |
+| `nav` list | Contains `modules/ROOT/nav.adoc` | ⚠️ `nav` does not reference `modules/ROOT/nav.adoc` — sidebar navigation won't render |
+| `asciidoc.attributes.lab_name` | Present and not stale | ⚠️ `lab_name` attribute missing or still a template value — attribute placeholders in content won't resolve |
+
+---
+
+**`content/lib/`** — 4 JS extension files:
+
+Check each file individually. Report any that are missing:
 
 ```
-📋 Using prompts from: Current repo (showroom/prompts/)
-
-Will use these validation frameworks:
-✓ enhanced_verification_workshop.txt (43K, updated 16:01)
-✓ redhat_style_guide_validation.txt (5.1K, updated 16:01)
-✓ verify_workshop_structure.txt (14K, updated 16:01)
-✓ verify_technical_accuracy_workshop.txt (9.7K, updated 14:45)
-✓ verify_accessibility_compliance_workshop.txt (10K, updated 14:47)
-✓ verify_content_quality.txt (13K, updated 14:45)
-
-Continue with verification? [Yes/No]
+⚠️  Missing content/lib files:
+    - content/lib/attributes-page-extension.js
+    Dynamic attribute injection will not work.
+    Run /showroom:create-lab --new to copy from reference repo.
 ```
+
+Files checked:
+- `content/lib/all-attributes-console-extension.js`
+- `content/lib/attributes-page-extension.js`
+- `content/lib/dev-mode.js`
+- `content/lib/unlisted-pages-extension.js`
+
+---
+
+**`supplemental-ui/`** — 4 UI asset files:
+
+Check each. Report missing:
+
+```
+⚠️  Missing supplemental-ui files:
+    - supplemental-ui/css/site-extra.css
+    Custom styling won't be applied.
+```
+
+Files checked:
+- `supplemental-ui/css/site-extra.css`
+- `supplemental-ui/img/favicon.ico`
+- `supplemental-ui/partials/head-meta.hbs`
+- `supplemental-ui/partials/header-content.hbs`
+
+---
+
+**`.github/workflows/gh-pages.yml`**:
+
+If MISSING:
+```
+❌  .github/workflows/gh-pages.yml not found
+    GitHub Pages auto-deploy won't work.
+    Run /showroom:create-lab --new to create.
+```
+
+If found — check the `antora generate` command references the correct playbook, then remind the user to verify GitHub Pages is enabled:
+
+```
+ℹ️  Remember: GitHub Pages must be enabled in repo Settings → Pages → Source: GitHub Actions
+    Without this, the workflow runs but nothing is published (404 on the guide URL).
+```
+
+
+
+Determine which playbook file the repo uses (`site.yml` or `default-site.yml`), then check the workflow references it:
+
+| Workflow references | Repo has | Severity | Message |
+|---|---|---|---|
+| `site.yml` | `site.yml` | — | ✓ Correct |
+| `default-site.yml` | `site.yml` | Critical | ❌ `gh-pages.yml` runs `antora generate default-site.yml` but repo has `site.yml` — build will fail. Fix: change to `antora generate site.yml` |
+| `default-site.yml` | `default-site.yml` | High | ⚠️ `gh-pages.yml` references `default-site.yml`. If you rename to `site.yml` (recommended), also update the workflow. |
+| `site.yml` | `default-site.yml` | Critical | ❌ `gh-pages.yml` runs `antora generate site.yml` but repo only has `default-site.yml` — build will fail. Fix: rename `default-site.yml` → `site.yml` |
+
+---
+
+Include all scaffold findings in the Step 5 results under a dedicated **"Scaffold Issues"** section, listed before content quality issues. Severity: missing required files = Critical, stale title/missing optional fields = High.
 
 ---
 
@@ -258,59 +255,142 @@ Options:
 - Provide glob pattern (e.g., `content/modules/ROOT/pages/*.adoc`)
 - Or directory path (e.g., `content/modules/ROOT/pages/`)
 
-### Step 4: Run Verification Agents
+### Step 4: Run Verification — Checklist Mode
 
-**If reference repository was provided in Step 0:**
-- Read reference examples before running verification
-- Compare content structure against reference patterns
-- Note deviations from proven Showroom patterns
-- Include reference-based feedback in verification results
+**Why checklist mode:** Open-ended review produces inconsistent results — the model notices different things each run. A numbered checklist forces an explicit PASS/FAIL for every item, so nothing is silently skipped.
 
-**Standard verification (with or without reference):**
+**Rules:**
+- Run ONE pass at a time. Output its full result table before starting the next pass.
+- Every check item MUST produce exactly one of: `PASS`, `FAIL: <file>:<line> — <detail>`, or `N/A: <reason>`
+- `N/A` is only valid when the check genuinely does not apply (e.g. accessibility checks on a nav.adoc file)
+- Do NOT group items. Do NOT say "several issues found" without listing each one individually.
+- After all passes complete, re-read the checklist and confirm no item was left blank.
 
-I'll run comprehensive verification using these validation frameworks:
+Use `@showroom/prompts/` files as reference criteria for each pass, but the driver is the explicit numbered list below — not the prompts.
 
-**For Workshop Content**:
-1. `enhanced_verification_workshop.txt` - Overall quality assessment
-2. `redhat_style_guide_validation.txt` - Red Hat style compliance
-3. `verify_workshop_structure.txt` - Workshop structure validation
-4. `verify_technical_accuracy_workshop.txt` - Technical accuracy
-5. `verify_accessibility_compliance_workshop.txt` - Accessibility standards
-6. `verify_content_quality.txt` - General content quality
+---
 
-**For Demo Content**:
-1. `enhanced_verification_demo.txt` - Overall demo quality
-2. `redhat_style_guide_validation.txt` - Red Hat style compliance
-3. `verify_technical_accuracy_demo.txt` - Demo technical accuracy
-4. `verify_accessibility_compliance_demo.txt` - Accessibility standards
-5. `verify_content_quality.txt` - General content quality
+#### PASS B: Structure and Learning Design
+
+Read all files in `content/modules/ROOT/pages/`. For each check, state which file and line the evidence comes from.
+
+| # | Check | Pass condition |
+|---|---|---|
+| B.1 | `index.adoc` exists | File present |
+| B.2 | `index.adoc` is learner-facing (not facilitator guide) | Does not start with "This guide helps facilitators..." |
+| B.3 | `01-overview.adoc` exists with business scenario | File present, contains company/scenario context |
+| B.4 | `02-details.adoc` exists with technical requirements | File present |
+| B.5 | At least one hands-on module exists (`03-*` or higher) | ≥1 module file |
+| B.6 | `nav.adoc` exists and includes all module files | All `*.adoc` in pages/ listed in nav.adoc |
+| B.7 | Conclusion module exists (`*conclusion*.adoc`) | File present |
+| B.8 | Each module has learning objectives (3+ items) | `== Learning Objectives` or equivalent section with bullets |
+| B.9 | Each module has at least 2 exercises | ≥2 `== Exercise` or equivalent sections |
+| B.10 | Exercise steps use numbered lists (`.`) not bullets (`*`) | Sequential actions use `.` |
+| B.11 | Learning objectives use bullets (`*`) not numbers (`.`) | Concepts/outcomes use `*` |
+| B.12 | Every exercise has a `=== Verify` section with expected output | Present after each major task |
+| B.13 | No individual module has a `== References` section | References only in conclusion |
+| B.14 | Conclusion has `== What You've Learned` section | Present in conclusion |
+| B.15 | Conclusion has `== References` section consolidating all module refs | Present in conclusion |
+
+Output result table for PASS B before continuing.
+
+---
+
+#### PASS C: AsciiDoc Formatting
+
+Scan every `.adoc` file in the content directory.
+
+| # | Check | Pass condition |
+|---|---|---|
+| C.1 | All `image::` macros include `link=self,window=blank` | No image without this parameter |
+| C.2 | All images have non-empty descriptive alt text | Not blank, not "image", not filename |
+| C.3 | All external links use `^` caret (new tab) | `link:https://...[\[text^\]]` pattern |
+| C.4 | Internal `xref:` links do NOT use `^` caret | `xref:file.adoc[text]` (no caret) |
+| C.5 | Code blocks use `[source,<lang>]` with language specified | Not bare `----` blocks |
+| C.6 | No em dashes (`—`) anywhere in content | Zero occurrences |
+| C.7 | Lists have blank line before and after | No lists immediately adjacent to text |
+| C.8 | Document title uses `= ` (single equals, one space) | First line of each file |
+| C.9 | All headings are sentence case (not Title Case) | No mid-word capitals in headings |
+| C.10 | No `include::` referencing files that don't exist | All includes resolve |
+
+Output result table for PASS C before continuing.
+
+---
+
+#### PASS D: Red Hat Style Guide
+
+Scan all content files. Reference `@showroom/prompts/redhat_style_guide_validation.txt` for full criteria.
+
+| # | Check | Pass condition |
+|---|---|---|
+| D.1 | No "the Red Hat OpenShift Platform" — use "Red Hat OpenShift" | Zero occurrences |
+| D.2 | No bare "OCP", "AAP", "RHOAI" without first-use expansion | Acronyms spelled out on first use |
+| D.3 | No prohibited vague terms: "robust", "powerful", "leverage", "synergy", "game-changer" | Zero occurrences |
+| D.4 | No unsupported superlatives: "best", "leading", "most" without citation | Zero bare superlatives |
+| D.5 | No non-inclusive terms: "whitelist/blacklist", "master/slave" | Zero occurrences — use "allowlist/denylist", "primary/replica" |
+| D.6 | Numbers 0-9 written as numerals, not words | "3 steps" not "three steps" |
+| D.7 | Oxford comma used in lists of 3+ items | "X, Y, and Z" pattern |
+| D.8 | No em dashes used (style rule, duplicate of C.6 for completeness) | Zero occurrences |
+| D.9 | No "he/she" — use "they/them" for gender-neutral | Zero gendered pronouns |
+| D.10 | Product version numbers match environment or use `{ocp_version}` placeholder | No hardcoded version mismatches |
+
+Output result table for PASS D before continuing.
+
+---
+
+#### PASS E: Technical Accuracy and Accessibility
+
+| # | Check | Pass condition |
+|---|---|---|
+| E.1 | All `oc` CLI commands use lowercase subcommands | `oc get pods` not `oc Get Pods` |
+| E.2 | YAML code blocks have consistent indentation (2 spaces) | No mixed tabs/spaces |
+| E.3 | Expected command outputs are present after commands | Each `[source,bash]` block followed by expected output |
+| E.4 | No hardcoded cluster URLs, usernames, or passwords | Use `{openshift_console_url}`, `{user}`, `{password}` |
+| E.5 | All `{attribute}` placeholders are defined in `antora.yml` or `_attributes.adoc` | No undefined attributes |
+| E.6 | All images have alt text (WCAG accessibility) | No `image::[,]` with empty first bracket |
+| E.7 | Heading hierarchy has no skipped levels (e.g. `=` then `===` skipping `==`) | Correct nesting throughout |
+| E.8 | No instructions reference UI elements that don't exist in current OCP version | e.g. no deprecated menu paths |
+| E.9 | Code examples are syntactically valid for stated language | YAML/JSON/bash syntax correct |
+
+Output result table for PASS E before continuing.
+
+---
+
+#### PASS F: Demo-specific (skip if workshop content)
+
+| # | Check | Pass condition |
+|---|---|---|
+| F.1 | Each section has Know (context/why) before Show (demonstration) | Know/Show structure present |
+| F.2 | Business value is stated for each demonstration | ROI/outcome framing present |
+| F.3 | Presenter notes present (`[NOTE]` blocks or aside sections) | Guidance for presenter exists |
+| F.4 | No hands-on exercises requiring participant input | Demo is presenter-led only |
+| F.5 | Key talking points highlighted for each section | Callout or note blocks used |
+
+Output result table for PASS F before continuing.
+
+---
+
+**After all passes:** Scan the checklist from B.1 to E.9 (and F.1-F.5 if applicable). Confirm every item has an explicit result. If any item has no result, address it before generating the report.
 
 ### Step 5: Present Results
 
-**If reference repository was used:**
-- Include section showing comparison against reference examples
-- Highlight where content matches proven patterns
-- Point out deviations with specific examples from reference
-- Suggest improvements based on reference patterns
-
-**Standard results (always included):**
-
 I'll provide results in this order:
 
-**1. Detailed Issue Sections FIRST** (top of output):
-- Specific file locations and line numbers
-- Before/after examples for each issue
-- Implementation steps showing exactly how to fix
-- Why each issue matters
-- Grouped by issue type with exact counts
+**1. Scaffold Issues FIRST** (from Step 1.5):
+- Missing required files (Critical)
+- Stale/template titles, wrong paths, missing view_switcher (High)
 
-**2. Validation Summary Table LAST** (bottom of output):
-- Clean table with Issue, Priority, and Files columns
-- No time estimates or fix duration
-- Clear priority levels (Critical, High, Medium, Low)
-- Total issue counts
+**2. Checklist FAIL items** (from Step 4 passes B–F):
+- Group by pass (B: Structure, C: AsciiDoc, D: Style, E: Technical, F: Demo)
+- For each FAIL: check ID, file:line, what is wrong, before/after, exact fix
+- Do NOT list PASS items here — only FAILs
 
-**3. Strengths Section** (after summary table):
+**3. Validation Summary Table LAST**:
+- One row per FAIL item: Check ID | Issue | Priority | File:Line
+- Priority: Critical (scaffold missing, broken navigation), High (style, missing verifications), Medium (formatting), Low (suggestions)
+- Total FAIL count by pass
+
+**4. Strengths Section** (after summary table):
 - What your content does exceptionally well
 - Positive highlights to reinforce good practices
 - Recognition of quality work
@@ -664,43 +744,9 @@ Every verification run checks:
 - ✓ Complete documentation
 - ✓ Consistent style
 
-## Prompt Location Strategy
-
-**Why multiple prompt locations?**
-
-Different repositories may need customized verification rules:
-- **Global defaults** (`~/showroom/prompts/`): Your standard verification rules for all projects
-- **Repo-specific** (`showroom/prompts/` in git repo): Custom rules for specific projects
-
-**Recommended workflow:**
-
-1. **Most repos**: Use global defaults from `~/showroom/prompts/`
-   - Consistent verification across all your content
-   - Easy to update centrally
-
-2. **Special repos**: Add `showroom/prompts/` to repo if you need custom rules
-   - Example: Stricter image requirements for partner content
-   - Example: Relaxed rules for internal documentation
-   - Example: Additional industry-specific validation
-
-**How the skill detects prompts:**
-
-1. Checks current git repo for `showroom/prompts/*.txt`
-2. Checks global home `~/showroom/prompts/*.txt`
-3. Asks you which to use if multiple locations found
-4. Shows you which prompts will be used before running verification
-
-**When to customize prompts in repo:**
-- ✅ Partner content with additional requirements
-- ✅ Internal docs with relaxed standards
-- ✅ Testing new verification rules before global rollout
-- ❌ Don't customize just to bypass quality standards
-
----
-
 ## Files Used
 
-**Verification prompts** (in `showroom/prompts/`):
+**Verification prompts** (from marketplace plugin `@showroom/prompts/`):
 - `enhanced_verification_workshop.txt`
 - `enhanced_verification_demo.txt`
 - `redhat_style_guide_validation.txt`
@@ -711,9 +757,10 @@ Different repositories may need customized verification rules:
 - `verify_accessibility_compliance_demo.txt`
 - `verify_content_quality.txt`
 
-**Reference examples**:
-- `content/modules/ROOT/pages/workshop/example/`
-- `content/modules/ROOT/pages/demo/`
+**Bundled templates** (quality references from marketplace plugin):
+- `@showroom/templates/workshop/example/` -- Workshop examples
+- `@showroom/templates/workshop/templates/` -- Workshop structural templates
+- `@showroom/templates/demo/` -- Demo examples
 
 ## Related Skills
 

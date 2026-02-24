@@ -148,123 +148,6 @@ etc.
 
 ---
 
-### Step 0: Reference Repository Setup (IMPORTANT)
-
-**Before generating content, we need access to real Showroom examples for quality reference.**
-
-**CRITICAL: This step MUST happen before any content generation to ensure quality matches real Showroom standards.**
-
-**Ask the user:**
-
-```
-📚 Reference Repository Check
-
-To generate high-quality content that matches Showroom standards, I need access to real Showroom examples.
-
-Do you have a Showroom repository cloned locally that I can reference for patterns and examples?
-
-Options:
-1. Yes - I have a local Showroom repo (Recommended - best quality)
-2. No - Clone template to /tmp/ for me
-3. Skip - Generate without reference (Not recommended - may need manual rewrites)
-
-Your choice: [1/2/3]
-```
-
-**If Option 1 (YES - Local repo):**
-
-```
-Great! Please provide the path to your Showroom repository:
-
-Example: ~/work/showroom-content/my-workshop
-
-Path:
-```
-
-**Validation:**
-- Check if path exists using Read tool
-- Verify it contains `content/modules/ROOT/pages/*.adoc` files
-- If invalid, ask again or offer Option 2
-
-**Once valid path provided:**
-1. Read 2-3 example modules from `content/modules/ROOT/pages/*.adoc`
-2. Analyze and learn from:
-   - Section structure (= Title, == Heading, === Subheading)
-   - Code block formatting and syntax highlighting
-   - Admonition usage (TIP, NOTE, WARNING, IMPORTANT)
-   - Image and diagram patterns (link=self,window=blank usage)
-   - Navigation includes and xrefs
-   - List formatting (blank lines before/after lists)
-   - External link patterns (^ caret usage)
-   - Business scenario integration
-3. Use these patterns as templates for generating new content
-
-**If Option 2 (NO - Clone template):**
-
-```
-I'll clone the Showroom template repository to /tmp/showroom-reference for you.
-
-This provides standard Showroom examples to ensure quality output.
-
-Proceed? [Yes/No]
-```
-
-**If Yes:**
-```bash
-git clone https://github.com/rhpds/showroom-template /tmp/showroom-reference
-```
-
-Then:
-1. Read example modules from `/tmp/showroom-reference/content/modules/ROOT/pages/*.adoc`
-2. Analyze patterns (same as Option 1)
-3. Use for content generation
-
-**If No or clone fails:**
-- Warn user: "⚠️  Without reference examples, generated content quality may require significant manual rewrites"
-- Ask: "Continue anyway? [Yes/No]"
-- If Yes, proceed with generic templates (lower quality expected)
-- If No, exit skill
-
-**If Option 3 (Skip):**
-
-```
-⚠️  WARNING: Generating without reference repository
-
-Without real Showroom examples, the generated content:
-- May not match Showroom quality standards
-- Will likely need manual rewrites
-- May miss important formatting patterns
-- Could take 5x longer to finalize
-
-This is the issue reported: "Module 2 is crap, requires manual rewrite with actual showroom docs"
-
-Are you sure you want to skip reference repository? [Yes/No]
-```
-
-**If Yes:** Proceed with generic templates, but add note in final output warning about potential quality issues
-**If No:** Go back to Option 1 or 2
-
-**Why This Step Matters:**
-
-Before this fix:
-- ❌ Module 2 was "crap"
-- ❌ Required manual rewrite using actual Showroom docs
-- ❌ 5 days of rework time
-- ❌ WebFetch tried to get examples from GitHub URLs but got 404 errors
-
-After this fix:
-- ✅ Modules generated with quality matching real Showroom content from first iteration
-- ✅ Reduces manual rewrites from days to hours
-- ✅ AI learns from actual examples, not generic patterns
-- ✅ Faster iteration, fewer back-and-forth edits
-
-**Store reference path for later use:**
-- Save reference repository path to use throughout content generation
-- When generating modules, read reference examples to match quality
-- Apply learned patterns to new content
-
----
-
 ### Step 1: Parse Arguments (If Provided)
 
 **Check if user invoked skill with arguments**.
@@ -357,23 +240,23 @@ What's your situation? [1/2/3]
 
 **ONLY AFTER user answers, proceed based on their response.**
 
-### Step 2.5: Ask for Target Directory (if not provided as argument)
+### Step 2.5: Ask for Showroom Repository Path (if not provided as argument)
 
 **SKIP THIS STEP IF**: User provided `<directory>` as argument
 
 **Ask the user**:
 ```
-Where should I create the lab files?
+What is the path to your cloned Showroom repository?
 
-Default location: content/modules/ROOT/pages/
+The RHDP team will have provided you with a Showroom repository to clone.
+Provide the local path to that cloned repo.
 
-Press Enter to use default, or type a different path:
+Example: /Users/yourname/work/showroom-content/my-lab-showroom
+
+Repo path:
 ```
 
-**Validation**:
-- If directory doesn't exist, ask: "Directory not found. Create it? [Yes/No]"
-- If Yes, create the directory
-- If No, ask again for directory
+Use `content/modules/ROOT/pages/` within that path as the target for lab files.
 
 **If option 1 (NEW lab)**:
 - Generate ALL workshop files: index.adoc, 01-overview.adoc, 02-details.adoc, 03-module-01-*.adoc
@@ -509,39 +392,351 @@ Note: If you're not sure, I'll use placeholders that work across versions.
 - Adjust module count and topics
 - Change the progression
 
-### Step 3.1: Update Lab Configuration Files (REQUIRED for new labs)
+### Step 3.1: Showroom Setup (Recommended for new labs)
 
-**CRITICAL: Update these files with the lab name BEFORE generating any content files.**
+**For NEW labs only. Skip if adding a module to an existing lab.**
 
-Using the lab title and slug from Step 2, update:
+**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.1 or above. Contact your RHDP administrator to confirm the version before publishing.
 
-1. **site.yml** (line 3):
-   ```yaml
-   site:
-     title: {{ lab_title }}  # e.g., "Building AI/ML Workloads on OpenShift AI"
-   ```
+Ask these questions SEQUENTIALLY — one at a time.
 
-2. **content/antora.yml** (line 2):
-   ```yaml
-   name: modules
-   title: {{ lab_title }}  # Same as site.yml
-   ```
+**Question 0 — Catalog infrastructure type:**
 
-3. **content/antora.yml** (line 9):
-   ```yaml
-   asciidoc:
-     attributes:
-       lab_name: "{{ lab_slug }}"  # e.g., "building-ai-ml-workloads-openshift-ai"
-   ```
+```
+Is this Showroom for an OCP-based or VM-based catalog?
 
-**Example transformation**:
-- User says: "Building AI/ML Workloads on OpenShift AI"
-- Generated slug: `building-ai-ml-workloads-openshift-ai`
-- site.yml title: "Building AI/ML Workloads on OpenShift AI"
-- antora.yml title: "Building AI/ML Workloads on OpenShift AI"
-- antora.yml lab_name: "building-ai-ml-workloads-openshift-ai"
+1. OCP cluster     (OpenShift — uses ocp4_workload_showroom)
+2. VM / RHEL       (cloud-vms-base — uses vm_workload_showroom, no OCP console)
 
-**Note**: These files must be updated BEFORE Step 8 (Generate Files).
+Choice [1/2]:
+```
+
+**Question A — Consoles and tools to embed:**
+
+*If OCP (choice 1):*
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Common options for OCP catalogs:
+- OpenShift Console  → https://console-openshift-console.${DOMAIN}
+- Bastion terminal   → path: /wetty, port: 443
+- OpenShift AI       → https://rhods-dashboard-redhat-ods-applications.${DOMAIN}
+- AAP dashboard      → https://aap-dashboard.${DOMAIN}
+- External URL       → any https:// URL
+
+Examples:
+  OpenShift Console | https://console-openshift-console.${DOMAIN}
+  Bastion | /wetty (port 443)
+
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+*If VM / RHEL (choice 2):*
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Common options for VM catalogs (no OCP console available):
+- Bastion terminal   → port: 3000, path: /wetty
+- AAP dashboard      → https://aap.${DOMAIN}
+- RHEL Cockpit       → https://cockpit.${DOMAIN}:9090
+- Grafana            → https://grafana.${DOMAIN}
+- Code Server        → port: 3001, path: /code
+- Custom app         → any port/path on the bastion VM
+- External docs      → any https:// URL (add external: true)
+
+Note: ${DOMAIN} is resolved at runtime from the bastion hostname.
+
+Examples:
+  Terminal | /wetty (port 3000)
+  AAP Dashboard | https://aap.${DOMAIN}
+
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+If user presses Enter → add appropriate commented-out examples per infra type in the generated ui-config.yml.
+
+**Question B — ui-bundle theme:**
+
+```
+Which ui-bundle theme do you need?
+
+Default: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
+
+Available themes (see https://github.com/rhpds/rhdp_showroom_theme/releases):
+- rh-one-2025 (default — Red Hat One 2025 theme)
+- rh-summit-2025 (Red Hat Summit 2025 theme)
+
+Press Enter to use the default, or paste a different URL:
+```
+
+**Check, fix, or create each infrastructure file — never blindly overwrite.**
+
+For every file below: silently check if it exists first.
+- **EXISTS** → read it, detect stale/template values, fix only what's wrong, report changes.
+- **MISSING** → create it from scratch, report created.
+
+**Known stale/template title values** (treat as "not updated"):
+`Workshop Title`, `Lab Title`, `Showroom Template`, `Red Hat Showroom`, `My Workshop`, `Template`, `showroom_template_nookbag`, empty string, or any value that exactly matches the repository directory name.
+
+---
+
+**1. `site.yml`** (at repo root — the going-forward standard):
+
+The showroom role supports both `site.yml` and `default-site.yml` via fallback. `site.yml` is the new standard. `default-site.yml` is also valid and silently supported by the role.
+
+```bash
+# Check which playbook file exists
+ls site.yml 2>/dev/null && echo "found site.yml"
+ls default-site.yml 2>/dev/null && echo "found default-site.yml"
+```
+
+| State | Action |
+|---|---|
+| `site.yml` exists | Proceed to check/fix below |
+| `default-site.yml` exists, no `site.yml` | Rename to `site.yml` silently, then check/fix |
+| Both exist | Use `site.yml`, remove `default-site.yml` |
+| Neither exists | Create `site.yml` from scratch |
+
+If renaming:
+```bash
+mv default-site.yml site.yml
+
+# Also update the GitHub Pages workflow if it references the old name
+if grep -q "default-site.yml" .github/workflows/gh-pages.yml 2>/dev/null; then
+  sed -i '' 's/antora generate default-site.yml/antora generate site.yml/g' .github/workflows/gh-pages.yml
+fi
+```
+Report: `✓ Renamed default-site.yml → site.yml (new standard)`
+Report: `✓ Updated .github/workflows/gh-pages.yml to reference site.yml` (if applicable)
+
+*If EXISTS — check and fix:*
+- `site.title` is stale/template → update to `"{{ lab_title }}"`
+- `site.start_page` is not `modules::index.adoc` → fix
+- `ui.bundle.url` is the old default nookbag bundle (not the theme from Question B) → update to `{{ ui_bundle_url }}`
+- `ui.supplemental_files` is missing or not `./supplemental-ui` → fix
+- `runtime.fetch` is missing → add `fetch: true`
+
+*If MISSING — create `site.yml`:*
+```yaml
+site:
+  title: "{{ lab_title }}"
+  start_page: modules::index.adoc
+
+content:
+  sources:
+  - url: ./
+    start_path: content
+
+ui:
+  bundle:
+    url: {{ ui_bundle_url }}
+    # Themes: https://github.com/rhpds/rhdp_showroom_theme/releases
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+
+runtime:
+  fetch: true
+
+asciidoc:
+  attributes:
+    source-highlighter: rouge
+```
+
+---
+
+**2. `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+
+*If EXISTS — check and fix:*
+- `type: showroom` missing → add at top
+- `view_switcher.enabled` is false or missing → set `enabled: true`, `default_mode: split`
+- `tabs:` section is entirely commented out AND user provided tabs in Question A → uncomment/add tabs
+- `persist_url_state` missing → add `persist_url_state: true`
+
+*If MISSING — create:*
+```yaml
+---
+type: showroom
+
+default_width: 30
+persist_url_state: true
+
+view_switcher:
+  enabled: true
+  default_mode: split
+
+tabs:
+{{ generated_tabs_from_Question_A }}
+```
+
+If user pressed Enter (no tabs): add commented-out examples appropriate for infra type from Question 0.
+
+*OCP (choice 1):*
+```yaml
+tabs:
+# - name: OpenShift Console
+#   url: 'https://console-openshift-console.${DOMAIN}'
+# - name: Bastion
+#   path: /wetty
+#   port: 443
+# - name: OpenShift AI
+#   url: 'https://rhods-dashboard-redhat-ods-applications.${DOMAIN}'
+```
+
+*VM / RHEL (choice 2):*
+```yaml
+tabs:
+# - name: Terminal
+#   port: 3000
+#   path: /wetty
+# - name: AAP Dashboard
+#   url: 'https://aap.${DOMAIN}'
+# - name: RHEL Cockpit
+#   url: 'https://cockpit.${DOMAIN}:9090'
+```
+
+---
+
+**3. `content/antora.yml`**:
+
+*If EXISTS — check and fix:*
+- `title:` is stale/template value → update to `"{{ lab_title }}"`
+- `name:` is not `modules` → fix to `modules`
+- `start_page:` is missing or not `index.adoc` → fix
+- `asciidoc.attributes.lab_name` is stale/template or missing → update to `"{{ lab_slug }}"`
+- `nav:` list missing `modules/ROOT/nav.adoc` → add it
+
+*If MISSING — create:*
+```yaml
+name: modules
+title: "{{ lab_title }}"
+version: master
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "{{ lab_slug }}"
+```
+
+---
+
+**4. `content/lib/`** — 4 JS extension files:
+
+Check each file individually. For each that is MISSING, clone reference repo and copy it:
+```bash
+# Clone reference if not already available
+git clone https://github.com/rhpds/lb2298-ibm-fusion /tmp/showroom-reference 2>/dev/null || true
+```
+
+Files to check/copy if missing:
+- `content/lib/all-attributes-console-extension.js`
+- `content/lib/attributes-page-extension.js`
+- `content/lib/dev-mode.js`
+- `content/lib/unlisted-pages-extension.js`
+
+If all 4 already exist → confirm present, skip clone.
+
+---
+
+**5. `supplemental-ui/`** — 4 UI asset files:
+
+Same pattern — check each, copy only missing ones:
+- `supplemental-ui/css/site-extra.css`
+- `supplemental-ui/img/favicon.ico`
+- `supplemental-ui/partials/head-meta.hbs`
+- `supplemental-ui/partials/header-content.hbs`
+
+---
+
+**6. `.github/workflows/gh-pages.yml`**:
+
+*If EXISTS* → do not modify (workflow is rarely wrong, and changes could break CI). Just confirm it's present.
+
+*If MISSING — create:*
+```yaml
+name: github pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.adoc"
+      - ".gitignore"
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: configure pages
+        uses: actions/configure-pages@v5
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.13.1
+      - name: install antora
+        run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
+      - name: antora generate
+        run: antora generate site.yml --stacktrace
+      - name: upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: www
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: deploy github pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+```
+
+---
+
+**Confirm scaffold status:**
+
+```
+✅ Scaffold complete:
+
+  site.yml              → [created | updated: title, ui-bundle] | no changes
+  ui-config.yml         → [created | updated: view_switcher, tabs] | no changes
+  content/antora.yml    → [created | updated: title, lab_name] | no changes
+  content/lib/          → [all present | copied 2 missing files]
+  supplemental-ui/      → [all present | copied 1 missing file]
+  .github/workflows/    → [created | already present]
+```
+
+**⚠️ GitHub Pages must be enabled manually** (one-time setup per repo):
+
+```
+1. Go to your GitHub repository
+2. Settings → Pages
+3. Under "Build and deployment", set Source to: GitHub Actions
+4. Save
+
+Without this step the gh-pages.yml workflow will run but GitHub Pages
+will not be published — the Showroom guide URL will return 404.
+
+After enabling, the first push to main will trigger a build.
+Your guide will be available at:
+  https://rhpds.github.io/<repo-name>/
+```
+
+**Note**: These files must exist and have correct values BEFORE generating any content modules (Step 8).
 
 ---
 
@@ -644,76 +839,9 @@ Now for this specific module:
    - Proof-of-concept content
    - Modules with very straightforward steps
 
-### Step 5: Get UserInfo Variables (if applicable)
+### Step 5: UserInfo Variables
 
-If UserInfo variables weren't already provided in Step 3, I'll ask for them now.
-
-**RECOMMENDED: Get from Deployed Environment (Primary Method)**
-
-I'll ask: "Do you have access to a deployed environment on demo.redhat.com or integration.demo.redhat.com?"
-
-**If YES** (recommended):
-```
-Please share the UserInfo variables from your deployed service:
-
-1. Login to https://integration.demo.redhat.com (or demo.redhat.com)
-2. Go to "My services" → Find your service
-3. Click on "Details" tab
-4. Expand "Advanced settings" section
-5. Copy and paste the output here
-```
-
-This shows all available variables like:
-- `openshift_cluster_console_url`
-- `openshift_api_server_url`
-- `openshift_cluster_admin_username`
-- `openshift_cluster_admin_password`
-- `gitea_console_url`
-- `gitea_admin_username`
-- `gitea_admin_password`
-- Custom workload-specific variables
-
-**If NO** (fallback):
-I'll use common placeholder variables:
-- `{openshift_console_url}`
-- `{openshift_api_url}`
-- `{user}`
-- `{password}`
-- `{bastion_public_hostname}`
-
-**Alternative**: Clone collections from AgV catalog
-- Read `common.yaml` from user-provided AgV path
-- Clone collections from any repository (agnosticd, rhpds, etc.)
-- Read workload roles to find `agnosticd_user_info` tasks
-- Extract variables from `data:` sections
-- Note: Less reliable than deployed environment output
-
-**Map to Showroom attributes**:
-```asciidoc
-{openshift_cluster_console_url}
-{openshift_api_server_url}
-{openshift_cluster_admin_username}
-{gitea_console_url}
-{{ custom_variable }}
-```
-
-**CRITICAL: DO NOT Replace Variables with Actual Values**:
-- ALWAYS keep variables as placeholders: `{openshift_console_url}`
-- NEVER replace with actual values like `https://console-openshift-console.apps.cluster-abc123.abc123.example.opentlc.com`
-- Showroom will replace these at runtime with actual deployment values
-- Each deployment gets different URLs - variables MUST stay dynamic
-- Example in module content:
-  ```asciidoc
-  . Navigate to the OpenShift Console at {openshift_cluster_console_url}
-  . Login with username: {openshift_cluster_admin_username}
-  . Password: {openshift_cluster_admin_password}
-  ```
-
-**What UserInfo variables are for**:
-- Understanding WHICH variables are available
-- Learning the correct variable names
-- Seeing what endpoints/tools exist in the environment
-- NOT for hardcoding actual values in content
+UserInfo variables are collected in Step 4, item 3. If skipped there, use placeholder attributes (`{openshift_console_url}`, `{user}`, `{password}`) and proceed.
 
 ### Step 6: Handle Diagrams, Screenshots, and Code Blocks (if provided)
 
@@ -766,35 +894,52 @@ See @showroom/docs/SKILL-COMMON-RULES.md for reference enforcement patterns.
 
 ### Step 8: Read Templates and Verification Criteria (BEFORE Generating)
 
-**CRITICAL: I MUST read all these files BEFORE generating content to ensure output meets all standards.**
+**CRITICAL: Read templates BEFORE generating any content.**
 
-**Templates to read:**
-- `.claude/templates/workshop/templates/00-index-learner.adoc` - Learner-facing index template
-- `.claude/templates/workshop/templates/03-module-01.adoc` - Module template
-- `.claude/templates/workshop/example/00-index.adoc` - Example index (but write for LEARNERS, not facilitators)
-- `.claude/templates/workshop/example/01-overview.adoc` - Example overview
-- `.claude/templates/workshop/example/02-details.adoc` - Example details
-- `.claude/templates/workshop/example/03-module-01.adoc` - Example module
+**Template source — check the Showroom repo first:**
+
+The user's Showroom repo may contain a `templates/` directory with up-to-date patterns. Always prefer these over the marketplace's built-in templates.
+
+```bash
+# Check if user's Showroom repo has templates
+ls {showroom_repo_path}/examples/workshop/templates/ # if exists use examples/ 2>/dev/null
+```
+
+**If `examples/workshop/templates/` exists in the Showroom repo — read from there:**
+- `{showroom_repo_path}/examples/workshop/templates/index.adoc` — **Learner-facing index** (output as `index.adoc`)
+- `{showroom_repo_path}/examples/workshop/templates/03-module-01.adoc` — Module template
+- `{showroom_repo_path}/examples/workshop/example/01-overview.adoc` — Overview example
+- `{showroom_repo_path}/examples/workshop/example/02-details.adoc` — Details example
+- `{showroom_repo_path}/examples/workshop/example/03-module-01.adoc` — Module example
+
+**If `examples/workshop/templates/` does NOT exist — fall back to marketplace templates:**
+- `@showroom/examples/workshop/templates/index.adoc`
+- `@showroom/examples/workshop/templates/03-module-01.adoc`
+- `@showroom/examples/workshop/example/01-overview.adoc`
+- `@showroom/examples/workshop/example/02-details.adoc`
+- `@showroom/examples/workshop/example/03-module-01.adoc`
+
+**Key rules from the templates:**
+- Workshop `index.adoc` is **learner-facing** — NOT a facilitator guide (use `index.adoc` template, output as `index.adoc`)
+- Modules use numbered exercises with verification checkpoints
+
+
+The user's `examples/` directory reflects the latest nookbag patterns and may be more current than the marketplace copies. Always use the repo's own templates when available.
 
 See @showroom/docs/SKILL-COMMON-RULES.md for verification prompt file lists and how to use them.
 
 ### Step 9: Generate Files (Using Verification Criteria)
 
-**IMPORTANT: Use Reference Repository from Step 0**
+**IMPORTANT: Use the bundled workshop templates read in Step 8 as quality references.**
 
-Before generating ANY content, refer back to the reference repository examples from Step 0:
-
-1. **Read reference examples again** if needed to refresh patterns
-2. **Match structure and style** from real Showroom modules
-3. **Apply learned patterns** to new content:
-   - Section structure matches reference examples
-   - Code block formatting follows reference style
-   - Image references use same patterns (link=self,window=blank)
-   - List formatting matches reference (blank lines before/after)
-   - External links follow reference pattern (^ caret for new tabs)
-   - Business scenario integration follows reference approach
-
-**This ensures generated content matches real Showroom quality instead of generic templates.**
+Apply patterns from the bundled templates to new content:
+- Section structure (= Title, == Heading, === Subheading)
+- Code block formatting and syntax highlighting
+- Admonition usage (TIP, NOTE, WARNING, IMPORTANT)
+- Image references (link=self,window=blank)
+- List formatting (blank lines before/after)
+- External links (^ caret for new tabs)
+- Business scenario integration
 
 **CRITICAL: If this is the FIRST module of a NEW lab, generate files in this order:**
 
@@ -842,7 +987,7 @@ Click on the next section to begin the workshop.
 ```
 
 **What NOT to do**:
-- ❌ Don't copy facilitator guide template from workshop/templates/00-index.adoc
+- ❌ Don't copy facilitator guide template from workshop/examples/templates/index.adoc
 - ❌ Don't include facilitator instructions
 - ❌ Don't write "This guide helps workshop facilitators..."
 
@@ -1170,6 +1315,7 @@ See @showroom/docs/SKILL-COMMON-RULES.md for navigation update rules and conflic
 3. Test commands in your environment
 4. Run: verify-content to check quality
 5. Create next module: create-lab (continuing existing lab)
+6. Enable GitHub Pages (if not done yet): repo Settings → Pages → Source: GitHub Actions
 
 **Note**: All files have been written. Use your editor to review them.
 ```

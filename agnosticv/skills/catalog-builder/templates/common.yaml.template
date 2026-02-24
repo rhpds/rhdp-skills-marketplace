@@ -3,18 +3,41 @@
 # Replace all <placeholders> with actual values from user input.
 
 ---
+# ---------------------------------------------------------------
+# Standard boilerplate (always include)
+# ---------------------------------------------------------------
 #include /includes/agd-v2-mapping.yaml
-#include /includes/sandbox-api.yaml
 #include /includes/catalog-icon-openshift.yaml  # or catalog-icon-project-dance, catalog-icon-rh-ai-2025
 #include /includes/terms-of-service.yaml
-#include /includes/access-restriction-rh1-2026-devs.yaml  # Optional - for restricted catalogs
-
 #include /includes/parameters/purpose.yaml
 #include /includes/parameters/salesforce-id.yaml
 #include /includes/parameters/num-users-salesforce.yaml  # If multi-user
+#include /includes/secrets/ocp4_token.yaml
+#include /includes/secrets/demosat-rhel-9-10-latest.yaml
 
-#include /includes/secrets/ocp4_ai_offline_token.yaml
-#include /includes/secrets/s3-rhpds-private-bucket.yaml
+# ---------------------------------------------------------------
+# Event restriction — in common.yaml until event.yaml is created
+# ---------------------------------------------------------------
+# summit-2026: #include /includes/access-restriction-summit-devs.yaml
+# rh1-2026:   #include /includes/access-restriction-rh1-2026-devs.yaml
+
+# ---------------------------------------------------------------
+# AWS only (CNV pool handles these — only needed for AWS)
+# ---------------------------------------------------------------
+# #include /includes/aws-sandbox-meta.yaml
+# #include /includes/parameters/aws-regions-standard.yaml
+# #include /includes/secrets/letsencrypt_with_zerossl_fallback.yaml
+
+# ---------------------------------------------------------------
+# LiteMaaS (if catalog uses AI model inference)
+# ---------------------------------------------------------------
+# #include /includes/secrets/litemaas-master_api.yaml        # LiteLLM API URL + master key
+# #include /includes/parameters/litellm_metadata.yaml        # LiteLLM metadata (model list, endpoints)
+
+# ---------------------------------------------------------------
+# Workload-specific secrets not in pool (add as needed)
+# ---------------------------------------------------------------
+# #include /includes/secrets/<workload-specific>.yaml
 
 # -------------------------------------------------------------------
 # --- Catalog Item: <Display Name>
@@ -74,44 +97,60 @@ requirements_content:
   collections:
     - name: https://github.com/agnosticd/core_workloads.git
       type: git
-      version: main
+      version: "{{ tag }}"
     - name: https://github.com/agnosticd/showroom.git
       type: git
-      version: v1.3.9
-    # Add other collections as needed
+      version: <showroom-version>  # Fixed version — minimum v1.5.1, check AgV for latest in use
+    # Add other collections here — use version: "{{ tag }}" for standard collections
 
 # -------------------------------------------------------------------
 # Workloads
 # -------------------------------------------------------------------
 workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
-  - agnosticd.showroom.ocp4_workload_showroom_ocp_integration
+  - agnosticd.core_workloads.ocp4_workload_authentication
+  - agnosticd.showroom.ocp4_workload_ocp_console_embed
   - agnosticd.showroom.ocp4_workload_showroom
   # Add technology-specific workloads
 
 # ===================================================================
-# Workload: ocp4_workload_authentication_htpasswd
+# Workload: ocp4_workload_authentication
+# Unified role — supports htpasswd and keycloak (RHBK)
+# Do NOT use ocp4_workload_authentication_htpasswd or _keycloak (deprecated)
+# Do NOT use RHSSO — use keycloak provider instead
 # ===================================================================
-ocp4_workload_authentication_htpasswd_admin_user: admin
-ocp4_workload_authentication_htpasswd_admin_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_base: user
-ocp4_workload_authentication_htpasswd_user_password: "{{ common_password }}"
-ocp4_workload_authentication_htpasswd_user_count: "{{ num_users | default('1') }}"
-ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+ocp4_workload_authentication_provider: htpasswd   # or: keycloak
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""   # auto-generated if empty
+ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
+ocp4_workload_authentication_user_password: ""    # auto-generated if empty
+ocp4_workload_authentication_remove_kubeadmin: true
+
+# Keycloak-specific (only needed if provider: keycloak)
+# ocp4_workload_authentication_keycloak_channel: stable-v26.2
 
 # ===================================================================
 # Workload: ocp4_workload_showroom
 # ===================================================================
-ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/showroom-repo.git
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<short-name>-showroom
 ocp4_workload_showroom_content_git_repo_ref: main
+# Default antora playbook is default-site.yml, override here if needed
+# ocp4_workload_showroom_content_antora_playbook: site.yml
+# Dev mode is overridden in dev.yaml
+ocp4_workload_showroom_antora_enable_dev_mode: "false"
 
 # -------------------------------------------------------------------
 # Metadata
 # -------------------------------------------------------------------
 __meta__:
   asset_uuid: <generated-uuid>
-  anarchy:
-    namespace: babylon-anarchy-7
+  # NOTE: Do NOT define anarchy.namespace here — it is set at the AgV top level
+  owners:
+    maintainer:
+      - name: <Name>
+        email: <email>
+    instructions:
+      - name: TBD
+        email: tbd@redhat.com
   components:
     - name: openshift
       display_name: OpenShift Cluster
@@ -140,12 +179,29 @@ __meta__:
           var: bastion_ansible_ssh_pass
         - name: bastion_ssh_port
           var: bastion_ansible_port
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:<latest-chained-tag>  # Check: https://quay.io/repository/agnosticd/ee-multicloud?tab=tags
+      pull: missing
+    # actions:          # Uncomment only if workload touches resources outside the cluster
+    #   stop:
+    #     disable: true
+    #   start:
+    #     disable: true
+  # sandbox_api:        # Uncomment only if remove_workloads should be skipped on destroy
+  #   actions:
+  #     destroy:
+  #       catch_all: false
+  tower:
+    timeout: 14400  # 4 hours - adjust based on complexity
   catalog:
     namespace: babylon-catalog-{{ stage | default('?') }}
     display_name: "<Display Name>"
     category: <Workshops|Demos|Labs|Sandboxes|Brand_Events>
     multiuser: true  # or false for demos
-    workshopLabUiRedirect: true  # Only for workshops
+    # workshopLabUiRedirect: true  # Uncomment for multi-user workshops with lab_ui_url
     parameters:
       - name: num_users
         description: Number of users to provision within the environment
@@ -156,27 +212,15 @@ __meta__:
           minimum: 3
           maximum: 60
     keywords:
-      - <keyword1>
-      - <keyword2>
+      - <specific-keyword1>   # Do NOT add generic terms (workshop, openshift, demo)
+      - <specific-keyword2>   # Do NOT add keywords already in the title
+      # For event catalogs add: summit-2026 or rh1-2026, and lab ID (lbxxxx)
     labels:
       Provider: RHDP
       Product: <Product_Name>
       Product_Family: <Product_Family>
-      # Brand_Event: Red_Hat_One_2026  # If Brand_Events
+      # Brand_Event: Red_Hat_Summit_2026  # Required for Brand_Events category
+      # Brand_Event: Red_Hat_One_2026     # Required for rh1-2026 events
     reportingLabels:
-      primaryBU: Hybrid_Platforms  # CRITICAL: For business unit tracking/reporting (Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.)
-  owners:
-    maintainer:
-      - email: <email>
-        name: <Name>
-    sme:
-      - email: <sme-email>
-        name: <SME Name>
-  tower:
-    timeout: 14400  # 4 hours - adjust based on complexity
-  deployer:
-    scm_url: https://github.com/agnosticd/agnosticd-v2
-    scm_ref: main
-    execution_environment:
-      image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
-      pull: missing
+      primaryBU: Hybrid_Platforms  # Always define. Options: Hybrid_Platforms, Application_Services, Ansible, RHEL, etc.
+      # secondaryBU: <optional>

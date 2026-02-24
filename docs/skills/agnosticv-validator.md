@@ -103,8 +103,8 @@ git pull origin main</code></pre>
 ## ✓ What It Validates
 
 <div class="validation-box">
-  <h3>17 Comprehensive Checks</h3>
-  <p>The validator performs extensive checks across your catalog configuration:</p>
+  <h3>Comprehensive Validation Checks</h3>
+  <p>The validator performs extensive checks across your catalog configuration, including new checks aligned to the v2.6.0 catalog-builder standards:</p>
 </div>
 
 <details open>
@@ -160,15 +160,74 @@ git pull origin main</code></pre>
 </details>
 
 <details>
-<summary><strong>Checks 4-9: Core Validation</strong></summary>
+<summary><strong>Checks 4-5: Workloads and YAML</strong></summary>
 
 <ul>
-  <li><strong>Check 4: Workloads</strong> - Collection format, existence, dependencies, naming</li>
-  <li><strong>Check 5: Authentication</strong> - HTPasswd or LDAP configuration</li>
-  <li><strong>Check 6: Showroom</strong> - Content repository and workload setup</li>
-  <li><strong>Check 7: Infrastructure</strong> - CNV pools, AWS, or SNO configuration</li>
-  <li><strong>Check 8: YAML Syntax</strong> - Valid YAML, required fields, data types</li>
-  <li><strong>Check 9: Best Practices</strong> - Naming conventions, documentation</li>
+  <li><strong>Check 4: Workloads</strong> - Collection format, existence, dependencies, naming (full <code>namespace.collection.role</code> format required)</li>
+  <li><strong>Check 5: YAML Syntax</strong> - Valid YAML, required fields, data types</li>
+</ul>
+
+</details>
+
+<details>
+<summary><strong>Check 6: Infrastructure (UPDATED)</strong></summary>
+
+<div class="check-content">
+  <p>Check 6 detects <code>config:</code> type and routes to the appropriate check file:</p>
+  <h4>cloud-vms-base → <code>cloud-vms-base-validator-checks.md</code>:</h4>
+  <ul>
+    <li>Instances block defined with bastion VM and correct tags</li>
+    <li>Bastion image is supported RHEL version (9.4+)</li>
+    <li>CNV: <code>services:/routes:</code> present; AWS: <code>security_groups:</code> present</li>
+    <li>Multi-user isolation warning (no per-user namespace on VMs)</li>
+  </ul>
+
+  <h4>OCP → <code>ocp-validator-checks.md</code>:</h4>
+  <ul>
+    <li><strong>Pool suffix:</strong> ERROR if pool does not end in <code>/prod</code></li>
+    <li><strong>OCP version:</strong> Must be 4.18, 4.20, or 4.21 (known pool versions)</li>
+    <li><strong>AWS OCP:</strong> WARNING — confirm RHDP team approval</li>
+    <li><strong>SNO + multiuser:</strong> ERROR — SNO cannot support concurrent users</li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 7: Authentication (UPDATED)</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li><strong>cloud-vms-base:</strong> Auth check skipped — VM catalogs use OS-level auth, no OCP cluster. Warns if <code>ocp4_workload_authentication</code> accidentally added.</li>
+    <li><strong>OCP:</strong> ERROR if deprecated <code>ocp4_workload_authentication_htpasswd</code> or <code>ocp4_workload_authentication_keycloak</code> roles found</li>
+    <li><strong>OCP:</strong> ERROR if RHSSO detected (use Keycloak/RHBK instead)</li>
+    <li><strong>OCP:</strong> PASS requires unified <code>ocp4_workload_authentication</code> with valid <code>ocp4_workload_authentication_provider</code> value (<code>htpasswd</code> or <code>keycloak</code>)</li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 8: Showroom (UPDATED)</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li><strong>OCP:</strong> Both <code>ocp4_workload_ocp_console_embed</code> AND <code>ocp4_workload_showroom</code> required together. ERROR if <code>ocp_console_embed</code> missing.</li>
+    <li><strong>OCP:</strong> <code>ocp4_workload_showroom_antora_enable_dev_mode: "false"</code> in common.yaml; <code>"true"</code> in dev.yaml</li>
+    <li><strong>cloud-vms-base:</strong> Uses <code>vm_workload_showroom</code> with <code>showroom_git_repo</code> and <code>showroom_git_ref</code>. ERROR if <code>ocp_console_embed</code> present (requires OCP cluster).</li>
+    <li><strong>cloud-vms-base:</strong> No dev mode variable — <code>vm_workload_showroom</code> does not have Antora dev mode.</li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 9: Best Practices</strong></summary>
+
+<ul>
+  <li>Naming conventions followed</li>
+  <li>Documentation completeness</li>
+  <li>dev.yaml has <code>purpose: development</code></li>
 </ul>
 
 </details>
@@ -214,13 +273,17 @@ git pull origin main</code></pre>
 </details>
 
 <details>
-<summary><strong>Check 13: Collection Versions</strong></summary>
+<summary><strong>Check 13: Collection Versions (UPDATED)</strong></summary>
 
-<ul>
-  <li><strong>Git collections:</strong> Must specify version (not allowed to omit)</li>
-  <li><strong>Galaxy collections:</strong> Version validation</li>
-  <li><strong>Format:</strong> Proper requirements_content structure</li>
-</ul>
+<div class="check-content">
+  <ul>
+    <li><strong>tag: defined:</strong> ERROR if <code>tag:</code> variable is not set in <code>common.yaml</code></li>
+    <li><strong>Standard collections:</strong> Should use <code>{{ tag }}</code> — WARNING if hardcoded version found on standard collections</li>
+    <li><strong>Showroom collection:</strong> Must use a fixed version (not <code>{{ tag }}</code>) pinned to <code>≥ v1.5.1</code> — ERROR if version is older or missing</li>
+    <li><strong>Galaxy collections:</strong> Version validation</li>
+    <li><strong>Format:</strong> Proper requirements_content structure</li>
+  </ul>
+</div>
 
 </details>
 
@@ -258,6 +321,20 @@ git pull origin main</code></pre>
 
 </details>
 
+
+
+<details>
+<summary><strong>Check 15a: Anarchy Namespace (NEW)</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li><strong>ERROR</strong> if <code>anarchy.namespace</code> is defined anywhere in the catalog item</li>
+    <li>The <code>anarchy.namespace</code> field is managed by the platform and must never be set by catalog items</li>
+  </ul>
+</div>
+
+</details>
+
 <details>
 <summary><strong>Check 16: AsciiDoc Templates</strong></summary>
 
@@ -267,6 +344,50 @@ git pull origin main</code></pre>
   <li><strong>Variable substitutions:</strong> Validates {variable} syntax usage</li>
   <li><strong>Content quality:</strong> Checks for proper structure</li>
 </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 16a: Event Catalog Validation (NEW)</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li><strong>Category:</strong> Event catalogs must use <code>Brand_Events</code> category</li>
+    <li><strong>Keywords:</strong> Event-specific keywords required (e.g. <code>summit-2026</code>)</li>
+    <li><strong>Directory naming:</strong> Must follow <code>summit-2026/lb####-short-name-cloud_provider</code> convention. WARNING if directory doesn't start with the lab ID. WARNING if directory doesn't end with <code>-aws</code> (AWS pools) or <code>-cnv</code> (CNV/OpenStack pools)</li>
+    <li><strong>Showroom naming:</strong> Showroom repo name must match lab ID pattern</li>
+    <li><strong>Console embed:</strong> <code>ocp_console_embed</code> workload presence validated for OCP-based event labs</li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 17: LiteMaaS Validation</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li>Triggered when <code>ocp4_workload_litellm_virtual_keys</code> workload is present, OR any <code>litellm</code>/<code>litemaas</code> variable is set, OR either include is already present</li>
+    <li><strong>Models list (OCP only):</strong> ERROR if <code>ocp4_workload_litellm_virtual_keys_models</code> is empty</li>
+    <li><strong>Duration (OCP only):</strong> WARNING if <code>ocp4_workload_litellm_virtual_keys_duration</code> is not set</li>
+    <li><strong>Includes (OCP and cloud-vms-base):</strong> ERROR if <code>#include /includes/secrets/litemaas-master_api.yaml</code> is missing</li>
+    <li><strong>Includes (OCP and cloud-vms-base):</strong> ERROR if <code>#include /includes/parameters/litellm_metadata.yaml</code> is missing</li>
+  </ul>
+</div>
+
+</details>
+
+<details>
+<summary><strong>Check 17a: Event Restriction Include (NEW)</strong></summary>
+
+<div class="check-content">
+  <ul>
+    <li>Triggered when catalog is in an event directory (e.g. <code>summit-2026/</code> or <code>rh1-2026/</code>)</li>
+    <li><strong>WARNING</strong> if event restriction include is missing from <code>common.yaml</code></li>
+    <li>Expected includes: <code>summit-devs.yaml</code> (for Summit) or <code>rh1-2026-devs.yaml</code> (for RH1)</li>
+    <li>These restrict catalog access to event participants until the event <code>event.yaml</code> file is created</li>
+  </ul>
+</div>
 
 </details>
 

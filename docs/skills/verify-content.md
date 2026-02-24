@@ -132,6 +132,21 @@ content/modules/ROOT/pages/*.adoc</code></pre>
       <li><strong>URLs:</strong> Valid links to documentation</li>
     </ul>
   </div>
+
+  <div class="check-category">
+    <div class="check-header">
+      <span class="check-icon">🖥️</span>
+      <h3>Scaffold Files</h3>
+    </div>
+    <ul>
+      <li><strong>default-site.yml:</strong> Title not stale, start_page, ui-bundle URL, supplemental_files path, runtime.fetch</li>
+      <li><strong>site.yml mismatch:</strong> Warning if repo has site.yml but no default-site.yml (rename to default-site.yml)</li>
+      <li><strong>ui-config.yml:</strong> type: showroom, view_switcher enabled, tabs configured, persist_url_state</li>
+      <li><strong>content/antora.yml:</strong> title not stale, name: modules, start_page, nav, lab_name attribute</li>
+      <li><strong>content/lib/:</strong> All 4 JS extension files present</li>
+      <li><strong>supplemental-ui/:</strong> All 4 UI asset files present</li>
+    </ul>
+  </div>
 </div>
 
 ---
@@ -142,32 +157,51 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">1️⃣</div>
     <div class="workflow-content">
-      <h4>Create Content First</h4>
-      <pre><code>/create-lab or /create-demo
-→ Generate initial content</code></pre>
+      <h4>Step 1: Invoke Skill</h4>
+      <pre><code>/showroom:verify-content</code></pre>
+      <p>Prompts load directly from <code>showroom/prompts/</code> in the marketplace plugin. No content-type detection needed — the skill knows the context from the prompt files.</p>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="workflow-icon">1.5️⃣</div>
+    <div class="workflow-content">
+      <h4>Step 1.5: Scaffold file check</h4>
+      <p>Silently checks all scaffold files and surfaces issues grouped by severity:</p>
+      <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
+        <li><strong>Critical:</strong> Missing required files (default-site.yml, ui-config.yml, antora.yml)</li>
+        <li><strong>High:</strong> Stale/template titles in default-site.yml, ui-config.yml, antora.yml; site.yml naming mismatch; missing view_switcher or tabs</li>
+        <li><strong>High:</strong> Wrong paths (supplemental_files), missing content/lib/ JS files</li>
+      </ul>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">2️⃣</div>
     <div class="workflow-content">
-      <h4>Run Verification</h4>
-      <pre><code>/showroom:verify-content
-→ Get quality report
-→ See list of issues</code></pre>
+      <h4>Steps 2–4: Checklist verification (5 passes)</h4>
+      <p>Each pass produces a complete PASS/FAIL/N/A table before the next starts — nothing is silently skipped:</p>
+      <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
+        <li><strong>Pass B:</strong> Structure (index, modules, nav, conclusion, exercises, verify sections)</li>
+        <li><strong>Pass C:</strong> AsciiDoc formatting (images, links, code blocks, lists, headings)</li>
+        <li><strong>Pass D:</strong> Red Hat style (product names, prohibited terms, numerals, Oxford comma)</li>
+        <li><strong>Pass E:</strong> Technical accuracy (commands, variables, hardcoded values, heading hierarchy)</li>
+        <li><strong>Pass F:</strong> Demo-specific (Know/Show, presenter notes — skipped for workshops)</li>
+      </ul>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">3️⃣</div>
     <div class="workflow-content">
-      <h4>Fix Issues</h4>
+      <h4>Step 3: Fix Issues</h4>
       <p>Review each issue and update content:</p>
       <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
         <li>Fix AsciiDoc formatting errors</li>
         <li>Update product terminology</li>
         <li>Correct code examples</li>
         <li>Add missing alt text</li>
+        <li>Add <code>view_switcher</code> to <code>ui-config.yml</code> if warned</li>
       </ul>
     </div>
   </div>
@@ -175,7 +209,7 @@ content/modules/ROOT/pages/*.adoc</code></pre>
   <div class="workflow-step">
     <div class="workflow-icon">4️⃣</div>
     <div class="workflow-content">
-      <h4>Re-verify</h4>
+      <h4>Step 4: Re-verify</h4>
       <pre><code>/showroom:verify-content
 → Confirm all issues resolved</code></pre>
     </div>

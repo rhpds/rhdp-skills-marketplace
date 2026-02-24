@@ -706,25 +706,15 @@ Read the collection to see if it has the plugin:
 {collection_path}/plugins/action/agnosticd_user_info.py
 ```
 
-If not found, tell user:
-```
-The collection needs the agnosticd_user_info plugin to save validation results.
+If not found, clone from GitHub silently and copy — no user interaction needed:
 
-Note: agnosticd.core is NOT available on Ansible Galaxy, so we need to copy the plugin
-files directly into this collection.
-
-Source: AAP collection has the plugin files
-I can copy from: ~/work/code/rhpds.aap_self_service_portal/plugins/
-
-Should I copy it?
-```
-
-If user says yes, use Bash to copy both files:
 ```bash
+git clone --depth 1 https://github.com/redhat-cop/agnosticd.git /tmp/agnosticd-core-tmp 2>/dev/null
 mkdir -p {collection_path}/plugins/modules
 mkdir -p {collection_path}/plugins/action
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/action/agnosticd_user_info.py {collection_path}/plugins/action/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/modules/agnosticd_user_info.py {collection_path}/plugins/modules/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/action/agnosticd_user_info.py {collection_path}/plugins/action/
+rm -rf /tmp/agnosticd-core-tmp
 ```
 
 Verify files were copied:
@@ -964,19 +954,14 @@ If the collection includes the plugin files (plugins/modules/agnosticd_user_info
 The collection already has the agnosticd_user_info plugin copied. No additional setup needed.
 ```
 
-If the collection does NOT have the plugin files:
-```
-The validation role needs agnosticd.core for the agnosticd_user_info plugin.
+If the collection does NOT have the plugin files, clone from GitHub and copy silently:
 
-Option 1 - Install agnosticd.core from git:
-ansible-galaxy collection install git+https://github.com/redhat-cop/agnosticd.git#/ansible/agnosticd-core/
-
-Option 2 - Copy plugin files to the collection (if you have them locally):
+```bash
+git clone --depth 1 https://github.com/redhat-cop/agnosticd.git /tmp/agnosticd-core-tmp 2>/dev/null
 mkdir -p plugins/modules plugins/action
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/modules/agnosticd_user_info.py plugins/modules/
-cp ~/work/code/rhpds.aap_self_service_portal/plugins/action/agnosticd_user_info.py plugins/action/
-
-Which option do you prefer?
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/modules/agnosticd_user_info.py plugins/modules/
+cp /tmp/agnosticd-core-tmp/ansible/agnosticd-core/plugins/action/agnosticd_user_info.py plugins/action/
+rm -rf /tmp/agnosticd-core-tmp
 ```
 
 **Step 7: Build the collection**
@@ -1275,14 +1260,14 @@ ignore_errors: true
 
 ### Working Validation Roles
 
-Check these for reference patterns:
-- `/Users/psrivast/work/code/rhpds.aap_self_service_portal/roles/ocp4_workload_aap_multiinstance_validation/`
-- `/Users/psrivast/work/code/rhpds.build-secured-dev-workflows/roles/rhads_validation/`
+Check these repos for reference patterns:
+- `rhpds.aap_self_service_portal` → `roles/ocp4_workload_aap_multiinstance_validation/`
+- `rhpds.build-secured-dev-workflows` → `roles/rhads_validation/`
 
 ### Working Info Templates
 
 Check this for reference:
-- `/Users/psrivast/work/code/agnosticv/agd_v2/aap-multiinstance-workshop/info-message-template.adoc`
+- AgnosticV repo → `agd_v2/aap-multiinstance-workshop/info-message-template.adoc`
 
 ## Skill Invocation Summary
 
