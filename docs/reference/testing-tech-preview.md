@@ -226,7 +226,9 @@ plugin-sync
 
 Then exit and relaunch Claude Code.
 
-**Setup:** `plugin-sync` is a shell function defined in `~/.zshrc`. If you don't have it, add this to your `~/.zshrc`:
+**Important:** `plugin-sync` is a shell function defined in `~/.zshrc` — run it in a **regular terminal**, not inside Claude Code. If you type it inside Claude Code, it will try to invoke it as a skill and fail.
+
+**Setup:** If you don't have `plugin-sync` yet, add this to your `~/.zshrc`:
 
 ```bash
 plugin-sync() {
