@@ -1142,7 +1142,9 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
 
   # --- Directory naming convention ---
   # Expected: <event-name>/<lab-id>-<short-name>-<cloud_provider>
+  # cloud_provider suffix: -aws (AWS pools) or -cnv (CNV/OpenStack pools)
   catalog_slug = os.path.basename(catalog_path)
+
   if lab_id and not catalog_slug.startswith(lab_id):
     warnings.append({
       'check': 'event_catalog',
@@ -1151,11 +1153,38 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
       'location': catalog_path,
       'current': catalog_slug,
       'expected_pattern': f'{lab_id}-<short-name>-<cloud_provider>',
-      'example': f'{lab_id}-ocp-fish-swim-aws',
+      'example': f'{lab_id}-my-lab-aws  OR  {lab_id}-my-lab-cnv',
       'fix': 'Rename directory to match: <lab-id>-<short-name>-<cloud_provider>',
     })
   else:
-    passed_checks.append(f"✓ Directory naming convention followed: {catalog_slug}")
+    passed_checks.append(f"✓ Directory starts with lab ID: {catalog_slug}")
+
+  # --- Cloud provider suffix check ---
+  # Detect expected suffix from config or component reference
+  components = config.get('__meta__', {}).get('catalog', {}).get('components', [])
+  component_str = ' '.join(str(c) for c in components)
+  cloud_provider_var = config.get('cloud_provider', '')
+
+  if 'aws' in component_str.lower() or cloud_provider_var == 'ec2':
+    expected_suffix = '-aws'
+  elif 'cnv' in component_str.lower() or cloud_provider_var in ('openstack', 'azure'):
+    expected_suffix = '-cnv'
+  else:
+    expected_suffix = None  # cloud-vms-base or unknown — skip suffix check
+
+  if expected_suffix:
+    if catalog_slug.endswith(expected_suffix):
+      passed_checks.append(f"✓ Directory ends with correct cloud provider suffix: {expected_suffix}")
+    else:
+      warnings.append({
+        'check': 'event_catalog',
+        'severity': 'WARNING',
+        'message': f'Directory name missing cloud provider suffix',
+        'location': catalog_path,
+        'current': catalog_slug,
+        'expected_suffix': expected_suffix,
+        'fix': f'Rename to: {catalog_slug}{expected_suffix}  (or correct existing suffix)',
+      })
 
   # --- Showroom repo naming ---
   # OCP catalogs use ocp4_workload_showroom_content_git_repo
