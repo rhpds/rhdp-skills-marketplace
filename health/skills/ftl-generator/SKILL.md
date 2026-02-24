@@ -205,27 +205,24 @@ From `common.yaml`:
 - `num_users` parameter → multi-user or single-user
 - `requirements_content.collections` → GitHub URLs for each collection
 
-For each collection URL in `requirements_content.collections`, extract the repo name from the GitHub URL and **check if it exists locally before asking**:
+Before looking for collections anywhere, read `~/CLAUDE.md` to find the developer's declared repository locations (the `### Repository Locations` section). Then **ask the developer:**
 
 ```
-Collection URL:  https://github.com/rhpds/rhpds.litellm_virtual_keys.git
-Repo name:       rhpds.litellm_virtual_keys
-Check first:     ~/work/code/rhpds.litellm_virtual_keys/
+I need to read these collections to extract namespace patterns and credentials:
+
+  - <collection-name-1>  (github.com/...)
+  - <collection-name-2>  (github.com/...)
+
+From your CLAUDE.md I can see your work directories are:
+  - ~/work/code/agnosticd/
+  - ~/work/code/agnosticv/
+  (etc.)
+
+Should I look for these collections there? Or do you have them cloned elsewhere?
+If none of them are available locally, I'll clone what I need to /tmp/
 ```
 
-Use the Read or Glob tool to check `~/work/code/<repo-name>/` for each collection. Then:
-- **If found locally** → use it, tell the developer: `✓ Found locally: ~/work/code/<repo-name>/`
-- **If not found** → ask the developer:
-
-```
-I need to read these collections but couldn't find them in ~/work/code/:
-
-  - <collection-name>  (github.com/rhpds/...)
-
-Do you have them cloned somewhere else? If not, I'll clone to /tmp/ftl-collection-<name>/
-```
-
-WAIT for answer. Use any path the developer provides. Only clone to `/tmp/` as a last resort.
+WAIT for answer. Only read paths the developer confirms. Never silently browse the filesystem.
 
 **Do not skip any collection.** Each one may define namespace patterns or credentials that affect grader logic.
 
@@ -406,13 +403,9 @@ __meta__:
 - `num_users` parameter **present** → multi-user lab. Students share one cluster, each gets their own namespaced resources derived from `LAB_USER`.
 - `num_users` parameter **absent** → single-user lab. One environment per student, no namespace isolation, `LAB_USER` not needed.
 
-**D. Collections — check ~/work/code/ first, then ask:**
-For each collection URL in `requirements_content.collections`, extract the repo name and check `~/work/code/<repo-name>/` using the Read or Glob tool:
+**D. Collections — read CLAUDE.md, then ask:**
 
-- **Found** → use it, note: `✓ ~/work/code/<repo-name>/`
-- **Not found** → ask the developer if it's elsewhere, offer to clone to `/tmp/ftl-collection-<name>/` if not
-
-Only ask when a collection isn't at the default path. Don't ask for all of them up front if most are already there.
+Read `~/CLAUDE.md` to find the developer's declared work directories (`### Repository Locations` section). Then ask the developer which of the required collections they have locally and where, referencing those known paths. Only read paths the developer confirms — never silently browse. Clone to `/tmp/ftl-collection-<name>/` only for collections the developer says aren't available locally.
 
 Then read each workload role's `defaults/main.yml`:
 ```bash
