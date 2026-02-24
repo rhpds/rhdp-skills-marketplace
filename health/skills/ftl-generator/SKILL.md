@@ -83,6 +83,8 @@ They already handle:
 
 If a developer asks how to run the grader, always answer with `grade_lab <lab> <user> [module] --podman` or `--ansible`. Never suggest `ansible-playbook main.yml ...` or a custom script.
 
+**NEVER generate `grade_lab.yml`.** The `bin/grade_lab` wrapper auto-discovers all `grade_module_*.yml` files in the lab directory — there is no need for an orchestrator playbook. Only generate `grade_module_XX.yml` files (one per module) and `solve_module_XX.yml` files.
+
 ---
 
 ### **5. ADMIN IS ONLY FOR READING THE CONFIGMAP — EVERYTHING ELSE RUNS AS THE STUDENT USER**
@@ -917,14 +919,7 @@ Note: `default('value', true)` — the `true` argument is required. Without it, 
 Write to: `{ftl_repo}/labs/{lab_short_name}/grade_module_XX.yml`
 Confirm: "Created: grade_module_01.yml (X lines, Y checkpoints)"
 
-#### 5.3: Grade Lab Orchestrator
-
-Generate `grade_lab.yml` that includes all module graders sequentially. Follow the orchestrator pattern from @health/docs/FTL-PATTERNS.md.
-
-Write to: `{ftl_repo}/labs/{lab_short_name}/grade_lab.yml`
-Confirm: "Created: grade_lab.yml (X lines)"
-
-#### 5.4: Solver Playbook — Module 1 Only
+#### 5.3: Solver Playbook — Module 1 Only
 
 Edit `{ftl_repo}/labs/{lab_short_name}/solve_module_01.yml` (already copied from template). Replace placeholder tasks with real automation for Module 1 student exercises.
 
@@ -977,7 +972,6 @@ Files created:
   lab.yml
   grade_module_01.yml  ({X} checkpoints)
   solve_module_01.yml  (or skipped if module is environment-validation only)
-  grade_lab.yml        (orchestrator — runs all modules)
   README.md
 ```
 
