@@ -79,9 +79,15 @@ Then update the plugins inside Claude Code:
 /plugin update health@rhdp-marketplace
 ```
 
+**Then sync the cache** (required — `/plugin update` updates the marketplace copy but not the cache Claude actually reads from):
+
+```bash
+plugin-sync
+```
+
 Restart Claude Code (exit and relaunch) to pick up the new skill definitions.
 
-To go back to stable, remove the `"ref": "tech-preview"` line from the JSON file, repeat the update commands, and restart.
+To go back to stable, remove the `"ref": "tech-preview"` line from the JSON file, repeat the update and sync commands, and restart.
 
 ### Option 2: Local Directory (For Development)
 
@@ -169,7 +175,8 @@ I've pushed AgV skill changes to tech-preview. To test:
    Add "ref": "tech-preview" to the source object
 2. Run: /plugin marketplace update rhdp-marketplace
 3. Run: /plugin update agnosticv@rhdp-marketplace
-4. Restart Claude Code
+4. Run in terminal: plugin-sync
+5. Restart Claude Code
 
 Try running /agnosticv:catalog-builder and let me know if it works.
 ```
@@ -200,7 +207,9 @@ Once tested, merge your branch to `main` via PR, tag a release, and teammates sw
 
 ### Skills don't update after switching branches
 
-Claude Code caches plugins. After switching marketplace branches, update and restart:
+Claude Code has two layers of caching — `/plugin update` only updates the marketplace copy. The cache that skills are actually served from must be synced separately.
+
+Full update sequence:
 
 ```
 /plugin marketplace update rhdp-marketplace
@@ -209,7 +218,36 @@ Claude Code caches plugins. After switching marketplace branches, update and res
 /plugin update health@rhdp-marketplace
 ```
 
+Then in a regular terminal (not inside Claude Code):
+
+```bash
+plugin-sync
+```
+
 Then exit and relaunch Claude Code.
+
+**Setup:** `plugin-sync` is a shell function defined in `~/.zshrc`. If you don't have it, add this to your `~/.zshrc`:
+
+```bash
+plugin-sync() {
+    local marketplace="${1:-rhdp-marketplace}"
+    local marketplaces_dir="$HOME/.claude/plugins/marketplaces/$marketplace"
+    local cache_dir="$HOME/.claude/plugins/cache/$marketplace"
+
+    for plugin_dir in "$marketplaces_dir"/*/; do
+        local plugin=$(basename "$plugin_dir")
+        local plugin_json="$plugin_dir/.claude-plugin/plugin.json"
+        [ -f "$plugin_json" ] || continue
+        local version=$(python3 -c "import json; print(json.load(open('$plugin_json'))['version'])" 2>/dev/null)
+        [ -z "$version" ] && echo "  ⚠️  $plugin: could not read version" && continue
+        local target="$cache_dir/$plugin/$version"
+        [ -d "$target" ] || echo "  ⚠️  $plugin: cache $version not found (run /plugin update first)" && continue
+        rsync -a --delete "$plugin_dir" "$target/"
+        echo "  ✓ $plugin → $version"
+    done
+    echo "Done. Restart Claude Code to pick up changes."
+}
+```
 
 ### `--plugin-dir` skills not showing up
 
