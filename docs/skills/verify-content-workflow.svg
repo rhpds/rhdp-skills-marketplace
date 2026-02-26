@@ -33,11 +33,11 @@
   <text x="60" y="265" font-size="12">2. Reads all content files specified</text>
   <text x="60" y="285" font-size="12">3. Runs comprehensive validation checks:</text>
   <text x="80" y="305" font-size="12">   - Red Hat style guide compliance (sentence case, product names)</text>
-  <text x="80" y="325" font-size="12">   - Workshop structure (learning objectives, verification commands)</text>
+  <text x="80" y="325" font-size="12">   - Workshop structure: Passes B (Structure) C (AsciiDoc) D (Style) E (Technical) F (Demo)</text>
   <text x="80" y="345" font-size="12">   - Technical accuracy (valid commands, correct syntax)</text>
   <text x="80" y="365" font-size="12">   - Accessibility (alt text, heading hierarchy)</text>
   <text x="80" y="385" font-size="12">   - Content quality (completeness, formatting, references)</text>
-  <text x="60" y="405" font-size="12">4. Categorizes findings as Critical/High/Medium/Low priority</text>
+  <text x="60" y="405" font-size="12">4. Runs passes B→C→D→E→(F for demos) in fixed order — all passes mandatory</text>
   <text x="60" y="425" font-size="12">5. Generates detailed issue sections FIRST, then summary table LAST</text>
 
   <!-- Arrow -->

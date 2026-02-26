@@ -1,0 +1,131 @@
+---
+- name: Get cluster information
+  kubernetes.core.k8s_cluster_info:
+  register: r_cluster_info
+  ignore_errors: true
+
+- name: Set cluster API URL
+  ansible.builtin.set_fact:
+    _cluster_api_url: "{{ r_cluster_info.connection.host | default('N/A') }}"
+
+- name: Initialize validation results
+  ansible.builtin.set_fact:
+    rhads_validation_results:
+      cluster: "{{ _cluster_api_url }}"
+      overall_status: "healthy"
+      components: {}
+      issues: []
+      summary:
+        total_components: 0
+        healthy: 0
+        degraded: 0
+        failed: 0
+
+- name: Check operators health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_operators
+  ansible.builtin.include_tasks:
+    file: check_operators.yml
+
+- name: Check ArgoCD health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_argocd
+  ansible.builtin.include_tasks:
+    file: check_argocd.yml
+
+- name: Check Vault health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_vault
+  ansible.builtin.include_tasks:
+    file: check_vault.yml
+
+- name: Check Keycloak health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_keycloak
+  ansible.builtin.include_tasks:
+    file: check_keycloak.yml
+
+- name: Check Developer Hub health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_developer_hub
+  ansible.builtin.include_tasks:
+    file: check_developer_hub.yml
+
+- name: Check GitLab health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_gitlab
+  ansible.builtin.include_tasks:
+    file: check_gitlab.yml
+
+- name: Check DevSpaces health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_devspaces
+  ansible.builtin.include_tasks:
+    file: check_devspaces.yml
+
+- name: Check Quay health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_quay
+  ansible.builtin.include_tasks:
+    file: check_quay.yml
+
+- name: Check RHACS health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_rhacs
+  ansible.builtin.include_tasks:
+    file: check_rhacs.yml
+
+- name: Check OpenShift Pipelines health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_pipelines
+  ansible.builtin.include_tasks:
+    file: check_pipelines.yml
+
+- name: Check Showroom health
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_showroom
+  ansible.builtin.include_tasks:
+    file: check_showroom.yml
+
+- name: Check all routes
+  when: rhpds_build_secured_dev_workflows_rhads_validation_check_routes
+  ansible.builtin.include_tasks:
+    file: check_routes.yml
+
+- name: Calculate overall health status
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'overall_status': 'failed' if rhads_validation_results.summary.failed > 0
+                        else 'degraded' if rhads_validation_results.summary.degraded > 0
+                        else 'healthy'
+    }) }}"
+
+- name: Format health check summary for user info
+  ansible.builtin.set_fact:
+    rhads_validation_summary: |
+      RHADS Environment Validation Report
+      ====================================
+      Status: {{ rhads_validation_results.overall_status | upper }}
+
+      Summary:
+      - Total Components Checked: {{ rhads_validation_results.summary.total_components }}
+      - Healthy: {{ rhads_validation_results.summary.healthy }}
+      - Degraded: {{ rhads_validation_results.summary.degraded }}
+      - Failed: {{ rhads_validation_results.summary.failed }}
+
+      {% if rhads_validation_results.issues | length > 0 %}
+      Issues Found:
+      {% for issue in rhads_validation_results.issues %}
+      - {{ issue }}
+      {% endfor %}
+      {% else %}
+      All components are healthy!
+      {% endif %}
+
+- name: Save validation results to user info
+  rhpds.build_secured_dev_workflows.agnosticd_user_info:
+    user: "{{ rhpds_build_secured_dev_workflows_rhads_validation_username_base }}{{ n + 1 }}"
+    data:
+      rhads_validation_status: "{{ rhads_validation_results.overall_status }}"
+      rhads_validation_summary: "{{ rhads_validation_summary }}"
+      rhads_validation_total: "{{ rhads_validation_results.summary.total_components }}"
+      rhads_validation_healthy: "{{ rhads_validation_results.summary.healthy }}"
+      rhads_validation_degraded: "{{ rhads_validation_results.summary.degraded }}"
+      rhads_validation_failed: "{{ rhads_validation_results.summary.failed }}"
+      rhads_validation_issues: "{{ rhads_validation_results.issues | join(', ') }}"
+  loop: "{{ range(0, rhpds_build_secured_dev_workflows_rhads_validation_num_users | int) | list }}"
+  loop_control:
+    loop_var: n
+
+- name: Display validation summary
+  ansible.builtin.debug:
+    msg: "{{ rhads_validation_summary }}"

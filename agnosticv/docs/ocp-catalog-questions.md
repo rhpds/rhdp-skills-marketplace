@@ -283,7 +283,7 @@ grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
   | grep "version:" | grep -v "tag" | sort -V | tail -1
 ```
 
-Use that version, or `v1.5.1` as minimum if nothing higher found.
+Use that version, or `v1.5.3` as minimum if nothing higher found.
 
 **EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write to `__meta__.deployer.execution_environment.image`.
 
@@ -304,7 +304,7 @@ Based on naming convention, your Showroom repo should be:
 Has this repository been created yet? [Y/n]
 ```
 
-**If YES:** Ask for URL or local path. Check for Showroom 1.5.1 structure (`default-site.yml`, `supplemental-ui/` at root, `ui-config.yml`). Pre-1.5.1 → block with migration instructions.
+**If YES:** Ask for URL or local path. Check for Showroom 1.5.3 structure (`default-site.yml`, `supplemental-ui/` at root, `ui-config.yml`). Pre-1.5.3 → block with migration instructions.
 
 **If NO:** Add placeholder and continue without blocking.
 
@@ -315,7 +315,7 @@ requirements_content:
   collections:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.1   # fixed — minimum v1.5.1
+    version: v1.5.3   # fixed — minimum v1.5.3
 
 workloads:
 - agnosticd.showroom.ocp4_workload_ocp_console_embed

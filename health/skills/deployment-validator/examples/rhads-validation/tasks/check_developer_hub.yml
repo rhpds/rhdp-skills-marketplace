@@ -1,0 +1,100 @@
+---
+- name: Get Developer Hub deployment (with retry for 5 minutes)
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: backstage
+  register: r_backstage_deployments
+  retries: 30  # 5 minutes / 10 seconds = 30 retries
+  delay: 10    # Wait 10 seconds between retries
+  until: >
+    r_backstage_deployments.resources | length > 0 and
+    r_backstage_deployments.resources | selectattr('status.availableReplicas', 'defined') | selectattr('status.availableReplicas', 'greaterthan', 0) | list | length > 0
+  ignore_errors: true
+
+- name: Get Developer Hub route
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: backstage
+  register: r_backstage_routes
+  ignore_errors: true
+
+- name: Get Developer Hub PostgreSQL pods
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: backstage
+  register: r_backstage_pods
+  ignore_errors: true
+
+- name: Check for PostgreSQL pod
+  ansible.builtin.set_fact:
+    _postgres_pods: "{{ r_backstage_pods.resources | selectattr('metadata.name', 'search', 'postgresql') | list }}"
+
+- name: Test Developer Hub route accessibility (with retry for 5 minutes)
+  ansible.builtin.uri:
+    url: "https://{{ r_backstage_routes.resources[0].spec.host }}"
+    method: GET
+    validate_certs: false
+    status_code: [200, 301, 302]
+    timeout: 10
+  register: r_backstage_http_check
+  retries: 30  # 5 minutes / 10 seconds = 30 retries
+  delay: 10    # Wait 10 seconds between retries
+  until: r_backstage_http_check is success
+  ignore_errors: true
+  when: r_backstage_routes.resources | length > 0
+
+- name: Evaluate Developer Hub health
+  ansible.builtin.set_fact:
+    developer_hub_status: |-
+      {%- if r_backstage_http_check is defined and not r_backstage_http_check.skipped | default(false) and not r_backstage_http_check.failed -%}
+      healthy
+      {%- elif r_backstage_deployments.resources | length == 0 -%}
+      missing
+      {%- elif r_backstage_deployments.resources | selectattr('status.availableReplicas', 'defined') | selectattr('status.availableReplicas', 'greaterthan', 0) | list | length == 0 -%}
+      unavailable
+      {%- elif _postgres_pods | selectattr('status.phase', 'equalto', 'Running') | list | length == 0 -%}
+      no-database
+      {%- elif r_backstage_routes.resources | length == 0 -%}
+      no-route
+      {%- elif r_backstage_http_check is defined and not r_backstage_http_check.skipped | default(false) and r_backstage_http_check.failed -%}
+      not-accessible
+      {%- else -%}
+      healthy
+      {%- endif -%}
+
+- name: Create Developer Hub validation result
+  ansible.builtin.set_fact:
+    developer_hub_validation:
+      status: "{{ developer_hub_status }}"
+      deployments: "{{ r_backstage_deployments.resources | length }}"
+      available: "{{ r_backstage_deployments.resources | selectattr('status.availableReplicas', 'defined') | selectattr('status.availableReplicas', 'greaterthan', 0) | list | length }}"
+      route: "{{ r_backstage_routes.resources[0].spec.host if r_backstage_routes.resources | length > 0 else 'N/A' }}"
+      route_accessible: "{{ not r_backstage_http_check.failed if (r_backstage_http_check is defined and not r_backstage_http_check.skipped | default(false)) else false }}"
+      http_status: "{{ r_backstage_http_check.status if (r_backstage_http_check is defined and not r_backstage_http_check.skipped | default(false) and not r_backstage_http_check.failed) else 'N/A' }}"
+      database_running: "{{ _postgres_pods | selectattr('status.phase', 'equalto', 'Running') | list | length > 0 }}"
+
+- name: Add issue if Developer Hub unhealthy
+  when: developer_hub_status != 'healthy'
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'issues': rhads_validation_results.issues + [
+        'Developer Hub is ' ~ developer_hub_status
+      ]
+    }) }}"
+
+- name: Update overall validation results for Developer Hub
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'components': rhads_validation_results.components | combine({
+        'developer_hub': developer_hub_validation
+      }),
+      'summary': {
+        'total_components': rhads_validation_results.summary.total_components + 1,
+        'healthy': rhads_validation_results.summary.healthy + (1 if developer_hub_status == 'healthy' else 0),
+        'degraded': rhads_validation_results.summary.degraded,
+        'failed': rhads_validation_results.summary.failed + (1 if developer_hub_status != 'healthy' else 0)
+      }
+    }) }}"

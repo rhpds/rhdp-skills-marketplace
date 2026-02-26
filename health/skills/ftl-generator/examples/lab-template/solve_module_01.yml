@@ -1,0 +1,213 @@
+---
+# =============================================================================
+# FTL Solver: [Lab Name] - Module 1
+# =============================================================================
+#
+# Automatically completes Module 1 tasks:
+# 1. [Task description]
+# 2. [Task description]
+# 3. [Task description]
+# [Add more as needed]
+#
+# Environment Variables Required:
+#   - REQUIRED_VAR_1: [Description]
+#   - REQUIRED_VAR_2: [Description]
+#
+# Optional:
+#   - LAB_USER: Username for multi-user environments (defaults to $USER)
+#
+# Usage:
+#   export REQUIRED_VAR_1="value"
+#   export REQUIRED_VAR_2="value"
+#   ansible-playbook solve_module_01.yml
+#
+# Or via wrapper:
+#   solve_lab your-lab-name 1
+#
+# WARNING: This will automatically complete lab exercises
+#
+# =============================================================================
+
+- name: Solve Module 1 - [Module Name]
+  hosts: localhost  # Change to appropriate host group if needed
+  gather_facts: false
+  become: false  # Change to true if root privileges needed
+
+  vars:
+    # Define your lab-specific variables here
+    required_var_1: "{{ lookup('env', 'REQUIRED_VAR_1') | default('default-value') }}"
+    required_var_2: "{{ lookup('env', 'REQUIRED_VAR_2') | default('default-value') }}"
+
+  tasks:
+    # =========================================================================
+    # Environment Variable Validation
+    # =========================================================================
+    - name: Validate required environment variables
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'REQUIRED_VAR_1') | length > 0 or required_var_1 != 'default-value'
+          - lookup('env', 'REQUIRED_VAR_2') | length > 0 or required_var_2 != 'default-value'
+        fail_msg: |
+          Required environment variables not set:
+          - REQUIRED_VAR_1: [Description]
+          - REQUIRED_VAR_2: [Description]
+
+    # =========================================================================
+    # Display Solver Information
+    # =========================================================================
+    - name: Display solver information
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Solving Module 1: [Module Name]
+          ================================================================================
+          [Brief description of what will be automated]
+          ================================================================================
+
+    # =========================================================================
+    # Step 1: [First Task]
+    # =========================================================================
+    # EXAMPLE: Check if resource exists before creating
+    - name: Check if [resource] exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod  # Or other resource type
+        name: "myapp"
+        namespace: "{{ required_var_1 }}"
+      register: r_resource
+
+    - name: Create [resource] if it doesn't exist
+      when: r_resource.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: "myapp"
+            namespace: "{{ required_var_1 }}"
+            labels:
+              app: myapp
+          spec:
+            containers:
+              - name: myapp
+                image: "nginx:latest"
+                ports:
+                  - containerPort: 8080
+
+    # =========================================================================
+    # Step 2: [Second Task]
+    # =========================================================================
+    # EXAMPLE: Execute command-based tasks
+    - name: Execute [task description]
+      ansible.builtin.command: >
+        command-to-execute
+      changed_when: true
+      failed_when: false  # Use if command may fail benignly
+
+    # =========================================================================
+    # Step 3: [Third Task]
+    # =========================================================================
+    # EXAMPLE: Wait for resource to be ready
+    - name: Wait for [resource] to be ready
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        name: "myapp"
+        namespace: "{{ required_var_1 }}"
+      register: r_pod_status
+      until:
+        - r_pod_status.resources | length > 0
+        - r_pod_status.resources[0].status.phase == "Running"
+      retries: 30
+      delay: 10
+
+    # =========================================================================
+    # Step 4: [Fourth Task]
+    # =========================================================================
+    # EXAMPLE: Complex configuration
+    - name: Configure [something]
+      ansible.builtin.uri:
+        url: "https://example.com/api/endpoint"
+        method: POST
+        body_format: json
+        body:
+          key: "value"
+        validate_certs: false
+        status_code: [200, 201]
+      register: r_api_call
+
+    # =========================================================================
+    # Add more steps as needed
+    # =========================================================================
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display completion summary
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Module 1 Solver Completed Successfully
+          ================================================================================
+
+          Resources created:
+            ✓ [Resource 1 description]
+            ✓ [Resource 2 description]
+            ✓ [Resource 3 description]
+
+          Next steps:
+            - Verify resources: [command to verify]
+            - Test functionality: [command to test]
+            - Grade Module 1: grade_lab your-lab-name 1
+            - Continue to Module 2: solve_lab your-lab-name 2
+
+          ================================================================================
+
+# =============================================================================
+# Notes for Lab Authors:
+# =============================================================================
+#
+# 1. **Solver Purpose**
+#    - Automates lab completion for testing
+#    - Helps students recover from mistakes
+#    - Validates that exercises are solvable
+#    - Should run fully automated (no user prompts!)
+#
+# 2. **Idempotency**
+#    - Check if resources exist before creating
+#    - Use `when:` conditions to avoid errors
+#    - Solver should be safe to run multiple times
+#
+# 3. **Error Handling**
+#    - Use `failed_when: false` for benign failures
+#    - Add retry logic for async operations
+#    - Wait for resources to be ready (don't assume instant)
+#
+# 4. **No User Interaction**
+#    - NEVER use ansible.builtin.pause
+#    - NEVER prompt for input
+#    - All values should come from environment variables
+#
+# 5. **Wait for Readiness**
+#    - Don't assume resources are ready immediately
+#    - Use `until:` loops to wait for completion
+#    - Add generous timeouts (retries: 30, delay: 10)
+#
+# 6. **Helpful Debug Output**
+#    - Show what's being created
+#    - Display URLs or endpoints created
+#    - Provide next steps in summary
+#
+# 7. **Multi-User Support**
+#    - Use LAB_USER for namespace isolation
+#    - Ensure resources created in correct namespace
+#    - Support concurrent execution by multiple users
+#
+# 8. **Testing Your Solver**
+#    - Test on fresh environment
+#    - Test running twice (idempotency)
+#    - Test with partial completion
+#    - Verify grader passes after solver
+#
+# =============================================================================

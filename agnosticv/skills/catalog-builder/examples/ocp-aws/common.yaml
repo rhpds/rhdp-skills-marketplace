@@ -1,0 +1,228 @@
+---
+# -------------------------------------------------------------------
+# --- Catalog Item: Red Hat OpenShift Container Platform
+#  Cluster (AWS) - AgdV2
+# -------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# AgnosticV includes
+# --------------------------------------------------------------------
+#include /includes/agd-v2-mapping.yaml
+#include /includes/catalog-icon-openshift.yaml
+#include /includes/terms-of-service.yaml
+
+#include /includes/parameters/agnosticd_open_environment.yaml
+#include /includes/parameters/salesforce-id.yaml
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/aws-regions-3.yaml
+
+#include /includes/secrets/ocp4_workload_ols_api_token.yaml
+
+# -------------------------------------------------------------------
+# Mandatory Variables
+# -------------------------------------------------------------------
+config: openshift-workloads
+cloud_provider: none
+clusters:
+- default:
+    api_url: "{{ openshift_api_url }}"
+    api_token: "{{ openshift_api_key }}"
+
+# ===================================================================
+# Additional Collections & roles to be installed for this config
+# ===================================================================
+requirements_content:
+  collections:
+  # AWS Cloud Provider
+  # Only used with openshift_aws_scale_cluster
+  - name: https://github.com/agnosticd/cloud_provider_aws.git
+    type: git
+    version: main
+  # Core OpenShift Workloads
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: main
+  # AI Workloads (for OpenShift Lightspeed)
+  - name: https://github.com/agnosticd/ai_workloads.git
+    type: git
+    version: main
+
+# ===================================================================
+# Autoscaling cluster
+# ===================================================================
+openshift_aws_scale_cluster: "{{ false if cluster_size == 'sno' else true }}"
+worker_instance_count: "{{ 0 if cluster_size == 'sno' else worker_instance_count_param }}"
+# Set by parameter
+# worker_instance_type: "m5a.4xlarge"
+
+# ===================================================================
+# OpenShift Version
+# ===================================================================
+# OpenShift version set from parameter
+# host_ocp4_installer_version: "4.19"
+
+# ===================================================================
+# List of workloads to be deployed
+# ===================================================================
+workloads:
+- agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+- agnosticd.ai_workloads.ocp4_workload_ols
+
+# ===================================================================
+# Workload: agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+# ===================================================================
+# Red Hat Build of Keycloak (RHBK) - User Authentication
+# Creates Keycloak instance and manages user accounts
+
+# Operator configuration
+ocp4_workload_authentication_keycloak_namespace: keycloak
+ocp4_workload_authentication_keycloak_channel: stable-v26.4
+ocp4_workload_authentication_keycloak_use_catalog_source: false
+
+ocp4_workload_authentication_keycloak_admin_create: true
+ocp4_workload_authentication_keycloak_admin_username: admin
+ocp4_workload_authentication_keycloak_admin_password: ''
+ocp4_workload_authentication_keycloak_remove_kubeadmin: true
+
+ocp4_workload_authentication_keycloak_num_users: "{{ (num_users | default('1')) | int }}"
+ocp4_workload_authentication_keycloak_user_username_base: user
+ocp4_workload_authentication_keycloak_user_password: ''
+
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_ols (OpenShift Lightspeed)
+# -------------------------------------------------------------------
+# Use Azure AI as the backend for OpenShift Lightspeed
+ocp4_workload_ai_platform: azure
+
+# Automatically create and manage Azure AI tokens
+ocp4_workload_ols_get_token: true
+
+# ===================================================================
+# Workloads to remove on destroy
+# ===================================================================
+remove_workloads:
+- agnosticd.ai_workloads.ocp4_workload_ols
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: 2a80b893-3380-46db-aeff-44e70f0a6b1f
+  owners:
+    maintainer:
+    - name: Nate Stephany
+      email: nstephan@redhat.com
+    - name: Wolfgang Kulhanek
+      email: wkulhane@redhat.com
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2025-10-09
+      pull: missing
+
+  sandbox_api:
+    actions:
+      destroy:
+        # Allow remove_workloads to run before sandbox is destroyed
+        catch_all: false
+
+  components:
+  - name: openshift_base
+    display_name: OpenShift Container Platform Cluster (AWS-Pools)
+    item: agd-v2/ocp-cluster-aws-pools
+    propagate_provision_data:
+    - name: openshift_api_ca_cert
+      var: openshift_api_ca_cert
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
+    - name: openshift_cluster_admin_token
+      var: openshift_cluster_admin_token
+    - name: bastion_public_hostname
+      var: bastion_ansible_host
+    - name: bastion_ssh_user_name
+      var: bastion_ansible_user
+    - name: bastion_ssh_password
+      var: bastion_ansible_ssh_pass
+    - name: bastion_ssh_port
+      var: bastion_ansible_port
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: Red Hat OpenShift Container Platform Cluster (AWS) - AgdV2
+    category: Workshops
+    keywords:
+    - workshop
+    - openshift
+    labels:
+      Product: Red_Hat_OpenShift_Container_Platform
+      Product_Family: Red_Hat_Cloud
+      Provider: RHDP
+      Featured_Score: '71'
+    multiuser: true
+    reportingLabels:
+      primaryBU: Hybrid_Platforms
+    parameters:
+    - name: cluster_size
+      description: >-
+        Cluster size configuration that determines the number of control plane and worker nodes.
+      formLabel: Cluster Size
+      openAPIV3Schema:
+        type: string
+        default: 'sno'
+        enum:
+        - 'sno'
+        - 'multinode'
+    - name: host_ocp4_installer_version
+      description: Version of OpenShift to Install
+      formLabel: OpenShift Version
+      required: false
+      openAPIV3Schema:
+        type: string
+        default: '4.20'
+        enum:
+        - '4.16'
+        - '4.18'
+        - '4.19'
+        - '4.20'
+      annotation: demo.redhat.com/ocp-version
+      variable: host_ocp4_installer_version
+    - name: worker_instance_count_param
+      description: OpenShift Worker count
+      formLabel: OpenShift Worker count
+      formHideCondition: cluster_size != 'multinode'
+      openAPIV3Schema:
+        type: integer
+        default: 2
+        minimum: 2
+        maximum: 10
+    - name: worker_instance_type
+      description: OpenShift Worker instance type
+      formLabel: OpenShift Worker instance type
+      formHideCondition: cluster_size != 'multinode'
+      openAPIV3Schema:
+        type: string
+        default: 'm5a.2xlarge'
+        enum:
+        - 'm5a.2xlarge'
+        - 'm5a.4xlarge'
+        - 'm5a.8xlarge'
+    - name: create_multi_user
+      description: Create multiple users on cluster?
+      formLabel: Create multiple users on cluster
+      openAPIV3Schema:
+        type: boolean
+        default: false
+    - name: num_users
+      description: >-
+        Number of users to provision within the environment.
+      formLabel: User Count
+      formHideCondition: create_multi_user == false
+      openAPIV3Schema:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 50

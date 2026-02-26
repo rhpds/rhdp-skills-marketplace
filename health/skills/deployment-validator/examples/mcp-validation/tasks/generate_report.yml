@@ -1,0 +1,105 @@
+---
+# ==============================================================================
+# Generate Validation Report
+# ==============================================================================
+
+- name: Count total components
+  ansible.builtin.set_fact:
+    _validation_total: "{{ _validation_results | length | int }}"
+
+- name: Count healthy components
+  ansible.builtin.set_fact:
+    _validation_healthy: >-
+      {{
+        _validation_results |
+        selectattr('status', 'equalto', 'healthy') |
+        list | length | int
+      }}
+
+- name: Count degraded components
+  ansible.builtin.set_fact:
+    _validation_degraded: >-
+      {{
+        _validation_results |
+        selectattr('status', 'equalto', 'degraded') |
+        list | length | int
+      }}
+
+- name: Count failed components
+  ansible.builtin.set_fact:
+    _validation_failed: >-
+      {{
+        _validation_results |
+        selectattr('status', 'equalto', 'failed') |
+        list | length | int
+      }}
+
+- name: Determine overall validation status
+  ansible.builtin.set_fact:
+    _validation_status: >-
+      {{
+        'FAILED' if _validation_failed > 0
+        else 'DEGRADED' if _validation_degraded > 0
+        else 'HEALTHY'
+      }}
+
+- name: Generate validation summary report
+  ansible.builtin.set_fact:
+    _validation_summary: |
+      MCP with OpenShift Workshop Validation Report
+      ================================================
+
+      Overall Status: {{ _validation_status }}
+
+      Components Summary:
+      - Total: {{ _validation_total }}
+      - Healthy: {{ _validation_healthy }}
+      - Degraded: {{ _validation_degraded }}
+      - Failed: {{ _validation_failed }}
+
+      {% if _validation_issues | length > 0 %}
+      Issues Detected:
+      {% for issue in _validation_issues %}
+      - {{ issue }}
+      {% endfor %}
+      {% else %}
+      Issues: None - All components healthy!
+      {% endif %}
+
+      Component Details:
+      {% for result in _validation_results %}
+
+      {{ result.component }} ({{ result.namespace }}):
+        Status: {{ result.status | upper }}
+      {% for key, value in result.details.items() %}
+        {{ key }}: {{ value }}
+      {% endfor %}
+      {% endfor %}
+
+- name: Display validation summary
+  ansible.builtin.debug:
+    msg: "{{ _validation_summary }}"
+
+- name: Format validation issues as AsciiDoc list
+  ansible.builtin.set_fact:
+    _validation_issues_formatted: >-
+      {{
+        _validation_issues | map('regex_replace', '^(.*)$', '* \1') | join('\n')
+        if _validation_issues | length > 0
+        else 'None'
+      }}
+
+- name: Save validation results to agnosticd_user_info
+  agnosticd.core.agnosticd_user_info:
+    data:
+      validation_status: "{{ _validation_status }}"
+      validation_total: "{{ _validation_total }}"
+      validation_healthy: "{{ _validation_healthy }}"
+      validation_degraded: "{{ _validation_degraded }}"
+      validation_failed: "{{ _validation_failed }}"
+      validation_issues: "{{ _validation_issues_formatted }}"
+      validation_summary: "{{ _validation_summary }}"
+
+- name: Validation complete message
+  ansible.builtin.debug:
+    msg: "Validation complete: {{ _validation_status }} ({{ _validation_healthy }}/{{ _validation_total }} healthy)"

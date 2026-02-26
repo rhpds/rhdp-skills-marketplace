@@ -82,7 +82,7 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
       </div>
       <div class="workflow-step-item">
         <span class="step-num">4</span>
-        <span>Step 3.1: Showroom 1.5.1 scaffold written (default-site.yml, ui-config.yml, etc.)</span>
+        <span>Step 3.1: Showroom 1.5.3 scaffold configured (site.yml, ui-config.yml, etc.)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">5</span>
@@ -127,7 +127,7 @@ Your go-to guide for RHDP Skills Marketplace commands and workflows.
       </div>
       <div class="workflow-step-item">
         <span class="step-num">4</span>
-        <span>Step 3.1: Showroom 1.5.1 scaffold written (default-site.yml, ui-config.yml, etc.)</span>
+        <span>Step 3.1: Showroom 1.5.3 scaffold configured (site.yml, ui-config.yml, etc.)</span>
       </div>
       <div class="workflow-step-item">
         <span class="step-num">5</span>

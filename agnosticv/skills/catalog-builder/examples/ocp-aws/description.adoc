@@ -1,0 +1,26 @@
+Provision a cluster in Red Hat OpenShift Container Platform with basic customizations using AgnosticD V2
+
+This asset provides an OpenShift Container Platform cluster with basic customizations on an AWS infrastructure for running hands-on-labs, workshops, and similar events where no specialized environment is available.
+
+Refer to the catalog for specialized workshops such as Containers and Cloud-Native Roadshow, OpenShift Getting Started Workshops, and so on.
+
+*Product(s):* Red Hat OpenShift Container Platform
+
+== Specifications
+
+* Deployer: AgnosticD V2
+* Three controller nodes (AWS instance type: m5a.2xlarge)
+* Total number of nodes dependent on the size ordered (AWS instance type: m5a.4xlarge)
+* Cluster version: 4.13.x - 4.16.x depending on the version ordered
+* Authentication enabled (refer to your provisioning email for details regarding the actual credentials)
+* Let's Encrypt certificates enabled on Ingress controllers
+
+== Supporting Materials
+
+You have full admin access to the provisioned workshop cluster and can find all details needed to access your cluster in the https://bit.ly/2zjCIgQ[Access guide].
+
+There is also an https://gpte-public-documents.s3.amazonaws.com/rhpds.html[Access guide for Red Hat Partners].
+
+Partners can also access https://red.ht/open-support[partner support].
+
+*Provisioning time:* Typically, ~40 min

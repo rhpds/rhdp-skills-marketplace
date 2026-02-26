@@ -1,6 +1,6 @@
 ---
 name: showroom:blog-generate
-description: Transform completed Red Hat Showroom lab modules or demo content into blog posts for Red Hat Developer, internal blogs, or marketing platforms.
+description: This skill should be used when the user asks to "turn this lab into a blog post", "write a blog post from this module", "generate a blog from my Showroom content", "convert my workshop to a blog", "write a Red Hat Developer blog post", or "create a blog post from my demo".
 ---
 
 ---

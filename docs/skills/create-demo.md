@@ -170,23 +170,20 @@ Create presenter-led demo content where YOU present and customers watch.
       <h4>Step 2.5: Provide Showroom Repository Path</h4>
       <p>Skill asks: <em>"What is the path to your RHDP-provided cloned Showroom repository?"</em></p>
       <p>This is the repo RHDP already provisioned for you — not where to create files, but the existing repo to write into.</p>
-      <pre><code>Example: ~/work/showroom-content/lb2298-ibm-fusion</code></pre>
+      <pre><code>Example: ~/work/showroom-content/your-demo-showroom</code></pre>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">3️⃣</div>
     <div class="workflow-content">
-      <h4>Step 3.1: Showroom 1.5.1 Scaffold</h4>
-      <p>Skill writes the full Showroom 1.5.1 scaffold into the provided repo path:</p>
-      <pre><code>default-site.yml
-supplemental-ui/
-content/lib/
-gh-pages.yml
-ui-config.yml          # includes view_switcher</code></pre>
+      <h4>Step 3.1: Showroom Scaffold (site.yml + ui-config.yml)</h4>
+      <p>Skill configures the two key infrastructure files in your Showroom repo (cloned from showroom_template_nookbag):</p>
+      <pre><code>site.yml              # Antora playbook — fix title, ui-bundle theme
+ui-config.yml          # Split view + tabs (view_switcher.enabled: true)</code></pre>
       <p>Skill also asks: <em>"Will this demo embed an OCP console or terminal tab?"</em> — configures console embedding if yes.</p>
       <div class="info-box" style="margin-top: 1rem;">
-        ℹ️ <strong>Showroom 1.5.1+ required</strong> for console embedding and split-view. Reference template: <code>lb2298-ibm-fusion</code> (not nookbag — that is pre-1.5.1).
+        ℹ️ <strong>Showroom 1.5.3+ required</strong> for split-view and OCP console embedding. Clone from <code>showroom_template_nookbag</code> as your starting template.
       </div>
     </div>
   </div>

@@ -1,0 +1,68 @@
+ifndef::showroom_primary_view_url[]
+[%autowidth.stretch,width=80%,cols="^.^a"]
+|===
+| Thank you for your patience! The demo access details will be made available very soon after the service is successfully deployed.
+|===
+endif::[]
+
+ifdef::showroom_primary_view_url[]
+== Generative AI Demo with Red Hat OpenShift AI
+
+=== Instructions
+
+Refer to {showroom_primary_view_url}[Showroom Demo^] for your instructions and lab content.
+
+.Showroom Demo
+[%autowidth.stretch,width=80%,cols="25%,75%a"]
+|===
+| Workshop URL | {showroom_primary_view_url}
+|===
+
+=== Access Credentials
+
+.OpenShift Cluster Access
+[%autowidth.stretch,width=80%,cols="25%,75%a"]
+|===
+| Console URL | {openshift_cluster_console_url}
+| API URL | {openshift_api_server_url}
+| Admin Username | `{openshift_cluster_admin_username}`
+| Admin Password | `{openshift_cluster_admin_password}`
+ifdef::openshift_cluster_user_password[]
+| User Login | `{openshift_cluster_user_name}`
+| User Password | `{openshift_cluster_user_password}`
+endif::[]
+|===
+
+ifdef::rhoai_dashboard[]
+.Red Hat OpenShift AI Dashboard
+[%autowidth.stretch,width=80%,cols="25%,75%a"]
+|===
+| Dashboard URL | {rhoai_dashboard}
+ifdef::openshift_cluster_user_password[]
+| Login Username | `{openshift_cluster_user_name}`
+| Login Password | `{openshift_cluster_user_password}`
+endif::[]
+ifndef::openshift_cluster_user_password[]
+| Login Username | `{openshift_cluster_admin_username}`
+| Login Password | `{openshift_cluster_admin_password}`
+endif::[]
+|===
+endif::[]
+
+ifdef::openshift_gitops_server[]
+.OpenShift GitOps (ArgoCD)
+[%autowidth.stretch,width=80%,cols="25%,75%a"]
+|===
+| GitOps Server URL | {openshift_gitops_server}
+| Login Username | `{openshift_cluster_admin_username}`
+| Login Password | `{openshift_cluster_admin_password}`
+|===
+endif::[]
+
+=== Additional Resources
+
+* link:https://docs.redhat.com/en/documentation/red_hat_openshift_ai[Red Hat OpenShift AI Documentation^]
+* link:https://access.redhat.com/products/red-hat-openshift-ai[OpenShift AI Product Page^]
+* link:https://developers.redhat.com/products/red-hat-openshift-ai/overview[Developer Resources^]
+
+endif::[]

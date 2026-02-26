@@ -36,9 +36,10 @@ export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx..."</code></pre>
   <div class="prereq-item">
     <div class="prereq-icon">📦</div>
     <h4>FTL Repository</h4>
-    <p>FTL repo cloned locally with <code>labs/</code>, <code>roles/</code>, and <code>bin/</code> directories</p>
-    <pre><code>git clone https://github.com/rhpds/ftl.git
-~/work/code/experiment/ftl/</code></pre>
+    <p>FTL repo cloned locally. The skill auto-detects it from <code>~/CLAUDE.md</code> or common paths — you don't need to provide the path manually unless it's in a non-standard location.</p>
+    <pre><code># Auto-detected from ~/CLAUDE.md, or falls back to:
+~/work/code/experiment/ftl/
+~/work/code/ftl/</code></pre>
   </div>
 </div>
 

@@ -1,6 +1,6 @@
 ---
 name: showroom:verify-content
-description: Run comprehensive quality verification on workshop or demo content using Red Hat standards and validation agents.
+description: This skill should be used when the user asks to "verify my workshop content", "review my lab module", "check my Showroom content", "validate my AsciiDoc module", "quality check my demo", "review my workshop for Red Hat standards", or "run a content review on my lab".
 ---
 
 ---
@@ -89,8 +89,8 @@ Check which file is present and use whichever exists for field validation:
 | State | Severity | Message |
 |---|---|---|
 | `site.yml` present | — | Proceed to field checks on `site.yml` |
-| `default-site.yml` present, no `site.yml` | High | ⚠️ Repo uses `default-site.yml` — rename to `site.yml` (new standard). Both work but `site.yml` is going forward. Fix: `mv default-site.yml site.yml` |
-| Both present | High | ⚠️ Both `site.yml` and `default-site.yml` exist — `default-site.yml` is redundant. Remove it: `rm default-site.yml` |
+| `default-site.yml` present, no `site.yml` | High | ⚠️ Rename to `site.yml` (new standard). Fix: `mv default-site.yml site.yml` — then check if `.github/workflows/gh-pages.yml` references `default-site.yml` and update it to `site.yml` |
+| Both present | High | ⚠️ Both exist — remove `default-site.yml`: `rm default-site.yml` — check `.github/workflows/gh-pages.yml` references `site.yml` not `default-site.yml` |
 | Neither present | Critical | ❌ No Antora playbook found. Showroom cannot build. Run `/showroom:create-lab --new` to scaffold. |
 
 Check fields in whichever playbook file is present:
@@ -119,7 +119,7 @@ Check fields in whichever playbook file is present:
 If MISSING:
 ```
 ❌  ui-config.yml not found
-    Showroom 1.5.1 requires this file for split-view and tab configuration.
+    Showroom 1.5.3 requires this file for split-view and tab configuration.
     Run /showroom:create-lab --new to scaffold.
 ```
 
@@ -167,40 +167,31 @@ If found — check:
 
 ---
 
-**`content/lib/`** — 4 JS extension files:
+**`content/lib/`** — Antora JS extension files (optional):
 
-Check each file individually. Report any that are missing:
+Check if `content/lib/` exists. Only required if `site.yml` references `./content/lib`.
 
 ```
-⚠️  Missing content/lib files:
-    - content/lib/attributes-page-extension.js
-    Dynamic attribute injection will not work.
-    Run /showroom:create-lab --new to copy from reference repo.
+ℹ️  content/lib/ not found — only needed if site.yml references ./content/lib
+    If referenced: copy JS files from a reference Showroom repo.
 ```
-
-Files checked:
-- `content/lib/all-attributes-console-extension.js`
-- `content/lib/attributes-page-extension.js`
-- `content/lib/dev-mode.js`
-- `content/lib/unlisted-pages-extension.js`
 
 ---
 
-**`supplemental-ui/`** — 4 UI asset files:
+**`content/supplemental-ui/`** — Red Hat branding files:
 
-Check each. Report missing:
+Check at `content/supplemental-ui/` (inside the content directory, referenced from `site.yml` as `./content/supplemental-ui`).
 
 ```
-⚠️  Missing supplemental-ui files:
-    - supplemental-ui/css/site-extra.css
-    Custom styling won't be applied.
+⚠️  Missing content/supplemental-ui/ files:
+    Red Hat branding (CSS, header partials) will not be applied.
+    Copy from showroom_template_nookbag or another RHDP Showroom repo.
 ```
 
 Files checked:
-- `supplemental-ui/css/site-extra.css`
-- `supplemental-ui/img/favicon.ico`
-- `supplemental-ui/partials/head-meta.hbs`
-- `supplemental-ui/partials/header-content.hbs`
+- `content/supplemental-ui/css/site-extra.css`
+- `content/supplemental-ui/partials/head-meta.hbs`
+- `content/supplemental-ui/partials/header-content.hbs`
 
 ---
 
@@ -257,14 +248,19 @@ Options:
 
 ### Step 4: Run Verification — Checklist Mode
 
-**Why checklist mode:** Open-ended review produces inconsistent results — the model notices different things each run. A numbered checklist forces an explicit PASS/FAIL for every item, so nothing is silently skipped.
+**Why checklist mode:** Open-ended review produces inconsistent results — the model notices different things each run. A numbered checklist forces an explicit PASS/FAIL for every item, so output is the same structure every time.
 
-**Rules:**
-- Run ONE pass at a time. Output its full result table before starting the next pass.
-- Every check item MUST produce exactly one of: `PASS`, `FAIL: <file>:<line> — <detail>`, or `N/A: <reason>`
-- `N/A` is only valid when the check genuinely does not apply (e.g. accessibility checks on a nav.adoc file)
-- Do NOT group items. Do NOT say "several issues found" without listing each one individually.
-- After all passes complete, re-read the checklist and confirm no item was left blank.
+**MANDATORY RULES — no exceptions:**
+- **ALWAYS run passes in this exact order: B → C → D → E → (F if demo)**
+- **ALWAYS run ALL passes** — never skip a pass because the content "looks fine"
+- Run ONE pass at a time. Output its **full result table** before starting the next pass
+- Every single check item MUST produce exactly one of:
+  - `PASS` — condition met
+  - `FAIL: <file>:<line> — <specific detail>`
+  - `N/A: <one-line reason>`
+- `N/A` is only valid when the check genuinely does not apply. Uncertainty is NOT a valid reason for N/A
+- Do NOT group items. List each one individually with file and line
+- **The output structure is always:** Scaffold Issues → Pass B table → Pass C table → Pass D table → Pass E table → (Pass F table) → Summary table → Strengths. Never deviate.
 
 Use `@showroom/prompts/` files as reference criteria for each pass, but the driver is the explicit numbered list below — not the prompts.
 

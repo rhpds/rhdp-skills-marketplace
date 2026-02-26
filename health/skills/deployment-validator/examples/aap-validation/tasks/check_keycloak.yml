@@ -1,0 +1,194 @@
+---
+# Simple Keycloak validation - get all pods in namespace
+# No label selectors - just count pods by name patterns
+
+- name: Check Keycloak operator CSV
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    namespace: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_namespace }}"
+  register: _keycloak_csv_info
+  ignore_errors: true
+
+- name: Parse Keycloak operator CSV status
+  ansible.builtin.set_fact:
+    _keycloak_operator_csv_status: >-
+      {{
+        (_keycloak_csv_info.resources | default([]) |
+         selectattr('metadata.name', 'search', ocp4_workload_aap_multiinstance_validation_keycloak_operator_name) |
+         list | first).status.phase | default('NotFound')
+        if (_keycloak_csv_info.resources | default([]) |
+            selectattr('metadata.name', 'search', ocp4_workload_aap_multiinstance_validation_keycloak_operator_name) |
+            list | length > 0)
+        else 'NotFound'
+      }}
+
+# ---------------------------------------------------------------
+# Get all pods in namespace and count by name pattern
+# ---------------------------------------------------------------
+- name: Get all pods in {{ ocp4_workload_aap_multiinstance_validation_keycloak_namespace }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_namespace }}"
+  register: _keycloak_all_pods
+  ignore_errors: true
+
+- name: Count Keycloak operator and instance pods by name pattern
+  ansible.builtin.set_fact:
+    _keycloak_operator_pods_running: >-
+      {{
+        _keycloak_all_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'rhbk-operator') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _keycloak_operator_pods_total: >-
+      {{
+        _keycloak_all_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'rhbk-operator') |
+        list | length
+      }}
+    _keycloak_pods_running: >-
+      {{
+        _keycloak_all_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'keycloak') |
+        rejectattr('metadata.name', 'search', 'rhbk-operator') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _keycloak_pods_total: >-
+      {{
+        _keycloak_all_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'keycloak') |
+        rejectattr('metadata.name', 'search', 'rhbk-operator') |
+        list | length
+      }}
+
+# ---------------------------------------------------------------
+# Check Keycloak instance CR
+# ---------------------------------------------------------------
+- name: Check Keycloak instance CR
+  kubernetes.core.k8s_info:
+    api_version: k8s.keycloak.org/v2alpha1
+    kind: Keycloak
+    namespace: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_namespace }}"
+    name: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_instance_name }}"
+  register: _keycloak_instance_info
+  ignore_errors: true
+
+- name: Parse Keycloak instance status
+  ansible.builtin.set_fact:
+    _keycloak_instance_ready: >-
+      {{
+        (_keycloak_instance_info.resources[0].status.conditions | default([]) |
+         selectattr('type', 'equalto', 'Ready') |
+         list | first).status | default('False')
+        if _keycloak_instance_info.resources | default([]) | length > 0
+        else 'NotFound'
+      }}
+
+- name: Check Keycloak route
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_namespace }}"
+    name: "{{ ocp4_workload_aap_multiinstance_validation_keycloak_instance_name }}"
+  register: _keycloak_route_info
+  ignore_errors: true
+
+- name: Extract Keycloak route URL
+  ansible.builtin.set_fact:
+    _keycloak_route_url: >-
+      {{
+        'https://' + _keycloak_route_info.resources[0].spec.host
+        if _keycloak_route_info.resources | default([]) | length > 0
+        else ''
+      }}
+
+- name: Test Keycloak route HTTP accessibility
+  ansible.builtin.uri:
+    url: "{{ _keycloak_route_url }}"
+    method: GET
+    validate_certs: "{{ ocp4_workload_aap_multiinstance_validation_http_validate_certs }}"
+    status_code: "{{ ocp4_workload_aap_multiinstance_validation_http_success_codes }}"
+    timeout: "{{ ocp4_workload_aap_multiinstance_validation_http_timeout }}"
+  register: _keycloak_http_check
+  ignore_errors: true
+  when: _keycloak_route_url | length > 0
+
+# ---------------------------------------------------------------
+# Determine Keycloak validation status
+# ---------------------------------------------------------------
+- name: Determine Keycloak status
+  ansible.builtin.set_fact:
+    _keycloak_status: >-
+      {{
+        'failed' if (
+          _keycloak_operator_csv_status != 'Succeeded' or
+          _keycloak_operator_pods_running | int == 0 or
+          _keycloak_instance_ready != 'True' or
+          _keycloak_pods_running | int == 0 or
+          _keycloak_route_url | length == 0
+        )
+        else 'degraded' if (
+          _keycloak_http_check is failed or
+          _keycloak_pods_running | int != _keycloak_pods_total | int
+        )
+        else 'healthy'
+      }}
+
+- name: Add Keycloak validation result
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_results: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results + [{
+          'component': 'Keycloak',
+          'status': _keycloak_status,
+          'namespace': ocp4_workload_aap_multiinstance_validation_keycloak_namespace,
+          'details': {
+            'operator_csv': _keycloak_operator_csv_status,
+            'operator_pods': _keycloak_operator_pods_running ~ '/' ~ _keycloak_operator_pods_total,
+            'instance_ready': _keycloak_instance_ready,
+            'pods': _keycloak_pods_running ~ '/' ~ _keycloak_pods_total,
+            'route': _keycloak_route_url,
+            'http_accessible': (_keycloak_http_check is success) if _keycloak_route_url | length > 0 else false
+          }
+        }]
+      }}
+
+- name: Add Keycloak issues if failed or degraded
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          'Keycloak: operator CSV ' ~ _keycloak_operator_csv_status ~ ' (expected Succeeded)'
+        ]
+      }}
+  when:
+    - _keycloak_status in ['failed', 'degraded']
+    - _keycloak_operator_csv_status != 'Succeeded'
+
+- name: Add Keycloak issues if pods not running
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          'Keycloak: ' ~ _keycloak_pods_running ~ '/' ~ _keycloak_pods_total ~ ' pods running'
+        ]
+      }}
+  when:
+    - _keycloak_status in ['failed', 'degraded']
+    - _keycloak_pods_running | int != _keycloak_pods_total | int
+
+- name: Add Keycloak issues if route not accessible
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          'Keycloak: route not HTTP accessible'
+        ]
+      }}
+  when:
+    - _keycloak_status == 'degraded'
+    - _keycloak_http_check is failed

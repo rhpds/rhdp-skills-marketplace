@@ -1,0 +1,78 @@
+---
+- name: Get RHACS Central deployment
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: central
+    namespace: stackrox
+  register: r_rhacs_central
+  ignore_errors: true
+
+- name: Get RHACS route
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: stackrox
+  register: r_rhacs_routes
+  ignore_errors: true
+
+- name: Test RHACS route accessibility (with retry for 5 minutes)
+  ansible.builtin.uri:
+    url: "https://{{ r_rhacs_routes.resources[0].spec.host }}"
+    method: GET
+    validate_certs: false
+    status_code: [200, 301, 302]
+    timeout: 10
+  register: r_rhacs_http_check
+  retries: 30  # 5 minutes / 10 seconds = 30 retries
+  delay: 10    # Wait 10 seconds between retries
+  until: r_rhacs_http_check is success
+  ignore_errors: true
+  when: r_rhacs_routes.resources | length > 0
+
+- name: Evaluate RHACS health
+  ansible.builtin.set_fact:
+    rhacs_status: |-
+      {%- if r_rhacs_central.resources | length == 0 -%}
+      missing
+      {%- elif r_rhacs_central.resources[0].status.availableReplicas | default(0) == 0 -%}
+      unavailable
+      {%- elif r_rhacs_routes.resources | length == 0 -%}
+      no-route
+      {%- elif r_rhacs_http_check is defined and not r_rhacs_http_check.skipped | default(false) and r_rhacs_http_check.failed -%}
+      not-accessible
+      {%- else -%}
+      healthy
+      {%- endif -%}
+
+- name: Create RHACS validation result
+  ansible.builtin.set_fact:
+    rhacs_validation:
+      status: "{{ rhacs_status }}"
+      central_available: "{{ r_rhacs_central.resources[0].status.availableReplicas | default(0) > 0 if r_rhacs_central.resources | length > 0 else false }}"
+      route: "{{ r_rhacs_routes.resources[0].spec.host if r_rhacs_routes.resources | length > 0 else 'N/A' }}"
+      route_accessible: "{{ not r_rhacs_http_check.failed if (r_rhacs_http_check is defined and not r_rhacs_http_check.skipped | default(false)) else false }}"
+      http_status: "{{ r_rhacs_http_check.status if (r_rhacs_http_check is defined and not r_rhacs_http_check.skipped | default(false) and not r_rhacs_http_check.failed) else 'N/A' }}"
+
+- name: Add issue if RHACS unhealthy
+  when: rhacs_status != 'healthy'
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'issues': rhads_validation_results.issues + [
+        'RHACS is ' ~ rhacs_status
+      ]
+    }) }}"
+
+- name: Update overall validation results for RHACS
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'components': rhads_validation_results.components | combine({
+        'rhacs': rhacs_validation
+      }),
+      'summary': {
+        'total_components': rhads_validation_results.summary.total_components + 1,
+        'healthy': rhads_validation_results.summary.healthy + (1 if rhacs_status == 'healthy' else 0),
+        'degraded': rhads_validation_results.summary.degraded,
+        'failed': rhads_validation_results.summary.failed + (1 if rhacs_status != 'healthy' else 0)
+      }
+    }) }}"

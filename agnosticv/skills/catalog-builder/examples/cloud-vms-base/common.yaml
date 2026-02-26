@@ -1,0 +1,337 @@
+---
+# -------------------------------------------------------------------
+# --- Catalog Item: VLLM Playground with Showroom Integration
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# AgnosticV includes
+# -------------------------------------------------------------------
+#include /includes/agd-v2-mapping.yaml
+
+#include /includes/aws-sandbox-meta.yaml
+#include /includes/catalog-icon-rh-ai-2025.yaml
+#include /includes/terms-of-service.yaml
+
+#include /includes/parameters/aws-regions-gpu.yaml
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/salesforce-id.yaml
+
+#include /includes/secrets/demosat-vllm-playground.yaml
+#include /includes/secrets/s3-rhpds-private-bucket.yaml
+#include /includes/secrets/zerossl.yaml
+
+# -------------------------------------------------------------------
+# Mandatory Variables
+# -------------------------------------------------------------------
+cloud_provider: aws
+cloud_provider_version: main
+config: cloud-vms-base
+
+# ===================================================================
+# Additional Collections & roles to be installed for this config
+# ===================================================================
+requirements_content:
+  collections:
+  - name: https://github.com/agnosticd/cloud_vm_workloads.git
+    type: git
+    version: main
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: main
+  - name: https://github.com/rhpds/vllm-playground.git
+    type: git
+    version: main
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: main
+
+# -------------------------------------------------------------------
+# Instance Variables
+# -------------------------------------------------------------------
+default_instance_image: RHEL-10.0-GOLD-latest
+default_instance_type: "t3a.large"
+default_rootfs_size: 200
+
+# -----------------
+# Security Groups
+# -----------------
+security_groups:
+- name: BastionSG
+  rules:
+  - name: BastionSSHPorts
+    description: "Bastion ssh"
+    from_port: 22
+    to_port: 22
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+- name: NodeSG
+  rules:
+  - name: FromNodeSGtcp
+    description: "Allow everything from HostSG nodes"
+    from_port: 0
+    to_port: 65535
+    protocol: -1
+    from_group: NodeSG
+    rule_type: Ingress
+
+- name: ShowroomSG
+  rules:
+  - name: ShowroomHTTPS
+    description: "Primary showroom endpoint - for reverse proxy"
+    from_port: 443
+    to_port: 443
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+  - name: LEChallange
+    description: LEChallange Port
+    from_port: 80
+    to_port: 80
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+  - name: Jupyter
+    description: "Jupyter Port"
+    from_port: 9443
+    to_port: 9443
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+- name: AIServicesSG
+  rules:
+  - name: VLLMPort
+    description: "Default VLLM Port if exposed"
+    from_port: 8000
+    to_port: 8000
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+  - name: BonusPorts
+    description: "Extra ports for additional services"
+    from_port: 8001
+    to_port: 8010
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+  - name: VLLMPlayground
+    description: "VLLM Playground UI"
+    from_port: 7860
+    to_port: 7860
+    protocol: tcp
+    cidr: "0.0.0.0/0"
+    rule_type: Ingress
+
+
+# -------------------------------------------------------------------
+# Instances
+# -------------------------------------------------------------------
+instances:
+- name: "vllm"
+  count: 1
+  unique: true
+  public_dns: true
+  floating_ip: true
+  image: "{{ default_instance_image }}"
+  flavor:
+    ec2: "{{ default_instance_type }}"
+  tags:
+  - key: "AnsibleGroup"
+    value: "bastions"
+  - key: "ostype"
+    value: "linux"
+  rootfs_size: "{{ default_rootfs_size }}"
+  security_groups:
+  - BastionSG
+  - NodeSG
+  - ShowroomSG
+  - AIServicesSG
+
+# -------------------------------------------------------------------
+# Workloads
+# -------------------------------------------------------------------
+pre_software_workloads:
+  all:
+  - host_satellite_repositories
+  bastions:
+  - host_common_packages
+  - bastion
+  # - agnosticd.cloud_vm_workloads.control_user
+
+software_workloads:
+  bastions:
+  - agnosticd.cloud_vm_workloads.asset_injector
+  - vllm_playground.demo.rhel_workload_accelerator_config
+  - vllm_playground.demo.rhel_workload_vllm_playground
+
+post_software_final_workloads:
+  bastions:
+  - agnosticd.cloud_vm_workloads.agnosticv_userdata_import
+  - agnosticd.showroom.vm_workload_showroom
+
+# -------------------------------------------------------------------
+# Workload Variables
+# -------------------------------------------------------------------
+common_password: >-
+  {{
+    lookup('password', output_dir ~ '/common_password length=12 chars=ascii_letters,digits')
+  }}
+student_password: "{{ common_password }}"
+
+# -------------------------------------------------------------------
+# Workload: host_common_packages
+# -------------------------------------------------------------------
+host_common_packages_el10:
+- python3.12
+- python3.12-devel
+- unzip
+- bash-completion
+- tmux
+- bind-utils
+- wget
+- git
+- vim-enhanced
+- httpd-tools
+- tree
+- jq
+- ansible-core
+- podman
+- buildah
+- wget
+
+host_common_packages_update_all: true
+
+# -------------------------------------------------
+# Workload: bastion
+# -------------------------------------------------
+install_bastion: true
+bastion_setup_student_user: true
+bastion_student_user_name: lab-user
+bastion_student_user_password: "{{ common_password }}"
+# bastion_remove_cloud_init_conf: false
+openshift_cnv_route_remove_x_frame_options_header: true
+
+# -------------------------------------------------
+# Workload: control-user
+# -------------------------------------------------
+env_authorized_key: "{{guid}}key"
+install_control_user: true
+# student_name: "{{ bastion_student_user_name }}"
+# student_password: "{{ common_password }}"
+control_user_name: "{{ student_name }}"
+control_user_password: "{{ bastion_student_user_password }}"
+control_user_private_group: "{{ omit }}"
+control_user_ssh_config: ./files/ssh_config.j2
+
+# -------------------------------------------------------------------
+# Workload: asset_injector
+# -------------------------------------------------------------------
+asset_injector_assets:
+- description: Remove 50-cloud-init.conf, ssh issue
+  type: remove
+  path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+
+- description: Remove 50-redhat.conf, ssh issue
+  type: remove
+  path: /etc/ssh/sshd_config.d/50-redhat.conf
+
+- description: Update sshd_config for password auth
+  type: blockinfile
+  path: /etc/ssh/sshd_config
+  state: present
+  marker: "# {mark} Our custom SSH settings via Ansible"
+  block: |
+    # Our custom SSH settings via Ansible
+    ChallengeResponseAuthentication no
+    PasswordAuthentication yes
+    UsePAM yes
+
+- description: Restart sshd to pick up new password support configuration
+  type: service
+  name: sshd
+  state: restarted
+
+# -------------------------------------------------------------------
+# Workload: rhel_workload_accelerator_config
+# -------------------------------------------------------------------
+rhel_workload_accelerator_config_type: >-
+  {{ 'nvidia' if default_instance_type.startswith('g') else 'none' }}
+
+# -------------------------------------------------------------------
+# Workload: rhel_workload_vllm_playground
+# -------------------------------------------------------------------
+rhel_workload_vllm_playground_accelerator_type: >-
+  {{ 'nvidia' if default_instance_type.startswith('g') else 'none' }}
+rhel_workload_vllm_playground_pull_images_mode: >-
+  {{ 'gpu' if default_instance_type.startswith('g') else 'cpu' }}
+rhel_workload_vllm_playground_install_benchmark: false
+rhel_workload_vllm_playground_enable_service: true
+
+# -------------------------------------------------------------------
+# Workload: showroom
+# -------------------------------------------------------------------
+showroom_git_repo: https://github.com/rhpds/showroom-vllm-playground.git
+showroom_git_ref: main
+showroom_host: "{{ lookup('agnosticd_user_data', 'hostname') }}"
+
+# -------------------------------------------------------------------
+# AgnosticV User Data to be displayed
+# -------------------------------------------------------------------
+agnosticv_importdata:
+  bastion_public_hostname: "{{ lookup('agnosticd_user_data', 'hostname') }}"
+  bastion_url: "https://{{ lookup('agnosticd_user_data', 'hostname') }}"
+  bastion_ssh_user_name: "{{ lookup('agnosticd_user_data', 'ssh_username') }}"
+  bastion_ssh_password: "{{ lookup('agnosticd_user_data', 'ssh_password') }}"
+  ssh_command: "{{ lookup('agnosticd_user_data', 'ssh_command') }}"
+  showroom_url: "{{ lookup('agnosticd_user_data', 'showroom_primary_view_url') | default('') }}"
+  vllm_playground_url: "http://{{ lookup('agnosticd_user_data', 'hostname') }}:7860"
+
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: 41cfcd4c-00e2-4531-803f-0d586b96a66a
+  owners:
+    maintainer:
+    - name: Nate Stephany
+      email: nstephan@redhat.com
+    sme:
+    - name: Michael Yang
+      email: micyang@redhat.com
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
+      pull: missing
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: VLLM Playground
+    category: Labs
+    keywords:
+    - vllm
+    labels:
+      Product: Red_Hat_AI
+      Product_Family: Red_Hat_AI
+      Provider: RHDP
+    parameters:
+    - name: default_instance_type
+      description: GPU Selection
+      formLabel: GPU Selection
+      openAPIV3Schema:
+        type: string
+        default: g4dn.xlarge
+        enum:
+        - g4dn.xlarge
+        - g5.xlarge
+        - g6.xlarge
+        - g6e.xlarge

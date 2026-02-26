@@ -45,7 +45,7 @@ This updates all installed plugins to their latest versions.
 
 ## Available Plugins
 
-### AgnosticV Plugin (v2.7.0)
+### AgnosticV Plugin (v2.8.0)
 
 **Plugin:** `agnosticv@rhdp-marketplace`
 
@@ -90,7 +90,7 @@ This updates all installed plugins to their latest versions.
 
 ---
 
-### Health Plugin (v2.7.0)
+### Health Plugin (v2.8.0)
 
 **Plugin:** `health@rhdp-marketplace`
 

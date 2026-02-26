@@ -1,0 +1,43 @@
+---
+- name: Get all routes in RHADS namespaces
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ namespace }}"
+  register: r_namespace_routes
+  ignore_errors: true
+  loop: "{{ rhpds_build_secured_dev_workflows_rhads_validation_namespaces }}"
+  loop_control:
+    loop_var: namespace
+
+- name: Collect all routes
+  ansible.builtin.set_fact:
+    all_routes: "{{ r_namespace_routes.results | map(attribute='resources') | flatten }}"
+
+- name: Create routes summary
+  ansible.builtin.set_fact:
+    routes_validation:
+      status: "healthy"
+      total_routes: "{{ all_routes | length }}"
+      routes_by_namespace: {}
+
+- name: Build routes by namespace
+  ansible.builtin.set_fact:
+    routes_validation: "{{ routes_validation | combine({
+      'routes_by_namespace': routes_validation.routes_by_namespace | combine({
+        item.metadata.namespace: (routes_validation.routes_by_namespace[item.metadata.namespace] | default([])) + [{
+          'name': item.metadata.name,
+          'host': item.spec.host
+        }]
+      })
+    }) }}"
+  loop: "{{ all_routes }}"
+  when: all_routes | length > 0
+
+- name: Update overall validation results for Routes
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'components': rhads_validation_results.components | combine({
+        'routes': routes_validation
+      })
+    }) }}"

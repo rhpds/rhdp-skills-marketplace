@@ -80,6 +80,15 @@ cd agnosticv</code></pre>
       <li>Data keys from <code>agnosticd_user_info.data</code></li>
     </ul>
   </div>
+
+  <div class="mode-tab">
+    <h4>Mode 4: Virtual CI (published/)</h4>
+    <ul>
+      <li>Base component path (e.g. <code>openshift_cnv/kafka-developer-workshop-cnv</code>)</li>
+      <li>Handles uniqueness check, UUID, dev restriction, prod.yaml version pinning</li>
+      <li>Supports bulk processing of multiple base components</li>
+    </ul>
+  </div>
 </div>
 
 ---
@@ -242,12 +251,28 @@ cd agnosticv</code></pre>
     <li>UUID auto-generated and validated for uniqueness; files committed to branch</li>
   </ol>
 
-  <h4>Naming Standards Cheat Sheet:</h4>
+  <h4>Naming Standards (Developer Guidelines):</h4>
   <ul>
-    <li>Event catalog: <code>summit-2026/lb2298-short-name-cnv</code> or <code>summit-2026/lb2298-short-name-aws</code></li>
-    <li>OCP pool (common.yaml): <code>cnv-cluster-4.18/prod</code> (always <code>/prod</code> suffix)</li>
-    <li>Showroom repo name: <code>lb2298-short-name</code> (no cloud suffix)</li>
-    <li>Collections: <code>tag: "{{ tag }}"</code> for standard; fixed tag <code>≥ v1.5.1</code> for showroom</li>
+    <li>AgV config: <code>summit-2026/lbXXXX-short-name-cnv</code></li>
+    <li>Showroom repo: <code>short-name-showroom</code></li>
+    <li>OCP pool: <code>cnv-cluster-4.18/prod</code> (always <code>/prod</code> suffix)</li>
+    <li>Collections: <code>tag: "{{ tag }}"</code> for standard; fixed tag <code>≥ v1.5.3</code> for showroom</li>
+  </ul>
+
+  <h4>Event branding (mandatory — Question 2 never skipped):</h4>
+  <ul>
+    <li>Event catalogs: <code>category: Brand_Events</code>, <code>Brand_Event: Red_Hat_Summit_2026</code> label, Lab ID keyword, event access restriction include</li>
+    <li><code>anarchy.namespace</code> — NEVER define</li>
+    <li><code>catalog.reportingLabels.primaryBU</code> — ALWAYS define</li>
+  </ul>
+
+  <h4>Bundled real examples (no network needed):</h4>
+  <ul>
+    <li><strong>ocp-demo/</strong> — OCP with CNV pool</li>
+    <li><strong>ocp-aws/</strong> — OCP with AWS pool</li>
+    <li><strong>ocp-cnv/</strong> — openshift_cnv pool</li>
+    <li><strong>cloud-vms-base/</strong> — RHEL VMs on AWS</li>
+    <li><strong>published-virtual-ci/</strong> — Virtual CI structure</li>
   </ul>
 </div>
 
@@ -441,7 +466,7 @@ git commit -m "Add your-catalog catalog"</code></pre>
   <div class="git-step">
     <h4>4. Push and create PR</h4>
     <pre><code>git push origin your-branch
-gh pr create --fill</code></pre>
+# Open GitHub → create PR from your branch to main</code></pre>
   </div>
 </div>
 

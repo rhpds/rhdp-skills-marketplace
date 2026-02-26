@@ -1,0 +1,255 @@
+---
+# =============================================================================
+# FTL Solver: OpenShift 4 Getting Started - Module 1
+# =============================================================================
+#
+# Automatically completes Module 1 tasks:
+# 1. Create project (if needed)
+# 2. Deploy parksmap from container image
+# 3. Verify deployment and pod running
+# 4. Create HTTPS route
+# 5. Grant service account view permissions
+#
+# Environment Variables Required:
+#   - OPENSHIFT_CLUSTER_INGRESS_DOMAIN: Cluster apps domain
+#   - LAB_USER: Student user (e.g., user1) - sets project to wksp-<user>
+#
+# Usage via wrapper (recommended):
+#   solve_lab ocp4-getting-started user1 1
+#
+# Or directly:
+#   export LAB_USER="user1"
+#   export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxxxx.example.com"
+#   ansible-playbook solve_module_01.yml
+#
+# =============================================================================
+
+- name: Solve Module 1 - Deploying and Managing Applications
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    project_name: "wksp-{{ lookup('env', 'LAB_USER') | default('user1', true) }}"
+    parksmap_image: "quay.io/openshiftroadshow/parksmap:latest"
+
+  tasks:
+    # =========================================================================
+    # Auto-detect cluster domain if not set
+    # =========================================================================
+    - name: Get cluster ingress domain from OpenShift
+      when: lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length == 0
+      ansible.builtin.command: oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+      register: r_cluster_domain
+      changed_when: false
+
+    - name: Set cluster domain
+      ansible.builtin.set_fact:
+        cluster_domain: "{{ lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | default(r_cluster_domain.stdout | default('apps.cluster.example.com'), true) }}"
+
+    - name: Display solver information
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Solving Module 1: Deploying and Managing Applications
+          ================================================================================
+          Project: {{ project_name }}
+          Image: {{ parksmap_image }}
+          ================================================================================
+
+    # =========================================================================
+    # Step 1: Create Project
+    # =========================================================================
+    - name: Check if project exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Namespace
+        name: "{{ project_name }}"
+      register: r_project
+
+    - name: Create project if it doesn't exist
+      when: r_project.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ project_name }}"
+            annotations:
+              openshift.io/description: "OpenShift Getting Started Workshop"
+
+    # =========================================================================
+    # Step 2: Deploy Parksmap Application
+    # =========================================================================
+    - name: Check if parksmap deployment exists
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_deployment
+
+    - name: Deploy parksmap from container image
+      when: r_parksmap_deployment.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: parksmap
+            namespace: "{{ project_name }}"
+            labels:
+              app: workshop
+              component: parksmap
+              role: frontend
+              app.kubernetes.io/part-of: workshop
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: parksmap
+                deployment: parksmap
+            template:
+              metadata:
+                labels:
+                  app: parksmap
+                  deployment: parksmap
+              spec:
+                containers:
+                  - name: parksmap
+                    image: "{{ parksmap_image }}"
+                    ports:
+                      - containerPort: 8080
+                        protocol: TCP
+                    resources:
+                      limits:
+                        memory: 1Gi
+
+    # =========================================================================
+    # Step 3: Create Service
+    # =========================================================================
+    - name: Check if parksmap service exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Service
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_service
+
+    - name: Create parksmap service
+      when: r_parksmap_service.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: parksmap
+            namespace: "{{ project_name }}"
+            labels:
+              app: parksmap
+          spec:
+            ports:
+              - name: 8080-tcp
+                port: 8080
+                protocol: TCP
+                targetPort: 8080
+            selector:
+              app: parksmap
+              deployment: parksmap
+
+    # =========================================================================
+    # Step 4: Create HTTPS Route
+    # =========================================================================
+    - name: Check if parksmap route exists
+      kubernetes.core.k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_route
+
+    - name: Create HTTPS route for parksmap
+      when: r_parksmap_route.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: route.openshift.io/v1
+          kind: Route
+          metadata:
+            name: parksmap
+            namespace: "{{ project_name }}"
+            labels:
+              app: parksmap
+          spec:
+            to:
+              kind: Service
+              name: parksmap
+            port:
+              targetPort: 8080-tcp
+            tls:
+              termination: edge
+              insecureEdgeTerminationPolicy: Redirect
+
+    # =========================================================================
+    # Step 5: Grant Service Account View Permissions
+    # =========================================================================
+    - name: Grant view permissions to default service account
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: default-view
+            namespace: "{{ project_name }}"
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: view
+          subjects:
+          - kind: ServiceAccount
+            name: default
+            namespace: "{{ project_name }}"
+
+    # =========================================================================
+    # Step 6: Wait for Application to be Ready
+    # =========================================================================
+    - name: Wait for parksmap deployment to be ready
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_ready
+      until:
+        - r_parksmap_ready.resources | length > 0
+        - r_parksmap_ready.resources[0].status.readyReplicas | default(0) | int >= 1
+      retries: 30
+      delay: 10
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display completion summary
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Module 1 Solver Completed Successfully
+          ================================================================================
+
+          Resources created:
+            ✓ Project: {{ project_name }}
+            ✓ Deployment: parksmap (1 replica)
+            ✓ Service: parksmap (8080/TCP)
+            ✓ Route: parksmap (HTTPS)
+            ✓ RoleBinding: default SA has view permissions
+
+          Next steps:
+            - Test application: https://{{ r_parksmap_route.resources[0].spec.host if r_parksmap_route.resources | length > 0 else 'parksmap-' + project_name + '.' + cluster_domain }}
+            - Grade Module 1: grade_lab ocp4-getting-started 1
+            - Continue to Module 2: solve_lab ocp4-getting-started 2
+
+          ================================================================================

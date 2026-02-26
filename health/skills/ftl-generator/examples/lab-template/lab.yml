@@ -1,0 +1,101 @@
+---
+# =============================================================================
+# Lab Metadata - [Lab Name]
+# =============================================================================
+#
+# This file provides metadata about the lab for tooling and documentation.
+# It's optional but recommended for better lab discovery and cataloging.
+#
+# =============================================================================
+
+# Lab Information
+lab_name: "[Lab Name]"
+lab_short_name: "your-lab-name"  # Used for grade_lab/solve_lab commands
+lab_description: |
+  [Multi-line description of what students will learn]
+
+# Lab Classification
+technology_stack:
+  - "[Technology 1]"  # e.g., OpenShift, AAP, RHEL, etc.
+  - "[Technology 2]"
+  - "[Technology 3]"
+
+difficulty: "beginner"  # beginner, intermediate, advanced
+estimated_duration_minutes: 90
+
+# Module Structure
+modules:
+  - number: 1
+    name: "[Module 1 Name]"
+    checkpoints: 10  # Number of validation checkpoints
+    description: |
+      [What students learn in this module]
+
+  # Add more modules as needed
+  # - number: 2
+  #   name: "[Module 2 Name]"
+  #   checkpoints: 8
+  #   description: |
+  #     [What students learn in this module]
+
+# Total Statistics
+total_modules: 1  # Update as you add modules
+total_checkpoints: 10  # Sum of all module checkpoints
+
+# Environment Requirements
+required_environment_variables:
+  - name: "REQUIRED_VAR_1"
+    description: "[What this variable is for]"
+    example: "example-value"
+
+  - name: "REQUIRED_VAR_2"
+    description: "[What this variable is for]"
+    example: "example-value"
+
+optional_environment_variables:
+  - name: "LAB_USER"
+    description: "Username for multi-user environments"
+    example: "user1"
+    default: "$USER"
+
+# Multi-User Support
+multi_user_support: true  # true if lab supports multiple concurrent users
+per_user_isolation: "namespace"  # namespace, project, none
+
+# Grader Roles Used
+grader_roles_used:
+  - "grader_check_command_output"
+  - "grader_check_ocp_resource"
+  - "grader_check_ocp_pod_running"
+  # Add all grader roles your lab uses
+
+# Solver Availability
+solver_available: true  # true if solve_module_XX.yml playbooks exist
+solver_type: "automated"  # automated, manual, hybrid
+
+# AgnosticV Integration
+agnosticv_integration:
+  catalog_item: ""  # AgnosticV catalog item name if deployed
+  post_software_hook: true  # If FTL installed via post_software
+  user_info_reporting: true  # If results reported to AgnosticD user info
+
+# Testing Status
+testing_status:
+  fresh_environment: "tested"  # tested, untested, in-progress
+  multi_user: "tested"  # tested, untested, not-applicable
+  production_validated: false  # true if used by real students
+
+# Documentation
+documentation:
+  readme_lines: 0  # Lines in README.md (update after writing)
+  architecture_diagram: false  # true if README includes architecture diagram
+  troubleshooting_guide: false  # true if README has troubleshooting section
+
+# Maintenance
+maintainer: ""  # Name or email of lab maintainer
+last_updated: "2026-02-10"  # Date of last update
+version: "1.0.0"  # Semantic version of lab graders/solvers
+
+# Notes
+notes: |
+  [Any additional notes about the lab, known issues, or special considerations]

@@ -1,0 +1,97 @@
+---
+# ---------------------------------------------------------------
+# AAP Multi-Instance Workshop Validation Role
+# ---------------------------------------------------------------
+# This role validates all deployed components in the AAP multi-instance workshop
+# Runs AFTER all workloads complete to verify workshop environment health
+
+# ---------------------------------------------------------------
+# Multi-User Configuration
+# ---------------------------------------------------------------
+# Number of users - retrieved from AgnosticD deployment
+ocp4_workload_aap_multiinstance_validation_num_users: "{{ num_users | default(1) | int }}"
+
+# User prefix (matches AAP deployment naming)
+ocp4_workload_aap_multiinstance_validation_user_prefix: "user"
+
+# ---------------------------------------------------------------
+# Component Validation Toggles
+# ---------------------------------------------------------------
+# Enable/disable specific validation checks
+ocp4_workload_aap_multiinstance_validation_check_keycloak: true
+ocp4_workload_aap_multiinstance_validation_check_aap_operator: true
+ocp4_workload_aap_multiinstance_validation_check_aap_instances: true
+ocp4_workload_aap_multiinstance_validation_check_self_service_portals: true
+ocp4_workload_aap_multiinstance_validation_check_showroom: true
+
+# ---------------------------------------------------------------
+# Keycloak Configuration
+# ---------------------------------------------------------------
+ocp4_workload_aap_multiinstance_validation_keycloak_namespace: keycloak
+ocp4_workload_aap_multiinstance_validation_keycloak_operator_name: rhbk-operator
+ocp4_workload_aap_multiinstance_validation_keycloak_instance_name: keycloak
+
+# ---------------------------------------------------------------
+# AAP Operator Configuration
+# ---------------------------------------------------------------
+ocp4_workload_aap_multiinstance_validation_aap_operator_namespace: openshift-operators
+ocp4_workload_aap_multiinstance_validation_aap_operator_name: ansible-automation-platform-operator
+
+# ---------------------------------------------------------------
+# AAP Instance Configuration
+# ---------------------------------------------------------------
+# Namespace pattern: {user_prefix}{user_number}-aap (e.g., user1-aap)
+ocp4_workload_aap_multiinstance_validation_aap_namespace_suffix: "-aap"
+
+# Expected AAP components per user
+ocp4_workload_aap_multiinstance_validation_check_controller: true
+ocp4_workload_aap_multiinstance_validation_check_eda: true
+ocp4_workload_aap_multiinstance_validation_check_hub: false
+
+# ---------------------------------------------------------------
+# Self-Service Portal Configuration
+# ---------------------------------------------------------------
+# Namespace pattern: {user_prefix}{user_number}-aap-ssap (e.g., user1-aap-ssap)
+ocp4_workload_aap_multiinstance_validation_ssap_namespace_suffix: "-aap-ssap"
+ocp4_workload_aap_multiinstance_validation_ssap_deployment_name: self-service-rhaap-portal
+
+# ---------------------------------------------------------------
+# Showroom Configuration
+# ---------------------------------------------------------------
+# Base namespace pattern: showroom-{guid} (per-user suffix -userN is added during validation)
+# Full namespace pattern: showroom-{guid}-userN (e.g., showroom-5l9zg-user1)
+ocp4_workload_aap_multiinstance_validation_showroom_namespace: showroom-{{ guid | default('00000') }}
+ocp4_workload_aap_multiinstance_validation_showroom_deployment_name: showroom
+
+# ---------------------------------------------------------------
+# HTTP Check Configuration
+# ---------------------------------------------------------------
+# Timeout for HTTP accessibility checks
+ocp4_workload_aap_multiinstance_validation_http_timeout: 30
+ocp4_workload_aap_multiinstance_validation_http_validate_certs: false
+
+# Accepted HTTP status codes (200 OK, 301/302/307 redirects, 303 See Other)
+ocp4_workload_aap_multiinstance_validation_http_success_codes:
+  - 200
+  - 301
+  - 302
+  - 303
+  - 307
+
+# ---------------------------------------------------------------
+# Status Levels
+# ---------------------------------------------------------------
+# healthy: All checks pass, HTTP accessible
+# degraded: Partial issues (e.g., pods not ready, route exists but not accessible)
+# failed: Critical issues (missing resources, pods not running, no route)
+
+# ---------------------------------------------------------------
+# Internal Variables (Do not modify)
+# ---------------------------------------------------------------
+# Validation results storage
+_ocp4_workload_aap_multiinstance_validation_results: []
+_ocp4_workload_aap_multiinstance_validation_total: 0
+_ocp4_workload_aap_multiinstance_validation_healthy: 0
+_ocp4_workload_aap_multiinstance_validation_degraded: 0
+_ocp4_workload_aap_multiinstance_validation_failed: 0
+_ocp4_workload_aap_multiinstance_validation_issues: []

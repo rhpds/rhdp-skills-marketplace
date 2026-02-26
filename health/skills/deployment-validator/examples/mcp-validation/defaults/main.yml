@@ -1,0 +1,107 @@
+---
+# ==============================================================================
+# Validation Role: ocp4_workload_mcp_with_openshift_validation
+# ==============================================================================
+# Validates deployed components for the MCP with OpenShift workshop
+
+# ==============================================================================
+# Feature Flags - Enable/Disable Component Checks
+# ==============================================================================
+ocp4_workload_mcp_with_openshift_validation_enabled: true
+
+# Per-User Component Checks
+ocp4_workload_mcp_with_openshift_validation_check_librechat: true
+ocp4_workload_mcp_with_openshift_validation_check_mcp_openshift: true
+ocp4_workload_mcp_with_openshift_validation_check_mcp_gitea: true
+ocp4_workload_mcp_with_openshift_validation_check_agent: true
+ocp4_workload_mcp_with_openshift_validation_check_showroom: true
+
+# Shared Component Checks
+ocp4_workload_mcp_with_openshift_validation_check_gitea: true
+ocp4_workload_mcp_with_openshift_validation_check_openshift_gitops: true
+ocp4_workload_mcp_with_openshift_validation_check_openshift_pipelines: true
+ocp4_workload_mcp_with_openshift_validation_check_toolhive: true
+
+# GitOps Sync Checks
+ocp4_workload_mcp_with_openshift_validation_check_argocd_apps: true
+
+# ==============================================================================
+# User Configuration
+# ==============================================================================
+ocp4_workload_mcp_with_openshift_validation_num_users: 1
+ocp4_workload_mcp_with_openshift_validation_user_prefix: "user"
+
+# ==============================================================================
+# Component-Specific Settings
+# ==============================================================================
+
+# LibreChat
+ocp4_workload_mcp_with_openshift_validation_librechat_namespace_pattern: "librechat-"
+ocp4_workload_mcp_with_openshift_validation_librechat_pod_pattern: "librechat-.*"
+ocp4_workload_mcp_with_openshift_validation_librechat_min_pods: 1
+
+# MCP OpenShift Server
+ocp4_workload_mcp_with_openshift_validation_mcp_openshift_namespace_pattern: "mcp-openshift-"
+ocp4_workload_mcp_with_openshift_validation_mcp_openshift_pod_pattern: "openshift-.*"
+ocp4_workload_mcp_with_openshift_validation_mcp_openshift_min_pods: 1
+
+# MCP Gitea Server
+ocp4_workload_mcp_with_openshift_validation_mcp_gitea_namespace_pattern: "mcp-gitea-"
+ocp4_workload_mcp_with_openshift_validation_mcp_gitea_pod_pattern: "gitea-.*"
+ocp4_workload_mcp_with_openshift_validation_mcp_gitea_min_pods: 1
+
+# Agent
+ocp4_workload_mcp_with_openshift_validation_agent_namespace_pattern: "agent-"
+ocp4_workload_mcp_with_openshift_validation_agent_pod_pattern: "agent-.*"
+ocp4_workload_mcp_with_openshift_validation_agent_min_pods: 1
+
+# Showroom
+ocp4_workload_mcp_with_openshift_validation_showroom_namespace_pattern: "showroom-.*-"
+ocp4_workload_mcp_with_openshift_validation_showroom_pod_pattern: "showroom-.*"
+ocp4_workload_mcp_with_openshift_validation_showroom_min_pods: 1
+
+# Shared Gitea
+ocp4_workload_mcp_with_openshift_validation_gitea_namespace: "gitea"
+ocp4_workload_mcp_with_openshift_validation_gitea_pod_pattern: "gitea-.*"
+ocp4_workload_mcp_with_openshift_validation_gitea_min_pods: 1
+
+# OpenShift GitOps
+ocp4_workload_mcp_with_openshift_validation_gitops_namespace: "openshift-gitops"
+ocp4_workload_mcp_with_openshift_validation_gitops_min_pods: 7
+
+# OpenShift Pipelines
+ocp4_workload_mcp_with_openshift_validation_pipelines_namespace: "openshift-pipelines"
+ocp4_workload_mcp_with_openshift_validation_pipelines_min_pods: 10
+
+# Toolhive
+ocp4_workload_mcp_with_openshift_validation_toolhive_namespace: "toolhive-system"
+ocp4_workload_mcp_with_openshift_validation_toolhive_pod_pattern: "toolhive-operator-.*"
+ocp4_workload_mcp_with_openshift_validation_toolhive_min_pods: 1
+
+# Argo CD Applications
+# Expected apps per user: agent, librechat, librechat-config, mcp-gitea, mcp-openshift
+ocp4_workload_mcp_with_openshift_validation_argocd_apps_per_user: 5
+ocp4_workload_mcp_with_openshift_validation_argocd_required_sync_status: "Synced"
+ocp4_workload_mcp_with_openshift_validation_argocd_required_health_status: "Healthy"
+# Wait for GitOps to sync (can take 5-10 minutes)
+ocp4_workload_mcp_with_openshift_validation_argocd_wait_retries: 60
+ocp4_workload_mcp_with_openshift_validation_argocd_wait_delay: 10
+
+# ==============================================================================
+# HTTP Check Configuration
+# ==============================================================================
+ocp4_workload_mcp_with_openshift_validation_http_validate_certs: false
+ocp4_workload_mcp_with_openshift_validation_http_timeout: 10
+ocp4_workload_mcp_with_openshift_validation_http_success_codes: [200, 301, 302]
+# API-only components (Agent, MCP servers) accept 404 at root path
+ocp4_workload_mcp_with_openshift_validation_http_api_success_codes: [200, 301, 302, 404]
+
+# ==============================================================================
+# Validation Thresholds
+# ==============================================================================
+# Health status determination
+# - healthy: All pods running, routes accessible, GitOps synced
+# - degraded: Some pods running but not all, or HTTP not accessible
+# - failed: No pods running or namespace missing
+
+ocp4_workload_mcp_with_openshift_validation_pod_ready_threshold: 0.8  # 80% pods must be ready

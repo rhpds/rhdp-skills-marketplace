@@ -1,0 +1,168 @@
+---
+# Simple AAP instance validation - get all pods in namespace
+# No label selectors - just count pods by name patterns
+
+- name: Set AAP instance variables for user{{ user_number }}
+  ansible.builtin.set_fact:
+    _aap_user: "{{ ocp4_workload_aap_multiinstance_validation_user_prefix }}{{ user_number }}"
+    _aap_namespace: "{{ ocp4_workload_aap_multiinstance_validation_user_prefix }}{{ user_number }}{{ ocp4_workload_aap_multiinstance_validation_aap_namespace_suffix }}"
+
+# Get AutomationController CR
+- name: Check AutomationController CR for {{ _aap_user }}
+  kubernetes.core.k8s_info:
+    api_version: automationcontroller.ansible.com/v1beta1
+    kind: AutomationController
+    namespace: "{{ _aap_namespace }}"
+  register: _aap_controller_cr
+  ignore_errors: true
+
+# Get EDA CR
+- name: Check EDA CR for {{ _aap_user }}
+  kubernetes.core.k8s_info:
+    api_version: eda.ansible.com/v1alpha1
+    kind: EDA
+    namespace: "{{ _aap_namespace }}"
+  register: _aap_eda_cr
+  ignore_errors: true
+  when: ocp4_workload_aap_multiinstance_validation_check_eda | bool
+
+# Get all pods in namespace
+- name: Get all pods in {{ _aap_namespace }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "{{ _aap_namespace }}"
+  register: _aap_pods
+  ignore_errors: true
+
+# Get routes
+- name: Get routes in {{ _aap_namespace }}
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ _aap_namespace }}"
+  register: _aap_routes
+  ignore_errors: true
+
+# Count pods by name pattern
+- name: Count pods for {{ _aap_user }}
+  ansible.builtin.set_fact:
+    _controller_pods: >-
+      {{
+        _aap_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', '-controller-') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _eda_pods: >-
+      {{
+        _aap_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', '-eda-') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _postgres_pods: >-
+      {{
+        _aap_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'postgres') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _redis_pods: >-
+      {{
+        _aap_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'redis') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+    _total_running_pods: >-
+      {{
+        _aap_pods.resources | default([]) |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+      }}
+
+# Extract routes
+- name: Extract AAP routes for {{ _aap_user }}
+  ansible.builtin.set_fact:
+    _gateway_route: >-
+      {{
+        (_aap_routes.resources | default([]) |
+         selectattr('metadata.name', 'equalto', _aap_user + '-aap') |
+         list | first).spec.host | default('')
+        if (_aap_routes.resources | default([]) |
+            selectattr('metadata.name', 'equalto', _aap_user + '-aap') |
+            list | length > 0)
+        else ''
+      }}
+    _controller_route: >-
+      {{
+        (_aap_routes.resources | default([]) |
+         selectattr('metadata.name', 'search', '-controller') |
+         list | first).spec.host | default('')
+        if (_aap_routes.resources | default([]) |
+            selectattr('metadata.name', 'search', '-controller') |
+            list | length > 0)
+        else ''
+      }}
+
+# Check HTTP accessibility
+- name: Check AAP gateway route HTTP for {{ _aap_user }}
+  ansible.builtin.uri:
+    url: "https://{{ _gateway_route }}/api/gateway/v1/"
+    method: GET
+    validate_certs: "{{ ocp4_workload_aap_multiinstance_validation_http_validate_certs }}"
+    timeout: "{{ ocp4_workload_aap_multiinstance_validation_http_timeout }}"
+    status_code: "{{ ocp4_workload_aap_multiinstance_validation_http_success_codes }}"
+  register: _aap_http_check
+  ignore_errors: true
+  failed_when: false
+  when: _gateway_route != ''
+
+# Determine status
+- name: Determine AAP instance status for {{ _aap_user }}
+  ansible.builtin.set_fact:
+    _aap_status: >-
+      {{
+        'failed' if (_controller_pods | int == 0 or _gateway_route == '')
+        else 'degraded' if (not _aap_http_check.status | default(0) in ocp4_workload_aap_multiinstance_validation_http_success_codes)
+        else 'healthy'
+      }}
+
+# Add validation result
+- name: Add AAP instance validation result for {{ _aap_user }}
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_results: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results + [{
+          'component': 'AAP Instance - ' ~ _aap_user,
+          'status': _aap_status,
+          'namespace': _aap_namespace,
+          'details': {
+            'controller_pods': _controller_pods ~ ' Running',
+            'eda_pods': _eda_pods ~ ' Running',
+            'postgres_pods': _postgres_pods ~ ' Running',
+            'redis_pods': _redis_pods ~ ' Running',
+            'total_pods': _total_running_pods ~ ' Running',
+            'gateway_route': ('https://' ~ _gateway_route) if _gateway_route else 'Not Found',
+            'controller_route': ('https://' ~ _controller_route) if _controller_route else 'Not Found',
+            'http_accessible': (_aap_http_check.status | default(0) in ocp4_workload_aap_multiinstance_validation_http_success_codes) | string
+          }
+        }]
+      }}
+
+# Add issues
+- name: Add AAP instance issues for {{ _aap_user }}
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          _aap_user ~ ' AAP: ' ~
+          ('No controller pods' if _controller_pods | int == 0 else '') ~
+          ('Gateway route not found' if _gateway_route == '' else '') ~
+          ('Not HTTP accessible' if _gateway_route != '' and not (_aap_http_check.status | default(0) in ocp4_workload_aap_multiinstance_validation_http_success_codes) else '')
+        ]
+      }}
+  when:
+    - _aap_status in ['failed', 'degraded']
+    - (_controller_pods | int == 0 or _gateway_route == '' or not (_aap_http_check.status | default(0) in ocp4_workload_aap_multiinstance_validation_http_success_codes))

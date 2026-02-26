@@ -279,7 +279,7 @@ git pull origin main</code></pre>
   <ul>
     <li><strong>tag: defined:</strong> ERROR if <code>tag:</code> variable is not set in <code>common.yaml</code></li>
     <li><strong>Standard collections:</strong> Should use <code>{{ tag }}</code> — WARNING if hardcoded version found on standard collections</li>
-    <li><strong>Showroom collection:</strong> Must use a fixed version (not <code>{{ tag }}</code>) pinned to <code>≥ v1.5.1</code> — ERROR if version is older or missing</li>
+    <li><strong>Showroom collection:</strong> Must use a fixed version (not <code>{{ tag }}</code>) pinned to <code>≥ v1.5.3</code> — ERROR if version is older or missing</li>
     <li><strong>Galaxy collections:</strong> Version validation</li>
     <li><strong>Format:</strong> Proper requirements_content structure</li>
   </ul>
