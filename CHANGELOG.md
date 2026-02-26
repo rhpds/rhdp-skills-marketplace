@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.0] - 2026-02-26
+
+### All Skills
+
+- **Descriptions**: All 8 SKILL.md descriptions updated with specific trigger phrases in third-person format ("This skill should be used when the user asks to...") for reliable skill matching
+- **Progressive disclosure**: Large skills (catalog-builder, create-lab, create-demo) now extract detailed content to `references/` files, reducing SKILL.md size significantly while preserving all content
+- **Bundled real examples**: Skills now ship with real production examples (no network needed)
+
+### AgnosticV Skills
+
+#### catalog-builder
+- **MODE 2/3/4 extracted**: Moved to `references/mode-2-description.md`, `references/mode-3-info-message.md`, `references/mode-4-virtual-ci.md`
+- **Bundled examples**: 5 real catalog examples (ocp-demo/CNV pool, ocp-cnv, ocp-aws/AWS pool, cloud-vms-base/RHEL, published Virtual CI)
+- **Developer guidelines**: `references/developer-guidelines.md` — naming standards, `__meta__` rules, FTL requirement, process timelines
+- **Event branding**: Question 2 (event?) made mandatory with CRITICAL note — never skippable; event branding checklist added
+- **Bundled examples reference**: Step 9.1 now reads matching infra type example before generating
+
+#### validator
+- Trigger-phrase description added
+
+### Health Skills
+
+#### ftl-generator
+- **FTL repo auto-discovery**: Step 1 checks CLAUDE.md, common paths (`~/work/code/experiment/ftl`), then asks — no cold questions
+- **Bundled examples**: `examples/lab-template/` (canonical template) + `examples/ocp4-getting-started/` (real 3-module lab)
+
+#### deployment-validator
+- **Bundled real validation roles**: 3 production examples — `aap-validation/` (AAP multi-instance), `mcp-validation/` (MCP/GitOps/Showroom), `rhads-validation/` (GitLab/RHACS/DevSpaces/DevHub/Quay/Vault)
+- **Workflow SVG updated**: Now shows all 6 phases including Phase 5 (Bastion Testing) and Phase 6 (PRs) which were previously missing
+
+### Showroom Skills
+
+#### create-lab
+- **Progressive disclosure**: Step 3.1 scaffold, Step 9 AsciiDoc rules, Step 13 conclusion template extracted to `references/`
+- **Scaffold corrected**: `site.yml` (not `default-site.yml`); if `default-site.yml` found → rename + update gh-pages.yml; OCP needs both `ocp4_workload_ocp_console_embed` + `ocp4_workload_showroom` workloads
+- **Step 8 template source fixed**: Was pointing to non-existent `@showroom/examples/` path; now correctly uses `@showroom/templates/`
+- **Showroom 1.5.3**: Version references updated throughout
+
+#### create-demo
+- Same progressive disclosure, scaffold, and template fixes as create-lab
+
+#### verify-content
+- **Mandatory pass order**: B→C→D→E→(F) — all passes always run, never skipped; output structure fixed
+- **Scaffold check corrected**: `content/supplemental-ui/` path fixed (was incorrectly at root `supplemental-ui/`); `default-site.yml` check now includes gh-pages.yml update instruction
+
+### GitHub Pages Docs
+- `deployment-health-checker.md`: Accurate 6-phase workflow, correct collection role file structure, 3 bundled validation examples described
+- `agnosticv-catalog-builder.md`: Mode 4 (Virtual CI) added, event branding enforcement, naming standards table, bundled examples list
+- `ftl.md`: FTL repo auto-detection note, bundled examples reference
+- `create-lab.md`, `create-demo.md`: `site.yml` standard, Showroom 1.5.3, nookbag as reference template
+- `verify-content.md`: Corrected `content/supplemental-ui/` path, fixed `default-site.yml` → `site.yml` rename logic
+- `quick-reference.md`, `_config.yml`, `index.md`: Version updated to v2.8.0
+
 ## [v2.7.0] - 2026-02-24
 
 ### AgnosticV Skills
