@@ -32,13 +32,13 @@
   <rect x="50" y="230" width="800" height="360" rx="5" class="process"/>
   <text x="450" y="260" text-anchor="middle" font-weight="bold">PROCESS: What the Skill Does</text>
   <text x="60" y="285" font-size="12">Mode 1 - Full Catalog:</text>
-  <text x="70" y="303" font-size="12">1. Discovers similar catalogs for reference</text>
-  <text x="70" y="321" font-size="12">2. Generates unique UUID and validates no collisions</text>
-  <text x="70" y="339" font-size="12">3. Sets up infrastructure (CNV/SNO/AWS/CNV VMs)</text>
-  <text x="70" y="357" font-size="12">4. Configures authentication (htpasswd or Keycloak)</text>
-  <text x="70" y="375" font-size="12">5. Recommends workloads based on technology keywords</text>
-  <text x="70" y="393" font-size="12">6. Extracts description from Showroom content</text>
-  <text x="70" y="411" font-size="12">7. Creates branch in AgV repository</text>
+  <text x="70" y="303" font-size="12">1. Step 1: Q1=type, Q2=event? (MANDATORY), Q3=tech — event sets Brand_Events+Brand_Event label+Lab ID</text>
+  <text x="70" y="321" font-size="12">2. Discovers similar catalogs, generates unique UUID</text>
+  <text x="70" y="339" font-size="12">3. Infra gate: OCP path (CNV/AWS pool, auth, workloads) or VM path (cloud-vms-base)</text>
+  <text x="70" y="357" font-size="12">4. Step 7: catalog details + maintainer name/email</text>
+  <text x="70" y="375" font-size="12">5. Step 9: __meta__ (primaryBU, Brand_Event, keywords 3-4 max, no anarchy.namespace)</text>
+  <text x="70" y="393" font-size="12">6. Reads bundled real examples (ocp-demo, ocp-cnv, ocp-aws, cloud-vms-base, published)</text>
+  <text x="70" y="411" font-size="12">7. Generates files + commits to branch</text>
   <text x="60" y="433" font-size="12">Mode 2 - Description Only:</text>
   <text x="70" y="451" font-size="12">1. Reads ALL Showroom modules for comprehensive content extraction</text>
   <text x="70" y="469" font-size="12">2. Generates description.adoc following RHDP structure</text>
