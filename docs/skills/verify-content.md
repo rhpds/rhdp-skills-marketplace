@@ -144,7 +144,7 @@ content/modules/ROOT/pages/*.adoc</code></pre>
       <li><strong>ui-config.yml:</strong> type: showroom, view_switcher enabled, tabs configured, persist_url_state</li>
       <li><strong>content/antora.yml:</strong> title not stale, name: modules, start_page, nav, lab_name attribute</li>
       <li><strong>content/lib/:</strong> All 4 JS extension files present</li>
-      <li><strong>supplemental-ui/:</strong> All 4 UI asset files present</li>
+      <li><strong>content/supplemental-ui/:</strong> Red Hat branding files (CSS, HBS partials)</li>
     </ul>
   </div>
 </div>
