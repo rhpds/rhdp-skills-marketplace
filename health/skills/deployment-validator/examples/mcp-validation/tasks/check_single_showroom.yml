@@ -1,0 +1,137 @@
+---
+# ==============================================================================
+# Validate Showroom for Single User
+# ==============================================================================
+
+- name: Discover Showroom namespace for {{ _user }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+  register: _all_namespaces
+  ignore_errors: true
+
+- name: Find Showroom namespace matching user pattern
+  ansible.builtin.set_fact:
+    _namespace: >-
+      {{
+        _all_namespaces.resources | default([]) |
+        map(attribute='metadata.name') |
+        select('match', '^' + ocp4_workload_mcp_with_openshift_validation_showroom_namespace_pattern + '.*-' + _user + '$') |
+        list | first | default('')
+      }}
+
+- name: Get all pods in {{ _namespace }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "{{ _namespace }}"
+  register: _pods
+  ignore_errors: true
+  when: _namespace != ''
+
+- name: Count Showroom running pods by name pattern
+  ansible.builtin.set_fact:
+    _pods_running: >-
+      {{
+        _pods.resources | default([]) |
+        selectattr('metadata.name', 'search', ocp4_workload_mcp_with_openshift_validation_showroom_pod_pattern) |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length | int
+        if (_namespace != '' and _pods is defined and not _pods.skipped | default(false))
+        else 0
+      }}
+
+- name: Initialize ready pod count
+  ansible.builtin.set_fact:
+    _pods_ready: 0
+
+- name: Count ready pods for Showroom
+  ansible.builtin.set_fact:
+    _pods_ready: "{{ _pods_ready | int + 1 }}"
+  loop: "{{ _pods.resources | default([]) | selectattr('metadata.name', 'search', ocp4_workload_mcp_with_openshift_validation_showroom_pod_pattern) | selectattr('status.phase', 'equalto', 'Running') | list }}"
+  when:
+    - _namespace != ''
+    - _pods is defined
+    - not _pods.skipped | default(false)
+    - item.status.conditions is defined
+    - item.status.conditions | selectattr('type', 'equalto', 'Ready') | selectattr('status', 'equalto', 'True') | list | length > 0
+  loop_control:
+    label: "{{ item.metadata.name }}"
+
+- name: Check routes in {{ _namespace }}
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ _namespace }}"
+  register: _routes
+  ignore_errors: true
+  when: _namespace != ''
+
+- name: Extract Showroom route hostname
+  ansible.builtin.set_fact:
+    _route_host: >-
+      {{
+        (_routes.resources | default([]) | first).spec.host | default('')
+        if (_routes.resources | default([]) | length > 0)
+        else ''
+      }}
+    _route_exists: "{{ _namespace != '' and _routes is defined and not _routes.skipped | default(false) and (_routes.resources | default([]) | length > 0) }}"
+
+- name: Check Showroom HTTP accessibility (with retries)
+  ansible.builtin.uri:
+    url: "https://{{ _route_host }}"
+    method: GET
+    validate_certs: "{{ ocp4_workload_mcp_with_openshift_validation_http_validate_certs }}"
+    timeout: "{{ ocp4_workload_mcp_with_openshift_validation_http_timeout }}"
+    status_code: "{{ ocp4_workload_mcp_with_openshift_validation_http_success_codes }}"
+  register: _http_check
+  until: _http_check is succeeded
+  retries: 6
+  delay: 10
+  ignore_errors: true
+  when: _route_exists
+
+- name: Determine Showroom health status for {{ _user }}
+  ansible.builtin.set_fact:
+    _status: >-
+      {{
+        'failed' if (_namespace == '' or _pods_ready | int == 0)
+        else 'degraded' if (
+          (_pods_ready | int < ocp4_workload_mcp_with_openshift_validation_showroom_min_pods) or
+          not _route_exists or
+          (_http_check.failed | default(false))
+        )
+        else 'healthy'
+      }}
+
+- name: Add Showroom validation result for {{ _user }}
+  ansible.builtin.set_fact:
+    _validation_results: >-
+      {{
+        _validation_results + [{
+          'component': _user + ' Showroom',
+          'namespace': _namespace if _namespace != '' else 'N/A',
+          'status': _status,
+          'details': {
+            'pods_running': _pods_running | int,
+            'pods_ready': _pods_ready | int,
+            'route_url': 'https://' + _route_host if _route_exists else 'N/A',
+            'http_status': _http_check.status | default('N/A') if _route_exists else 'N/A',
+            'http_accessible': not (_http_check.failed | default(true)) if _route_exists else false
+          }
+        }]
+      }}
+
+- name: Add Showroom issue for {{ _user }} if not healthy
+  ansible.builtin.set_fact:
+    _validation_issues: >-
+      {{
+        _validation_issues + [_user + ' Showroom: ' + (
+          'namespace not found (expected pattern: ' + ocp4_workload_mcp_with_openshift_validation_showroom_namespace_pattern + '...-' + _user + ')' if _namespace == ''
+          else 'no pods ready (running: ' + (_pods_running | string) + ', ready: 0)' if (_pods_ready | int == 0)
+          else 'only ' + (_pods_ready | string) + '/' + (_pods_running | string) + ' pod(s) ready' if (_pods_ready | int < ocp4_workload_mcp_with_openshift_validation_showroom_min_pods)
+          else 'route not found' if not _route_exists
+          else 'HTTP not accessible (status: ' + (_http_check.status | default('connection failed') | string) + ')'
+        )]
+      }}
+  when: _status != 'healthy'

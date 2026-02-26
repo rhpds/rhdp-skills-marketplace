@@ -1,0 +1,28 @@
+---
+# ==============================================================================
+# Validate Per-User Components
+# ==============================================================================
+
+- name: Set current user name
+  ansible.builtin.set_fact:
+    _user: "{{ ocp4_workload_mcp_with_openshift_validation_user_prefix }}{{ _user_number }}"
+
+- name: Validate LibreChat for {{ _user }}
+  ansible.builtin.include_tasks: check_single_librechat.yml
+  when: ocp4_workload_mcp_with_openshift_validation_check_librechat | bool
+
+- name: Validate MCP OpenShift Server for {{ _user }}
+  ansible.builtin.include_tasks: check_single_mcp_openshift.yml
+  when: ocp4_workload_mcp_with_openshift_validation_check_mcp_openshift | bool
+
+- name: Validate MCP Gitea Server for {{ _user }}
+  ansible.builtin.include_tasks: check_single_mcp_gitea.yml
+  when: ocp4_workload_mcp_with_openshift_validation_check_mcp_gitea | bool
+
+- name: Validate Agent for {{ _user }}
+  ansible.builtin.include_tasks: check_single_agent.yml
+  when: ocp4_workload_mcp_with_openshift_validation_check_agent | bool
+
+- name: Validate Showroom for {{ _user }}
+  ansible.builtin.include_tasks: check_single_showroom.yml
+  when: ocp4_workload_mcp_with_openshift_validation_check_showroom | bool

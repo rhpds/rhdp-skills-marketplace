@@ -1,6 +1,6 @@
 ---
 name: health:deployment-validator
-description: Create validation roles for RHDP deployment health checks and post-deployment validation
+description: This skill should be used when the user asks to "create a validation role", "build health checks", "add deployment validation", "create post-deployment checks", "validate my deployment", "check if my lab deployed correctly", or "write an Ansible role to verify my RHDP deployment".
 ---
 
 ---
@@ -1258,16 +1258,18 @@ ignore_errors: true
 
 ## Reference Examples
 
-### Working Validation Roles
+### Bundled Real Examples (always available — no network needed)
 
-Check these repos for reference patterns:
-- `rhpds.aap_self_service_portal` → `roles/ocp4_workload_aap_multiinstance_validation/`
-- `rhpds.build-secured-dev-workflows` → `roles/rhads_validation/`
+**`@health/skills/deployment-validator/examples/aap-validation/`**
+AAP multi-instance workshop validation: per-user AAP instances, Keycloak (shared), Showroom (per-user). Shows namespace auto-discovery, pod count by name pattern, route check, report generation.
 
-### Working Info Templates
+**`@health/skills/deployment-validator/examples/mcp-validation/`**
+MCP with OpenShift validation: ArgoCD, GitOps, Gitea, LibreChat, Showroom per-user. Shows complex per-user component checks with multiple services per namespace.
 
-Check this for reference:
-- AgnosticV repo → `agd_v2/aap-multiinstance-workshop/info-message-template.adoc`
+**`@health/skills/deployment-validator/examples/rhads-validation/`**
+RHADS build-secured-dev-workflows validation: GitLab, RHACS, DevSpaces, DevHub, Keycloak, Quay, Vault, Pipelines, Showroom. Shows how to handle many heterogeneous shared components.
+
+**Read the matching example before generating any tasks.** Pattern your new role's structure, variable naming, pod-count approach, and report format on the closest matching example.
 
 ## Skill Invocation Summary
 

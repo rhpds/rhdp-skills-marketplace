@@ -1,0 +1,17 @@
+ifndef::openshift_cluster_admin_username[]
+Please wait.
+
+When your environment is deployed, access information will be displayed below.
+endif::[]
+
+ifdef::openshift_cluster_admin_username[]
+== OpenShift Access Information
+[cols="1,3"]
+|===
+| OpenShift Console URL | {openshift_cluster_console_url}
+| OpenShift API         | {openshift_api_server_url}
+| Username              | {openshift_cluster_admin_username}
+| Password              | {openshift_cluster_admin_password}
+|===
+
+endif::[]

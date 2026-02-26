@@ -1,0 +1,71 @@
+---
+# RHADS Validation Role Defaults
+
+# Enable/disable specific validation checks
+rhpds_build_secured_dev_workflows_rhads_validation_check_operators: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_argocd: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_vault: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_keycloak: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_developer_hub: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_gitlab: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_devspaces: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_quay: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_rhacs: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_pipelines: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_showroom: true
+rhpds_build_secured_dev_workflows_rhads_validation_check_routes: true
+
+# Namespaces to validate
+rhpds_build_secured_dev_workflows_rhads_validation_namespaces:
+  - tssc-tas
+  - tssc-tpa
+  - tssc-app-ci
+  - tssc-app-development
+  - tssc-app-stage
+  - tssc-app-prod
+  - tssc-gitops
+  - tssc-keycloak
+  - openshift-gitops
+  - external-secrets
+  - vault
+  - keycloak
+  - backstage
+  - gitlab
+  - openshift-devspaces
+  - quay-registry
+  - quay-enterprise
+  - stackrox
+  # Note: showroom namespaces are auto-discovered by matching pattern: showroom-*-user{{ n }}
+
+# Showroom validation settings
+rhpds_build_secured_dev_workflows_rhads_validation_username_base: "user"
+
+# Operators to validate (includes TAS and TPA operators)
+rhpds_build_secured_dev_workflows_rhads_validation_operators:
+  # Operators in tssc-* namespaces
+  - name: rhtas-operator
+    namespace: tssc-tas
+  - name: rhtpa-operator
+    namespace: tssc-tpa
+  - name: rhbk-operator  # Red Hat build of Keycloak
+    namespace: tssc-keycloak
+
+  # Operators in openshift-operators (AllNamespaces mode)
+  - name: devspacesoperator
+    namespace: openshift-operators
+  - name: openshift-gitops-operator
+    namespace: openshift-operators
+  - name: openshift-pipelines-operator-rh
+    namespace: openshift-operators
+  - name: quay-operator
+    namespace: openshift-operators
+  - name: rhacs-operator
+    namespace: openshift-operators
+
+# ArgoCD instances to check
+rhpds_build_secured_dev_workflows_rhads_validation_argocd_namespaces:
+  - tssc-gitops
+  - openshift-gitops
+
+# Number of users configured
+rhpds_build_secured_dev_workflows_rhads_validation_num_users: "{{ num_users | default(1) }}"

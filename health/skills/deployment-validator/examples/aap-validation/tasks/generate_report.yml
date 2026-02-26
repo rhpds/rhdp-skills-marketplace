@@ -1,0 +1,121 @@
+---
+# ---------------------------------------------------------------
+# Generate Validation Report
+# ---------------------------------------------------------------
+# Compiles all validation results and saves to agnosticd_user_info
+# for display in the catalog info page
+
+# ---------------------------------------------------------------
+# Count validation results by status
+# ---------------------------------------------------------------
+- name: Count total components
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_total: "{{ _ocp4_workload_aap_multiinstance_validation_results | length | int }}"
+
+- name: Count healthy components
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_healthy: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results |
+        selectattr('status', 'equalto', 'healthy') |
+        list | length | int
+      }}
+
+- name: Count degraded components
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_degraded: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results |
+        selectattr('status', 'equalto', 'degraded') |
+        list | length | int
+      }}
+
+- name: Count failed components
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_failed: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results |
+        selectattr('status', 'equalto', 'failed') |
+        list | length | int
+      }}
+
+# ---------------------------------------------------------------
+# Determine overall validation status
+# ---------------------------------------------------------------
+- name: Determine overall validation status
+  ansible.builtin.set_fact:
+    _validation_status: >-
+      {{
+        'FAILED' if _ocp4_workload_aap_multiinstance_validation_failed > 0
+        else 'DEGRADED' if _ocp4_workload_aap_multiinstance_validation_degraded > 0
+        else 'HEALTHY'
+      }}
+
+# ---------------------------------------------------------------
+# Format issues list for display
+# ---------------------------------------------------------------
+- name: Format issues list
+  ansible.builtin.set_fact:
+    _validation_issues_text: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues | join(', ')
+        if _ocp4_workload_aap_multiinstance_validation_issues | length > 0
+        else 'None'
+      }}
+
+# ---------------------------------------------------------------
+# Generate detailed summary report
+# ---------------------------------------------------------------
+- name: Generate validation summary
+  ansible.builtin.set_fact:
+    _validation_summary: |
+      AAP Multi-Instance Workshop Validation Report
+      ================================================
+
+      Overall Status: {{ _validation_status }}
+
+      Components Summary:
+      - Total: {{ _ocp4_workload_aap_multiinstance_validation_total }}
+      - Healthy: {{ _ocp4_workload_aap_multiinstance_validation_healthy }}
+      - Degraded: {{ _ocp4_workload_aap_multiinstance_validation_degraded }}
+      - Failed: {{ _ocp4_workload_aap_multiinstance_validation_failed }}
+
+      {% if _ocp4_workload_aap_multiinstance_validation_issues | length > 0 %}
+      Issues Detected:
+      {% for issue in _ocp4_workload_aap_multiinstance_validation_issues %}
+      - {{ issue }}
+      {% endfor %}
+      {% else %}
+      Issues: None - All components healthy!
+      {% endif %}
+
+      Component Details:
+      {% for result in _ocp4_workload_aap_multiinstance_validation_results %}
+
+      {{ result.component }} ({{ result.namespace }}):
+        Status: {{ result.status | upper }}
+      {% for key, value in result.details.items() %}
+        {{ key }}: {{ value }}
+      {% endfor %}
+      {% endfor %}
+
+# ---------------------------------------------------------------
+# Save validation data to agnosticd_user_info for catalog display
+# ---------------------------------------------------------------
+- name: Save validation results to user info
+  rhpds.aap_self_service_portal.agnosticd_user_info:
+    data:
+      validation_status: "{{ _validation_status }}"
+      validation_total: "{{ _ocp4_workload_aap_multiinstance_validation_total }}"
+      validation_healthy: "{{ _ocp4_workload_aap_multiinstance_validation_healthy }}"
+      validation_degraded: "{{ _ocp4_workload_aap_multiinstance_validation_degraded }}"
+      validation_failed: "{{ _ocp4_workload_aap_multiinstance_validation_failed }}"
+      validation_issues: "{{ _validation_issues_text }}"
+      validation_summary: "{{ _validation_summary }}"
+
+# ---------------------------------------------------------------
+# Display validation summary
+# ---------------------------------------------------------------
+- name: Display validation summary
+  ansible.builtin.debug:
+    msg: "{{ _validation_summary }}"

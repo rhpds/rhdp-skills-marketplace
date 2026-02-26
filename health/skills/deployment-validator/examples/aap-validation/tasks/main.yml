@@ -1,0 +1,55 @@
+---
+# ---------------------------------------------------------------
+# Main entry point for AAP Multi-Instance Workshop Validation
+# ---------------------------------------------------------------
+# This role validates all deployed components and generates a health report
+
+- name: Display validation start message
+  ansible.builtin.debug:
+    msg: "Starting AAP Multi-Instance Workshop validation for {{ ocp4_workload_aap_multiinstance_validation_num_users }} user(s)"
+
+# ---------------------------------------------------------------
+# Initialize validation results
+# ---------------------------------------------------------------
+- name: Initialize validation tracking variables
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_results: []
+    _ocp4_workload_aap_multiinstance_validation_total: 0
+    _ocp4_workload_aap_multiinstance_validation_healthy: 0
+    _ocp4_workload_aap_multiinstance_validation_degraded: 0
+    _ocp4_workload_aap_multiinstance_validation_failed: 0
+    _ocp4_workload_aap_multiinstance_validation_issues: []
+
+# ---------------------------------------------------------------
+# Run validation checks
+# ---------------------------------------------------------------
+
+- name: Validate Keycloak deployment
+  ansible.builtin.include_tasks: check_keycloak.yml
+  when: ocp4_workload_aap_multiinstance_validation_check_keycloak | bool
+
+- name: Validate AAP Operator
+  ansible.builtin.include_tasks: check_aap_operator.yml
+  when: ocp4_workload_aap_multiinstance_validation_check_aap_operator | bool
+
+- name: Validate AAP instances (per user)
+  ansible.builtin.include_tasks: check_aap_instances.yml
+  when: ocp4_workload_aap_multiinstance_validation_check_aap_instances | bool
+
+- name: Validate Self-Service Portals (per user)
+  ansible.builtin.include_tasks: check_self_service_portals.yml
+  when: ocp4_workload_aap_multiinstance_validation_check_self_service_portals | bool
+
+- name: Validate Showroom instances (per user)
+  ansible.builtin.include_tasks: check_showroom_instances.yml
+  when: ocp4_workload_aap_multiinstance_validation_check_showroom | bool
+
+# ---------------------------------------------------------------
+# Generate validation report and save to user info
+# ---------------------------------------------------------------
+- name: Generate validation report
+  ansible.builtin.include_tasks: generate_report.yml
+
+- name: Display validation complete message
+  ansible.builtin.debug:
+    msg: "Validation complete - Status: {{ _validation_status }}"

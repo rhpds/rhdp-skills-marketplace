@@ -1,0 +1,38 @@
+= VLLM Playground
+
+vLLM Playground is a management interface for deploying and managing vLLM inference servers using containers. It simplifies model serving with features like structured outputs, tool calling, MCP integration, and performance benchmarking.
+
+This demo uses ACME Corporation customer scenario to show how vLLM and Red Hat AI Inference Server (RHAIIS) modernize AI-powered customer support infrastructure.
+
+== Business Outcomes
+
+* Deploy and manage vLLM servers using containers
+* Configure structured outputs for reliable system integration
+* Implement tool calling to extend AI capabilities
+* Enable agentic workflows with human-in-the-loop approval
+* Validate production readiness with performance benchmarks
+
+== Demo Options
+
+* **15-20 min** - Executive brief (deployment + business value)
+* **30-45 min** - Technical demo (structured outputs + tool calling)
+* **60 min** - Full deep dive (all 5 modules with MCP and benchmarking)
+
+== Environment
+
+* RHEL 10 (CPU or GPU)
+* vLLM Playground v0.1.1
+
+== Products
+
+* Red Hat AI
+* Red Hat Enterprise Linux 10
+* vLLM Playground
+* vLLM (inference engine)
+* Podman
+
+== Resources
+
+* https://github.com/micytao/vllm-playground[vLLM Playground Repository^]
+* https://github.com/rhpds/showroom-vllm-playground[Demo Content Repository^]
+* https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai[Red Hat OpenShift AI^]

@@ -1,0 +1,220 @@
+---
+# Simple Showroom validation - auto-discover namespace by pattern
+# No label selectors - just count pods by name patterns
+
+- name: Set Showroom user name for user{{ user_number }}
+  ansible.builtin.set_fact:
+    _showroom_user: "user{{ user_number }}"
+    _showroom_deployment: "{{ ocp4_workload_aap_multiinstance_validation_showroom_deployment_name }}"
+
+- name: Discover showroom namespace for {{ _showroom_user }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Namespace
+  register: _all_namespaces
+  ignore_errors: true
+
+- name: Find showroom namespace matching user pattern
+  ansible.builtin.set_fact:
+    _showroom_namespace: "{{ _all_namespaces.resources | map(attribute='metadata.name') | select('match', '^showroom-.*-' ~ _showroom_user ~ '$') | first | default('') }}"
+
+# ---------------------------------------------------------------
+# Check Showroom deployment
+# ---------------------------------------------------------------
+- name: Check Showroom deployment for {{ _showroom_user }}
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: "{{ _showroom_deployment }}"
+    namespace: "{{ _showroom_namespace }}"
+  register: _showroom_deployment_info
+  ignore_errors: true
+  when: _showroom_namespace != ''
+
+- name: Parse Showroom deployment status for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _showroom_deployment_available: >-
+      {{
+        (_showroom_deployment_info.resources | default([]) | first).status.conditions |
+        default([]) |
+        selectattr('type', 'equalto', 'Available') |
+        selectattr('status', 'equalto', 'True') |
+        list | length > 0
+        if (_showroom_namespace != '' and _showroom_deployment_info is defined and not _showroom_deployment_info.skipped | default(false) and _showroom_deployment_info.resources | default([]) | length > 0)
+        else false
+      }}
+    _showroom_deployment_exists: "{{ _showroom_namespace != '' and _showroom_deployment_info is defined and not _showroom_deployment_info.skipped | default(false) and (_showroom_deployment_info.resources | default([]) | length > 0) }}"
+
+# ---------------------------------------------------------------
+# Get all pods in namespace and count by name pattern
+# ---------------------------------------------------------------
+- name: Get all pods in {{ _showroom_namespace }}
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: "{{ _showroom_namespace }}"
+  register: _showroom_pods
+  ignore_errors: true
+  when: _showroom_namespace != ''
+
+- name: Count Showroom pods by name pattern for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _showroom_pods_running: >-
+      {{
+        _showroom_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'showroom') |
+        selectattr('status.phase', 'equalto', 'Running') |
+        list | length
+        if (_showroom_namespace != '' and _showroom_pods is defined and not _showroom_pods.skipped | default(false))
+        else 0
+      }}
+    _showroom_pods_total: >-
+      {{
+        _showroom_pods.resources | default([]) |
+        selectattr('metadata.name', 'search', 'showroom') |
+        list | length
+        if (_showroom_namespace != '' and _showroom_pods is defined and not _showroom_pods.skipped | default(false))
+        else 0
+      }}
+
+# ---------------------------------------------------------------
+# Check Showroom route
+# ---------------------------------------------------------------
+- name: Check Showroom routes for {{ _showroom_user }}
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: "{{ _showroom_namespace }}"
+  register: _showroom_route_info
+  ignore_errors: true
+  when: _showroom_namespace != ''
+
+- name: Extract Showroom route hostname for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _showroom_route_host: >-
+      {{
+        (_showroom_route_info.resources | default([]) | first).spec.host | default('')
+        if (_showroom_namespace != '' and _showroom_route_info is defined and not _showroom_route_info.skipped | default(false) and _showroom_route_info.resources | default([]) | length > 0)
+        else ''
+      }}
+    _showroom_route_exists: "{{ _showroom_namespace != '' and _showroom_route_info is defined and not _showroom_route_info.skipped | default(false) and (_showroom_route_info.resources | default([]) | length > 0) }}"
+
+# ---------------------------------------------------------------
+# Check HTTP accessibility
+# ---------------------------------------------------------------
+- name: Check Showroom HTTP accessibility for {{ _showroom_user }}
+  ansible.builtin.uri:
+    url: "https://{{ _showroom_route_host }}/"
+    method: GET
+    validate_certs: "{{ ocp4_workload_aap_multiinstance_validation_http_validate_certs }}"
+    timeout: "{{ ocp4_workload_aap_multiinstance_validation_http_timeout }}"
+    status_code: "{{ ocp4_workload_aap_multiinstance_validation_http_success_codes }}"
+  register: _showroom_http_check
+  ignore_errors: true
+  failed_when: false
+  when: _showroom_namespace != '' and _showroom_route_exists | bool
+
+- name: Set Showroom HTTP accessibility status for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _showroom_http_accessible: >-
+      {{
+        _showroom_http_check.status | default(0) in ocp4_workload_aap_multiinstance_validation_http_success_codes
+        if _showroom_route_exists | bool
+        else false
+      }}
+
+# ---------------------------------------------------------------
+# Determine validation status
+# ---------------------------------------------------------------
+- name: Determine Showroom status for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _showroom_status: >-
+      {{
+        'failed' if (
+          _showroom_namespace == '' or
+          not _showroom_deployment_exists or
+          not _showroom_deployment_available or
+          _showroom_pods_running | int == 0 or
+          not _showroom_route_exists
+        )
+        else 'degraded' if (
+          _showroom_pods_running | int != _showroom_pods_total | int or
+          not _showroom_http_accessible
+        )
+        else 'healthy'
+      }}
+
+# ---------------------------------------------------------------
+# Add validation result
+# ---------------------------------------------------------------
+- name: Add Showroom validation result for {{ _showroom_user }}
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_results: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_results + [{
+          'component': 'Showroom - ' ~ _showroom_user,
+          'status': _showroom_status,
+          'namespace': _showroom_namespace if _showroom_namespace != '' else 'not-found',
+          'details': {
+            'deployment_available': _showroom_deployment_available | string,
+            'pods': _showroom_pods_running ~ '/' ~ _showroom_pods_total,
+            'route': ('https://' ~ _showroom_route_host) if _showroom_route_exists else 'Not Found',
+            'http_accessible': _showroom_http_accessible | string
+          }
+        }]
+      }}
+
+# ---------------------------------------------------------------
+# Add issues if any
+# ---------------------------------------------------------------
+- name: Add Showroom issues for {{ _showroom_user }} if namespace not found
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          _showroom_user ~ ' Showroom: namespace not found (expected pattern: showroom-*-' ~ _showroom_user ~ ')'
+        ]
+      }}
+  when:
+    - _showroom_status == 'failed'
+    - _showroom_namespace == ''
+
+- name: Add Showroom issues for {{ _showroom_user }} if deployment not available
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          _showroom_user ~ ' Showroom: deployment not available'
+        ]
+      }}
+  when:
+    - _showroom_status in ['failed', 'degraded']
+    - _showroom_namespace != ''
+    - not _showroom_deployment_available | bool
+
+- name: Add Showroom issues for {{ _showroom_user }} if pods not running
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          _showroom_user ~ ' Showroom: ' ~ _showroom_pods_running ~ '/' ~ _showroom_pods_total ~ ' pods running'
+        ]
+      }}
+  when:
+    - _showroom_status in ['failed', 'degraded']
+    - _showroom_namespace != ''
+    - _showroom_pods_running | int != _showroom_pods_total | int
+
+- name: Add Showroom issues for {{ _showroom_user }} if route not accessible
+  ansible.builtin.set_fact:
+    _ocp4_workload_aap_multiinstance_validation_issues: >-
+      {{
+        _ocp4_workload_aap_multiinstance_validation_issues + [
+          _showroom_user ~ ' Showroom: route not HTTP accessible'
+        ]
+      }}
+  when:
+    - _showroom_status in ['failed', 'degraded']
+    - _showroom_namespace != ''
+    - _showroom_route_exists | bool
+    - not _showroom_http_accessible | bool

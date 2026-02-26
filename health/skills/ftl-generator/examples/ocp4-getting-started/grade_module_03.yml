@@ -1,0 +1,198 @@
+---
+# =============================================================================
+# Grade Module 3: CI/CD with Tekton Pipelines
+# =============================================================================
+#
+# Validates:
+# - Tekton pipeline definition created
+# - Pipeline has correct tasks (git-clone, build-test, build-image, redeploy)
+# - PersistentVolumeClaim created for workspace
+# - Pipeline executed successfully
+# - Webhook configuration on BuildConfig
+#
+# Environment Variables Required:
+#   - LAB_USER: Student user (e.g., user1) - sets project to wksp-<user>
+#
+# Usage via wrapper (recommended):
+#   grade_lab ocp4-getting-started user1 3
+#
+# Or directly:
+#   export LAB_USER="user1"
+#   ansible-playbook grade_module_03.yml
+#
+# =============================================================================
+
+- name: Initialize FTL Grading Session - Module 3
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    lab_id: "OpenShift 4 Getting Started - Module 3: CI/CD with Tekton Pipelines"
+    module_number: "03"
+    student_name: "{{ lookup('env', 'LAB_USER') | default('student') }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_03.txt"
+  roles:
+    - ftl_run_init
+
+- name: Grade Module 3 - CI/CD with Tekton Pipelines
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    project_name: "wksp-{{ lookup('env', 'LAB_USER') | default('user1', true) }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_03.txt"
+
+  tasks:
+
+    # =========================================================================
+    # Exercise 3.1: Pipeline Definition Exists
+    # =========================================================================
+    - name: "Exercise 3.1: Verify nationalparks-pipeline exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 3.1: Tekton pipeline 'nationalparks-pipeline' created"
+        resource_api_version: "tekton.dev/v1"
+        resource_kind: "Pipeline"
+        resource_name: "nationalparks-pipeline"
+        resource_namespace: "{{ project_name }}"
+        student_error_message: |
+          Pipeline 'nationalparks-pipeline' not found in project {{ project_name }}.
+
+          Create pipeline:
+            1. Developer Perspective → Pipelines → Create Pipeline
+            2. Define pipeline with 4 tasks: git-clone, build-and-test, build-image, redeploy
+            3. Or use YAML from workshop instructions
+
+          Check pipeline: oc get pipeline nationalparks-pipeline -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 3.2: Pipeline Has Required Tasks
+    # =========================================================================
+    - name: "Exercise 3.2: Get pipeline definition to check tasks"
+      kubernetes.core.k8s_info:
+        api_version: tekton.dev/v1
+        kind: Pipeline
+        name: nationalparks-pipeline
+        namespace: "{{ project_name }}"
+      register: r_pipeline
+      failed_when: false
+
+    - name: "Exercise 3.2: Check pipeline tasks"
+      when: r_pipeline.resources | length > 0
+      ansible.builtin.set_fact:
+        pipeline_tasks: "{{ r_pipeline.resources[0].spec.tasks | default([]) }}"
+        task_names: "{{ r_pipeline.resources[0].spec.tasks | default([]) | map(attribute='name') | list }}"
+
+    - name: "Exercise 3.2: Validate required tasks present"
+      when: r_pipeline.resources | length > 0
+      ansible.builtin.set_fact:
+        has_git_clone: "{{ 'git-clone' in task_names }}"
+        has_build_test: "{{ task_names | select('match', '.*build.*test.*|.*test.*build.*') | list | length > 0 }}"
+        has_build_image: "{{ task_names | select('match', '.*build.*image.*') | list | length > 0 }}"
+        has_redeploy: "{{ 'redeploy' in task_names or 'deploy' in task_names }}"
+        all_tasks_present: "{{
+          ('git-clone' in task_names) and
+          (task_names | select('match', '.*build.*') | list | length >= 2) and
+          ('redeploy' in task_names or 'deploy' in task_names)
+        }}"
+
+    - name: "Exercise 3.2: Set default if pipeline doesn't exist"
+      when: r_pipeline.resources | length == 0
+      ansible.builtin.set_fact:
+        all_tasks_present: false
+
+    - name: "Exercise 3.2: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 3.2: Pipeline has required tasks (git-clone, build-and-test, build-image, redeploy)'
+          if all_tasks_present
+          else 'FAIL: Exercise 3.2: Pipeline tasks: Pipeline missing required tasks. Expected: git-clone, build-and-test, build-image, redeploy. Found tasks: ' + (task_names | join(', ') if r_pipeline.resources | length > 0 else 'none') + '. Check pipeline: oc describe pipeline nationalparks-pipeline -n ' + project_name
+        }}"
+
+    - name: "Exercise 3.2: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 3.3: PVC for Pipeline Workspace Exists
+    # =========================================================================
+    - name: "Exercise 3.3: Verify app-source-pvc exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_pvc_exists
+      vars:
+        task_description_message: "Exercise 3.3: PVC 'app-source-pvc' created for pipeline workspace"
+        pvc_name: "app-source-pvc"
+        pvc_namespace: "{{ project_name }}"
+        check_pvc_bound: true
+        min_storage_size: "1Gi"
+        student_error_message: |
+          PVC 'app-source-pvc' not found or not bound in project {{ project_name }}.
+
+          Create PVC:
+            1. Developer Perspective → Search → PersistentVolumeClaim → Create PVC
+            2. Name: app-source-pvc
+            3. Size: 1 GiB
+            4. Access Mode: ReadWriteOnce (RWO)
+
+          Check PVC: oc get pvc app-source-pvc -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 3.4: Pipeline Executed Successfully
+    # =========================================================================
+    - name: "Exercise 3.4: Verify pipeline run succeeded"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_pipeline_run
+      vars:
+        task_description_message: "Exercise 3.4: Pipeline executed successfully at least once"
+        pipeline_name: "nationalparks-pipeline"
+        pipeline_namespace: "{{ project_name }}"
+        require_pipeline_run: true
+        check_last_n_runs: 10
+        student_error_message: |
+          No successful pipeline runs found for nationalparks-pipeline.
+
+          Start pipeline:
+            1. Developer Perspective → Pipelines → nationalparks-pipeline
+            2. Click Actions → Start
+            3. Configure workspace 'app-source' to use PVC 'app-source-pvc'
+            4. Configure workspace 'maven-settings' to use EmptyDir
+            5. Start
+
+          Monitor: oc get pipelineruns -n {{ project_name }}
+          View logs: oc logs -f pipelinerun/<pipelinerun-name> -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 3.5: Tekton Triggers EventListener Configured
+    # =========================================================================
+    - name: "Exercise 3.5: Verify EventListener exists"
+      kubernetes.core.k8s_info:
+        api_version: triggers.tekton.dev/v1alpha1
+        kind: EventListener
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_eventlistener
+      failed_when: false
+
+    - name: "Exercise 3.5: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 3.5: Tekton Triggers EventListener configured for webhook automation'
+          if r_eventlistener.resources | length > 0
+          else 'FAIL: Exercise 3.5: EventListener not found in project ' + project_name + '. Create Tekton Triggers (TriggerTemplate, TriggerBinding, EventListener) for webhook-driven pipeline automation. Check: oc get eventlistener -n ' + project_name
+        }}"
+
+    - name: "Exercise 3.5: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+- name: Finalize FTL Grading Session - Module 3
+  hosts: localhost
+  gather_facts: false
+  vars:
+    module_number: "03"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_03.txt"
+  roles:
+    - ftl_run_grade_report_generation
+    - ftl_run_finish

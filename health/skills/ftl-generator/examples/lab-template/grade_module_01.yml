@@ -1,0 +1,213 @@
+---
+# =============================================================================
+# Grade Module 1: [Module Name Here]
+# =============================================================================
+#
+# This playbook validates that students have completed Module 1 exercises.
+#
+# Validates:
+# - Exercise 1.1: [Description]
+# - Exercise 1.2: [Description]
+# - Exercise 1.3: [Description]
+# [Add more as needed]
+#
+# Environment Variables Required:
+#   - REQUIRED_VAR_1: [Description]
+#   - REQUIRED_VAR_2: [Description]
+#
+# Optional:
+#   - LAB_USER: Username for multi-user environments (defaults to $USER)
+#
+# Usage:
+#   export REQUIRED_VAR_1="value"
+#   export REQUIRED_VAR_2="value"
+#   ansible-playbook grade_module_01.yml
+#
+# Or via wrapper:
+#   grade_lab your-lab-name 1
+#
+# =============================================================================
+
+# =============================================================================
+# Play 1: Initialize Grading Session
+# =============================================================================
+- name: Initialize FTL Grading Session - Module 1
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    lab_id: "[Lab Name] - Module 1: [Module Name]"
+    module_number: "01"
+    student_name: "{{ lookup('env', 'LAB_USER') | default('student') }}"
+    # CRITICAL: Define grader_student_report_file in EVERY play
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+  roles:
+    - ftl_run_init
+
+# =============================================================================
+# Play 2: Grade Module (CRITICAL: Must include grader_student_report_file!)
+# =============================================================================
+- name: Grade Module 1 - [Module Name]
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    # Define your lab-specific variables here
+    required_var_1: "{{ lookup('env', 'REQUIRED_VAR_1') | default('default-value') }}"
+    required_var_2: "{{ lookup('env', 'REQUIRED_VAR_2') | default('default-value') }}"
+
+    # CRITICAL: Define grader_student_report_file in EVERY play
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+
+  tasks:
+    # =========================================================================
+    # Environment Variable Validation
+    # =========================================================================
+    - name: Validate required environment variables
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'REQUIRED_VAR_1') | length > 0 or required_var_1 != 'default-value'
+          - lookup('env', 'REQUIRED_VAR_2') | length > 0 or required_var_2 != 'default-value'
+        fail_msg: |
+          Required environment variables not set:
+          - REQUIRED_VAR_1: [Description of what this is]
+          - REQUIRED_VAR_2: [Description of what this is]
+
+          Example:
+            export REQUIRED_VAR_1="example-value"
+            export REQUIRED_VAR_2="example-value"
+
+    # =========================================================================
+    # Exercise 1.1: [Exercise Name]
+    # =========================================================================
+    # EXAMPLE: Using a generic grader role
+    # Replace with appropriate grader role for your validation
+    - name: "Exercise 1.1: [Description of what gets validated]"
+      ansible.builtin.include_role:
+        name: grader_check_command_output  # CHANGE THIS to appropriate grader role
+      vars:
+        task_description_message: "Exercise 1.1: [Short description for report]"
+        command: "echo 'Replace this with actual command'"
+        expected_output: "Replace this"
+        student_error_message: |
+          [What failed and how to fix it]
+
+          Example fix command:
+            command-to-fix-the-issue
+
+    # =========================================================================
+    # Exercise 1.2: [Exercise Name]
+    # =========================================================================
+    # EXAMPLE: Using OpenShift resource grader
+    - name: "Exercise 1.2: [Description]"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource  # Or other appropriate role
+      vars:
+        task_description_message: "Exercise 1.2: [Short description]"
+        resource_kind: "Pod"  # Or Deployment, Service, etc.
+        resource_name: "myapp"
+        resource_namespace: "{{ required_var_1 }}"
+        student_error_message: |
+          [Helpful error message explaining what's wrong and how to fix]
+
+    # =========================================================================
+    # Exercise 1.3: [Exercise Name]
+    # =========================================================================
+    # EXAMPLE: Complex validation requiring multiple checks
+    - name: "Exercise 1.3: Get resource to check custom attribute"
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        name: "myapp"
+        namespace: "{{ required_var_1 }}"
+      register: r_my_resource
+      failed_when: false
+
+    - name: "Exercise 1.3: Evaluate custom logic"
+      when: r_my_resource.resources | length > 0
+      ansible.builtin.set_fact:
+        custom_check_passed: "{{
+          r_my_resource.resources[0].metadata.labels.get('custom-label', '') == 'expected-value'
+        }}"
+
+    - name: "Exercise 1.3: Set default if resource doesn't exist"
+      when: r_my_resource.resources | length == 0
+      ansible.builtin.set_fact:
+        custom_check_passed: false
+
+    - name: "Exercise 1.3: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 1.3: [Success message]'
+          if custom_check_passed
+          else 'FAIL: Exercise 1.3: [Failure message with helpful guidance]'
+        }}"
+
+    - name: "Exercise 1.3: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Add more exercises as needed
+    # =========================================================================
+    # Copy the pattern above for each checkpoint
+    # Remember to number them sequentially: 1.1, 1.2, 1.3, etc.
+
+# =============================================================================
+# Play 3: Finalize Grading Session
+# =============================================================================
+- name: Finalize FTL Grading Session - Module 1
+  hosts: localhost
+  gather_facts: false
+  vars:
+    module_number: "01"
+    # CRITICAL: Define grader_student_report_file in EVERY play
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+  roles:
+    - ftl_run_grade_report_generation
+    - ftl_run_finish
+
+# =============================================================================
+# Notes for Lab Authors:
+# =============================================================================
+#
+# 1. **Three-Play Pattern (CRITICAL)**
+#    - Play 1: Initialize (ftl_run_init)
+#    - Play 2: Grade (your checkpoints)
+#    - Play 3: Finalize (ftl_run_grade_report_generation + ftl_run_finish)
+#
+# 2. **grader_student_report_file Variable (CRITICAL)**
+#    - Must be defined in ALL THREE plays
+#    - Ansible plays have isolated variable scopes
+#    - If missing from Play 2, results won't appear in report
+#
+# 3. **Exercise Numbering**
+#    - Use Exercise X.Y format (e.g., 1.1, 1.2, 1.3)
+#    - X = module number
+#    - Y = checkpoint number within module
+#
+# 4. **Error Messages**
+#    - Should tell students: What failed, Why it failed, How to fix it
+#    - Include example commands to check status
+#    - Be specific and actionable
+#
+# 5. **Available Grader Roles**
+#    See docs/GRADER_ROLES_REFERENCE.md for complete list and examples:
+#    - Generic System: command_output, file_exists, service_running, etc.
+#    - OpenShift/K8s: ocp_resource, ocp_pod_running, ocp_route_exists, etc.
+#    - AAP/Tower: aap_licensed, aap_job_completed, aap_workflow_completed
+#    - HTTP/Network: http_endpoint, http_json_response
+#
+# 6. **Testing Your Grader**
+#    - Test on fresh environment (before lab completion)
+#    - Test after solver (after lab completion)
+#    - Test with partial completion
+#    - Verify error messages are helpful
+#
+# 7. **Multi-User Support**
+#    - Use LAB_USER for namespace isolation
+#    - Example: pod_namespace: "workshop-{{ lookup('env', 'LAB_USER') }}"
+#    - Per-user reports: grading_report_user1.txt, grading_report_user2.txt
+#
+# =============================================================================

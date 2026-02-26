@@ -1,0 +1,37 @@
+Generative AI Demo with Red Hat OpenShift AI – Experience the power of Generative AI on Red Hat OpenShift AI using Model as a Service (MaaS) deployed on optimized virtualized infrastructure, without requiring any local GPU resources.
+
+This immersive demo environment showcases how OpenShift AI seamlessly integrates with OpenShift components like Pipelines, GitOps, and Data Foundation to enable enterprise-scale AI workflows on hybrid cloud infrastructure. It highlights secure, scalable, and efficient AI deployment using virtualized compute resources powered by MaaS for inference.
+
+== Key Components
+* *Red Hat OpenShift Container Platform* – Secure and stable foundation for containerized workloads.
+* *Red Hat OpenShift AI* – Comprehensive platform for building, training, and serving AI/ML models at scale.
+* *Red Hat OpenShift Data Foundation* – Resilient, scalable storage for AI workloads.
+* *Red Hat OpenShift Pipelines* and *GitOps* – Automate and streamline AI lifecycle management.
+* *Red Hat OpenShift Serverless* and *Service Mesh* – Simplify scalable, secure AI microservices deployment.
+
+== Special Features
+* *Model as a Service (MaaS)* – Access and serve AI models without deploying GPUs locally.
+* *Hybrid Cloud Integration* – Demonstrates Red Hat’s unified AI platform across data science and infrastructure teams.
+* *Generative AI in Action* – Explore real-world enterprise use cases powered by OpenShift AI and integrated MLOps pipelines.
+
+== Provisioning and Access
+* *Access Details*: Credentials for OpenShift AI and the cluster will be provided once the demo environment is ready.
+
+== Additional Resources
+* *Showroom Demo Guide Preview*:  
+link:https://rhpds.github.io/showroom-generative-ai-rag/modules/index.html[Demo Guide – Showroom]
+* *Reference Document*:  
+link:https://docs.google.com/document/d/1gMnBz7BVYwUggbQAtjUasukuDp_rVkzydGjU5ErP734/edit?tab=t.0[Detailed Reference Document]
+* *Video Guides*:  
+link:https://videos.learning.redhat.com/media/Generative-Ai-Detailed-Demo-Video/1_foo7e9qk[Detailed Walkthrough] | link:https://videos.learning.redhat.com/media/Short-Demo-LLM-RAG-OpenShiftAI/1_9xw7r6ec[Short Overview]
+* *Source & Support*:  
+link:https://github.com/openshift-labs/starter-guides/[Documentation and Issue Tracking]
+
+[WARNING]
+====
+This item utilizes OpenShift Virtualization (CNV) Pools infrastructure for optimized resource allocation and management.  
+The cluster is pre-configured with multinode architecture and uses *Model as a Service (MaaS)*, so **no GPUs are deployed on the local OpenShift cluster**.
+
+If you experience repeated provisioning failures, please contact us on Slack:  
+link:https://redhat.enterprise.slack.com/archives/C04N203SNUW[#forum-demo-redhat-com].
+====

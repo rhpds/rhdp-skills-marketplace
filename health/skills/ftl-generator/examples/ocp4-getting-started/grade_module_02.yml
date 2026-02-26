@@ -1,0 +1,503 @@
+---
+# =============================================================================
+# Grade Module 2: Building from Source and Data Integration
+# =============================================================================
+#
+# Validates:
+# - Nationalparks deployment via S2I from Git source
+# - BuildConfig and successful Build completion
+# - MongoDB database deployment and configuration
+# - Secret creation for database credentials
+# - Environment variable configuration
+# - Route label for service discovery
+# - Data loading via REST API
+# - Application health probes
+#
+# Environment Variables Required:
+#   - OPENSHIFT_CLUSTER_INGRESS_DOMAIN: Cluster apps domain
+#   - LAB_USER: Student user (e.g., user1) - sets project to wksp-<user>
+#
+# Usage via wrapper (recommended):
+#   grade_lab ocp4-getting-started user1 2
+#
+# Or directly:
+#   export LAB_USER="user1"
+#   export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxxxx.example.com"
+#   ansible-playbook grade_module_02.yml
+#
+# =============================================================================
+
+- name: Initialize FTL Grading Session - Module 2
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    lab_id: "OpenShift 4 Getting Started - Module 2: Building from Source and Data Integration"
+    module_number: "02"
+    student_name: "{{ lookup('env', 'LAB_USER') | default('student') }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_02.txt"
+  roles:
+    - ftl_run_init
+
+- name: Grade Module 2 - Building from Source and Data Integration
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    project_name: "wksp-{{ lookup('env', 'LAB_USER') | default('user1', true) }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_02.txt"
+
+  tasks:
+    # =========================================================================
+    # Auto-detect cluster domain if not set
+    # =========================================================================
+    - name: Get cluster ingress domain from OpenShift
+      when: lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length == 0
+      ansible.builtin.command: oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+      register: r_cluster_domain
+      changed_when: false
+
+    - name: Set cluster domain
+      ansible.builtin.set_fact:
+        cluster_domain: "{{ lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | default(r_cluster_domain.stdout | default('apps.cluster.example.com'), true) }}"
+
+    # =========================================================================
+    # Exercise 2.1: Nationalparks BuildConfig Exists
+    # =========================================================================
+    - name: "Exercise 2.1: Verify nationalparks BuildConfig exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 2.1: Nationalparks BuildConfig created"
+        resource_api_version: "build.openshift.io/v1"
+        resource_kind: "BuildConfig"
+        resource_name: "nationalparks"
+        resource_namespace: "{{ project_name }}"
+        student_error_message: |
+          BuildConfig 'nationalparks' not found in project {{ project_name }}.
+
+          Deploy from source:
+            1. Developer Perspective → +Add → Import from Git
+            2. Git Repo: https://github.com/openshift-roadshow/nationalparks.git
+            3. Builder Image: Java (openjdk-11-ubi8)
+            4. Name: nationalparks
+            5. Create
+
+          Check BuildConfig: oc get bc nationalparks -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.2: Build Completed Successfully
+    # =========================================================================
+    - name: "Exercise 2.2: Verify at least one build succeeded"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_build_completed
+      vars:
+        task_description_message: "Exercise 2.2: Nationalparks S2I build completed successfully"
+        build_config_name: "nationalparks"
+        build_config_namespace: "{{ project_name }}"
+        require_build_execution: true
+        check_last_n_builds: 10
+        student_error_message: |
+          No successful builds found for nationalparks BuildConfig.
+
+          Start build: oc start-build nationalparks -n {{ project_name }}
+          Monitor build: oc logs -f bc/nationalparks -n {{ project_name }}
+          Check builds: oc get builds -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.3: Nationalparks Deployment Exists
+    # =========================================================================
+    - name: "Exercise 2.3: Verify nationalparks deployment exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 2.3: Nationalparks deployment created"
+        resource_api_version: "apps/v1"
+        resource_kind: "Deployment"
+        resource_name: "nationalparks"
+        resource_namespace: "{{ project_name }}"
+        student_error_message: |
+          Nationalparks deployment not found in project {{ project_name }}.
+          Deployment should be created automatically after successful build.
+          Check deployment: oc get deployment nationalparks -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.4: Nationalparks Pod Running
+    # =========================================================================
+    - name: "Exercise 2.4: Get nationalparks deployment status"
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_np_deploy_status
+      failed_when: false
+
+    - name: "Exercise 2.4: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.4: Nationalparks pod running'
+          if r_np_deploy_status.resources | length > 0 and
+             (r_np_deploy_status.resources[0].status.readyReplicas | default(0) | int) >= 1
+          else 'FAIL: Exercise 2.4: Nationalparks pod not running in project ' + project_name + '. Check pods: oc get pods -n ' + project_name + ' | View logs: oc logs deployment/nationalparks -n ' + project_name
+        }}"
+
+    - name: "Exercise 2.4: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.5: Nationalparks Route Exists with HTTPS
+    # =========================================================================
+    - name: "Exercise 2.5: Verify nationalparks route exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_route_exists
+      vars:
+        task_description_message: "Exercise 2.5: Nationalparks route created with HTTPS"
+        route_name: "nationalparks"
+        route_namespace: "{{ project_name }}"
+        check_https: true
+        student_error_message: |
+          Nationalparks route not found or not using HTTPS in project {{ project_name }}.
+          Create route with TLS: oc create route edge nationalparks --service=nationalparks -n {{ project_name }}
+          Check route: oc get route nationalparks -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.6: Nationalparks /ws/info/ Endpoint Responds
+    # =========================================================================
+    - name: "Exercise 2.6: Get nationalparks route for endpoint testing"
+      kubernetes.core.k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_nationalparks_route
+      failed_when: false
+
+    - name: "Exercise 2.6: Test /ws/info/ endpoint"
+      when: r_nationalparks_route.resources | length > 0
+      ansible.builtin.include_role:
+        name: grader_check_http_json_response
+      vars:
+        task_description_message: "Exercise 2.6: Nationalparks /ws/info/ endpoint returns metadata"
+        endpoint_url: "https://{{ r_nationalparks_route.resources[0].spec.host }}/ws/info/"
+        validate_https: true
+        validate_certs: false
+        json_field_checks:
+          - id
+          - displayName
+        json_value_checks:
+          id: "nationalparks"
+        student_error_message: "FAIL: Exercise 2.6: Nationalparks /ws/info/ endpoint not responding correctly. Test: curl -k https://{{ r_nationalparks_route.resources[0].spec.host }}/ws/info/"
+
+    - name: "Exercise 2.6: Handle missing route"
+      when: r_nationalparks_route.resources | length == 0
+      ansible.builtin.set_fact:
+        grader_output_message: "FAIL: Exercise 2.6: Cannot test /ws/info/ endpoint - route does not exist"
+
+    - name: "Exercise 2.6: Log result if route missing"
+      when: r_nationalparks_route.resources | length == 0
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.7: MongoDB Secret Exists
+    # =========================================================================
+    - name: "Exercise 2.7: Verify mongodb-credentials secret exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_secret_exists
+      vars:
+        task_description_message: "Exercise 2.7: MongoDB credentials secret created"
+        secret_name: "mongodb-credentials"
+        secret_namespace: "{{ project_name }}"
+        required_keys:
+          - admin-usr
+          - admin-pwd
+          - app-usr
+          - app-pwd
+        student_error_message: |
+          Secret 'mongodb-credentials' not found or missing required keys.
+
+          Create secret:
+            oc create secret generic mongodb-credentials \
+              --from-literal=admin-usr=admin \
+              --from-literal=admin-pwd=secret \
+              --from-literal=app-usr=parksapp \
+              --from-literal=app-pwd=keepsafe \
+              -n {{ project_name }}
+
+          Check secret: oc describe secret mongodb-credentials -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.8: MongoDB Deployment Exists
+    # =========================================================================
+    - name: "Exercise 2.8: Verify mongodb deployment exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 2.8: MongoDB deployment created"
+        resource_api_version: "apps/v1"
+        resource_kind: "Deployment"
+        resource_name: "mongodb"
+        resource_namespace: "{{ project_name }}"
+        student_error_message: |
+          MongoDB deployment not found in project {{ project_name }}.
+
+          Deploy MongoDB:
+            1. Developer Perspective → +Add → Container images
+            2. Image: mongo:6.0.4
+            3. Name: mongodb
+            4. Add environment variables from mongodb-credentials secret
+
+          Check deployment: oc get deployment mongodb -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 2.9: MongoDB Pod Running
+    # =========================================================================
+    - name: "Exercise 2.9: Get mongodb deployment status"
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: mongodb
+        namespace: "{{ project_name }}"
+      register: r_mongodb_deploy_status
+      failed_when: false
+
+    - name: "Exercise 2.9: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.9: MongoDB pod running'
+          if r_mongodb_deploy_status.resources | length > 0 and
+             (r_mongodb_deploy_status.resources[0].status.readyReplicas | default(0) | int) >= 1
+          else 'FAIL: Exercise 2.9: MongoDB pod not running in project ' + project_name + '. Check pods: oc get pods -l app=mongodb -n ' + project_name + ' | View logs: oc logs deployment/mongodb -n ' + project_name
+        }}"
+
+    - name: "Exercise 2.9: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.10: MongoDB Deployment Labels
+    # =========================================================================
+    - name: "Exercise 2.10: Get mongodb deployment to check labels"
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: mongodb
+        namespace: "{{ project_name }}"
+      register: r_mongodb_deployment
+      failed_when: false
+
+    - name: "Exercise 2.10: Check mongodb deployment labels"
+      when: r_mongodb_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        mongodb_labels: "{{ r_mongodb_deployment.resources[0].metadata.labels | default({}) }}"
+        mongodb_labels_correct: "{{
+          (r_mongodb_deployment.resources[0].metadata.labels | default({})).get('role', '') == 'database'
+        }}"
+
+    - name: "Exercise 2.10: Set default if deployment doesn't exist"
+      when: r_mongodb_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        mongodb_labels_correct: false
+
+    - name: "Exercise 2.10: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.10: MongoDB deployment has role=database label'
+          if mongodb_labels_correct
+          else 'FAIL: Exercise 2.10: MongoDB labels: Deployment missing role=database label. Add label: oc label deployment/mongodb role=database -n ' + project_name
+        }}"
+
+    - name: "Exercise 2.10: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.11: Nationalparks Environment Variables Configured
+    # =========================================================================
+    - name: "Exercise 2.11: Get nationalparks deployment to check env vars"
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_np_deployment
+      failed_when: false
+
+    - name: "Exercise 2.11: Check environment variables"
+      when: r_np_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        np_env_vars: "{{ r_np_deployment.resources[0].spec.template.spec.containers[0].env | default([]) }}"
+
+    - name: "Exercise 2.11: Validate required environment variables present"
+      when: r_np_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        env_vars_configured: "{{
+          (np_env_vars | selectattr('name', 'equalto', 'MONGODB_SERVER_HOST') | list | length > 0) and
+          (np_env_vars | selectattr('name', 'equalto', 'MONGODB_DATABASE') | list | length > 0) and
+          (np_env_vars | selectattr('name', 'equalto', 'MONGODB_USER') | list | length > 0) and
+          (np_env_vars | selectattr('name', 'equalto', 'MONGODB_PASSWORD') | list | length > 0)
+        }}"
+
+    - name: "Exercise 2.11: Set default if deployment doesn't exist"
+      when: r_np_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        env_vars_configured: false
+
+    - name: "Exercise 2.11: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.11: Nationalparks deployment has database environment variables configured'
+          if env_vars_configured
+          else 'FAIL: Exercise 2.11: Environment variables: Missing required database connection environment variables. Configure: MONGODB_SERVER_HOST, MONGODB_DATABASE, MONGODB_USER, MONGODB_PASSWORD. Check env vars: oc set env deployment/nationalparks --list -n ' + project_name
+        }}"
+
+    - name: "Exercise 2.11: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.12: Nationalparks Route Label for Service Discovery
+    # =========================================================================
+    - name: "Exercise 2.12: Get nationalparks route to check labels"
+      kubernetes.core.k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_np_route
+      failed_when: false
+
+    - name: "Exercise 2.12: Check route label"
+      when: r_np_route.resources | length > 0
+      ansible.builtin.set_fact:
+        route_label_correct: "{{
+          (r_np_route.resources[0].metadata.labels | default({})).get('type', '') == 'parksmap-backend'
+        }}"
+
+    - name: "Exercise 2.12: Set default if route doesn't exist"
+      when: r_np_route.resources | length == 0
+      ansible.builtin.set_fact:
+        route_label_correct: false
+
+    - name: "Exercise 2.12: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.12: Nationalparks route has type=parksmap-backend label for service discovery'
+          if route_label_correct
+          else 'FAIL: Exercise 2.12: Route label: Nationalparks route missing type=parksmap-backend label. Parksmap uses this label to discover backend services. Add label: oc label route nationalparks type=parksmap-backend -n ' + project_name
+        }}"
+
+    - name: "Exercise 2.12: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.13: Data Loaded (Check /ws/data/all returns data)
+    # =========================================================================
+    - name: "Exercise 2.13: Test /ws/data/all endpoint for loaded data"
+      when: r_nationalparks_route.resources | length > 0
+      ansible.builtin.uri:
+        url: "https://{{ r_nationalparks_route.resources[0].spec.host }}/ws/data/all"
+        method: GET
+        validate_certs: false
+        return_content: yes
+        status_code: 200
+      register: r_data_all
+      failed_when: false
+
+    - name: "Exercise 2.13: Check if data loaded"
+      when:
+        - r_nationalparks_route.resources | length > 0
+        - r_data_all is succeeded
+      ansible.builtin.set_fact:
+        data_count: "{{ r_data_all.json | length }}"
+        data_loaded: "{{ (r_data_all.json | length) > 2000 }}"
+
+    - name: "Exercise 2.13: Set default if route missing or request failed"
+      when: r_nationalparks_route.resources | length == 0 or r_data_all is failed
+      ansible.builtin.set_fact:
+        data_loaded: false
+        data_count: 0
+
+    - name: "Exercise 2.13: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.13: National parks data loaded (' + (data_count | string) + ' records)'
+          if data_loaded
+          else 'FAIL: Exercise 2.13: Data loading: No data found in nationalparks database. Load data by visiting /ws/data/load endpoint: curl -k https://' + (r_nationalparks_route.resources[0].spec.host if r_nationalparks_route.resources | length > 0 else '<route-url>') + '/ws/data/load'
+        }}"
+
+    - name: "Exercise 2.13: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.14: Readiness Probe Configured
+    # =========================================================================
+    - name: "Exercise 2.14: Check readiness probe"
+      when: r_np_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        readiness_probe: "{{ r_np_deployment.resources[0].spec.template.spec.containers[0].readinessProbe | default({}) }}"
+        readiness_probe_configured: "{{
+          r_np_deployment.resources[0].spec.template.spec.containers[0].readinessProbe is defined and
+          r_np_deployment.resources[0].spec.template.spec.containers[0].readinessProbe != {}
+        }}"
+
+    - name: "Exercise 2.14: Set default if deployment doesn't exist"
+      when: r_np_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        readiness_probe_configured: false
+
+    - name: "Exercise 2.14: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.14: Readiness probe configured on nationalparks deployment'
+          if readiness_probe_configured
+          else 'FAIL: Exercise 2.14: Readiness probe: Deployment missing readiness probe. Probes help OpenShift determine when pod is ready to receive traffic. Add probe via Topology → nationalparks → Add Health Checks'
+        }}"
+
+    - name: "Exercise 2.14: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 2.15: Liveness Probe Configured
+    # =========================================================================
+    - name: "Exercise 2.15: Check liveness probe"
+      when: r_np_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        liveness_probe: "{{ r_np_deployment.resources[0].spec.template.spec.containers[0].livenessProbe | default({}) }}"
+        liveness_probe_configured: "{{
+          r_np_deployment.resources[0].spec.template.spec.containers[0].livenessProbe is defined and
+          r_np_deployment.resources[0].spec.template.spec.containers[0].livenessProbe != {}
+        }}"
+
+    - name: "Exercise 2.15: Set default if deployment doesn't exist"
+      when: r_np_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        liveness_probe_configured: false
+
+    - name: "Exercise 2.15: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 2.15: Liveness probe configured on nationalparks deployment'
+          if liveness_probe_configured
+          else 'FAIL: Exercise 2.15: Liveness probe: Deployment missing liveness probe. Probes help OpenShift restart unhealthy pods automatically. Add probe via Topology → nationalparks → Add Health Checks'
+        }}"
+
+    - name: "Exercise 2.15: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+- name: Finalize FTL Grading Session - Module 2
+  hosts: localhost
+  gather_facts: false
+  vars:
+    module_number: "02"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_02.txt"
+  roles:
+    - ftl_run_grade_report_generation
+    - ftl_run_finish

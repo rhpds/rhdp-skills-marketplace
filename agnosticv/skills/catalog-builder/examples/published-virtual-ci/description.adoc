@@ -1,0 +1,64 @@
+This hands-on workshop guides students through building production-ready agentic AI applications on Red Hat OpenShift AI using Llama Stack, LangGraph, Langfuse, Langflow and the Model Context Protocol (MCP). Students will progress from deploying a Llama Stack distribution to creating AI agents that interact with enterprise backend systems, implementing safety guardrails, RAG capabilities, and web search integration. The workshop culminates in deploying a complete full-stack AI agent application with tracing, evaluation, and feedback mechanisms, providing comprehensive experience in building and operating enterprise-grade AI systems.
+
+[IMPORTANT]
+====
+This Red Hat One lab is being released as-is with little change from the version delivered in person at the event.
+There is limited support for these labs and only those with regular usage will be retained in the RHDP catalog.
+A 30 day advance notice will be posted for any labs that get scheduled for removal.
+====
+
+== Lab Guide
+
+You can find a preview version of the link:https://rhpds.github.io/showroom-agentic-ai-llamastack[lab guide^] here.
+
+== Featured Technology and Products
+
+* Red Hat OpenShift AI 3.2
+* Red Hat OpenShift Container Platform
+* Llama Stack
+* LangGraph
+* Langfuse
+* Model Context Protocol (MCP)
+
+== Detailed Overview
+
+* *Deploy and Explore Llama Stack*
+** Deploy a Llama Stack distribution on OpenShift using the LlamaStackDistribution CRD
+** Discover the comprehensive API landscape including Inference, Agents, RAG, Safety, Memory, and Tools APIs
+** Interact with language models through multiple inference interfaces including the native Response API
+
+* *Implement RAG and Safety*
+** Build Retrieval-Augmented Generation systems using Llama Stack's built-in vector stores and embedding models
+** Implement content moderation and safety shields using Llama Guard to meet enterprise compliance requirements
+** Integrate Tavily web search capabilities to extend model knowledge beyond training data
+
+* *Backend Setup and MCP Integration*
+** Deploy PostgreSQL-backed REST APIs providing customer and finance capabilities
+** Register Model Context Protocol servers that bridge AI agents with backend microservices
+** Enable AI agents to access customer data and financial transactions through tool abstraction
+
+* *Build Autonomous Agents*
+** Create agents using Llama Stack Client for direct, programmatic tool invocation
+** Build LangGraph-based agents that autonomously reason about tool selection and parameter extraction
+** Chain multiple MCP tools together for complex multi-step business queries
+
+* *Deploy Production Applications*
+** Deploy full-stack AI agent applications with web-based chat interfaces using FastAPI
+** Implement Langfuse for traces, evaluations, and feedback mechanisms
+** Build graphical agent workflows with Langflow for visual development
+
+== Authors
+
+* Burr Sutter
+* Natale Vinto
+* James Falkner
+* Tony Kay
+
+== Support
+
+For help with instructions or functionality, join the link:https://redhat.enterprise.slack.com/archives/C0AB4CS98EM[#forum-ai-agent-builders] community on Slack.
+
+For problems with provisioning or environment stability:
+
+* Open an RHDP link:https://red.ht/rhdp-ticket[Support Ticket^]
+* Post a message in Slack channel: link:https://redhat.enterprise.slack.com/archives/C06QWD4A5TE[#forum-demo-redhat-com^]

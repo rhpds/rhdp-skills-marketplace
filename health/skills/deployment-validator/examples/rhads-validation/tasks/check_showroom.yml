@@ -1,0 +1,67 @@
+---
+# Initialize showroom validation results
+- name: Initialize Showroom validation results
+  ansible.builtin.set_fact:
+    showroom_user_validations: []
+    showroom_total_checked: 0
+    showroom_total_healthy: 0
+    showroom_total_failed: 0
+
+# Check each user's showroom namespace
+- name: Check Showroom for each user
+  ansible.builtin.include_tasks: check_showroom_user.yml
+  loop: "{{ range(0, rhpds_build_secured_dev_workflows_rhads_validation_num_users | int) | list }}"
+  loop_control:
+    loop_var: showroom_user_index
+
+# Determine overall showroom status
+- name: Evaluate overall Showroom health
+  ansible.builtin.set_fact:
+    showroom_status: |-
+      {%- if showroom_total_checked | int == 0 -%}
+      missing
+      {%- elif showroom_total_failed | int == showroom_total_checked | int -%}
+      all-failed
+      {%- elif showroom_total_failed | int > 0 -%}
+      partial-failure
+      {%- else -%}
+      healthy
+      {%- endif -%}
+
+# Create aggregate Showroom validation result
+- name: Create Showroom validation result
+  ansible.builtin.set_fact:
+    showroom_validation:
+      status: "{{ showroom_status }}"
+      total_users: "{{ showroom_total_checked }}"
+      healthy_users: "{{ showroom_total_healthy }}"
+      failed_users: "{{ showroom_total_failed }}"
+      user_details: "{{ showroom_user_validations }}"
+
+# Add detailed issue for each unhealthy Showroom instance
+- name: Add issue for each unhealthy Showroom instance
+  when: showroom_status != 'healthy'
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'issues': rhads_validation_results.issues + [
+        'Showroom (' ~ item.user ~ '): ' ~ item.status ~ ' in namespace ' ~ item.namespace
+      ]
+    }) }}"
+  loop: "{{ showroom_user_validations | selectattr('status', '!=', 'healthy') | list }}"
+  loop_control:
+    label: "{{ item.user }}"
+
+# Update overall validation results for Showroom
+- name: Update overall validation results for Showroom
+  ansible.builtin.set_fact:
+    rhads_validation_results: "{{ rhads_validation_results | combine({
+      'components': rhads_validation_results.components | combine({
+        'showroom': showroom_validation
+      }),
+      'summary': {
+        'total_components': rhads_validation_results.summary.total_components + 1,
+        'healthy': rhads_validation_results.summary.healthy + (1 if showroom_status == 'healthy' else 0),
+        'degraded': rhads_validation_results.summary.degraded + (1 if showroom_status == 'partial-failure' else 0),
+        'failed': rhads_validation_results.summary.failed + (1 if showroom_status in ['all-failed', 'missing'] else 0)
+      }
+    }) }}"

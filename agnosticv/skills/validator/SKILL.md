@@ -1,6 +1,6 @@
 ---
 name: agnosticv:validator
-description: Validate AgnosticV catalog configurations against best practices and deployment requirements
+description: This skill should be used when the user asks to "validate my catalog", "check my AgnosticV config", "review common.yaml", "validate my RHDP catalog", "check for errors in my catalog", "lint my AgnosticV files", or "verify my catalog before submitting".
 ---
 
 ---

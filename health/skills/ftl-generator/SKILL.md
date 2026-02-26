@@ -1,6 +1,6 @@
 ---
 name: health:ftl-generator
-description: Generate FTL grader and solver playbooks for a Showroom workshop by analyzing module content
+description: This skill should be used when the user asks to "generate FTL graders", "create a grader playbook", "build FTL checkpoints", "generate a solver", "create FTL for my lab", "write FTL grade_module playbooks", "add grading to my Showroom workshop", or "generate Finish The Labs playbooks".
 ---
 
 ---
@@ -329,12 +329,25 @@ Use the discovery output — combined with the Showroom content and AgV catalog 
 
 ### Step 1: Locate FTL Repository
 
-Ask directly:
+**Find the FTL repo using this discovery chain (stop at first hit):**
 
+**1. Check CLAUDE.md and config files:**
+```bash
+grep -r "ftl\|FTL\|experiment" ~/CLAUDE.md ~/claude/*.md ~/.claude/*.md 2>/dev/null | grep -iE 'ftl|experiment' | grep -oE '~[^ ]+|/[^ ]+'
+```
+
+**2. Check common local paths** (silently):
+```bash
+for candidate in ~/work/code/experiment/ftl ~/work/code/ftl ~/devel/ftl ~/ftl; do
+  [ -d "$candidate/labs" ] && [ -d "$candidate/roles" ] && [ -d "$candidate/bin" ] && echo "$candidate" && break
+done
+```
+
+**3. Ask if not found:**
 ```
 Where is your FTL repository cloned?
 
-Example: ~/work/code/ftl
+Example: ~/work/code/experiment/ftl
 
 FTL repo path:
 ```
@@ -344,6 +357,12 @@ WAIT for answer.
 **Validate** the path has `roles/`, `labs/`, and `bin/` directories.
 
 Read the available grader roles from `roles/` directory to know what validation types are available.
+
+**Bundled examples for reference** (always available — no network needed):
+- `@health/skills/ftl-generator/examples/lab-template/` — Canonical template (always copy this, never generate from scratch)
+- `@health/skills/ftl-generator/examples/ocp4-getting-started/` — Real working lab with grader/solver patterns across 3 modules
+
+Read these before generating any playbooks.
 
 ---
 

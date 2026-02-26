@@ -1,0 +1,330 @@
+---
+# =============================================================================
+# Grade Module 1: Deploying and Managing Applications
+# =============================================================================
+#
+# Validates:
+# - Project creation and CLI access
+# - Parksmap frontend deployment from container image
+# - Application scaling (properly scaled back to 1)
+# - Route creation with HTTPS
+# - Logging access
+# - Service account permissions
+#
+# Environment Variables Required:
+#   - OPENSHIFT_CLUSTER_INGRESS_DOMAIN: Cluster apps domain
+#   - LAB_USER: Student user (e.g., user1) - sets project to wksp-<user>
+#
+# Usage via wrapper (recommended):
+#   grade_lab ocp4-getting-started user1 1
+#
+# Or directly:
+#   export LAB_USER="user1"
+#   export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxxxx.example.com"
+#   ansible-playbook grade_module_01.yml
+#
+# =============================================================================
+
+- name: Initialize FTL Grading Session - Module 1
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    lab_id: "OpenShift 4 Getting Started - Module 1: Deploying and Managing Applications"
+    module_number: "01"
+    student_name: "{{ lookup('env', 'LAB_USER') | default('student') }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+  roles:
+    - ftl_run_init
+
+- name: Grade Module 1 - Deploying and Managing Applications
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    project_name: "wksp-{{ lookup('env', 'LAB_USER') | default('user1', true) }}"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+
+  tasks:
+    # =========================================================================
+    # Auto-detect cluster domain if not set
+    # =========================================================================
+    - name: Get cluster ingress domain from OpenShift
+      when: lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | length == 0
+      ansible.builtin.command: oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+      register: r_cluster_domain
+      changed_when: false
+
+    - name: Set cluster domain
+      ansible.builtin.set_fact:
+        cluster_domain: "{{ lookup('env', 'OPENSHIFT_CLUSTER_INGRESS_DOMAIN') | default(r_cluster_domain.stdout | default('apps.cluster.example.com'), true) }}"
+
+    # =========================================================================
+    # Exercise 1.1: Project Exists
+    # =========================================================================
+    - name: "Exercise 1.1: Verify project exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 1.1: Project {{ project_name }} exists"
+        resource_kind: "Namespace"
+        resource_name: "{{ project_name }}"
+        resource_namespace: ""  # Namespaces are cluster-scoped
+        student_error_message: |
+          Project {{ project_name }} not found.
+          The project is pre-created for you. Contact your instructor if it is missing.
+
+    # =========================================================================
+    # Exercise 1.2: Parksmap Deployment Exists
+    # =========================================================================
+    - name: "Exercise 1.2: Verify parksmap deployment exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_resource
+      vars:
+        task_description_message: "Exercise 1.2: Parksmap deployment created"
+        resource_api_version: "apps/v1"
+        resource_kind: "Deployment"
+        resource_name: "parksmap"
+        resource_namespace: "{{ project_name }}"
+        student_error_message: |
+          Parksmap deployment not found in project {{ project_name }}.
+
+          Deploy the application:
+            1. Open Developer Perspective
+            2. Click +Add → Container images
+            3. Enter image: quay.io/openshiftroadshow/parksmap:latest
+            4. Set Name: parksmap
+            5. Create
+
+          Check deployment: oc get deployment parksmap -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 1.3: Parksmap Service Exists
+    # =========================================================================
+    - name: "Exercise 1.3: Verify parksmap service exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_service_exists
+      vars:
+        task_description_message: "Exercise 1.3: Parksmap service created"
+        service_name: "parksmap"
+        service_namespace: "{{ project_name }}"
+        check_port: 8080
+        student_error_message: |
+          Parksmap service not found in project {{ project_name }}.
+          Service should be created automatically with deployment.
+          Check service: oc get svc parksmap -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 1.4: Parksmap Pod Running
+    # =========================================================================
+    - name: "Exercise 1.4: Verify parksmap pod is running"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_pod_running
+      vars:
+        task_description_message: "Exercise 1.4: Parksmap pod running"
+        pod_name: "parksmap-.*"
+        pod_namespace: "{{ project_name }}"
+        min_ready_pods: 1
+        student_error_message: |
+          Parksmap pod not found or not running in project {{ project_name }}.
+          Check pod status: oc get pods -n {{ project_name }}
+          View pod events: oc describe pod -l app=parksmap -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 1.5: Deployment Labels Configured
+    # =========================================================================
+    - name: "Exercise 1.5: Get deployment to check labels"
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_deployment
+      failed_when: false
+
+    - name: "Exercise 1.5: Evaluate deployment labels"
+      when: r_parksmap_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        deployment_labels: "{{ r_parksmap_deployment.resources[0].metadata.labels | default({}) }}"
+        required_labels:
+          app: "workshop"
+          component: "parksmap"
+          role: "frontend"
+
+    - name: "Exercise 1.5: Check if required labels present"
+      when: r_parksmap_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        labels_correct: "{{
+          (deployment_labels.app | default('') == required_labels.app) and
+          (deployment_labels.component | default('') == required_labels.component) and
+          (deployment_labels.role | default('') == required_labels.role)
+        }}"
+
+    - name: "Exercise 1.5: Set default if deployment doesn't exist"
+      when: r_parksmap_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        labels_correct: false
+
+    - name: "Exercise 1.5: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 1.5: Deployment labels configured correctly (app=workshop, component=parksmap, role=frontend)'
+          if labels_correct
+          else 'FAIL: Exercise 1.5: Deployment labels: Missing or incorrect labels on parksmap deployment. Required labels: app=workshop, component=parksmap, role=frontend. Check labels: oc get deployment parksmap -n ' + project_name + ' --show-labels'
+        }}"
+
+    - name: "Exercise 1.5: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 1.6: Deployment Scaled Correctly (Back to 1)
+    # =========================================================================
+    - name: "Exercise 1.6: Check deployment replica count"
+      when: r_parksmap_deployment.resources | length > 0
+      ansible.builtin.set_fact:
+        replica_count: "{{ r_parksmap_deployment.resources[0].spec.replicas | default(0) }}"
+
+    - name: "Exercise 1.6: Set default replica count if no deployment"
+      when: r_parksmap_deployment.resources | length == 0
+      ansible.builtin.set_fact:
+        replica_count: 0
+
+    - name: "Exercise 1.6: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 1.6: Parksmap scaled correctly (1 replica)'
+          if replica_count | int == 1
+          else 'FAIL: Exercise 1.6: Replica count: Parksmap deployment has ' + (replica_count | string) + ' replicas, expected 1. The scaling exercise requires scaling back to 1 replica. Scale deployment: oc scale deployment/parksmap --replicas=1 -n ' + project_name
+        }}"
+
+    - name: "Exercise 1.6: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 1.7: Route Exists
+    # =========================================================================
+    - name: "Exercise 1.7: Verify parksmap route exists"
+      ansible.builtin.include_role:
+        name: grader_check_ocp_route_exists
+      vars:
+        task_description_message: "Exercise 1.7: Parksmap route created"
+        route_name: "parksmap"
+        route_namespace: "{{ project_name }}"
+        student_error_message: |
+          Parksmap route not found in project {{ project_name }}.
+
+          Create route via CLI:
+            oc expose svc/parksmap -n {{ project_name }}
+
+          Or via Web Console:
+            Developer Perspective → Topology → Click parksmap → Create Route
+
+          Check route: oc get route parksmap -n {{ project_name }}
+
+    # =========================================================================
+    # Exercise 1.8: Route Uses HTTPS
+    # =========================================================================
+    - name: "Exercise 1.8: Verify route TLS configuration"
+      kubernetes.core.k8s_info:
+        api_version: route.openshift.io/v1
+        kind: Route
+        name: parksmap
+        namespace: "{{ project_name }}"
+      register: r_parksmap_route
+      failed_when: false
+
+    - name: "Exercise 1.8: Check if route has TLS configured"
+      when: r_parksmap_route.resources | length > 0
+      ansible.builtin.set_fact:
+        route_has_tls: "{{ r_parksmap_route.resources[0].spec.tls is defined }}"
+
+    - name: "Exercise 1.8: Set default if route doesn't exist"
+      when: r_parksmap_route.resources | length == 0
+      ansible.builtin.set_fact:
+        route_has_tls: false
+
+    - name: "Exercise 1.8: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 1.8: Parksmap route uses HTTPS (TLS configured)'
+          if route_has_tls
+          else 'FAIL: Exercise 1.8: Route HTTPS: Route does not have TLS configured. Routes should use secure HTTPS. Edit route and enable \"Secure Route\" or recreate with --insecure-policy=Redirect'
+        }}"
+
+    - name: "Exercise 1.8: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 1.9: Application Accessible via Route
+    # =========================================================================
+    - name: "Exercise 1.9: Test application endpoint"
+      when: r_parksmap_route.resources | length > 0
+      ansible.builtin.include_role:
+        name: grader_check_http_endpoint
+      vars:
+        task_description_message: "Exercise 1.9: Parksmap application accessible via route"
+        url: "https://{{ r_parksmap_route.resources[0].spec.host }}"
+        expected_status_code: 200
+        validate_certs: false
+        student_error_message: |
+          Parksmap application not accessible via route.
+          Route URL: https://{{ r_parksmap_route.resources[0].spec.host }}
+
+          Check pod status: oc get pods -l app=parksmap -n {{ project_name }}
+          Check pod logs: oc logs -l app=parksmap -n {{ project_name }}
+          Test route: curl -k https://{{ r_parksmap_route.resources[0].spec.host }}
+
+    - name: "Exercise 1.9: Handle case when route doesn't exist"
+      when: r_parksmap_route.resources | length == 0
+      ansible.builtin.set_fact:
+        grader_output_message: "FAIL: Exercise 1.9: Application accessibility: Cannot test application - route does not exist"
+
+    - name: "Exercise 1.9: Log result if route missing"
+      when: r_parksmap_route.resources | length == 0
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+    # =========================================================================
+    # Exercise 1.10: Service Account View Permissions
+    # =========================================================================
+    - name: "Exercise 1.10: Check if default SA has view RoleBinding"
+      kubernetes.core.k8s_info:
+        api_version: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        namespace: "{{ project_name }}"
+      register: r_rolebindings
+      failed_when: false
+
+    - name: "Exercise 1.10: Evaluate view permission"
+      ansible.builtin.set_fact:
+        sa_has_view: "{{ r_rolebindings.resources | selectattr('roleRef.name', 'equalto', 'view') |
+          selectattr('subjects', 'defined') | list |
+          map(attribute='subjects') | flatten |
+          selectattr('kind', 'equalto', 'ServiceAccount') |
+          selectattr('name', 'equalto', 'default') | list | length > 0 }}"
+
+    - name: "Exercise 1.10: Create result message"
+      ansible.builtin.set_fact:
+        grader_output_message: "{{
+          'PASS: Exercise 1.10: Service account has view permissions'
+          if sa_has_view
+          else 'FAIL: Exercise 1.10: Service account permissions: Default service account does not have view role. Grant permissions: oc policy add-role-to-user view -z default -n ' + project_name
+        }}"
+
+    - name: "Exercise 1.10: Log result"
+      ansible.builtin.include_role:
+        name: ftl_run_log_grade_to_log
+
+- name: Finalize FTL Grading Session - Module 1
+  hosts: localhost
+  gather_facts: false
+  vars:
+    module_number: "01"
+    grader_student_report_file: "grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_module_01.txt"
+  roles:
+    - ftl_run_grade_report_generation
+    - ftl_run_finish

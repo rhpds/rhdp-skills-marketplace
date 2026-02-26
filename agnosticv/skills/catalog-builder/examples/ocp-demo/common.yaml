@@ -1,0 +1,383 @@
+---
+# -------------------------------------------------------------------
+# --- Catalog: Red Workshops
+# --- Catalog Item: Demo - Generative AI with Red Hat Openshift AI (CNV Pools)
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# AgnosticV includes
+# -------------------------------------------------------------------
+#include /includes/agd-v2-mapping.yaml
+#include /includes/sandbox-api.yaml
+#include /includes/catalog-icon-openshift-data-science.yaml
+#include /includes/terms-of-service.yaml
+
+
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/ocp4-fips-enable.yaml
+#include /includes/parameters/salesforce-id.yaml
+
+#include /includes/secrets/dynamic-aws-dns.yaml
+#include /includes/secrets/ocp4_ai_offline_token.yaml
+#include /includes/secrets/demosat-rhel-9-10-latest.yaml
+#include /includes/secrets/zerossl.yaml
+
+# -------------------------------------------------------------------
+# Mandatory Variables - AgnosticV2 Pattern
+# -------------------------------------------------------------------
+# Agnosticdv2 variables
+config: openshift-workloads
+cloud_provider: none
+software_to_deploy: none
+openshift_cnv_scale_cluster: true
+clusters:
+  - default:
+      api_url: "{{ openshift_api_url }}"
+      api_token: "{{ openshift_cluster_admin_token }}"
+
+# ===================================================================
+# Additional Collections & roles to be installed for this config
+# ===================================================================
+requirements_content:
+  collections:
+    # Assisted Installer Collection
+    - name: https://github.com/rhpds/assisted_installer.git
+      type: git
+      version: v0.0.8
+
+    # Core OpenShift Workloads
+    - name: https://github.com/agnosticd/core_workloads.git
+      type: git
+      version: main
+
+    # Core Openshift AI Collection
+    - name: https://github.com/agnosticd/ai_workloads.git
+      type: git
+      version: main
+
+    # Original Gen AI collection
+    - name: https://github.com/rhpds/lb1942.instruct_docling_lab.git
+      type: git
+      version: main
+
+# worker count for Auto-scaling
+worker_instance_count: 4
+ai_workers_cores: 16
+ai_workers_memory: 64Gi
+
+# -------------------------------------------------------------------
+# Common Password (from original gen_ai)
+# -------------------------------------------------------------------
+common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+common_admin_password: "{{ common_password }}"
+common_user_password: "{{ common_password }}"
+common_admin_username: admin
+
+# -------------------------------------------------------------------
+# Workload configuration
+# -------------------------------------------------------------------
+ocp4_workload_catalogsource_image: quay.io/gpte-devops-automation/olm_snapshot_redhat_catalog
+ocp4_workload_catalogsource_tag: v4.18_2025_07_25
+
+# User configuration
+ocp4_workload_user_base: user
+ocp4_workload_user_count: 1
+ocp4_workload_multi_user: false
+
+# Show kubeadmin password
+ocp4_cluster_show_access_user_info: true
+
+# OpenShift network type
+ocp4_network_type: OVNKubernetes
+
+# Gen AI secrets (copied from original)
+models_aws_s3_access_key: !vault |
+  $ANSIBLE_VAULT;1.2;AES256;gpte_vault_0
+  37393362653231343836356262616562363137653333373533373966636664333137316132623138
+  6262346238313531656531643030323935393034653961380a323865343931333431646433613637
+  38633263306539346137626639303664336566633339323432386534376239313266386637373939
+  3466363061613963360a656464633563346637313937366431316164636662323865353665633366
+  63303534353532303537343632646566336230353662646664363865373136663461
+
+models_aws_s3_secret_key: !vault |
+  $ANSIBLE_VAULT;1.2;AES256;gpte_vault_0
+  39363536383835326665623462623737396632383134353562613533366366613035353265306466
+  3633323635626130373961373664623363386431636662640a373164616238363632633161326538
+  61366462396231646333626262313064626239356663323736363936656263306266666535623362
+  3162356434396364300a613565313032626462303636306664333738663562333138346630306463
+  39336538353164396163343530353936346234353338363035393662323363373534306231313238
+  3631663265346531653836306564366336376139333663663865
+
+granite_bearerToken: !vault |
+  $ANSIBLE_VAULT;1.2;AES256;gpte_vault_0
+  65393934643033356338633061303661613031626239313936346566333138633636333939626136
+  3633343431313234356638366439386431303933333135660a393637333935343731613965386135
+  37333234306165623931336538393738373236313232386236363861623338613766343233653066
+  6264636664333535390a623634306632323633623535303137336433613035336532666331333566
+  37656634363537646531343866316638383966346639383064616130636336343161373235313435
+  3335383735386539633161633135353263326635323131343735
+
+llamacode7b: !vault |
+  $ANSIBLE_VAULT;1.2;AES256;gpte_vault_0
+  63666339313030313533306637626131383735326137333962663262373936613339363064353736
+  6166383730336264643238623537323639633935303361370a356634623062313037323662386464
+  38313031613330313732663164343233663535633134646639366231653733663062343531323363
+  6531356636316261660a316434333131393331363764373632333763363139393266333534613233
+  36633434386333666563656162653733393264323536336231326534396536323436613036356163
+  6236346233333032316264613665626439373262383132613361
+
+granite_bearerToken_8b_code_instruct_128k: !vault |
+  $ANSIBLE_VAULT;1.2;AES256;gpte_vault_0
+  31666137383834303933366438636365656234383263323561646132613261336136316338623732
+  6237643130393863633830663331333265336364346265390a393532643132353331643231653865
+  34353738613065396464626262343130633835373333336264396166343439643566386433363136
+  3964656364323665360a653166613934323936333339663934396235313033326332363237663962
+  64653465306335613664386134633661343832333561323066363062386462643237613138643437
+  3464666530623637396663666137376439343265656138343161
+
+# ===================================================================
+# List of workloads to be deployed
+# ===================================================================
+workloads:
+  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.core_workloads.ocp4_workload_authorino
+  - agnosticd.core_workloads.ocp4_workload_pipelines
+  - agnosticd.core_workloads.ocp4_workload_openshift_gitops
+  - agnosticd.core_workloads.ocp4_workload_serverless
+  - agnosticd.core_workloads.ocp4_workload_servicemesh2
+  - agnosticd.ai_workloads.ocp4_workload_openshift_ai
+  - agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
+  - agnosticd.core_workloads.ocp4_workload_showroom
+  - agnosticd.core_workloads.ocp4_workload_web_terminal
+
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_authentication_htpasswd
+# -------------------------------------------------------------------
+ocp4_workload_authentication_htpasswd_admin_user: admin
+# Generate admin password
+ocp4_workload_authentication_htpasswd_admin_password: ""
+ocp4_workload_authentication_htpasswd_admin_password_length: 16
+ocp4_workload_authentication_htpasswd_user_base: user
+# Generate user password
+ocp4_workload_authentication_htpasswd_user_password: ""
+ocp4_workload_authentication_htpasswd_user_password_length: 16
+ocp4_workload_authentication_htpasswd_user_password_randomized: true
+ocp4_workload_authentication_htpasswd_user_count: 1
+ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_authorino
+# -------------------------------------------------------------------
+ocp4_workload_authorino_operator_channel: stable
+ocp4_workload_authorino_operator_use_catalog_snapshot: true
+ocp4_workload_authorino_operator_catalog_snapshot_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_authorino_operator_catalog_snapshot_image_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_authorino_operator_catalogsource_name: redhat-operators-snapshot-authorino
+ocp4_workload_authorino_operator_starting_csv: authorino-operator.v1.2.2
+ocp4_workload_authorino_operator_automatic_install_plan_approval: false
+
+# -------------------------------------------------------------------
+# ocp4_workload_pipelines
+# -------------------------------------------------------------------
+ocp4_workload_pipelines_channel: pipelines-1.18
+ocp4_workload_pipelines_use_catalog_snapshot: true
+ocp4_workload_pipelines_catalog_snapshot_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_pipelines_catalog_snapshot_image_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_pipelines_starting_csv: openshift-pipelines-operator-rh.v1.18.1
+ocp4_workload_pipelines_automatic_install_plan_approval: false
+ocp4_workload_pipelines_install_cli_tools: false
+# -------------------------------------------------------------------
+# ocp4_workload_openshift_gitops
+# -------------------------------------------------------------------
+ocp4_workload_openshift_gitops_channel: gitops-1.16
+ocp4_workload_openshift_gitops_use_catalog_snapshot: true
+ocp4_workload_openshift_gitops_catalog_snapshot_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_openshift_gitops_catalog_snapshot_image_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_openshift_gitops_starting_csv: openshift-gitops-operator.v1.16.2
+ocp4_workload_openshift_gitops_automatic_install_plan_approval: false
+
+ocp4_workload_openshift_gitops_setup_cluster_admin: true
+ocp4_workload_openshift_gitops_update_route_tls: true
+ocp4_workload_openshift_gitops_controller_update: true
+ocp4_workload_openshift_gitops_controller_requests_cpu: 250m
+ocp4_workload_openshift_gitops_controller_requests_memory: 2Gi
+ocp4_workload_openshift_gitops_controller_limits_cpu: "2"
+ocp4_workload_openshift_gitops_controller_limits_memory: 4Gi
+
+ocp4_workload_openshift_gitops_rbac_update: true
+ocp4_workload_openshift_gitops_rbac_policy: |
+  g, {{ common_admin_username }}, role:admin
+  g, user1, role:admin
+ocp4_workload_openshift_gitops_rbac_scopes: '[name,groups]'
+
+# -------------------------------------------------------------------
+# ocp4_workload_serverless
+# -------------------------------------------------------------------
+ocp4_workload_serverless_channel: stable
+ocp4_workload_serverless_use_catalog_snapshot: true
+ocp4_workload_serverless_catalog_snapshot_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_serverless_catalog_snapshot_image_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_serverless_starting_csv: serverless-operator.v1.36.0
+ocp4_workload_serverless_automatic_install_plan_approval: false
+
+ocp4_workload_serverless_install_serving: false
+ocp4_workload_serverless_install_eventing: false
+
+# -------------------------------------------------------------------
+# Workload ocp4_workload_servicemesh2 - Service Mesh v2
+# -------------------------------------------------------------------
+ocp4_workload_servicemesh2_catalogsource_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_servicemesh2_catalogsource_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_servicemesh2_use_catalog_snapshot: true
+
+
+# Elasticsearch
+ocp4_workload_servicemesh2_es_channel: stable
+ocp4_workload_servicemesh2_es_startingcsv: ""
+
+# Jaeger
+ocp4_workload_servicemesh2_jaeger_channel: stable
+ocp4_workload_servicemesh2_jaeger_startingcsv: ""
+
+# Kiali
+ocp4_workload_servicemesh2_kiali_channel: stable
+ocp4_workload_servicemesh2_kiali_startingcsv: ""
+
+# Service Mesh
+ocp4_workload_servicemesh2_servicemesh_channel: stable
+ocp4_workload_servicemesh2_servicemesh_startingcsv: ""
+
+
+# -------------------------------------------------------------------
+# OpenShift AI Workload - TODO: Need to add proper collection for this
+# -------------------------------------------------------------------
+ocp4_workload_openshift_ai_channel: stable
+ocp4_workload_openshift_ai_use_catalog_snapshot: true
+ocp4_workload_openshift_ai_catalog_snapshot_image: "{{ ocp4_workload_catalogsource_image }}"
+ocp4_workload_openshift_ai_catalog_snapshot_image_tag: "{{ ocp4_workload_catalogsource_tag }}"
+ocp4_workload_openshift_ai_starting_csv: rhods-operator.2.22.0
+ocp4_workload_openshift_ai_automatic_install_plan_approval: false
+
+ocp4_workload_openshift_ai_kserve: Managed
+
+# -------------------------------------------------------------------
+# ocp4_workload_gitops_bootstrap
+# -------------------------------------------------------------------
+ocp4_workload_gitops_bootstrap_repo_url: https://github.com/ritzshah/llm-rag-deployment.git
+ocp4_workload_gitops_bootstrap_repo_path: bootstrap-helm-chart
+ocp4_workload_gitops_bootstrap_repo_revision: update-token-v1
+
+ocp4_workload_gitops_bootstrap_helm_values:
+  gradioEnv:
+    BEARER_TOKEN: "{{ granite_bearerToken }}"
+    INFERENCE_SERVER_URL: https://granite-3-2-8b-instruct-predictor-maas-apicast-production.apps.maas.redhatworkshops.io:443/v1/completions
+    MODEL_NAME: granite-3-2-8b-instruct
+  gradioRagEnv:
+    BEARER_TOKEN: "{{ granite_bearerToken }}"
+    INFERENCE_SERVER_URL: https://granite-3-2-8b-instruct-predictor-maas-apicast-production.apps.maas.redhatworkshops.io:443/v1/completions
+    MODEL_NAME: granite-3-2-8b-instruct
+ocp4_workload_gitops_bootstrap_health_retries: 2
+
+# -------------------------------------------------------------------
+# Role: ocp4_workload_showroom
+# -------------------------------------------------------------------
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/showroom-generative-ai-rag.git
+ocp4_workload_showroom_content_git_repo_ref: v1.0.0
+ocp4_workload_showroom_deployment_type: helm
+ocp4_workload_showroom_chart_package_url: https://rhpds.github.io/showroom-deployer
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: 1.3.4
+ocp4_workload_showroom_terminal_image: quay.io/rhpds/openshift-showroom-terminal-ocp:2025-07-29
+
+# -------------------------------------------------
+# lb1942.instruct_docling_lab.bootstrap
+# -------------------------------------------------
+bootstrap_rh_submit_repo: https://github.com/jhurlocker/elyra_docling_rh_summit
+bootstrap_num_users: 1
+bootstrap_user_name_base: user
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: d22af282-9f88-4218-a4ee-43f47aacb95c
+  owners:
+    maintainer:
+      - name: Ritesh Shah
+        email: rshah@redhat.com
+    instructions:
+      - name: Ritesh Shah
+        email: rshah@redhat.com
+  anarchy:
+    namespace: babylon-anarchy-4
+  # Components to include in template and catalog item
+  components:
+    - name: openshift
+      display_name: OpenShift Cluster
+      item: agd-v2/ocp-cluster-cnv-pools/prod
+      parameter_values:
+        cluster_size: multinode
+        host_ocp4_installer_version: "4.18"
+        ocp4_fips_enable: false
+      # Propagate agnosticd_user_info data set by this component to variables.
+      propagate_provision_data:
+        - name: sandbox_openshift_api_key
+          var: sandbox_openshift_api_key
+        - name: sandbox_openshift_api_url
+          var: sandbox_openshift_api_url
+        - name: sandbox_openshift_namespace
+          var: sandbox_openshift_namespace
+        - name: openshift_cluster_admin_token
+          var: openshift_cluster_admin_token
+        - name: openshift_api_url
+          var: openshift_api_url
+
+  # Disable actions on chained config that are handled by base.
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2025-10-09
+      pull: missing
+    actions:
+      destroy:
+        disable: true
+      start:
+        disable: true
+      status:
+        disable: true
+      stop:
+        disable: true
+      update:
+        disable: true
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: Generative AI Demo with Red Hat Openshift AI (CNV Pools)
+    category: Demos
+    keywords:
+      - workshop
+      - openshift
+      - ocp
+      - ocp418
+      - ods
+      - datascience
+      - rhods
+      - openshiftai
+      - aiml
+      - rh1
+      - ocpai
+      - ai
+      - gpu
+      - generativeai
+      - rhai
+      - rhoai
+      - cnv
+    multiuser: false
+    labels:
+      Product: Red_Hat_OpenShift_AI
+      Product_Family: Red_Hat_Cloud
+      Provider: RHDP
+    reportingLabels:
+      primaryBU: Artificial_Intelligence
+      secondaryBU: Hybrid_Platforms
+    parameters: []

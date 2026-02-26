@@ -1,0 +1,407 @@
+---
+# =============================================================================
+# FTL Solver: OpenShift 4 Getting Started - Module 3
+# =============================================================================
+#
+# Automatically completes Module 3 tasks:
+# 1. Create Tekton pipeline definition
+# 2. Create PersistentVolumeClaim for pipeline workspace
+# 3. Execute pipeline run
+# 4. Configure GitHub webhook trigger
+#
+# Environment Variables Required:
+#   - LAB_USER: Student user (e.g., user1) - sets project to wksp-<user>
+#
+# Usage via wrapper (recommended):
+#   solve_lab ocp4-getting-started user1 3
+#
+# Or directly:
+#   export LAB_USER="user1"
+#   ansible-playbook solve_module_03.yml
+#
+# =============================================================================
+
+- name: Solve Module 3 - CI/CD with Tekton Pipelines
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    project_name: "wksp-{{ lookup('env', 'LAB_USER') | default('user1', true) }}"
+
+  tasks:
+
+    - name: Display solver information
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Solving Module 3: CI/CD with Tekton Pipelines
+          ================================================================================
+          Project: {{ project_name }}
+          ================================================================================
+
+    # =========================================================================
+    # Step 1: Create PVC for Pipeline Workspace
+    # =========================================================================
+    - name: Check if app-source-pvc exists
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: app-source-pvc
+        namespace: "{{ project_name }}"
+      register: r_pvc
+
+    - name: Create app-source-pvc
+      when: r_pvc.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: app-source-pvc
+            namespace: "{{ project_name }}"
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Gi
+
+    # =========================================================================
+    # Step 2: Create Tekton Pipeline
+    # =========================================================================
+    - name: Check if nationalparks-pipeline exists
+      kubernetes.core.k8s_info:
+        api_version: tekton.dev/v1
+        kind: Pipeline
+        name: nationalparks-pipeline
+        namespace: "{{ project_name }}"
+      register: r_pipeline
+
+    - name: Create nationalparks Tekton pipeline
+      when: r_pipeline.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: tekton.dev/v1
+          kind: Pipeline
+          metadata:
+            name: nationalparks-pipeline
+            namespace: "{{ project_name }}"
+          spec:
+            params:
+              - name: APP_NAME
+                type: string
+                default: nationalparks
+              - name: APP_GIT_URL
+                type: string
+                default: https://github.com/openshift-roadshow/nationalparks.git
+              - name: APP_GIT_REVISION
+                type: string
+                default: master
+            workspaces:
+              - name: app-source
+              - name: maven-settings
+            tasks:
+              - name: git-clone
+                taskRef:
+                  resolver: cluster
+                  params:
+                    - name: kind
+                      value: task
+                    - name: name
+                      value: git-clone
+                    - name: namespace
+                      value: openshift-pipelines
+                params:
+                  - name: URL
+                    value: $(params.APP_GIT_URL)
+                  - name: REVISION
+                    value: $(params.APP_GIT_REVISION)
+                  - name: SUBMODULES
+                    value: "true"
+                  - name: DEPTH
+                    value: "1"
+                  - name: SSL_VERIFY
+                    value: "true"
+                  - name: DELETE_EXISTING
+                    value: "true"
+                  - name: VERBOSE
+                    value: "true"
+                workspaces:
+                  - name: output
+                    workspace: app-source
+              - name: build-and-test
+                taskRef:
+                  resolver: cluster
+                  params:
+                    - name: kind
+                      value: task
+                    - name: name
+                      value: maven
+                    - name: namespace
+                      value: openshift-pipelines
+                runAfter:
+                  - git-clone
+                params:
+                  - name: MAVEN_IMAGE
+                    value: maven:3.8.3-openjdk-11
+                  - name: GOALS
+                    value:
+                      - package
+                  - name: PROXY_PROTOCOL
+                    value: http
+                workspaces:
+                  - name: source
+                    workspace: app-source
+                  - name: maven_settings
+                    workspace: maven-settings
+              - name: build-image
+                taskRef:
+                  resolver: cluster
+                  params:
+                    - name: kind
+                      value: task
+                    - name: name
+                      value: buildah
+                    - name: namespace
+                      value: openshift-pipelines
+                runAfter:
+                  - build-and-test
+                params:
+                  - name: IMAGE
+                    value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest
+                  - name: BUILDER_IMAGE
+                    value: registry.redhat.io/rhel8/buildah:latest
+                  - name: STORAGE_DRIVER
+                    value: vfs
+                  - name: DOCKERFILE
+                    value: ./Dockerfile
+                  - name: CONTEXT
+                    value: .
+                  - name: TLSVERIFY
+                    value: "true"
+                  - name: FORMAT
+                    value: oci
+                workspaces:
+                  - name: source
+                    workspace: app-source
+              - name: redeploy
+                taskRef:
+                  resolver: cluster
+                  params:
+                    - name: kind
+                      value: task
+                    - name: name
+                      value: openshift-client
+                    - name: namespace
+                      value: openshift-pipelines
+                runAfter:
+                  - build-image
+                params:
+                  - name: SCRIPT
+                    value: oc rollout restart deployment/$(params.APP_NAME)
+
+    # =========================================================================
+    # Step 3: Execute Pipeline Run
+    # =========================================================================
+    - name: Check if recent pipeline run exists
+      kubernetes.core.k8s_info:
+        api_version: tekton.dev/v1
+        kind: PipelineRun
+        namespace: "{{ project_name }}"
+        label_selectors:
+          - tekton.dev/pipeline=nationalparks-pipeline
+      register: r_pipelineruns
+
+    - name: Create pipeline run
+      when: r_pipelineruns.resources | length == 0
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: tekton.dev/v1
+          kind: PipelineRun
+          metadata:
+            generateName: nationalparks-pipeline-run-
+            namespace: "{{ project_name }}"
+            labels:
+              tekton.dev/pipeline: nationalparks-pipeline
+          spec:
+            pipelineRef:
+              name: nationalparks-pipeline
+            workspaces:
+              - name: app-source
+                persistentVolumeClaim:
+                  claimName: app-source-pvc
+              - name: maven-settings
+                emptyDir: {}
+      register: r_pipeline_run
+
+    - name: Wait for pipeline run to complete
+      when: r_pipeline_run is changed
+      kubernetes.core.k8s_info:
+        api_version: tekton.dev/v1
+        kind: PipelineRun
+        name: "{{ r_pipeline_run.result.metadata.name }}"
+        namespace: "{{ project_name }}"
+      register: r_pipeline_status
+      until:
+        - r_pipeline_status.resources[0].status.conditions is defined
+        - r_pipeline_status.resources[0].status.conditions | selectattr('type', 'equalto', 'Succeeded') | list | length > 0
+        - r_pipeline_status.resources[0].status.conditions | selectattr('type', 'equalto', 'Succeeded') | first | json_query('status') in ['True', 'False']
+      retries: 120
+      delay: 10
+
+    # =========================================================================
+    # Step 3.5: Create Tekton Triggers (TriggerTemplate, TriggerBinding, EventListener)
+    # Replicates: oc create -f {gitea_url}/{user}/nationalparks/raw/branch/master/pipeline/nationalparks-triggers.yaml
+    # =========================================================================
+    - name: Create TriggerTemplate for nationalparks
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: triggers.tekton.dev/v1alpha1
+          kind: TriggerTemplate
+          metadata:
+            name: nationalparks
+            namespace: "{{ project_name }}"
+          spec:
+            params:
+              - name: git-revision
+              - name: git-commit-message
+              - name: git-repo-url
+              - name: git-repo-name
+              - name: content-type
+              - name: pusher-name
+            resourcetemplates:
+              - apiVersion: tekton.dev/v1beta1
+                kind: PipelineRun
+                metadata:
+                  labels:
+                    tekton.dev/pipeline: nationalparks-pipeline
+                  name: nationalparks-deploy-$(uid)
+                spec:
+                  params:
+                    - name: APP_NAME
+                      value: $(tt.params.git-repo-name)
+                    - name: APP_GIT_URL
+                      value: $(tt.params.git-repo-url)
+                    - name: APP_GIT_REVISION
+                      value: $(tt.params.git-revision)
+                  pipelineRef:
+                    name: nationalparks-pipeline
+                  workspaces:
+                    - name: app-source
+                      persistentVolumeClaim:
+                        claimName: app-source-pvc
+                    - name: maven-settings
+                      emptyDir: {}
+
+    - name: Create TriggerBinding for nationalparks
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: triggers.tekton.dev/v1alpha1
+          kind: TriggerBinding
+          metadata:
+            name: nationalparks
+            namespace: "{{ project_name }}"
+          spec:
+            params:
+              - name: git-repo-url
+                value: $(body.repository.clone_url)
+              - name: git-repo-name
+                value: $(body.repository.name)
+              - name: git-revision
+                value: $(body.after)
+
+    - name: Create EventListener for nationalparks
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: triggers.tekton.dev/v1alpha1
+          kind: EventListener
+          metadata:
+            name: nationalparks
+            namespace: "{{ project_name }}"
+          spec:
+            serviceAccountName: pipeline
+            triggers:
+              - bindings:
+                  - ref: nationalparks
+                template:
+                  ref: nationalparks
+
+    # =========================================================================
+    # Step 4: Configure GitHub Webhook Trigger
+    # =========================================================================
+    - name: Get nationalparks BuildConfig
+      kubernetes.core.k8s_info:
+        api_version: build.openshift.io/v1
+        kind: BuildConfig
+        name: nationalparks
+        namespace: "{{ project_name }}"
+      register: r_buildconfig
+
+    - name: Check if GitHub webhook trigger exists
+      when: r_buildconfig.resources | length > 0
+      ansible.builtin.set_fact:
+        has_github_webhook: "{{
+          r_buildconfig.resources[0].spec.triggers | default([]) |
+          selectattr('type', 'equalto', 'GitHub') |
+          list | length > 0
+        }}"
+
+    - name: Add GitHub webhook trigger to BuildConfig
+      when:
+        - r_buildconfig.resources | length > 0
+        - not (has_github_webhook | default(false))
+      kubernetes.core.k8s_json_patch:
+        api_version: build.openshift.io/v1
+        kind: BuildConfig
+        name: nationalparks
+        namespace: "{{ project_name }}"
+        patch:
+          - op: add
+            path: /spec/triggers/-
+            value:
+              type: GitHub
+              github:
+                secret: "ftl-webhook-secret"
+
+    # =========================================================================
+    # Summary
+    # =========================================================================
+    - name: Display pipeline run status
+      when: r_pipeline_run is changed
+      ansible.builtin.debug:
+        msg: |
+          Pipeline run status: {{ r_pipeline_status.resources[0].status.conditions | selectattr('type', 'equalto', 'Succeeded') | first | json_query('reason') }}
+
+    - name: Display completion summary
+      ansible.builtin.debug:
+        msg: |
+          ================================================================================
+          Module 3 Solver Completed Successfully
+          ================================================================================
+
+          Resources created:
+            ✓ PVC: app-source-pvc (1Gi for pipeline workspace)
+            ✓ Pipeline: nationalparks-pipeline
+            ✓ PipelineRun: {{ r_pipeline_run.result.metadata.name if r_pipeline_run is changed else 'Already exists' }}
+            ✓ GitHub webhook configured on BuildConfig
+
+          Pipeline tasks:
+            1. git-clone: Clone source from Git
+            2. build-and-test: Maven build and test
+            3. build-image: S2I image build
+            4. redeploy: Rollout restart deployment
+
+          Next steps:
+            - View pipeline runs: oc get pipelineruns -n {{ project_name }}
+            - Monitor pipeline: Developer Perspective → Pipelines → nationalparks-pipeline
+            - Grade Module 3: grade_lab ocp4-getting-started 3
+            - Grade full lab: grade_lab ocp4-getting-started
+
+          ================================================================================

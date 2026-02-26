@@ -1,0 +1,18 @@
+---
+# dev environment vars CNV
+
+purpose: development
+
+# -------------------------------------------------------------------
+# ocp4_workload_gitops_bootstrap
+# -------------------------------------------------------------------
+ocp4_workload_gitops_bootstrap_repo_url: https://github.com/ritzshah/llm-rag-deployment.git
+ocp4_workload_gitops_bootstrap_repo_path: bootstrap-helm-chart
+ocp4_workload_gitops_bootstrap_repo_revision: update-token-v1-cnv
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  deployer:
+    scm_ref: main

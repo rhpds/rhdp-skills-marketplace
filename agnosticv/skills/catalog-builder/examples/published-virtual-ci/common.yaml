@@ -1,0 +1,70 @@
+---
+#include /includes/catalog-icon-openshift.yaml
+#include /includes/terms-of-service.yaml
+
+#include /includes/parameters/salesforce-id.yaml
+#include /includes/parameters/purpose.yaml
+
+# -------------------------------------------------------------------
+#
+# --- Catalog Item: LB1688: Agentic AI with Llama Stack and 3rd party Frameworks
+#
+# No changes should be made to this CI, other than __meta__
+# All changes to the functional CI should be made to the component(s)
+#
+# agd_v2/agentic-ai-openshift-aws
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  asset_uuid: 46536500-382e-4412-8b2e-d1f95bfd0ac8
+  owners:
+    maintainer:
+      - name: Tony Kay
+        email: ankay@redhat.com
+    sme:
+      - name: Burr Sutter
+        email: bsutter@redhat.com
+      - name: Natale Vinto
+        email: nvinto@redhat.com
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "Agentic AI with Llama Stack and 3rd party Frameworks"
+    workshopLabUiRedirect: true
+    category: Brand_Events
+    reportingLabels:
+      primaryBU: Artificial_Intelligence
+    keywords:
+      - lb1688
+      - rh1-2026
+      - openshift-ai
+      - llamastack
+      - mcp
+    labels:
+      Product: Red_Hat_OpenShift_Container_Platform
+      Product_Family: Red_Hat_Cloud
+      Provider: RHDP
+      Brand_Event: Red_Hat_One_2026
+    multiuser: true
+    parameters:
+      - name: num_users
+        description: Number of users to provision within the cluster.
+        formLabel: OpenShift User Count
+        openAPIV3Schema:
+          type: integer
+          default: 2
+          minimum: 2
+          maximum: 22
+        components:
+          - name: agentic-ai-openshift-aws
+
+  components:
+    - name: agentic-ai-openshift-aws
+      display_name: "Agentic AI with Llama Stack and 3rd party Frameworks (AWS)"
+      item: agd_v2/agentic-ai-openshift-aws
+
+  deployer:
+    type: null

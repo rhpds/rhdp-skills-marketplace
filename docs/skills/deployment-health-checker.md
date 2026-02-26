@@ -7,7 +7,7 @@ title: /health:deployment-validator
 
 <div class="skill-badge">🏥 Deployment Health Validation</div>
 
-Create Ansible validation roles for post-deployment health checks and verification.
+Create Ansible validation roles that verify every component of your RHDP deployment is healthy — pods running, routes accessible, operators installed, per-user resources correctly provisioned.
 
 ---
 
@@ -119,15 +119,19 @@ Create Ansible validation roles for post-deployment health checks and verificati
 ## 📁 What It Creates
 
 <div class="file-structure">
-  <h4>Generated Directory Structure:</h4>
-  <pre><code>~/work/code/agnosticd/roles/ocp4_workload_<name>_validation/
-├── defaults/main.yml          # Default variables
+  <h4>Generated role in your Ansible collection:</h4>
+  <pre><code>{collection}/roles/ocp4_workload_{workshop}_validation/
+├── defaults/main.yml              # Component toggles + settings
 ├── tasks/
-│   ├── main.yml              # Main validation tasks
-│   ├── pre_workload.yml      # Pre-checks
-│   ├── workload.yml          # Core validation
-│   └── post_workload.yml     # Post-checks
-└── README.md                  # Documentation</code></pre>
+│   ├── main.yml                   # Orchestrates all checks
+│   ├── check_keycloak.yml         # Shared Keycloak namespace
+│   ├── check_aap_instances.yml    # Per-user loop
+│   ├── check_single_aap_instance.yml
+│   ├── check_showroom_instances.yml
+│   ├── check_single_showroom.yml
+│   └── generate_report.yml        # Results to agnosticd_user_info
+└── playbooks/
+    └── validate_{workshop}.yml    # Bastion test playbook</code></pre>
 </div>
 
 ---

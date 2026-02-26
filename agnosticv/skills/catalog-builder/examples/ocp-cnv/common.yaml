@@ -1,0 +1,52 @@
+---
+#include /includes/catalog-icon-aap.yaml
+#include /includes/parameters/purpose.yaml
+
+
+# Replace the link with your repo
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/zt-ans-bu-intro-controller-aap25.git
+ocp4_workload_showroom_ironrdp_enable: true
+
+# Replace uuid for new CI and the display_name
+__meta__:
+  # This catalog item only consists of components and does not describe
+  # anything to provision.
+  deployer:
+    type: null
+  asset_uuid: f5b25279-84bb-4eab-bcbf-9ec67191b871
+  owners:
+    maintainer:
+    - name: Nuno Martins
+      email: nmartins@redhat.com
+    sme:
+    - name: Alberto Gonzalez Rodriguez
+      email: josegonz@redhat.com
+    instructions:
+    - name: Nuno Martins
+      email: nmartins@redhat.com
+
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: Introduction to Ansible Automation Controller 2.5 - Lab
+    category: Workshops
+    multiuser: false
+    workshopLabUiRedirect: true
+    keywords:
+    - aap2
+    - automation
+    labels:
+      Product: Red_Hat_Ansible_Automation_Platform
+      Product_Family: Red_Hat_Automation
+      Provider: Ansible_BU
+      Multi_Asset: "true"
+    reportingLabels:
+      primaryBU: Automation
+  # Keep the components
+  components:
+  - name: zt-lab-developer-cnv
+    display_name: zt lab developer cnv
+    item: zt-ansiblebu/zt-ans-bu-lab-developer-cnv
+    parameter_values:
+      ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/zt-ans-bu-intro-controller-aap25.git
+      ocp4_workload_showroom_ironrdp_enable: false
