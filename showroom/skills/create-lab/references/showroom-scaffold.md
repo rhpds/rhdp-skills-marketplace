@@ -4,7 +4,7 @@
 
 **For NEW labs only. Skip if adding a module to an existing lab.**
 
-**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.1 or above. Contact your RHDP administrator to confirm the version before publishing.
+**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.3 or above. Contact your RHDP administrator to confirm the version before publishing.
 
 Ask these questions SEQUENTIALLY — one at a time.
 
@@ -154,7 +154,7 @@ asciidoc:
 
 ---
 
-**2. `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+**2. `ui-config.yml`** (at repo root, Showroom 1.5.3 format):
 
 *If EXISTS — check and fix:*
 - `type: showroom` missing → add at top
@@ -379,5 +379,5 @@ showroom_content_antora_playbook: site.yml
 **Collection version (requirements_content.collections):**
 ```yaml
 - name: agnosticd.showroom
-  version: ">=1.5.2"
+  version: ">=1.5.3"
 ```

@@ -119,7 +119,7 @@ Check fields in whichever playbook file is present:
 If MISSING:
 ```
 ❌  ui-config.yml not found
-    Showroom 1.5.1 requires this file for split-view and tab configuration.
+    Showroom 1.5.3 requires this file for split-view and tab configuration.
     Run /showroom:create-lab --new to scaffold.
 ```
 

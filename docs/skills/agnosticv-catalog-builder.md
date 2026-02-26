@@ -256,7 +256,7 @@ cd agnosticv</code></pre>
     <li>AgV config: <code>summit-2026/lbXXXX-short-name-cnv</code></li>
     <li>Showroom repo: <code>short-name-showroom</code></li>
     <li>OCP pool: <code>cnv-cluster-4.18/prod</code> (always <code>/prod</code> suffix)</li>
-    <li>Collections: <code>tag: "{{ tag }}"</code> for standard; fixed tag <code>≥ v1.5.2</code> for showroom</li>
+    <li>Collections: <code>tag: "{{ tag }}"</code> for standard; fixed tag <code>≥ v1.5.3</code> for showroom</li>
   </ul>
 
   <h4>Event branding (mandatory — Question 2 never skipped):</h4>

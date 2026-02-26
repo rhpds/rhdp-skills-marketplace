@@ -4,7 +4,7 @@
 
 **For NEW demos only. Skip if adding a module to an existing demo.**
 
-**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.1 or above. Contact your RHDP administrator to confirm the version before publishing.
+**Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.3 or above. Contact your RHDP administrator to confirm the version before publishing.
 
 Ask these questions SEQUENTIALLY — one at a time.
 
@@ -77,7 +77,7 @@ asciidoc:
     source-highlighter: rouge
 ```
 
-**2. Create `ui-config.yml`** (at repo root, Showroom 1.5.1 format):
+**2. Create `ui-config.yml`** (at repo root, Showroom 1.5.3 format):
 
 ```yaml
 ---

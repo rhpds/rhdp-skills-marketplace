@@ -139,8 +139,8 @@ content/modules/ROOT/pages/*.adoc</code></pre>
       <h3>Scaffold Files</h3>
     </div>
     <ul>
-      <li><strong>default-site.yml:</strong> Title not stale, start_page, ui-bundle URL, supplemental_files path, runtime.fetch</li>
-      <li><strong>site.yml mismatch:</strong> Warning if repo has site.yml but no default-site.yml (rename to default-site.yml)</li>
+      <li><strong>site.yml</strong> (preferred) or <strong>default-site.yml</strong>: Title not stale, start_page, ui-bundle URL, supplemental_files pointing to <code>./content/supplemental-ui</code></li>
+      <li><strong>site.yml standard:</strong> If repo has <code>default-site.yml</code> only → flag to rename to <code>site.yml</code> and update gh-pages.yml reference</li>
       <li><strong>ui-config.yml:</strong> type: showroom, view_switcher enabled, tabs configured, persist_url_state</li>
       <li><strong>content/antora.yml:</strong> title not stale, name: modules, start_page, nav, lab_name attribute</li>
       <li><strong>content/lib/:</strong> All 4 JS extension files present</li>
@@ -169,8 +169,8 @@ content/modules/ROOT/pages/*.adoc</code></pre>
       <h4>Step 1.5: Scaffold file check</h4>
       <p>Silently checks all scaffold files and surfaces issues grouped by severity:</p>
       <ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">
-        <li><strong>Critical:</strong> Missing required files (default-site.yml, ui-config.yml, antora.yml)</li>
-        <li><strong>High:</strong> Stale/template titles in default-site.yml, ui-config.yml, antora.yml; site.yml naming mismatch; missing view_switcher or tabs</li>
+        <li><strong>Critical:</strong> Missing required files (site.yml or default-site.yml, ui-config.yml, antora.yml)</li>
+        <li><strong>High:</strong> Stale/template titles in site.yml, ui-config.yml, antora.yml; <code>default-site.yml</code> present (rename to <code>site.yml</code>); missing view_switcher or tabs</li>
         <li><strong>High:</strong> Wrong paths (supplemental_files), missing content/lib/ JS files</li>
       </ul>
     </div>
