@@ -214,7 +214,8 @@ A project folder tracked by Git. Contains all files and history.
 |-----------|-------------|--------------|--------|
 | **showroom** | Salespeople, SAs, content creators | Create demos & workshops | create-lab, create-demo, verify-content, blog-generate |
 | **agnosticv** | RHDP internal team | Deploy workshop infrastructure | agnosticv-catalog-builder, agnosticv-validator |
-| **health** | RHDP internal team | Test deployed infrastructure | deployment-health-checker, ftl |
+| **health** | RHDP internal team | Deployment health validation | deployment-validator |
+| **ftl** | RHDP internal team | Full Test Lifecycle lab grading | ftl:lab-validator |
 
 ---
 

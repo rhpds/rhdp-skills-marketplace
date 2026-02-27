@@ -147,12 +147,12 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `deployment-validator` | Create validation roles | Automated post-deploy health checks |
-| `lab-validator` | Generate lab grader/solver playbooks | Automated workshop grading and testing |
+| `/ftl:lab-validator` | Generate lab grader/solver playbooks (Full Test Lifecycle) | Automated workshop grading and testing |
 
 **Workflow:**
 ```
 Deploy catalog → /deployment-validator → Health checks → Verify readiness
-/create-lab → /lab-validator → Generate graders/solvers → Test workshop
+/create-lab → /ftl:lab-validator → Generate graders/solvers → Test workshop
 ```
 
 **Documentation:** [health/README.md](health/README.md)

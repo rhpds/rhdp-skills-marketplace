@@ -252,7 +252,7 @@ Create Ansible validation roles that verify every component of your RHDP deploym
   <a href="ftl.html" class="related-skill-card">
     <div class="related-skill-icon">🎯</div>
     <div class="related-skill-content">
-      <h4>/ftl</h4>
+      <h4>/ftl:lab-validator</h4>
       <p>Generate automated graders</p>
     </div>
   </a>
@@ -262,7 +262,7 @@ Create Ansible validation roles that verify every component of your RHDP deploym
 
 <div class="navigation-footer">
   <a href="index.html" class="nav-button">← Back to Skills</a>
-  <a href="ftl.html" class="nav-button">Next: /ftl →</a>
+  <a href="ftl.html" class="nav-button">Next: /ftl:lab-validator →</a>
 </div>
 
 <style>

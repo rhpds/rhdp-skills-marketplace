@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.1] - 2026-02-27
+
+### FTL — New Plugin (Full Test Lifecycle)
+
+- **Renamed**: `health:ftl-generator` → `ftl:lab-validator`
+- **New plugin**: `ftl/` — Full Test Lifecycle, own namespace separate from `health`
+- **FTL expanded**: FTL now stands for **Full Test Lifecycle** throughout docs and skill
+- All references updated across README, MARKETPLACE, docs, sidebar nav, glossary
+
+### AgnosticV Skills — Include Loop Prevention
+
+#### catalog-builder
+- **Duplicate include warning**: Before adding any `#include` line, skill now checks `account.yaml` at the event directory level and AgV root level to avoid duplicate includes that cause `"included more than once / include loop"` errors
+- This applies to ALL includes, not just event restriction includes
+
+#### validator
+- **Check 17a updated**: Now detects when event restriction include is already covered by `account.yaml` — errors if both files include it (loop), passes if only one does
+- **Check 18 (new)**: General duplicate include detection across all files loaded together (`account.yaml` parent dir, `account.yaml` root, `common.yaml`, `dev.yaml`) — errors on any duplicate
+
 ## [v2.8.0] - 2026-02-26
 
 ### All Skills
