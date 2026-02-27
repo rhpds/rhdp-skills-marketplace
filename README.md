@@ -90,7 +90,7 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 
 **Health Plugin** (`health@rhdp-marketplace`) - Deployment validation and testing:
 - `/health:deployment-validator` - Create Ansible validation roles
-- `/health:ftl-generator` - Generate FTL grader/solver playbooks for workshop testing
+- `/ftl:lab-validator` - Generate lab grader/solver playbooks for workshop testing
 
 ---
 
@@ -147,12 +147,12 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `deployment-validator` | Create validation roles | Automated post-deploy health checks |
-| `ftl-generator` | Generate FTL grader/solver playbooks | Automated workshop grading and testing |
+| `lab-validator` | Generate lab grader/solver playbooks | Automated workshop grading and testing |
 
 **Workflow:**
 ```
 Deploy catalog → /deployment-validator → Health checks → Verify readiness
-/create-lab → /ftl-generator → Generate graders/solvers → Test workshop
+/create-lab → /lab-validator → Generate graders/solvers → Test workshop
 ```
 
 **Documentation:** [health/README.md](health/README.md)
@@ -172,7 +172,7 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 
 **Workflow:**
 ```
-/create-lab → /health:ftl-generator (generate grader/solver) → Test workshop → Deploy to RHDP
+/create-lab → /ftl:lab-validator (generate grader/solver) → Test workshop → Deploy to RHDP
 ```
 
 **Documentation:** [automation/README.md](automation/README.md)

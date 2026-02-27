@@ -1,0 +1,9 @@
+{
+  "name": "ftl",
+  "version": "2.8.0",
+  "description": "Full Test Lifecycle — generate lab grader and solver playbooks for Showroom workshops",
+  "author": {
+    "name": "RHDP Team",
+    "email": "prakhar@redhat.com"
+  }
+}

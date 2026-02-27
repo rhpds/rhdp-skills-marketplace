@@ -140,7 +140,7 @@ The platform follows Red Hat's AI principles by augmenting human expertise rathe
 ## Future Plans
 
 The **automation namespace** is planned for Q1 2026, which will include:
-- **FTL (Finish The Labs)**: Automated grader/solver generation for workshop testing and validation
+- **FTL (Full Test Lifecycle)**: Automated grader/solver generation for workshop testing and validation
 - **Field Automation Builder**: Import field-sourced content directly into RHDP catalog
 - **Workflow Automation**: Automated RHDP operations and orchestration
 

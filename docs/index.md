@@ -109,7 +109,7 @@ title: Home
       <p>Deployment validation and lab grading (RHDP internal)</p>
       <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
         <li>deployment-validator - Create Ansible validation roles</li>
-        <li>ftl-generator - Generate FTL grader and solver playbooks</li>
+        <li>lab-validator - Generate lab grader and solver playbooks</li>
       </ul>
       <a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Learn more →</a>
     </div>

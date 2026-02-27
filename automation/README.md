@@ -16,7 +16,7 @@ The **automation** namespace provides skills for automating RHDP operations, int
 
 ## Future Skills (Planned)
 
-### /ftl (Finish The Labs)
+### /ftl (Full Test Lifecycle)
 
 AI-powered skill for automated lab testing and validation based on [FTL grading system](https://github.com/redhat-gpte-devopsautomation/FTL).
 
@@ -45,7 +45,7 @@ AI-powered skill for automated lab testing and validation based on [FTL grading 
 
 **Integration:**
 - Repository: [redhat-gpte-devopsautomation/FTL](https://github.com/redhat-gpte-devopsautomation/FTL)
-- RHDP Skills integration: Generate FTL graders from workshop content
+- RHDP Skills integration: Generate lab graders from workshop content
 - Status: Future integration planned
 
 **Status:** Planned for future release
@@ -110,7 +110,7 @@ AI-powered skill for integrating with field-sourced content repository.
 
 The automation namespace will provide intelligent automation capabilities that go beyond simple scripting:
 
-### Intelligent Testing (/ftl - Finish The Labs)
+### Intelligent Testing (/ftl - Full Test Lifecycle)
 - **Generate Graders**: Create Ansible playbooks to validate learner actions
 - **Create Solvers**: Build automated lab completion playbooks for testing
 - **Validate Workshops**: Test what learners will do before publishing
@@ -139,7 +139,7 @@ The automation namespace will provide intelligent automation capabilities that g
 - Auto-remediate failed validations
 
 **showroom (Content):**
-- Generate FTL graders from workshop modules
+- Generate lab graders from workshop modules
 - Create solver playbooks to validate workshop steps
 - Test workshop content before publishing to catalog
 - Enable learner self-assessment with automated grading

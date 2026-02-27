@@ -1,0 +1,1 @@
+../../ftl/skills/lab-validator/SKILL.md

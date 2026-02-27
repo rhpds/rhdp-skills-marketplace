@@ -27,7 +27,7 @@
 
 ## FTL Requirement
 
-All event labs MUST have FTL grader/solver playbooks. Use `/health:ftl-generator`.
+All event labs MUST have FTL grader/solver playbooks. Use `/ftl:lab-validator`.
 
 ## Development Cycle Rule
 

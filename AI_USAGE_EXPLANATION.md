@@ -112,7 +112,7 @@ Previously, this required both subject matter expertise AND proficiency with RHD
 
 ## Future AI Enhancements
 
-- **FTL (Finish The Labs)**: AI-generated workshop graders/solvers for automated testing
+- **FTL (Full Test Lifecycle)**: AI-generated workshop graders/solvers for automated testing
 - **Multi-language Support**: AI-powered translation of workshop content
 - **Smart Recommendations**: AI suggests infrastructure sizing based on workload analysis
 - **Automated Content Updates**: AI detects upstream changes and suggests content updates

@@ -1,6 +1,6 @@
 ---
-name: health:ftl-generator
-description: This skill should be used when the user asks to "generate FTL graders", "create a grader playbook", "build FTL checkpoints", "generate a solver", "create FTL for my lab", "write FTL grade_module playbooks", "add grading to my Showroom workshop", or "generate Finish The Labs playbooks".
+name: ftl:lab-validator
+description: This skill should be used when the user asks to "generate FTL graders", "create a grader playbook", "build FTL checkpoints", "generate a solver", "create FTL for my lab", "write grade_module playbooks", "add grading to my Showroom workshop", "generate lab validators", or "build Full Test Lifecycle playbooks".
 ---
 
 ---
@@ -8,9 +8,9 @@ context: main
 model: claude-opus-4-6
 ---
 
-# FTL Lab Generator
+# FTL Lab Validator
 
-Generate production-quality FTL (Finish The Labs) grader and solver playbooks for a Showroom workshop by reading existing module content. The skill analyzes your `.adoc` module files, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
+Generate production-quality FTL (Full Test Lifecycle) grader and solver playbooks for a Showroom workshop by reading existing module content. The skill analyzes your `.adoc` module files, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
 
 ## What You'll Need Before Starting
 
@@ -359,8 +359,8 @@ WAIT for answer.
 Read the available grader roles from `roles/` directory to know what validation types are available.
 
 **Bundled examples for reference** (always available — no network needed):
-- `@health/skills/ftl-generator/examples/lab-template/` — Canonical template (always copy this, never generate from scratch)
-- `@health/skills/ftl-generator/examples/ocp4-getting-started/` — Real working lab with grader/solver patterns across 3 modules
+- `@ftl/skills/lab-validator/examples/lab-template/` — Canonical template (always copy this, never generate from scratch)
+- `@ftl/skills/lab-validator/examples/ocp4-getting-started/` — Real working lab with grader/solver patterns across 3 modules
 
 Read these before generating any playbooks.
 
