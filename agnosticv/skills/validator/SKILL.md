@@ -1660,7 +1660,12 @@ def check_litemaas_includes(config, includes):
 
 ```python
 def check_event_restriction_include(catalog_path, event_context):
-  """Warn if event catalog is missing access restriction include"""
+  """Warn if event catalog is missing access restriction include.
+
+  IMPORTANT: Check account.yaml first — if the event directory already has
+  an account.yaml that includes the restriction, adding it to common.yaml
+  would create an include loop error (seen as 'included more than once').
+  """
 
   if event_context == 'none':
     return
@@ -1673,20 +1678,50 @@ def check_event_restriction_include(catalog_path, event_context):
   if not expected:
     return
 
+  # Check if account.yaml in the event directory already includes the restriction
+  # e.g. summit-2026/account.yaml may already carry this include at directory level
+  event_dir = os.path.dirname(catalog_path)
+  account_yaml = os.path.join(event_dir, 'account.yaml')
+  covered_by_account = False
+  try:
+    with open(account_yaml) as f:
+      if expected in f.read():
+        covered_by_account = True
+  except:
+    pass
+
   try:
     with open(f"{catalog_path}/common.yaml") as f:
       content = f.read()
-    if expected not in content:
+
+    in_common = expected in content
+
+    if covered_by_account and in_common:
+      # Duplicate — account.yaml + common.yaml both have it → include loop
+      errors.append({
+        'check': 'event_restriction',
+        'severity': 'ERROR',
+        'message': f'Duplicate event restriction include — causes include loop',
+        'location': 'common.yaml',
+        'detail': f'{expected} is already in {account_yaml} — adding it to common.yaml too causes the "included more than once" error',
+        'fix': f'Remove #include /includes/{expected} from common.yaml (account.yaml already covers it)'
+      })
+    elif covered_by_account and not in_common:
+      # Account.yaml covers it — common.yaml correctly omits it
+      passed_checks.append(f"✓ Event restriction covered by account.yaml: {expected}")
+    elif not covered_by_account and in_common:
+      # common.yaml has it and account.yaml doesn't — correct
+      passed_checks.append(f"✓ Event restriction include present in common.yaml: {expected}")
+    else:
+      # Neither has it — warn
       warnings.append({
         'check': 'event_restriction',
         'severity': 'WARNING',
         'message': f'Event catalog missing access restriction include for {event_context}',
         'location': 'common.yaml',
         'fix': f'Add: #include /includes/{expected}',
-        'note': 'Stays in common.yaml until event.yaml is created for the event'
+        'note': 'Only add to common.yaml if account.yaml does not already include it'
       })
-    else:
-      passed_checks.append(f"✓ Event restriction include present: {expected}")
   except:
     pass
 ```

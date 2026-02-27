@@ -546,6 +546,13 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 ```
 
 **Event restriction** (event catalogs — in common.yaml until event.yaml is created):
+
+**Before adding:** check if the event directory already has an `account.yaml` that includes the restriction:
+```bash
+grep "access-restriction-summit-devs" $AGV_PATH/summit-2026/account.yaml 2>/dev/null
+```
+- **If found in `account.yaml`**: do NOT add to `common.yaml` — it would create an include loop error
+- **If NOT found**: add to `common.yaml`:
 ```
 #include /includes/access-restriction-summit-devs.yaml   # summit-2026
 #include /includes/access-restriction-rh1-2026-devs.yaml # rh1-2026
