@@ -119,7 +119,6 @@ tabs:
 - `supplemental-ui/css/site-extra.css`
 - `supplemental-ui/img/favicon.ico`
 - `supplemental-ui/partials/head-meta.hbs`
-- `supplemental-ui/partials/header-content.hbs`
 
 **5. Create `.github/workflows/gh-pages.yml`:**
 

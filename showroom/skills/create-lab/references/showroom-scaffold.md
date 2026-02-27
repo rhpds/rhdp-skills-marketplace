@@ -255,7 +255,6 @@ Same pattern — check each, copy only missing ones:
 - `content/supplemental-ui/css/site-extra.css`
 - `content/supplemental-ui/img/favicon.ico`
 - `content/supplemental-ui/partials/head-meta.hbs`
-- `content/supplemental-ui/partials/header-content.hbs`
 
 ---
 

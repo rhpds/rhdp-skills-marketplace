@@ -191,7 +191,6 @@ Check at `content/supplemental-ui/` (inside the content directory, referenced fr
 Files checked:
 - `content/supplemental-ui/css/site-extra.css`
 - `content/supplemental-ui/partials/head-meta.hbs`
-- `content/supplemental-ui/partials/header-content.hbs`
 
 ---
 
