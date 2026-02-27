@@ -106,6 +106,33 @@ The plugin will update to the latest version from the marketplace.
 
 ---
 
+## Getting a New Plugin (e.g. /ftl:lab-validator added in v2.8.1)
+
+When the marketplace gains a **brand new plugin** (not just an update to an existing one), it won't appear in your installed list automatically — you need to install it explicitly.
+
+**Step 1: Update marketplace first**
+
+```bash
+/plugin marketplace update
+```
+
+This pulls the latest marketplace index from GitHub. After this, the new plugin will appear in the **Marketplace** tab under Browse.
+
+**Step 2: Install the new plugin**
+
+```bash
+/plugin install ftl@rhdp-marketplace
+```
+
+**Step 3: Restart Claude Code**
+
+The new skill `/ftl:lab-validator` will now be available.
+
+> **Why is this different from a regular update?**
+> `/plugin update` only updates plugins you already have installed. A brand new plugin has never been installed, so it won't show up in the update list — you need to explicitly install it once.
+
+---
+
 ## Understanding the Update Process
 
 **Why two steps?**
@@ -268,6 +295,7 @@ Then install the plugins again:
 /plugin install showroom@rhdp-marketplace
 /plugin install agnosticv@rhdp-marketplace
 /plugin install health@rhdp-marketplace
+/plugin install ftl@rhdp-marketplace
 ```
 
 </details>

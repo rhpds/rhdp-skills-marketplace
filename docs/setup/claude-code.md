@@ -81,7 +81,8 @@ Native Agent Skills support with plugin marketplace - automatic updates and the 
 /plugin install agnosticv@rhdp-marketplace
 
 # For deployment health checks (RHDP internal)
-/plugin install health@rhdp-marketplace</code></pre>
+/plugin install health@rhdp-marketplace
+/plugin install ftl@rhdp-marketplace</code></pre>
     </div>
   </div>
 </div>

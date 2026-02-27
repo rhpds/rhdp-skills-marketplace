@@ -117,7 +117,9 @@ rm -rf ~/.claude/docs</code></pre>
 /plugin install agnosticv@rhdp-marketplace
 
 # For deployment health checks (RHDP internal)
-/plugin install health@rhdp-marketplace</code></pre>
+/plugin install health@rhdp-marketplace
+/plugin install ftl@rhdp-marketplace
+/plugin install ftl@rhdp-marketplace</code></pre>
     </div>
   </div>
 
