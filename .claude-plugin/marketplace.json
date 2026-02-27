@@ -21,7 +21,14 @@
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
       "license": "Apache-2.0",
-      "tags": ["agnosticv", "catalog", "infrastructure", "workshop", "demo", "validation"]
+      "tags": [
+        "agnosticv",
+        "catalog",
+        "infrastructure",
+        "workshop",
+        "demo",
+        "validation"
+      ]
     },
     {
       "name": "showroom",
@@ -35,7 +42,16 @@
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
       "license": "Apache-2.0",
-      "tags": ["showroom", "workshop", "lab", "demo", "asciidoc", "content-creation", "validation", "blog"]
+      "tags": [
+        "showroom",
+        "workshop",
+        "lab",
+        "demo",
+        "asciidoc",
+        "content-creation",
+        "validation",
+        "blog"
+      ]
     },
     {
       "name": "health",
@@ -49,7 +65,33 @@
       "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
       "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
       "license": "Apache-2.0",
-      "tags": ["ansible", "validation", "health-check", "deployment"]
+      "tags": [
+        "ansible",
+        "validation",
+        "health-check",
+        "deployment"
+      ]
+    },
+    {
+      "name": "ftl",
+      "source": "./ftl",
+      "description": "Full Test Lifecycle \u2014 generate lab grader and solver playbooks for Showroom workshops",
+      "version": "2.8.1",
+      "author": {
+        "name": "RHDP Team",
+        "email": "prakhar@redhat.com"
+      },
+      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "ftl",
+        "grading",
+        "testing",
+        "lab-validation",
+        "ansible",
+        "workshop"
+      ]
     }
   ]
 }
