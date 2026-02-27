@@ -1,13 +1,13 @@
 ---
 layout: default
-title: /health:ftl-generator
+title: /ftl:lab-validator
 ---
 
-# /health:ftl-generator
+# /ftl:lab-validator
 
-<div class="skill-badge">🧪 FTL Lab Generator</div>
+<div class="skill-badge">🧪 FTL Lab Validator</div>
 
-Generate production-quality FTL (Finish The Labs) grader and solver playbooks for a Showroom workshop by analyzing module content. The skill reads your `.adoc` module files and AgnosticV catalog, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
+Generate production-quality FTL (Full Test Lifecycle) grader and solver playbooks for a Showroom workshop by analyzing module content. The skill reads your `.adoc` module files and AgnosticV catalog, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
 
 ---
 
@@ -48,7 +48,7 @@ export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx..."</code></pre>
 ## Quick Start
 
 ```text
-/health:ftl-generator
+/ftl:lab-validator
 ```
 
 The skill will walk you through the complete workflow step by step.

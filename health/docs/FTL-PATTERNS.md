@@ -1,6 +1,6 @@
 # FTL Framework Patterns Reference
 
-Core patterns and conventions for generating FTL grader and solver playbooks. This document is read by the `/health:ftl-generator` skill at runtime.
+Core patterns and conventions for generating FTL grader and solver playbooks. This document is read by the `/ftl:lab-validator` skill at runtime.
 
 ---
 

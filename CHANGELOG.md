@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.1] - 2026-02-27
+
+### FTL — New Plugin (Full Test Lifecycle)
+
+- **Renamed**: `health:ftl-generator` → `ftl:lab-validator`
+- **New plugin**: `ftl/` — Full Test Lifecycle, own namespace separate from `health`
+- **FTL expanded**: FTL now stands for **Full Test Lifecycle** throughout docs and skill
+- All references updated across README, MARKETPLACE, docs, sidebar nav, glossary
+
+### AgnosticV Skills — Include Loop Prevention
+
+#### catalog-builder
+- **Duplicate include warning**: Before adding any `#include` line, skill now checks `account.yaml` at the event directory level and AgV root level to avoid duplicate includes that cause `"included more than once / include loop"` errors
+- This applies to ALL includes, not just event restriction includes
+
+#### validator
+- **Check 17a updated**: Now detects when event restriction include is already covered by `account.yaml` — errors if both files include it (loop), passes if only one does
+- **Check 18 (new)**: General duplicate include detection across all files loaded together (`account.yaml` parent dir, `account.yaml` root, `common.yaml`, `dev.yaml`) — errors on any duplicate
+
 ## [v2.8.0] - 2026-02-26
 
 ### All Skills
@@ -29,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Health Skills
 
-#### ftl-generator
+#### lab-validator
 - **FTL repo auto-discovery**: Step 1 checks CLAUDE.md, common paths (`~/work/code/experiment/ftl`), then asks — no cold questions
 - **Bundled examples**: `examples/lab-template/` (canonical template) + `examples/ocp4-getting-started/` (real 3-module lab)
 
@@ -74,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### catalog-builder
 - Keyword rules aligned: 3-4 max, no generic terms, consistent across builder and validator
 
-### Health Skills (FTL Generator)
+### FTL Skills (Full Test Lifecycle)
 
 - **Step 0.5 rewrite**: Skill now reads Showroom content and AgV catalog first, then asks about deployed environment — no longer jumps straight to cluster commands
 - **All 9 buried questions fixed**: Questions formatted as `**Question N —**` headers were skipped; all converted to `**Ask the developer:**` imperative pattern
@@ -2266,7 +2285,7 @@ This release makes RHDP Skills Marketplace accessible to average salespeople and
 
 #### Health Namespace (RHDP Internal - Post-Deployment Validation)
 - `validation-role-builder` - Create Ansible validation roles for RHDP workloads
-- `ftl` - Finish The Labs: Automated grader and solver generation for workshop testing
+- `ftl` - Full Test Lifecycle: Automated grader and solver generation for workshop testing
 
 #### Installation System
 - Platform-agnostic installation script with Claude Code and Cursor support

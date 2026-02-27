@@ -143,9 +143,9 @@ For creating validation and health check roles.
     <div class="skill-status available">✅ Available</div>
   </a>
 
-  <a href="ftl.html" class="skill-card health coming-soon">
+  <a href="ftl.html" class="skill-card health">
     <div class="skill-icon">🎯</div>
-    <h3>/ftl</h3>
+    <h3>/ftl:lab-validator</h3>
     <p>Generate automated graders and solvers for workshop testing.</p>
     <div class="skill-meta">
       <div class="meta-item">
@@ -217,7 +217,7 @@ For creating validation and health check roles.
         <td><span class="status-badge available">✅ Available</span></td>
       </tr>
       <tr>
-        <td><code>/ftl</code></td>
+        <td><code>/ftl:lab-validator</code></td>
         <td>Health</td>
         <td>Success criteria</td>
         <td><span class="status-badge coming-soon">🚧 Coming Soon</span></td>

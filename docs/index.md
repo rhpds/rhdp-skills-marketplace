@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-badge">v2.8.0</div>
+  <div class="hero-badge">v2.8.1</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for creating workshops, demos, and automating Red Hat Demo Platform infrastructure.</p>
   <div class="hero-actions">
@@ -109,7 +109,7 @@ title: Home
       <p>Deployment validation and lab grading (RHDP internal)</p>
       <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
         <li>deployment-validator - Create Ansible validation roles</li>
-        <li>ftl-generator - Generate FTL grader and solver playbooks</li>
+        <li>lab-validator - Generate lab grader and solver playbooks</li>
       </ul>
       <a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Learn more →</a>
     </div>

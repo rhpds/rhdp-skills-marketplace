@@ -1,1 +1,0 @@
-../../health/skills/ftl-generator/SKILL.md

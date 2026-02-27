@@ -231,7 +231,7 @@ elif choice == 2:
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
                    "anarchy_namespace", "best_practices",
-                   "litemaas", "event_restriction",
+                   "litemaas", "event_restriction", "duplicate_includes",
                    "event_catalog"]  # event_catalog only runs if event_context != none
 
 elif choice == 3:
@@ -241,7 +241,7 @@ elif choice == 3:
                    "stage_files", "multiuser", "bastion", "collections",
                    "deployer", "reporting_labels", "components", "asciidoc",
                    "anarchy_namespace", "best_practices",
-                   "litemaas", "event_restriction",
+                   "litemaas", "event_restriction", "duplicate_includes",
                    "event_catalog",   # event_catalog only runs if event_context != none
                    "github_api", "collection_urls", "scm_refs"]
 ```
@@ -1660,7 +1660,12 @@ def check_litemaas_includes(config, includes):
 
 ```python
 def check_event_restriction_include(catalog_path, event_context):
-  """Warn if event catalog is missing access restriction include"""
+  """Warn if event catalog is missing access restriction include.
+
+  IMPORTANT: Check account.yaml first — if the event directory already has
+  an account.yaml that includes the restriction, adding it to common.yaml
+  would create an include loop error (seen as 'included more than once').
+  """
 
   if event_context == 'none':
     return
@@ -1673,22 +1678,139 @@ def check_event_restriction_include(catalog_path, event_context):
   if not expected:
     return
 
+  # Check if account.yaml in the event directory already includes the restriction
+  # e.g. summit-2026/account.yaml may already carry this include at directory level
+  event_dir = os.path.dirname(catalog_path)
+  account_yaml = os.path.join(event_dir, 'account.yaml')
+  covered_by_account = False
+  try:
+    with open(account_yaml) as f:
+      if expected in f.read():
+        covered_by_account = True
+  except:
+    pass
+
   try:
     with open(f"{catalog_path}/common.yaml") as f:
       content = f.read()
-    if expected not in content:
+
+    in_common = expected in content
+
+    if covered_by_account and in_common:
+      # Duplicate — account.yaml + common.yaml both have it → include loop
+      errors.append({
+        'check': 'event_restriction',
+        'severity': 'ERROR',
+        'message': f'Duplicate event restriction include — causes include loop',
+        'location': 'common.yaml',
+        'detail': f'{expected} is already in {account_yaml} — adding it to common.yaml too causes the "included more than once" error',
+        'fix': f'Remove #include /includes/{expected} from common.yaml (account.yaml already covers it)'
+      })
+    elif covered_by_account and not in_common:
+      # Account.yaml covers it — common.yaml correctly omits it
+      passed_checks.append(f"✓ Event restriction covered by account.yaml: {expected}")
+    elif not covered_by_account and in_common:
+      # common.yaml has it and account.yaml doesn't — correct
+      passed_checks.append(f"✓ Event restriction include present in common.yaml: {expected}")
+    else:
+      # Neither has it — warn
       warnings.append({
         'check': 'event_restriction',
         'severity': 'WARNING',
         'message': f'Event catalog missing access restriction include for {event_context}',
         'location': 'common.yaml',
         'fix': f'Add: #include /includes/{expected}',
-        'note': 'Stays in common.yaml until event.yaml is created for the event'
+        'note': 'Only add to common.yaml if account.yaml does not already include it'
       })
-    else:
-      passed_checks.append(f"✓ Event restriction include present: {expected}")
   except:
     pass
+```
+
+---
+
+### Check 18: Duplicate Includes (causes include loop errors)
+
+```python
+def check_duplicate_includes(catalog_path, agv_path):
+  """Detect duplicate #include lines across all files in the catalog.
+
+  AgnosticV errors with 'included more than once / include loop' when the
+  same include appears in multiple files that are loaded together. Common case:
+  account.yaml in the event directory + common.yaml both including the same file.
+  """
+
+  import re
+
+  def extract_includes(filepath):
+    """Return list of include paths from a file."""
+    try:
+      with open(filepath) as f:
+        content = f.read()
+      return re.findall(r'^#include\s+(.+)$', content, re.MULTILINE)
+    except:
+      return []
+
+  # Collect all includes from files that are loaded together:
+  # account.yaml (event/parent dir), common.yaml, dev.yaml
+  files_to_check = {
+    'common.yaml': os.path.join(catalog_path, 'common.yaml'),
+    'dev.yaml':    os.path.join(catalog_path, 'dev.yaml'),
+  }
+
+  # Check parent directory account.yaml (e.g. summit-2026/account.yaml)
+  parent_dir = os.path.dirname(catalog_path)
+  account_yaml = os.path.join(parent_dir, 'account.yaml')
+  if os.path.exists(account_yaml):
+    files_to_check['account.yaml (parent dir)'] = account_yaml
+
+  # Also check AgV root account.yaml
+  root_account = os.path.join(agv_path, 'account.yaml')
+  if os.path.exists(root_account):
+    files_to_check['account.yaml (root)'] = root_account
+
+  # Collect all includes with their source file
+  all_includes = {}  # include_path → [source_files]
+  for label, filepath in files_to_check.items():
+    for inc in extract_includes(filepath):
+      inc = inc.strip()
+      if inc not in all_includes:
+        all_includes[inc] = []
+      all_includes[inc].append(label)
+
+  # Check within common.yaml itself for duplicates
+  try:
+    with open(files_to_check['common.yaml']) as f:
+      content = f.read()
+    includes_in_common = re.findall(r'^#include\s+(.+)$', content, re.MULTILINE)
+    seen = set()
+    for inc in includes_in_common:
+      inc = inc.strip()
+      if inc in seen:
+        errors.append({
+          'check': 'duplicate_includes',
+          'severity': 'ERROR',
+          'message': f'Duplicate #include in common.yaml: {inc}',
+          'location': 'common.yaml',
+          'fix': f'Remove the duplicate #include {inc} line',
+        })
+      seen.add(inc)
+  except:
+    pass
+
+  # Check for cross-file duplicates
+  for inc, sources in all_includes.items():
+    if len(sources) > 1:
+      errors.append({
+        'check': 'duplicate_includes',
+        'severity': 'ERROR',
+        'message': f'Include appears in multiple files — causes include loop',
+        'include': inc,
+        'found_in': sources,
+        'fix': f'Remove #include {inc} from common.yaml (already included via {sources[0]})',
+        'detail': 'AgnosticV errors: "included more than once / include loop"'
+      })
+    else:
+      passed_checks.append(f"✓ No duplicate include: {inc}")
 ```
 
 ---
