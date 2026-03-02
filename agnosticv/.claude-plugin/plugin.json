@@ -1,6 +1,6 @@
 {
   "name": "agnosticv",
-  "version": "2.8.3",
+  "version": "2.8.4",
   "description": "AgnosticV catalog builder and validator for RHDP infrastructure automation",
   "author": {
     "name": "RHDP Team",

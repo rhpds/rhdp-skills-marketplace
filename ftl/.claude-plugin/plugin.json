@@ -1,6 +1,6 @@
 {
   "name": "ftl",
-  "version": "2.8.3",
+  "version": "2.8.4",
   "description": "Full Test Lifecycle \u2014 generate lab grader and solver playbooks for Showroom workshops",
   "author": {
     "name": "RHDP Team",

@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.4] - 2026-03-02
+
+### AgnosticV Skills
+
+#### catalog-builder
+- Lab terminology: all Lab types (multi-user, single-user, admin-only) now use `Labs` category with `workshop_user_mode` (multi/single/none) auto-set
+- OLS (ocp4_workload_ols) must be explicitly requested — no longer auto-added
+- `ocp4_workload_showroom_user_data_seed` documented as optional workload (before ocp4_workload_showroom)
+- Info-message generation now reads actual workload task files for real agnosticd_user_info key names — no generic placeholders
+- Showroom v1.5.4 minimum
+- Keycloak channel updated to stable-v26.4
+
+#### validator
+- `Labs` and `Open_Environments` added to valid categories
+- `workshop_user_mode` validation (multi/single/none)
+- Check 18: general duplicate include detection across all loaded files
+
+### All Skills
+- Replaced all 'press Enter' prompts with typed options (Claude Code has no Enter key)
+- OCP console embed (`ocp4_workload_ocp_console_embed`) must be before `ocp4_workload_showroom`
+
+### Showroom Skills
+- Tabs must be configured in ui-config.yml — blank panel warning added to all skills
+- Full tab examples from real tests/showroom-embed-test catalog
+- `ocp4_workload_showroom_user_data_seed` ordering documented in scaffold
+
+
+
 ## [v2.8.3] - 2026-03-02
 
 ### AgnosticV Skills — Catalog Type + Schema Alignment
