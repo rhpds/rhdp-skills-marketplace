@@ -137,12 +137,12 @@ Then check `tabs:` section based on detected infra type:
 *OCP catalog:*
 | Check | Message if wrong |
 |---|---|
-| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. Expected: OpenShift Console, Bastion terminal, or other OCP-specific URLs |
+| At least one uncommented tab | ⚠️ **No tabs configured — learners will see a blank right panel.** Add at least one tab. Common OCP examples: `- name: Terminal / path: /wetty / port: 443`, `- name: OCP Console / url: 'https://console-openshift-console.${DOMAIN}'`. See `@showroom/skills/create-lab/references/showroom-scaffold.md` for full tab reference. |
 
 *VM / RHEL catalog:*
 | Check | Message if wrong |
 |---|---|
-| At least one uncommented tab | ⚠️ No consoles configured — learners will see no embedded tools. For VM catalogs add: Wetty terminal (port 3000/wetty), AAP dashboard, RHEL Cockpit, or other bastion-accessible URLs |
+| At least one uncommented tab | ⚠️ **No tabs configured — learners will see a blank right panel.** Add at least one tab. Common VM examples: `- name: Terminal / port: 3000 / path: /wetty`, `- name: AAP Dashboard / url: 'https://aap.${DOMAIN}'`. See `@showroom/skills/create-lab/references/showroom-scaffold.md` for full tab reference. |
 | No `console-openshift-console` URL | ⚠️ OCP console URL found in VM catalog — this won't work without an OCP cluster. Use bastion-accessible URLs instead. |
 
 ---
