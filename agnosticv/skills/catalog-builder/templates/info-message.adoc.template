@@ -23,12 +23,20 @@ Access your workshop guide:
 
 == Additional Information
 
-=== <Service Name>
+NOTE: Replace the section below with real variable names from your workload's
+agnosticd_user_info data. Never use generic placeholders like {data_key_1}.
+Find real key names by searching your workload tasks for agnosticd_user_info calls.
 
-* *API URL*: {<data_key_1>}
-* *API Key*: {<data_key_2>}
+=== LiteMaaS (example — use only if your workload sets these)
 
-NOTE: The data above comes from `agnosticd_user_info.data` in your workload.
+* *API URL*: {litellm_api_base_url}
+* *API Key*: {litellm_virtual_key}
+
+=== Gitea (example — use only if your workload sets these)
+
+* *Git URL*: {gitea_console_url}
+* *Username*: {gitea_admin_username}
+* *Password*: {gitea_admin_password}
 
 == Support
 

@@ -334,6 +334,16 @@ Without tabs configured, learners will see a blank right panel.
 Use /showroom:create-lab to scaffold ui-config.yml with the correct tabs.
 ```
 
+**Ask about user data:**
+
+```
+Q: Does your lab expose any data to learners via Showroom
+   (API URLs, credentials, feature flags, per-user tokens)? [Y/n]
+```
+
+If YES → include `ocp4_workload_showroom_user_data_seed` before `ocp4_workload_showroom`.
+Ask what data to include and generate the seed var (global keys + optional `users` map for multi-user labs).
+
 **Generate Showroom section for common.yaml:**
 
 ```yaml
@@ -344,12 +354,20 @@ requirements_content:
     version: v1.5.4   # fixed — minimum v1.5.4
 
 workloads:
-- agnosticd.showroom.ocp4_workload_ocp_console_embed
+- agnosticd.showroom.ocp4_workload_ocp_console_embed   # before showroom
+- agnosticd.showroom.ocp4_workload_showroom_user_data_seed  # if exposing data
 - agnosticd.showroom.ocp4_workload_showroom
 
 ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<short-name>-showroom
 ocp4_workload_showroom_content_git_repo_ref: main
 ocp4_workload_showroom_antora_enable_dev_mode: "false"
+
+# User data seed — define exactly what content.user_data exposes to learners:
+# ocp4_workload_showroom_user_data_seed:
+#   api_url: "https://api.{{ cluster_domain }}"   # global — all users see this
+#   users:                                          # per-user (multi-user labs only)
+#     user1:
+#       token: "{{ user1_token }}"
 ```
 
 **dev.yaml Showroom override:**

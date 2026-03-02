@@ -212,15 +212,24 @@ ocp4_workload_showroom_tabs:
 
 ### AgnosticV common.yaml — Showroom workloads and vars
 
-**OCP (console embed + split view — BOTH workloads required, embed MUST be first):**
+**OCP (console embed + split view — workload order matters):**
 ```yaml
 workloads:
-  - agnosticd.showroom.ocp4_workload_ocp_console_embed   # MUST be before showroom
-  - agnosticd.showroom.ocp4_workload_showroom
+  - agnosticd.showroom.ocp4_workload_ocp_console_embed       # 1st — removes X-Frame-Options
+  - agnosticd.showroom.ocp4_workload_showroom_user_data_seed # 2nd — if exposing data to learners
+  - agnosticd.showroom.ocp4_workload_showroom                # last
 
 ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/your-showroom-repo.git
 ocp4_workload_showroom_content_git_repo_ref: main
 ocp4_workload_showroom_content_antora_playbook: site.yml
+
+# Expose data to learners via content.user_data (use real var names from your workloads):
+# ocp4_workload_showroom_user_data_seed:
+#   openshift_console_url: "https://console-openshift-console.{{ cluster_domain }}"
+#   openshift_api_url: "{{ openshift_api_url }}"
+#   users:              # per-user data (multi-user labs only)
+#     user1:
+#       gitea_token: "{{ gitea_user1_token }}"
 ```
 
 **VM / cloud-vms-base:**

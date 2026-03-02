@@ -20,29 +20,46 @@ Q: What is the path to your AgV catalog directory?
 Path:
 ```
 
-### Step 2: User Data Configuration
+### Step 2: Discover Actual User Data Keys
 
-```
-📧 Info Message Template
+**Do NOT ask the user to type key names from memory.** First try to read the actual workload code to find the real keys.
 
-This template uses data from agnosticd_user_info.
+**Step 2a — Search workload tasks for agnosticd_user_info calls:**
+Read the catalog's `common.yaml` to get the workload list, then search each collection role's tasks for `agnosticd_user_info` calls:
 
-Q: Does your workload share data via agnosticd_user_info? [Y/n]
-```
-
-**If YES:**
-```
-Q: List the data keys your workload shares (comma-separated):
-
-Examples:
-  - litellm_api_base_url, litellm_virtual_key
-  - grafana_url, grafana_password
-  - custom_service_url, custom_api_key
-
-Data keys:
+```bash
+grep -r "agnosticd_user_info\|agnosticd.core.agnosticd_user_info" \
+  {collection_path}/roles/*/tasks/ -A 10 | grep -A 5 "data:"
 ```
 
-**Generate template** (same as Mode 1, Step 10.4)
+Extract every key name under `data:` — these are the REAL variable names (e.g. `litellm_api_base_url`, `gitea_admin_password`, `openshift_console_url`).
+
+**Step 2b — Confirm with user:**
+```
+I found these data keys in your workloads:
+
+  - litellm_api_base_url
+  - litellm_virtual_key
+  - gitea_admin_username
+
+Are these correct? Any to add or remove?
+```
+
+**If workload code is not available**, ask — but require exact names:
+```
+Q: What data keys does your workload share via agnosticd_user_info?
+   Use the EXACT key names from your workload's agnosticd_user_info data: dict.
+   Do not use generic names — check your workload tasks first.
+
+   Common real examples:
+   - litellm_api_base_url, litellm_virtual_key   (LiteMaaS)
+   - gitea_admin_username, gitea_admin_password   (Gitea)
+   - openshift_console_url                        (OCP cluster)
+
+Data keys (exact names):
+```
+
+**Generate template using REAL key names only** — never use generic placeholders like `{data_key_1}`, `{user}`, or `{api_key}`. Every `{variable}` in the template must correspond to an actual key from the workload.
 
 **Write file and optionally commit**
 
