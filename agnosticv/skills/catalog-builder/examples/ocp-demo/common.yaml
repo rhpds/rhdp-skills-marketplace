@@ -60,6 +60,11 @@ requirements_content:
       type: git
       version: main
 
+    # Showroom Collection
+    - name: https://github.com/agnosticd/showroom.git
+      type: git
+      version: v1.5.4
+
 # worker count for Auto-scaling
 worker_instance_count: 4
 ai_workers_cores: 16
@@ -139,7 +144,7 @@ granite_bearerToken_8b_code_instruct_128k: !vault |
 # List of workloads to be deployed
 # ===================================================================
 workloads:
-  - agnosticd.core_workloads.ocp4_workload_authentication_htpasswd
+  - agnosticd.core_workloads.ocp4_workload_authentication
   - agnosticd.core_workloads.ocp4_workload_authorino
   - agnosticd.core_workloads.ocp4_workload_pipelines
   - agnosticd.core_workloads.ocp4_workload_openshift_gitops
@@ -147,23 +152,19 @@ workloads:
   - agnosticd.core_workloads.ocp4_workload_servicemesh2
   - agnosticd.ai_workloads.ocp4_workload_openshift_ai
   - agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
-  - agnosticd.core_workloads.ocp4_workload_showroom
+  - agnosticd.showroom.ocp4_workload_ocp_console_embed
+  - agnosticd.showroom.ocp4_workload_showroom
   - agnosticd.core_workloads.ocp4_workload_web_terminal
 
 # -------------------------------------------------------------------
-# Workload: ocp4_workload_authentication_htpasswd
+# Workload: ocp4_workload_authentication (unified — htpasswd provider)
 # -------------------------------------------------------------------
-ocp4_workload_authentication_htpasswd_admin_user: admin
-# Generate admin password
-ocp4_workload_authentication_htpasswd_admin_password: ""
-ocp4_workload_authentication_htpasswd_admin_password_length: 16
-ocp4_workload_authentication_htpasswd_user_base: user
-# Generate user password
-ocp4_workload_authentication_htpasswd_user_password: ""
-ocp4_workload_authentication_htpasswd_user_password_length: 16
-ocp4_workload_authentication_htpasswd_user_password_randomized: true
-ocp4_workload_authentication_htpasswd_user_count: 1
-ocp4_workload_authentication_htpasswd_remove_kubeadmin: true
+ocp4_workload_authentication_provider: htpasswd
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""          # auto-generated if empty
+ocp4_workload_authentication_remove_kubeadmin: true
+ocp4_workload_authentication_num_users: "{{ num_users | default(1) | int }}"
+ocp4_workload_authentication_user_password: ""           # auto-generated if empty
 
 # -------------------------------------------------------------------
 # Workload: ocp4_workload_authorino

@@ -65,28 +65,19 @@ worker_instance_count: "{{ 0 if cluster_size == 'sno' else worker_instance_count
 # List of workloads to be deployed
 # ===================================================================
 workloads:
-- agnosticd.core_workloads.ocp4_workload_authentication_keycloak
+- agnosticd.core_workloads.ocp4_workload_authentication
 - agnosticd.ai_workloads.ocp4_workload_ols
 
 # ===================================================================
-# Workload: agnosticd.core_workloads.ocp4_workload_authentication_keycloak
-# ===================================================================
-# Red Hat Build of Keycloak (RHBK) - User Authentication
-# Creates Keycloak instance and manages user accounts
-
-# Operator configuration
-ocp4_workload_authentication_keycloak_namespace: keycloak
+# Workload: ocp4_workload_authentication (unified — keycloak provider)
+# -------------------------------------------------------------------
+ocp4_workload_authentication_provider: keycloak
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_admin_password: ""          # auto-generated if empty
+ocp4_workload_authentication_remove_kubeadmin: true
+ocp4_workload_authentication_num_users: "{{ num_users | default(1) | int }}"
+ocp4_workload_authentication_user_password: ""           # auto-generated if empty
 ocp4_workload_authentication_keycloak_channel: stable-v26.4
-ocp4_workload_authentication_keycloak_use_catalog_source: false
-
-ocp4_workload_authentication_keycloak_admin_create: true
-ocp4_workload_authentication_keycloak_admin_username: admin
-ocp4_workload_authentication_keycloak_admin_password: ''
-ocp4_workload_authentication_keycloak_remove_kubeadmin: true
-
-ocp4_workload_authentication_keycloak_num_users: "{{ (num_users | default('1')) | int }}"
-ocp4_workload_authentication_keycloak_user_username_base: user
-ocp4_workload_authentication_keycloak_user_password: ''
 
 # -------------------------------------------------------------------
 # Workload: ocp4_workload_ols (OpenShift Lightspeed)
