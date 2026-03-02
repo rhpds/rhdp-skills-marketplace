@@ -1,37 +1,67 @@
 # Showroom Scaffold Setup (create-demo)
 
-### Step 3.1: Showroom Setup (Recommended for new demos)
+### Step 3.1: Showroom Setup (Recommended for new labs)
 
-**For NEW demos only. Skip if adding a module to an existing demo.**
+**For NEW labs only. Skip if adding a module to an existing lab.**
 
 **Note to RHDP developers**: If you want console embedding (OpenShift Console, Bastion terminal, etc.) and split-view in Showroom, your Showroom deployment must be on version 1.5.3 or above. Contact your RHDP administrator to confirm the version before publishing.
 
 Ask these questions SEQUENTIALLY — one at a time.
 
-**Question A — Consoles and tools to embed:**
+**Question 0 — Catalog infrastructure type:**
 
 ```
-What consoles or tools should the presenter see in the Showroom right panel?
+Is this Showroom for an OCP-based or VM-based catalog?
 
-Each tab appears as a clickable pane next to the demo script.
+1. OCP cluster     (OpenShift — uses ocp4_workload_showroom)
+2. VM / RHEL       (cloud-vms-base — uses vm_workload_showroom, no OCP console)
 
-Common options:
+Choice [1/2]:
+```
+
+**Question A — Consoles and tools to embed:**
+
+*If OCP (choice 1):*
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Common options for OCP catalogs:
 - OpenShift Console  → https://console-openshift-console.${DOMAIN}
 - Bastion terminal   → path: /wetty, port: 443
 - OpenShift AI       → https://rhods-dashboard-redhat-ods-applications.${DOMAIN}
 - AAP dashboard      → https://aap-dashboard.${DOMAIN}
 - External URL       → any https:// URL
 
-List each console as: name | url  (or name | path + port for terminals)
-
 Examples:
   OpenShift Console | https://console-openshift-console.${DOMAIN}
   Bastion | /wetty (port 443)
 
-You can adjust these later by editing ui-config.yml.
+Your consoles (or press Enter to leave as commented-out examples):
+```
+
+*If VM / RHEL (choice 2):*
+```
+What consoles or tools should learners see in the Showroom right panel?
+
+Common options for VM catalogs (no OCP console available):
+- Bastion terminal   → port: 3000, path: /wetty
+- AAP dashboard      → https://aap.${DOMAIN}
+- RHEL Cockpit       → https://cockpit.${DOMAIN}:9090
+- Grafana            → https://grafana.${DOMAIN}
+- Code Server        → port: 3001, path: /code
+- Custom app         → any port/path on the bastion VM
+- External docs      → any https:// URL (add external: true)
+
+Note: ${DOMAIN} is resolved at runtime from the bastion hostname.
+
+Examples:
+  Terminal | /wetty (port 3000)
+  AAP Dashboard | https://aap.${DOMAIN}
 
 Your consoles (or press Enter to leave as commented-out examples):
 ```
+
+If user presses Enter → add appropriate commented-out examples per infra type in the generated ui-config.yml.
 
 **Question B — ui-bundle theme:**
 
@@ -47,13 +77,57 @@ Available themes (see https://github.com/rhpds/rhdp_showroom_theme/releases):
 Press Enter to use the default, or paste a different URL:
 ```
 
-**Now create all infrastructure files:**
+**Check, fix, or create each infrastructure file — never blindly overwrite.**
 
-**1. Create `site.yml`** (at repo root):
+For every file below: silently check if it exists first.
+- **EXISTS** → read it, detect stale/template values, fix only what's wrong, report changes.
+- **MISSING** → create it from scratch, report created.
 
+**Known stale/template title values** (treat as "not updated"):
+`Workshop Title`, `Lab Title`, `Showroom Template`, `Red Hat Showroom`, `My Workshop`, `Template`, `showroom_template_nookbag`, empty string, or any value that exactly matches the repository directory name.
+
+---
+
+**1. `site.yml`** (at repo root — the going-forward standard):
+
+The showroom role supports both `site.yml` and `site.yml` via fallback. `site.yml` is the new standard. `site.yml` is also valid and silently supported by the role.
+
+```bash
+# Check which playbook file exists
+ls site.yml 2>/dev/null && echo "found site.yml"
+ls site.yml 2>/dev/null && echo "found site.yml"
+```
+
+| State | Action |
+|---|---|
+| `site.yml` exists | Proceed to check/fix below |
+| `site.yml` exists, no `site.yml` | Rename to `site.yml` silently, then check/fix |
+| Both exist | Use `site.yml`, remove `site.yml` |
+| Neither exists | Create `site.yml` from scratch |
+
+If renaming:
+```bash
+mv site.yml site.yml
+
+# Also update the GitHub Pages workflow if it references the old name
+if grep -q "site.yml" .github/workflows/gh-pages.yml 2>/dev/null; then
+  sed -i '' 's/antora generate site.yml/antora generate site.yml/g' .github/workflows/gh-pages.yml
+fi
+```
+Report: `✓ Renamed site.yml → site.yml (new standard)`
+Report: `✓ Updated .github/workflows/gh-pages.yml to reference site.yml` (if applicable)
+
+*If EXISTS — check and fix:*
+- `site.title` is stale/template → update to `"{{ lab_title }}"`
+- `site.start_page` is not `modules::index.adoc` → fix
+- `ui.bundle.url` is the old default nookbag bundle (not the theme from Question B) → update to `{{ ui_bundle_url }}`
+- `ui.supplemental_files` is missing or not `./supplemental-ui` → fix
+- `runtime.fetch` is missing → add `fetch: true`
+
+*If MISSING — create `site.yml`:*
 ```yaml
 site:
-  title: "{{ demo_title }}"
+  title: "{{ lab_title }}"
   start_page: modules::index.adoc
 
 content:
@@ -64,10 +138,11 @@ content:
 ui:
   bundle:
     url: {{ ui_bundle_url }}
-    # Themes can be found at https://github.com/rhpds/rhdp_showroom_theme
-    # Summit 2025 url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
+    # Themes: https://github.com/rhpds/rhdp_showroom_theme/releases
     snapshot: true
-  supplemental_files: ./supplemental-ui
+  supplemental_files:
+    - path: ./content/supplemental-ui
+    - path: ./content/lib
 
 runtime:
   fetch: true
@@ -77,15 +152,24 @@ asciidoc:
     source-highlighter: rouge
 ```
 
-**2. Create `ui-config.yml`** (at repo root, Showroom 1.5.3 format):
+---
 
+**2. `ui-config.yml`** (at repo root, Showroom 1.5.4 format):
+
+**⚠️ Tabs must be configured** — split view is enabled but the right panel is blank without tabs. Always ask the developer which consoles to show and configure them. A blank right panel is one of the most common Showroom issues.
+
+*If EXISTS — check and fix:*
+- `type: showroom` missing → add at top
+- `view_switcher.enabled` is false or missing → set `enabled: true`, `default_mode: split`
+- `tabs:` section is entirely commented out → uncomment and configure tabs from Question A
+- `persist_url_state` missing → add `persist_url_state: true`
+
+*If MISSING — create:*
 ```yaml
 ---
 type: showroom
 
-# Set the left column width to 30%
 default_width: 30
-# Persist the URL state so browser refresh doesn't reset the UI
 persist_url_state: true
 
 view_switcher:
@@ -93,11 +177,12 @@ view_switcher:
   default_mode: split
 
 tabs:
-{{ generated_tabs_from_Question_B }}
+{{ generated_tabs_from_Question_A }}
 ```
 
-If the user provided tabs in Question B, generate the `tabs:` block. If they pressed Enter, include the common examples as commented-out lines:
+If user pressed Enter (no tabs): add commented-out examples appropriate for infra type from Question 0.
 
+*OCP (choice 1):*
 ```yaml
 tabs:
 # - name: OpenShift Console
@@ -105,23 +190,81 @@ tabs:
 # - name: Bastion
 #   path: /wetty
 #   port: 443
+# - name: OpenShift AI
+#   url: 'https://rhods-dashboard-redhat-ods-applications.${DOMAIN}'
 ```
 
-**3. Create `content/lib/`** — read these 4 files from `https://github.com/rhpds/lb2298-ibm-fusion` (clone to temp dir if not available locally) and write unchanged:
+*VM / RHEL (choice 2):*
+```yaml
+tabs:
+# - name: Terminal
+#   port: 3000
+#   path: /wetty
+# - name: AAP Dashboard
+#   url: 'https://aap.${DOMAIN}'
+# - name: RHEL Cockpit
+#   url: 'https://cockpit.${DOMAIN}:9090'
+```
 
+---
+
+**3. `content/antora.yml`**:
+
+*If EXISTS — check and fix:*
+- `title:` is stale/template value → update to `"{{ lab_title }}"`
+- `name:` is not `modules` → fix to `modules`
+- `start_page:` is missing or not `index.adoc` → fix
+- `asciidoc.attributes.lab_name` is stale/template or missing → update to `"{{ lab_slug }}"`
+- `nav:` list missing `modules/ROOT/nav.adoc` → add it
+
+*If MISSING — create:*
+```yaml
+name: modules
+title: "{{ lab_title }}"
+version: master
+start_page: index.adoc
+nav:
+- modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "{{ lab_slug }}"
+```
+
+---
+
+**4. `content/lib/`** — 4 JS extension files:
+
+Check each file individually. For each that is MISSING, clone reference repo and copy it:
+```bash
+# Clone reference if not already available
+# JS extension files should already be in your repo if cloned from showroom_template_nookbag
+```
+
+Files to check/copy if missing:
 - `content/lib/all-attributes-console-extension.js`
 - `content/lib/attributes-page-extension.js`
 - `content/lib/dev-mode.js`
 - `content/lib/unlisted-pages-extension.js`
 
-**4. Create `supplemental-ui/`** at repo root — same reference repo, write unchanged:
+If all 4 already exist → confirm present, skip clone.
 
-- `supplemental-ui/css/site-extra.css`
-- `supplemental-ui/img/favicon.ico`
-- `supplemental-ui/partials/head-meta.hbs`
+---
 
-**5. Create `.github/workflows/gh-pages.yml`:**
+**5. `supplemental-ui/`** — 4 UI asset files:
 
+Same pattern — check each, copy only missing ones:
+- `content/supplemental-ui/css/site-extra.css`
+- `content/supplemental-ui/img/favicon.ico`
+- `content/supplemental-ui/partials/head-meta.hbs`
+
+---
+
+**6. `.github/workflows/gh-pages.yml`**:
+
+*If EXISTS* → do not modify (workflow is rarely wrong, and changes could break CI). Just confirm it's present.
+
+*If MISSING — create:*
 ```yaml
 name: github pages
 
@@ -173,34 +316,38 @@ jobs:
       uses: actions/deploy-pages@v4
 ```
 
-**6. Update `content/antora.yml`** with demo title and slug:
+---
 
-```yaml
-name: modules
-title: "{{ demo_title }}"
-version: master
-start_page: index.adoc
-nav:
-- modules/ROOT/nav.adoc
-
-asciidoc:
-  attributes:
-    lab_name: "{{ demo_slug }}"
-```
-
-**Confirm scaffold is complete:**
+**Confirm scaffold status:**
 
 ```
-✅ Scaffold created:
-- site.yml (ui-bundle: {{ ui_bundle_url }})
-- ui-config.yml ({{ tab_count }} tab(s) configured)
-- content/lib/ (4 JS extension files)
-- supplemental-ui/ (css, favicon, partials)
-- .github/workflows/gh-pages.yml
-- content/antora.yml (updated)
+✅ Scaffold complete:
+
+  site.yml              → [created | updated: title, ui-bundle] | no changes
+  ui-config.yml         → [created | updated: view_switcher, tabs] | no changes
+  content/antora.yml    → [created | updated: title, lab_name] | no changes
+  content/lib/          → [all present | copied 2 missing files]
+  supplemental-ui/      → [all present | copied 1 missing file]
+  .github/workflows/    → [created | already present]
 ```
 
-**Note**: These files must exist BEFORE generating any content modules (Step 8).
+**⚠️ GitHub Pages must be enabled manually** (one-time setup per repo):
+
+```
+1. Go to your GitHub repository
+2. Settings → Pages
+3. Under "Build and deployment", set Source to: GitHub Actions
+4. Save
+
+Without this step the gh-pages.yml workflow will run but GitHub Pages
+will not be published — the Showroom guide URL will return 404.
+
+After enabling, the first push to main will trigger a build.
+Your guide will be available at:
+  https://rhpds.github.io/<repo-name>/
+```
+
+**Note**: These files must exist and have correct values BEFORE generating any content modules (Step 8).
 
 ---
 
@@ -228,4 +375,10 @@ workloads:
 showroom_git_repo: https://github.com/rhpds/your-showroom-repo.git
 showroom_git_ref: main
 showroom_content_antora_playbook: site.yml
+```
+
+**Collection version (requirements_content.collections):**
+```yaml
+- name: agnosticd.showroom
+  version: ">=1.5.3"
 ```

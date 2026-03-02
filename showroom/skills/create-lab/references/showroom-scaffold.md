@@ -154,12 +154,14 @@ asciidoc:
 
 ---
 
-**2. `ui-config.yml`** (at repo root, Showroom 1.5.3 format):
+**2. `ui-config.yml`** (at repo root, Showroom 1.5.4 format):
+
+**⚠️ Tabs must be configured** — split view is enabled but the right panel is blank without tabs. Always ask the developer which consoles to show and configure them. A blank right panel is one of the most common Showroom issues.
 
 *If EXISTS — check and fix:*
 - `type: showroom` missing → add at top
 - `view_switcher.enabled` is false or missing → set `enabled: true`, `default_mode: split`
-- `tabs:` section is entirely commented out AND user provided tabs in Question A → uncomment/add tabs
+- `tabs:` section is entirely commented out → uncomment and configure tabs from Question A
 - `persist_url_state` missing → add `persist_url_state: true`
 
 *If MISSING — create:*

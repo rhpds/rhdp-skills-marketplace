@@ -310,6 +310,24 @@ Has this repository been created yet? [Y/n]
 
 **If NO:** Add placeholder and continue without blocking.
 
+**⚠️ IMPORTANT — Remind the developer to configure tabs in `ui-config.yml`:**
+
+The split view is enabled by default in Showroom 1.5.4, but the right panel is empty unless tabs are explicitly configured. Tell the developer:
+
+```
+In your Showroom repo, open ui-config.yml and uncomment or add the tabs
+you want learners to see in the right panel:
+
+  - name: Terminal
+    path: /wetty
+    port: 443
+  - name: OCP Console
+    url: 'https://console-openshift-console.${DOMAIN}'
+
+Without tabs configured, learners will see a blank right panel.
+Use /showroom:create-lab to scaffold ui-config.yml with the correct tabs.
+```
+
 **Generate Showroom section for common.yaml:**
 
 ```yaml
