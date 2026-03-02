@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100">
+  <defs>
+    <style>
+      .input { fill: #1a56db; }
+      .phase { fill: #057a55; }
+      .phase-alt { fill: #0e7490; }
+      .output { fill: #d97706; }
+      .note { fill: #6b7280; }
+      text { fill: white; font-family: Arial, sans-serif; font-size: 12px; }
+      .title { font-size: 17px; font-weight: bold; fill: #111827; }
+      .phase-label { font-size: 12px; font-weight: bold; }
+      .arrow { stroke: #374151; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#374151" />
+    </marker>
+  </defs>
+  <text x="450" y="28" text-anchor="middle" class="title">/ftl:lab-validator — Full Test Lifecycle Workflow</text>
+
+  <rect x="40" y="45" width="820" height="90" rx="6" class="input"/>
+  <text x="450" y="68" text-anchor="middle" font-weight="bold" font-size="13">INPUTS</text>
+  <text x="55" y="90">• Showroom repo with .adoc module files (GitHub URL or local path)</text>
+  <text x="55" y="108">• AgnosticV catalog path (optional but recommended)</text>
+  <text x="55" y="126">• FTL repo cloned locally (auto-detected from ~/CLAUDE.md or common paths)</text>
+
+  <path d="M 450 135 L 450 155" class="arrow"/>
+
+  <rect x="40" y="155" width="820" height="90" rx="6" class="phase"/>
+  <text x="55" y="177" class="phase-label">Step 0.5 — Read ALL Lab Content First</text>
+  <text x="55" y="197">Read every .adoc module file fully — do not skim. Read AgV catalog and collection role defaults.</text>
+  <text x="55" y="215">Ask developer to paste cluster discovery output (namespaces, pods, ConfigMap).</text>
+  <text x="55" y="233">Never run discovery commands yourself — developer pastes the output.</text>
+
+  <path d="M 450 245 L 450 265" class="arrow"/>
+
+  <rect x="40" y="265" width="820" height="72" rx="6" class="phase-alt"/>
+  <text x="55" y="287" class="phase-label">Steps 1–3 — Confirm Configuration</text>
+  <text x="55" y="305">Auto-detect FTL repo path from ~/CLAUDE.md → common paths → ask.</text>
+  <text x="55" y="323">Confirm: lab short name (from AgV path), lab type (OCP/RHEL), single vs multi-user.</text>
+
+  <path d="M 450 337 L 450 357" class="arrow"/>
+
+  <rect x="40" y="357" width="820" height="90" rx="6" class="phase"/>
+  <text x="55" y="379" class="phase-label">Step 4 — Checkpoint Analysis (confirm before generating)</text>
+  <text x="55" y="399">Map every student exercise to a grader role. Label each checkpoint:</text>
+  <text x="55" y="417">  Pre-configured (deployed by AgnosticD) vs Student action (student must do this)</text>
+  <text x="55" y="435">Present the full checkpoint list — developer confirms before any files are generated.</text>
+
+  <path d="M 450 447 L 450 467" class="arrow"/>
+
+  <rect x="40" y="467" width="820" height="90" rx="6" class="phase-alt"/>
+  <text x="55" y="489" class="phase-label">Step 5 — Generate Module 1 Only (copy lab-template, never from scratch)</text>
+  <text x="55" y="509">Copy labs/lab-template/ → labs/{lab_short_name}/. Read bundled examples for patterns.</text>
+  <text x="55" y="527">Generate grade_module_01.yml and solve_module_01.yml using 22 generic grader roles.</text>
+  <text x="55" y="545">NEVER generate grade_lab.yml — bin/grade_lab auto-discovers grade_module_*.yml files.</text>
+
+  <path d="M 450 557 L 450 577" class="arrow"/>
+
+  <rect x="40" y="577" width="820" height="108" rx="6" class="phase"/>
+  <text x="55" y="599" class="phase-label">Step 6 — Guided Testing</text>
+  <text x="55" y="619">A: Local test (no git push): bash bin/grade_lab {lab} {user} 1 --podman --local</text>
+  <text x="55" y="637">B: Run solver then re-grade (expect all PASS): bash bin/solve_lab ... --local</text>
+  <text x="55" y="655">C: Production test (pulls from GitHub): bash bin/grade_lab {lab} {user} 1 --podman</text>
+  <text x="55" y="673">D: Load test all users: bash bin/grade_lab {lab} all 1 --podman</text>
+  <text x="55" y="691">Iterate: fix → recommit → retest. Generate Module 2 only after Module 1 passes.</text>
+
+  <path d="M 450 685 L 450 705" class="arrow"/>
+
+  <rect x="40" y="705" width="820" height="108" rx="6" class="output"/>
+  <text x="450" y="728" text-anchor="middle" font-weight="bold" font-size="13">OUTPUTS (one module at a time)</text>
+  <text x="55" y="750">&#x2713; labs/{lab_short_name}/lab.yml — lab metadata</text>
+  <text x="55" y="768">&#x2713; labs/{lab_short_name}/grade_module_01.yml — grader (Module 1)</text>
+  <text x="55" y="786">&#x2713; labs/{lab_short_name}/solve_module_01.yml — solver (Module 1)</text>
+  <text x="55" y="804">&#x2713; labs/{lab_short_name}/README.md</text>
+  <text x="55" y="822">&#x2713; Additional grade_module_XX.yml + solve_module_XX.yml added after each module passes</text>
+
+  <rect x="40" y="827" width="820" height="36" rx="4" class="note"/>
+  <text x="450" y="850" text-anchor="middle" font-size="11">Bundled examples: examples/lab-template/ · examples/ocp4-getting-started/ — read before generating</text>
+</svg>

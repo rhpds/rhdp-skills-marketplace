@@ -12,6 +12,10 @@ model: claude-opus-4-6
 
 Generate production-quality FTL (Full Test Lifecycle) grader and solver playbooks for a Showroom workshop by reading existing module content. The skill analyzes your `.adoc` module files, identifies student exercises and checkpoints, and generates complete Ansible playbooks following all FTL framework conventions.
 
+## Workflow Diagram
+
+![Workflow](workflow.svg)
+
 ## What You'll Need Before Starting
 
 **Required:**
