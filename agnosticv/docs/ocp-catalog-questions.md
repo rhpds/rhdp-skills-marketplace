@@ -185,6 +185,9 @@ Based on technologies already provided:
 - `pipelines` → `rhpds.openshift_pipelines.ocp4_workload_openshift_pipelines`
 - `showroom` → both workloads always together (see Step 6)
 
+**Do NOT auto-add these — always ask the user explicitly:**
+- `ocp4_workload_ols` (OpenShift Lightspeed) — only if user specifically wants AI coding assistant in the catalog. Ask: "Will this catalog include OpenShift Lightspeed (AI coding assistant)? [Y/n]" — add only if YES.
+
 **Present recommendations:**
 
 ```
@@ -195,6 +198,9 @@ Recommended workloads:
 ✓ agnosticd.showroom.ocp4_workload_showroom (recommended - guide)
   agnosticd.aap25.ocp4_workload_aap25 (suggested - ansible)
   agnosticd.openshift_gitops.ocp4_workload_openshift_gitops (suggested - gitops)
+
+Optional — ask user before adding:
+  agnosticd.ai_workloads.ocp4_workload_ols (OpenShift Lightspeed — AI coding assistant, ask first)
 
 Select workloads (comma-separated numbers, or 'all'):
 ```
