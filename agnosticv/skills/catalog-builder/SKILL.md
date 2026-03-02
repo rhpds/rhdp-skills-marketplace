@@ -526,6 +526,33 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 
 **Developer Guidelines** (naming, __meta__ rules, FTL requirement): `@agnosticv/skills/catalog-builder/references/developer-guidelines.md`
 
+**CRITICAL — Workload variable names must be verified, never invented:**
+
+Before generating any `ocp4_workload_X_*` variable block, find the role's actual `defaults/main.yml`:
+
+**1. Check if collection is cloned locally** (from CLAUDE.md or common paths):
+```bash
+find ~/work/code -name "defaults" -path "*/{role_name}/*" 2>/dev/null | head -3
+```
+
+**2. If not local — shallow-clone to /tmp to read defaults:**
+```bash
+# Get repo URL from requirements_content.collections in common.yaml
+git clone --depth=1 --filter=blob:none --sparse {collection_repo_url} /tmp/collection-verify/
+cd /tmp/collection-verify && git sparse-checkout set roles/{role_name}/defaults
+```
+
+**3. Read `defaults/main.yml`** — only use variable names that actually exist there. Do not guess or invent names.
+
+**4. If clone fails** — use the bundled examples above as reference, or ask:
+```
+I cannot verify variable names for {workload} without access to the collection.
+Please confirm: which variables from this workload do you want to set?
+(Check the role's defaults/main.yml in {collection_repo_url})
+```
+
+**Never invent a variable name.** If unsure, ask — do not guess.
+
 **Auto-add `#include` lines at the top — only what's needed:**
 
 **CRITICAL — Avoid duplicate includes (causes include loop):**
