@@ -458,7 +458,7 @@ fi
 **If no Showroom repo was provided in Step 6**, show creation instructions and pause:
 
 ```
-📚 Create Showroom Repository (Showroom 1.5.3+ REQUIRED)
+📚 Create Showroom Repository (Showroom 1.5.4+ REQUIRED)
 
 1. Create a new empty GitHub repo in github.com/rhpds
    Naming: {short-name}-showroom
@@ -469,7 +469,7 @@ fi
 
    Reference: https://github.com/rhpds/lb2298-ibm-fusion
 
-⚠️  Do NOT use showroom_template_nookbag — it is pre-1.5.3.
+⚠️  Do NOT use showroom_template_nookbag — it is pre-1.5.4.
 
 ⏸️  Re-run this skill once the Showroom repo is ready.
 ```

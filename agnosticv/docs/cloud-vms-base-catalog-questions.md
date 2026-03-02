@@ -214,7 +214,7 @@ grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
   | grep "version:" | grep -v "tag" | sort -V | tail -1
 ```
 
-Use that version, or `v1.5.3` as minimum if nothing higher found.
+Use that version, or `v1.5.4` as minimum if nothing higher found.
 
 **EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write to `__meta__.deployer.execution_environment.image` — same as OCP catalogs.
 
@@ -225,7 +225,7 @@ Use that version, or `v1.5.3` as minimum if nothing higher found.
 cloud-vms-base uses bastion-side showroom (`vm_workload_showroom`). It uses the same **nookbag** frontend as OCP showroom — split view, view_switcher, and tab embedding all work identically. The difference is what you embed: instead of the OCP console, you embed bastion terminals, AAP dashboards, RHEL consoles, or any HTTPS URL.
 
 ⚠️ **Do NOT add** `ocp4_workload_ocp_console_embed` — it requires an OCP cluster.
-⚠️ **Requires Showroom 1.5.3+** for split view and view_switcher.
+⚠️ **Requires Showroom 1.5.4+** for split view and view_switcher.
 
 **Ask sequentially:**
 
@@ -243,7 +243,7 @@ If NO → skip this step entirely.
 Q: URL or local path to the Showroom repository:
 ```
 
-Check for Showroom 1.5.3 structure if local path provided (`site.yml` or `default-site.yml`, `ui-config.yml`, `supplemental-ui/`).
+Check for Showroom 1.5.4 structure if local path provided (`site.yml` or `default-site.yml`, `ui-config.yml`, `supplemental-ui/`).
 
 **Question C — Consoles and tools to embed in tabs:**
 
@@ -289,7 +289,7 @@ requirements_content:
   collections:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.3   # fixed — minimum v1.5.3
+    version: v1.5.4   # fixed — minimum v1.5.4
 
 workloads:
 - agnosticd.showroom.vm_workload_showroom
@@ -299,7 +299,7 @@ showroom_git_repo: https://github.com/rhpds/<short-name>-showroom
 showroom_git_ref: main
 ```
 
-**Generate `ui-config.yml`** in the Showroom repo root (Showroom 1.5.3 format):
+**Generate `ui-config.yml`** in the Showroom repo root (Showroom 1.5.4 format):
 
 ```yaml
 ---

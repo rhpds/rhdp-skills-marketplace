@@ -283,7 +283,7 @@ grep -r "agnosticd/showroom.git" "$AGV_PATH" --include="*.yaml" -h -A2 \
   | grep "version:" | grep "v1\." | sort -V | tail -1
 ```
 
-Use that version, or `v1.5.3` as minimum if nothing higher found.
+Use that version, or `v1.5.4` as minimum if nothing higher found.
 
 **If showroom version ≥ v1.5.2**: OCP console embedding is supported — add `ocp4_workload_ocp_console_embed` **before** `ocp4_workload_showroom` in the workloads list (see Step 6).
 
@@ -306,7 +306,7 @@ Based on naming convention, your Showroom repo should be:
 Has this repository been created yet? [Y/n]
 ```
 
-**If YES:** Ask for URL or local path. Check for Showroom 1.5.3 structure (`site.yml` at root, `ui-config.yml` with `view_switcher.enabled: true`). Pre-1.5.3 → block with migration instructions.
+**If YES:** Ask for URL or local path. Check for Showroom 1.5.4 structure (`site.yml` at root, `ui-config.yml` with `view_switcher.enabled: true`). Pre-1.5.4 → block with migration instructions.
 
 **If NO:** Add placeholder and continue without blocking.
 
@@ -317,7 +317,7 @@ requirements_content:
   collections:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.3   # fixed — minimum v1.5.3
+    version: v1.5.4   # fixed — minimum v1.5.4
 
 workloads:
 - agnosticd.showroom.ocp4_workload_ocp_console_embed
