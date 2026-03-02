@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.3] - 2026-03-02
+
+### AgnosticV Skills — Catalog Type + Schema Alignment
+
+#### catalog-builder
+- **Lab terminology**: Catalog type Question 1 now uses "Lab" (not "Workshop") with three distinct options: multi-user, single-user, and admin-only. Maps to correct categories (`Workshops` for multi-user, `Labs` for single/admin) and correct `workshop_user_mode` value.
+- **`workshop_user_mode` field**: Now auto-set in `__meta__.catalog` based on catalog type (added to babylon schema by Johnathan Kupferer, Feb 2026): `multi`, `single`, or `none`
+- **Auth role keycloak channel**: Updated `stable-v26.2` → `stable-v26.4` in ocp-catalog-questions.md
+- **Auth example**: Workload format example updated to use unified `ocp4_workload_authentication` role
+
+#### validator
+- **`Labs` and `Open_Environments` categories**: Added to valid category list
+- **`workshop_user_mode` validation**: New check — validates against schema enum (`multi`, `single`, `none`); errors if invalid value set
+- **Auth example**: Updated to use unified `ocp4_workload_authentication` role (not deprecated `_htpasswd` specific role)
+- **primaryBU values**: Corrected to match real AgV catalogs — `Artificial_Intelligence`, `Automation`, `Application_Developer`, `RHEL`, `Edge`, `RHDP` (removed made-up values)
+
 ## [v2.8.2] - 2026-03-02
 
 ### Showroom Skills — Scaffold Fix

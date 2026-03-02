@@ -166,7 +166,7 @@ ocp4_workload_authentication_admin_password: ""
 ocp4_workload_authentication_num_users: "{{ num_users | default(0) }}"
 ocp4_workload_authentication_user_password: ""
 ocp4_workload_authentication_remove_kubeadmin: true
-ocp4_workload_authentication_keycloak_channel: stable-v26.2
+ocp4_workload_authentication_keycloak_channel: stable-v26.4
 ```
 
 ---

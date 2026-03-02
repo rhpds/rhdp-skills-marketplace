@@ -391,7 +391,7 @@ def search_uuid_in_repo(uuid, repo_path, current_catalog):
 def check_category(config):
   """Category correctness validation"""
 
-  valid_categories = ["Workshops", "Demos", "Sandboxes", "Labs", "Brand_Events"]
+  valid_categories = ["Workshops", "Labs", "Demos", "Sandboxes", "Open_Environments", "Brand_Events"]
 
   if '__meta__' not in config or 'catalog' not in config['__meta__']:
     errors.append({
@@ -532,7 +532,7 @@ def check_workload_dependencies(config):
         'message': f'Invalid workload format: {workload}',
         'location': 'common.yaml:workloads',
         'expected': 'namespace.collection.role_name',
-        'example': 'agnosticd.core_workloads.ocp4_workload_authentication_htpasswd',
+        'example': 'agnosticd.core_workloads.ocp4_workload_authentication',
         'fix': 'Use fully qualified workload name'
       })
       continue
@@ -1034,6 +1034,23 @@ def check_reporting_labels(config):
     })
 
   passed_checks.append(f"✓ Reporting labels configured: primaryBU={primary_bu}")
+
+  # Check workshop_user_mode if present — must be valid value (JK added to babylon schema Feb 2026)
+  workshop_user_mode = config.get('__meta__', {}).get('catalog', {}).get('workshop_user_mode')
+  valid_modes = ['multi', 'single', 'none']
+  if workshop_user_mode is not None:
+    if workshop_user_mode not in valid_modes:
+      errors.append({
+        'check': 'multiuser',
+        'severity': 'ERROR',
+        'message': f'Invalid workshop_user_mode: {workshop_user_mode}',
+        'location': 'common.yaml:__meta__.catalog.workshop_user_mode',
+        'valid_values': valid_modes,
+        'fix': f'Set to one of: multi (multiple students), single (one student), none (admin-only/no users)'
+      })
+    else:
+      passed_checks.append(f"✓ workshop_user_mode valid: {workshop_user_mode}")
+
 ```
 
 ### Check 15: Component Propagation

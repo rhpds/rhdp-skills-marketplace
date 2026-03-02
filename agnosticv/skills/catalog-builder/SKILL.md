@@ -229,20 +229,24 @@ Ask these THREE questions sequentially before touching anything else.
 ```
 🏗️  What type of catalog is this?
 
-1. Workshop  (multi-user, hands-on lab)
-2. Demo      (single-user, presenter-led)
-3. Sandbox   (self-service)
+1. Lab — multi-user     (multiple students, hands-on exercises)
+2. Lab — single-user    (one student, hands-on exercises)
+3. Lab — admin only     (no student users, admin access only)
+4. Demo                 (presenter-led, no student interaction)
+5. Sandbox              (self-service, open environment)
 
-Choice [1-3]:
+Choice [1-5]:
 ```
 
 Auto-set from choice:
 
-| Choice | catalog_type | category | multiuser |
+| Choice | category | multiuser | workshop_user_mode |
 |---|---|---|---|
-| 1 | workshop | Workshops | true |
-| 2 | demo | Demos | false |
-| 3 | sandbox | Sandboxes | false |
+| 1 (Lab multi-user) | Workshops | true | multi |
+| 2 (Lab single-user) | Labs | false | single |
+| 3 (Lab admin only) | Labs | false | none |
+| 4 (Demo) | Demos | false | none |
+| 5 (Sandbox) | Sandboxes | false | none |
 
 **Question 2 — Event (MANDATORY — never skip):**
 
@@ -345,13 +349,15 @@ Category is already determined from Step 1. Confirm internally:
 
 | Type answered in Step 1 | Event? | Category set |
 |---|---|---|
-| Lab / Workshop | Yes | `Brand_Events` |
+| Lab multi-user | Yes | `Brand_Events` |
+| Lab single-user / admin-only | Yes | `Brand_Events` |
 | Demo | Yes | `Brand_Events` |
-| Lab / Workshop | No | `Workshops` |
+| Lab multi-user | No | `Workshops` |
+| Lab single-user / admin-only | No | `Labs` |
 | Demo | No | `Demos` |
 | Sandbox | No | `Sandboxes` |
 
-Multiuser auto-set: `Brand_Events` / `Workshops` → `true`, `Demos` → `false`.
+multiuser: Lab multi-user → `true`, all others → `false`.
 
 ### UUID *(auto — generated and collision-checked silently)*
 
@@ -791,7 +797,8 @@ __meta__:
       Provider: RHDP
       # Brand_Event: Red_Hat_Summit_2026   # auto-set for event catalogs
     multiuser: <auto from Step 1>
-    # workshopLabUiRedirect: true          # auto-set for OCP multi-user workshops
+    workshop_user_mode: <auto from Step 1: multi | single | none>
+    # workshopLabUiRedirect: true          # auto-set for multi-user labs
 ```
 
 **For no-event catalogs**: omit `Brand_Event` label and event keywords.
