@@ -242,7 +242,7 @@ Auto-set from choice:
 
 | Choice | category | multiuser | workshop_user_mode |
 |---|---|---|---|
-| 1 (Lab multi-user) | Workshops | true | multi |
+| 1 (Lab multi-user) | Labs | true | multi |
 | 2 (Lab single-user) | Labs | false | single |
 | 3 (Lab admin only) | Labs | false | none |
 | 4 (Demo) | Demos | false | none |
@@ -352,7 +352,7 @@ Category is already determined from Step 1. Confirm internally:
 | Lab multi-user | Yes | `Brand_Events` |
 | Lab single-user / admin-only | Yes | `Brand_Events` |
 | Demo | Yes | `Brand_Events` |
-| Lab multi-user | No | `Workshops` |
+| Lab multi-user | No | `Labs` |
 | Lab single-user / admin-only | No | `Labs` |
 | Demo | No | `Demos` |
 | Sandbox | No | `Sandboxes` |
