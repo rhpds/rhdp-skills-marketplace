@@ -124,7 +124,7 @@ For creating and managing RHDP catalog items.
 ## 🏥 Health Skills (Post-Deployment Validation)
 
 <div class="category-intro">
-For creating validation and health check roles.
+For creating deployment health check validation roles.
 </div>
 
 <div class="skills-grid">
@@ -142,20 +142,30 @@ For creating validation and health check roles.
     </div>
     <div class="skill-status available">✅ Available</div>
   </a>
+</div>
 
+---
+
+## 🧪 FTL Skills (Full Test Lifecycle)
+
+<div class="category-intro">
+For generating automated grader and solver playbooks for Showroom workshop labs.
+</div>
+
+<div class="skills-grid">
   <a href="ftl.html" class="skill-card health">
-    <div class="skill-icon">🎯</div>
+    <div class="skill-icon">🧪</div>
     <h3>/ftl:lab-validator</h3>
-    <p>Generate automated graders and solvers for workshop testing.</p>
+    <p>Generate grade_module and solve_module playbooks by reading your Showroom .adoc modules.</p>
     <div class="skill-meta">
       <div class="meta-item">
-        <strong>Before:</strong> Have success criteria defined
+        <strong>Before:</strong> Showroom content with student exercises
       </div>
       <div class="meta-item">
-        <strong>Use when:</strong> Creating automated validation
+        <strong>Use when:</strong> Adding automated grading to your lab
       </div>
     </div>
-    <div class="skill-status coming-soon">🚧 Coming Soon</div>
+    <div class="skill-status available">✅ Available</div>
   </a>
 </div>
 
@@ -218,9 +228,9 @@ For creating validation and health check roles.
       </tr>
       <tr>
         <td><code>/ftl:lab-validator</code></td>
-        <td>Health</td>
-        <td>Success criteria</td>
-        <td><span class="status-badge coming-soon">🚧 Coming Soon</span></td>
+        <td>FTL</td>
+        <td>Showroom .adoc modules</td>
+        <td><span class="status-badge available">✅ Available</span></td>
       </tr>
     </tbody>
   </table>

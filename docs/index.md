@@ -105,13 +105,22 @@ title: Home
 
     <div class="category-card">
       <div class="category-icon">🏥</div>
-      <h3>Health (2 skills)</h3>
-      <p>Deployment validation and lab grading (RHDP internal)</p>
+      <h3>Health (1 skill)</h3>
+      <p>Post-deployment validation (RHDP internal)</p>
       <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
         <li>deployment-validator - Create Ansible validation roles</li>
-        <li>lab-validator - Generate lab grader and solver playbooks</li>
       </ul>
       <a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Learn more →</a>
+    </div>
+
+    <div class="category-card">
+      <div class="category-icon">🧪</div>
+      <h3>FTL — Full Test Lifecycle (1 skill)</h3>
+      <p>Automated lab grading and solving (RHDP internal)</p>
+      <ul style="margin-top: 1rem; margin-left: 1.5rem; color: #586069;">
+        <li>lab-validator - Generate grade/solve playbooks for workshop labs</li>
+      </ul>
+      <a href="{{ '/skills/ftl.html' | relative_url }}">Learn more →</a>
     </div>
   </div>
 </div>
