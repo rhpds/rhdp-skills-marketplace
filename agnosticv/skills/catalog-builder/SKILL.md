@@ -415,7 +415,7 @@ Choice [1/2]:
 📝 Catalog Details
 
 Q: Display name (appears in RHDP UI):
-   Example: Ansible Automation Platform with OpenShift AI
+   Example: Ansible Automation Platform with OpenShift Artificial_Intelligence
 
 Name:
 
@@ -672,11 +672,12 @@ Q: What is the primary business unit (primaryBU)?
 
 Valid values (from @agnosticv/docs/constants.md):
 - Hybrid_Platforms
-- Application_Services
-- Ansible
+- Artificial_Intelligence
+- Automation
+- Application_Developer
 - RHEL
-- Cloud_Services
-- AI
+- Edge
+- RHDP
 
 primaryBU:
 

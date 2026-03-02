@@ -19,7 +19,7 @@
 | `deployer.actions.*.disable` | Set `true` to DISABLE. Default false. Set start/stop true if base component handles cluster lifecycle |
 | `deployer.ee` | Use current chained EE: `quay.io/agnosticd/ee-multicloud:chained-2026-02-16` |
 | `sandbox_api.actions.destroy.catch_all` | Set `false` if remove_workloads should run on destroy |
-| `catalog.reportingLabels.primaryBU` | **Always define**: Hybrid_Platforms, Application_Services, Ansible, RHEL, Cloud_Services, AI |
+| `catalog.reportingLabels.primaryBU` | **Always define**: Hybrid_Platforms, Artificial_Intelligence, Automation, Application_Developer, RHEL, Edge, RHDP |
 | `catalog.labels.Brand_Event` | `Red_Hat_Summit_2026` or `Red_Hat_One_2026` for event catalogs |
 | `catalog.keywords` | Add `summit-2026`/`rh1-2026` + Lab ID. Max 3-4 keywords. No generics |
 | `catalog.multiuser` | Set `true` for multi-user CIs |

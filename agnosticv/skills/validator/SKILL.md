@@ -1014,11 +1014,12 @@ def check_reporting_labels(config):
   # Canonical list — keep in sync with @agnosticv/docs/constants.md
   valid_bus = [
     'Hybrid_Platforms',
-    'Application_Services',
-    'Ansible',
+    'Artificial_Intelligence',
+    'Automation',
+    'Application_Developer',
     'RHEL',
-    'Cloud_Services',
-    'AI',
+    'Edge',
+    'RHDP',
   ]
 
   if primary_bu not in valid_bus:
