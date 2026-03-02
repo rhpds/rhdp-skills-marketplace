@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.8.2] - 2026-03-02
+
+### Showroom Skills — Scaffold Fix
+
+Thanks to **Juliano Antunes** for identifying and fixing this issue!
+
+- **Removed `header-content.hbs` from scaffold** — this file clashes with the UI bundle template and overrides event-specific branding (Summit logo, header links). Including it caused broken Showroom UI when using themed bundles (e.g. RH One theme). Removed from `create-lab`, `create-demo`, and `verify-content` skill references.
+
 ## [v2.8.1] - 2026-02-27
 
 ### FTL — New Plugin (Full Test Lifecycle)
