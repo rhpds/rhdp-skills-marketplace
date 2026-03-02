@@ -56,6 +56,8 @@ Use the GitHub MCP server's `get_file_contents` tool to fetch config files. Sear
 | `zt-ansiblebu-agnosticv` | `rhpds` |
 | `zt-rhelbu-agnosticv` | `rhpds` |
 
+> **Note:** `partner-agnosticv` is a subset of the primary `agnosticv` catalog, curated for Red Hat partners rather than internal Red Hatters. It has a much more limited selection of catalog items. The configs are generally identical to their `agnosticv` counterparts — there is usually nothing unique to `partner-agnosticv`. When a partner catalog item fails provisioning, check whether the corresponding item in `agnosticv` has been updated and align the `partner-agnosticv` config accordingly.
+
 For each repo, try to fetch the catalog item directory listing first:
 - `get_file_contents(owner="rhpds", repo="{repo}", path="{account}/{CATALOG_ITEM}")`
 
