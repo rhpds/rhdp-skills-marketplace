@@ -782,11 +782,21 @@ oc delete project my-project
 - Second-person narrative
 - Code blocks with syntax highlighting
 
-### Step 10: Final Quality Check
+### Step 10: Final Quality Check (Run Agents)
 
-**Since verification criteria were applied during generation (Step 7-8), the module should already meet all standards.**
+After generating the module, run both review agents:
 
-See @showroom/docs/SKILL-COMMON-RULES.md for quality gate integration checks (AsciiDoc syntax, navigation, instruction clarity, module sizing).
+**1. Ask the workshop-reviewer agent** to validate structure, learning objectives, and hands-on exercise quality:
+```
+Ask: Review this lab module for structure and learning design quality
+```
+
+**2. Ask the style-enforcer agent** to check Red Hat style compliance:
+```
+Ask: Check this lab module for Red Hat style guide compliance
+```
+
+Apply any fixes flagged before delivering. See also @showroom/docs/SKILL-COMMON-RULES.md for quality gate checks (AsciiDoc syntax, navigation, instruction clarity, module sizing).
 
 ### Step 11: Update Navigation (REQUIRED)
 

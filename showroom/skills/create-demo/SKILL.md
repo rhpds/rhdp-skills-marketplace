@@ -582,17 +582,49 @@ See @showroom/docs/SKILL-COMMON-RULES.md for image syntax and AsciiDoc list form
 **CRITICAL: Content rules** (originality, em dashes, Know/Show bullets vs numbers, demo language, talk track):
 See `@showroom/skills/create-demo/references/content-rules.md` for all rules with correct/incorrect examples.
 
+### Step 10: Validate (Run Agents)
+
+After generating the demo module, run both review agents:
+
+**1. Ask the workshop-reviewer agent** to validate the Know/Show structure, business focus, and presenter guidance:
+```
+Ask: Review this demo module for structure and business focus quality
+```
+
+**2. Ask the style-enforcer agent** to check Red Hat style compliance:
+```
+Ask: Check this demo module for Red Hat style guide compliance
+```
+
+Apply any fixes the agents flag before delivering to the user.
+
+---
+
+### Step 11: Update Navigation (REQUIRED)
+
+See @showroom/docs/SKILL-COMMON-RULES.md for navigation update requirements.
+
+---
+
+### Step 12: Deliver
+
+**CRITICAL: Manage Output Tokens to Prevent Overflow**
+
+Write files using Write tool — show brief confirmations only. Keep total output under 5000 tokens.
+
+---
+
 ## Integration Notes
 
 **Templates used** (from Showroom repo `templates/demo/templates/` or marketplace fallback):
-- `index.adoc` (facilitator/presenter guide) (facilitator/presenter guide)
+- `index.adoc` (facilitator/presenter guide)
 - `01-overview.adoc`, `02-details.adoc`
 - `03-module-01.adoc` (Know/Show structure)
 - `99-conclusion.adoc`
 
-**Agents invoked**:
-- `workshop-reviewer` - Validates structure
-- `style-enforcer` - Applies Red Hat style
+**Agents invoked at Step 10**:
+- `workshop-reviewer` — validates Know/Show structure and business focus
+- `style-enforcer` — applies Red Hat style standards
 
 **Files created**:
 - Demo module: `content/modules/ROOT/pages/<module-file>.adoc`
