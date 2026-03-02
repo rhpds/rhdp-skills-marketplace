@@ -279,11 +279,13 @@ All standard collections use `"{{ tag }}"` as version. Showroom uses a fixed pin
 Silently grep AgV repo for the highest pinned showroom version in use:
 
 ```bash
-grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
-  | grep "version:" | grep -v "tag" | sort -V | tail -1
+grep -r "agnosticd/showroom.git" "$AGV_PATH" --include="*.yaml" -h -A2 \
+  | grep "version:" | grep "v1\." | sort -V | tail -1
 ```
 
 Use that version, or `v1.5.3` as minimum if nothing higher found.
+
+**If showroom version ≥ v1.5.2**: OCP console embedding is supported — add `ocp4_workload_ocp_console_embed` **before** `ocp4_workload_showroom` in the workloads list (see Step 6).
 
 **EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write to `__meta__.deployer.execution_environment.image`.
 
@@ -291,7 +293,7 @@ Use that version, or `v1.5.3` as minimum if nothing higher found.
 
 ## Step 6: Showroom Configuration
 
-Both OCP showroom workloads must always be added together. `ocp4_workload_ocp_console_embed` is required to embed the OCP console and other UIs in the Showroom split view.
+Both OCP showroom workloads must always be added together. `ocp4_workload_ocp_console_embed` MUST come **before** `ocp4_workload_showroom` — it removes the X-Frame-Options header so the OCP console can be embedded in the Showroom split view. Only applies for OCP catalogs with showroom version ≥ v1.5.2.
 
 **Ask for the Showroom repo:**
 
@@ -304,7 +306,7 @@ Based on naming convention, your Showroom repo should be:
 Has this repository been created yet? [Y/n]
 ```
 
-**If YES:** Ask for URL or local path. Check for Showroom 1.5.3 structure (`default-site.yml`, `supplemental-ui/` at root, `ui-config.yml`). Pre-1.5.3 → block with migration instructions.
+**If YES:** Ask for URL or local path. Check for Showroom 1.5.3 structure (`site.yml` at root, `ui-config.yml` with `view_switcher.enabled: true`). Pre-1.5.3 → block with migration instructions.
 
 **If NO:** Add placeholder and continue without blocking.
 
