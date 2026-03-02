@@ -716,7 +716,7 @@ AAP labs:
 RHEL labs with remote nodes:
   BASTION_HOST, BASTION_USER — passed into container for SSH to remote nodes
 
-Additional lab-specific vars (or press Enter if none):
+Additional lab-specific vars (or type 'none' to skip):
 ```
 
 WAIT for answer.

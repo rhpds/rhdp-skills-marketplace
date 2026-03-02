@@ -143,7 +143,7 @@ Q: Any warnings or special requirements? (optional)
              "Beta release - features subject to change"
              "High memory usage - 32GB RAM minimum"
 
-Warnings [press Enter to skip]:
+Warnings [type 'skip' to leave blank]:
 ```
 
 **3. Guide Link:**
@@ -186,7 +186,7 @@ for ((i=1; i<=module_count; i++)); do
 
   echo ""
   echo "Q: Module $i details (2-3 bullets max, what do learners do?):"
-  echo "   Enter bullets one per line, press Enter twice when done"
+  echo "   Enter bullets one per line, type 'done' on a new line when finished"
   echo ""
 
   bullets=()
@@ -204,7 +204,7 @@ done
 ```
 Q: Lab/Demo authors (from __meta__.owners or manual entry):
    If this catalog has a common.yaml, I'll extract from __meta__.owners.
-   Otherwise, enter author names (one per line, press Enter twice when done):
+   Otherwise, enter author names (one per line, type 'done' on a new line when finished):
 
 Authors:
 ```

@@ -44,7 +44,7 @@ Tab format for ui-config.yml:
     url: 'https://devspaces.${DOMAIN}'
 
 ${DOMAIN} is resolved at runtime from the cluster ingress domain.
-Enter tabs or press Enter to use commented examples:
+Enter your tabs, or type 'default' to use commented-out examples:
 ```
 
 *VM / RHEL — common tab options:*
@@ -61,12 +61,17 @@ Which tools should appear in the right panel?
   - name: Grafana
     url: 'https://grafana.${DOMAIN}'
 
-Enter tabs or press Enter to use commented examples:
+Enter your tabs, or type 'default' to use commented-out examples:
 ```
 
 **Q2 — ui-bundle theme:**
 ```
-Which Red Hat theme? (press Enter for default)
+Which Red Hat theme?
+1. rh-one-2025 (default)
+2. rh-summit-2025
+3. Other — paste URL
+
+Choice [1/2/3]:
 
 Default: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
 Summit:  https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip

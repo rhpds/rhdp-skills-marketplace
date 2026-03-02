@@ -253,7 +253,7 @@ Replace `<virtual-ci-name>` with actual Virtual CI folder name.
 Q: What scm_ref version should be used for production?
    (e.g., demyst-1.0.1, ocp-adv-1.0.0, build-secure-dev-0.0.1)
 
-   Enter version tag (or press Enter to skip):
+   Enter version tag (or type 'skip' to leave unpinned):
 ```
 
 **If user provides version:**

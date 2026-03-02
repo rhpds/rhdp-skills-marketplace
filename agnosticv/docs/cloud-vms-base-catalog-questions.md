@@ -269,7 +269,7 @@ Examples:
 
 You can also configure this later by editing ui-config.yml in your Showroom repo.
 
-Your tabs (or press Enter to leave as commented-out examples):
+Enter your tabs, or type 'default' to leave as commented-out examples:
 ```
 
 **Question D — ui-bundle theme:**
@@ -279,7 +279,7 @@ Q: Which ui-bundle theme do you need?
 
 Default: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
 
-Press Enter to use the default, or paste a different URL:
+Choice [1/2/3] or paste a URL:
 ```
 
 **Generate Showroom section for common.yaml:**

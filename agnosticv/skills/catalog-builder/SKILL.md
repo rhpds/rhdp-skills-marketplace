@@ -687,7 +687,7 @@ Valid values (from @agnosticv/docs/constants.md):
 
 primaryBU:
 
-Q: Secondary BU? (optional, press Enter to skip)
+Q: Secondary BU? (optional, type 'skip' or enter a value)
 
 secondaryBU:
 ```
