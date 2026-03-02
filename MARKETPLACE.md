@@ -95,17 +95,29 @@ This updates all installed plugins to their latest versions.
 **Plugin:** `health@rhdp-marketplace`
 
 **Skills:**
-- `/health:deployment-validator` - Create deployment health check validation roles
-  - Post-deployment validation
-  - Ansible-based health checks
+- `/health:deployment-validator` - Create Ansible validation roles for post-deployment health checks
+  - Discovers deployed components by reading bastion command output
+  - Generates per-component check tasks (pods, routes, operators)
+  - Produces health report via agnosticd_user_info for catalog info page
 
+**Tags:** `ansible`, `validation`, `health-check`, `deployment`
+
+---
+
+### FTL Plugin (v2.8.4)
+
+**Plugin:** `ftl@rhdp-marketplace`
+
+**FTL = Full Test Lifecycle**
+
+**Skills:**
 - `/ftl:lab-validator` - Generate lab grader and solver playbooks for Showroom workshops
-  - Reads .adoc module files to auto-detect checkpoints
-  - Generates per-module grader and solver playbooks
-  - Follows FTL three-play pattern with full grader role catalog
-  - Supports multi-user and single-user lab patterns
+  - Reads ALL .adoc module files to identify student checkpoints
+  - Generates grade_module_*.yml and solve_module_*.yml per module
+  - One module at a time — test before generating the next
+  - Bundled real lab examples (lab-template, ocp4-getting-started)
 
-**Tags:** `ansible`, `validation`, `health-check`, `deployment`, `ftl`, `grading`, `testing`
+**Tags:** `ftl`, `grading`, `testing`, `lab-validation`, `ansible`, `workshop`
 
 ---
 

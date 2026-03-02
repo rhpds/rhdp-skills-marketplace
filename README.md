@@ -88,8 +88,10 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 - `/agnosticv:catalog-builder` - Create/update AgnosticV catalog items & Virtual CIs
 - `/agnosticv:validator` - Validate catalog configurations
 
-**Health Plugin** (`health@rhdp-marketplace`) - Deployment validation and testing:
+**Health Plugin** (`health@rhdp-marketplace`) - Deployment validation:
 - `/health:deployment-validator` - Create Ansible validation roles
+
+**FTL Plugin** (`ftl@rhdp-marketplace`) - Full Test Lifecycle:
 - `/ftl:lab-validator` - Generate lab grader/solver playbooks for workshop testing
 
 ---
@@ -147,15 +149,32 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `deployment-validator` | Create validation roles | Automated post-deploy health checks |
-| `/ftl:lab-validator` | Generate lab grader/solver playbooks (Full Test Lifecycle) | Automated workshop grading and testing |
 
 **Workflow:**
 ```
 Deploy catalog → /deployment-validator → Health checks → Verify readiness
-/create-lab → /ftl:lab-validator → Generate graders/solvers → Test workshop
 ```
 
 **Documentation:** [health/README.md](health/README.md)
+
+---
+
+### 🧪 ftl (RHDP Internal/Advanced - Full Test Lifecycle)
+
+**Purpose:** Generate automated grader and solver playbooks for Showroom workshop labs
+
+**Skills:**
+
+| Skill | Description | Use Case |
+|-------|-------------|----------|
+| `lab-validator` | Generate grade/solve playbooks | Automated workshop lab validation and testing |
+
+**Workflow:**
+```
+/create-lab → /ftl:lab-validator → Generate graders/solvers → Test workshop
+```
+
+**Documentation:** [ftl/README.md](ftl/README.md)
 
 ---
 
