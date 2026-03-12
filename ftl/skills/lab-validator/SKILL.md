@@ -853,6 +853,35 @@ Before writing any custom `kubernetes.core.k8s_info` + `set_fact` logic, check w
 
 **Generate files in this order:**
 
+#### 5.0: grade_e2e_readiness.yml (Pre-deployed Infrastructure Check)
+
+Generate this file **before any module grader**. It validates that all pre-deployed components the lab depends on are healthy. Use the namespaces, components, and env vars already established in Steps 2 and 4 — no new questions needed.
+
+**What goes in it:**
+- Only HC entries tagged `Source: Pre-configured` from Step 4
+- All student-action checkpoints are excluded — those belong in `grade_module_*.yml`
+- Three-play pattern (Init → Grade → Finalize) with `grader_student_report_file` set to:
+  `grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_e2e_readiness.txt`
+
+**Structure to follow** (based on `labs/mcp-with-openshift/grade_e2e_readiness.yml`):
+1. Play 1 (Init): `ftl_run_init` role
+2. Play 2 (Grade): tasks block with:
+   - Validate required env vars (same list as module graders — `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `LAB_USER`, etc.)
+   - Set namespace variables from env (with defaults matching the namespace pattern from Step 2)
+   - Discover Showroom namespace dynamically via `kubernetes.core.k8s_info` (list all namespaces, match pattern)
+   - Read `showroom-userdata` ConfigMap for credentials/URLs if Showroom is present
+   - HC-N check per pre-deployed component (pods, routes, HTTP endpoints, API checks)
+3. Play 3 (Finalize): `ftl_run_grade_report_generation` + `ftl_run_finish` roles
+
+**After generating**, tell the user:
+```
+Created: grade_e2e_readiness.yml (pre-deployed infrastructure — X health checks)
+Run it standalone to verify environment before student starts:
+  bash bin/grade_lab {lab_short_name} {user} e2e_readiness --podman --local
+```
+
+Write to: `{ftl_repo}/labs/{lab_short_name}/grade_e2e_readiness.yml`
+
 #### 5.1: lab.yml (Lab Metadata)
 
 Use the template pattern from `labs/lab-template/lab.yml` in the FTL repo. Populate with:

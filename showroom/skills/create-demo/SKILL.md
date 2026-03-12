@@ -234,13 +234,19 @@ What's your situation? [1/2/3]
 ```
 What is the path to your cloned Showroom repository?
 
-The RHDP team will have provided you with a Showroom repository to clone.
-Provide the local path to that cloned repo.
+You can provide:
+- A local path:  /Users/yourname/work/showroom-content/my-demo-showroom
+- A GitHub URL:  https://github.com/rhpds/my-demo-showroom
+  (I'll clone it to /tmp/ automatically)
 
-Example: /Users/yourname/work/showroom-content/my-demo-showroom
-
-Repo path:
+Repo path or URL:
 ```
+
+**If the user provides a GitHub URL** (starts with `https://github.com/` or `git@github.com:`):
+- Extract the repo name from the URL (last path segment, strip `.git` suffix if present)
+- Use the Bash tool to run: `git clone <url> /tmp/<repo-name>`
+- Set the repo path to `/tmp/<repo-name>`
+- Inform the user: "Cloned to /tmp/<repo-name> — using that as the working directory."
 
 Use `content/modules/ROOT/pages/` within that path as the target for demo files.
 
