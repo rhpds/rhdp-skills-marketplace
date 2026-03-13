@@ -566,6 +566,8 @@ Detect `config:` type from `common.yaml` and route to the appropriate infra-spec
 
 ```python
 config_type = config.get('config', '')
+cloud_provider = config.get('cloud_provider', '')
+num_users = config.get('num_users', None)
 
 if config_type == 'cloud-vms-base':
     # → Run checks from @agnosticv/docs/cloud-vms-base-validator-checks.md
@@ -574,8 +576,27 @@ if config_type == 'cloud-vms-base':
     #           Check 8  (VM showroom only, no ocp_console_embed)
     #           Check 11 (multiuser isolation warning only)
     pass
+
+elif config_type == 'namespace':
+    # Sandbox API Tenant CI — config: namespace, cloud_provider: none
+    # → Run checks from @agnosticv/docs/sandbox-validator-checks.md
+    #   Covers: Check 6C (sandboxes block, kind: OcpSandbox, cloud_selector)
+    #           Check 6D (sandbox_api.actions.destroy.catch_all: false required)
+    #           Check 6E (namespaced_workloads collection, tenant workloads)
+    #           Check 6F (remove_workloads present and correct)
+    #           Check 6G (deployer.actions.status + update disabled)
+    pass
+
+elif config_type == 'openshift-workloads' and cloud_provider == 'none' and num_users == 0:
+    # Sandbox API Cluster CI — shared cluster for tenant placements
+    # → Run checks from @agnosticv/docs/sandbox-validator-checks.md
+    #   Covers: Check 6H (sandbox-api.yaml + access-restriction-admins-only includes)
+    #           Check 6I (propagate_provision_data complete)
+    #           Check 6J (deployer.actions.status + update disabled)
+    pass
+
 else:
-    # config: openshift-workloads or openshift-cluster
+    # config: openshift-workloads — standard OCP lab with cloud_provider: cnv or aws
     # → Run checks from @agnosticv/docs/ocp-validator-checks.md
     #   Covers: Check 6B (pool /prod suffix, OCP version, GPU, SNO limits)
     #           Check 7  (unified auth role, deprecated roles, RHSSO block)

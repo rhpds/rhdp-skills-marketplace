@@ -399,10 +399,11 @@ If no reference, ask once — then follow the appropriate question file:
 ```
 🏗️  What type of infrastructure?
 
-1. OpenShift cluster  (OCP — workshops, demos on OpenShift)
-2. RHEL / AAP VMs     (cloud-vms-base — RHEL demos, AAP, non-OCP)
+1. OpenShift cluster      (OCP — workshops, demos on OpenShift)
+2. RHEL / AAP VMs         (cloud-vms-base — RHEL demos, AAP, non-OCP)
+3. Sandbox API CI         (shared OCP cluster + per-tenant deployments)
 
-Choice [1/2]:
+Choice [1/2/3]:
 ```
 
 **BRANCH 1: OpenShift cluster**
@@ -413,6 +414,28 @@ Choice [1/2]:
 **BRANCH 2: RHEL / AAP VMs — `cloud-vms-base`**
 → Follow `@agnosticv/docs/cloud-vms-base-catalog-questions.md` for Steps 3B through 8.
   That file covers: CNV or AWS gate, RHEL image, sizing, port exposure, authentication skip, VM workloads, VM showroom (no console embed), and multi-user isolation warning.
+  Return here for Step 7 when complete.
+
+**BRANCH 3: Sandbox API CI**
+
+Ask:
+```
+Which half of the Sandbox API CI pair are you creating?
+
+1. Cluster CI  — provisions the shared OCP cluster sized for N tenants
+                  (config: openshift-workloads, cloud_provider: none)
+2. Tenant CI   — deploys per-user workloads on a pre-configured cluster
+                  (config: namespace, targets cluster via sandbox labels)
+
+Choice [1/2]:
+```
+
+**BRANCH 3A: Cluster CI**
+→ Follow `@agnosticv/docs/sandbox-cluster-ci-questions.md` for Steps 3B through 8.
+  Return here for Step 7 when complete.
+
+**BRANCH 3B: Tenant CI**
+→ Follow `@agnosticv/docs/sandbox-tenant-ci-questions.md` for Steps 3B through 8.
   Return here for Step 7 when complete.
 
 ### Step 7: Catalog Details
@@ -675,7 +698,35 @@ If user says No or unsure → omit `deployer.actions` entirely.
       pull: missing
 ```
 
-**Ask: remove_workloads on destroy** (always ask — important for any catalog):
+**sandbox_api and deployer.actions — branch by CI type:**
+
+**Sandbox API Cluster CI (Branch 3A):** Auto-set — do not ask:
+```yaml
+  deployer:
+    actions:
+      status:
+        disable: true
+      update:
+        disable: true
+```
+Omit `sandbox_api` entirely (Cluster CI does not run remove_workloads).
+
+**Sandbox API Tenant CI (Branch 3B):** Auto-set — do not ask:
+```yaml
+  sandbox_api:
+    actions:
+      destroy:
+        catch_all: false   # allows remove_workloads to run before sandbox release
+
+  deployer:
+    actions:
+      status:
+        disable: true
+      update:
+        disable: true
+```
+
+**Standard OCP / RHEL+AAP catalogs:** Ask as before:
 
 ```
 Q: Do you want remove_workloads to run when the environment is destroyed?
