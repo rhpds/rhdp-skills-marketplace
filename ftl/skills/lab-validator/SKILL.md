@@ -247,87 +247,137 @@ WAIT for confirmation.
 
 ---
 
+**After reading Showroom content and AgV catalog — present what was detected and confirm:**
+
+```
+Based on what I read:
+
+  Lab type:    [OCP cluster / RHEL+AAP VMs / AAP deployed on OCP]
+  User model:  [Multi-user — namespace pattern: wksp-{user} / Single-user]
+  Pre-deployed components found:
+    - [component 1 — namespace if OCP]
+    - [component 2 — namespace if OCP]
+    - ...
+  Student creates: [list of things students do per module]
+
+Does this look correct? [Y/n]
+```
+
+WAIT for confirmation. Adjust if the developer corrects anything.
+
+---
+
 **Ask the developer (Question 3 — deployed environment):**
 
 ```
-Last question before we start: do you have a deployed lab environment?
+Do you have a deployed lab environment running?
 
-You need:
-1. A running lab ordered from RHDP (integration.demo.redhat.com or demo.redhat.com)
-2. Cluster access — bastion SSH or laptop kubeconfig
-3. Lab credentials from the Showroom User tab
+I need to discover real values from it — exact namespace names, what is
+actually running, service URLs — before I can generate anything accurate.
+Without this, graders will be full of wrong assumptions.
 
-Do you have all of this? [Y/n]
+Do you have a running lab from RHDP right now? [Y/n]
 ```
 
-**If NO — stop here:**
+**If NO — stop:**
 ```
-Please order the lab environment first:
-1. Go to https://demo.redhat.com (or integration.demo.redhat.com)
-2. Find the catalog item for this lab and order it
-3. Wait for provisioning (~15-60 minutes)
-4. Come back when you have bastion/kubeconfig access
+Come back once you have a running environment.
 
-We cannot write accurate graders without real data from the deployed environment.
-```
+To get one:
+  1. Go to demo.redhat.com (or integration.demo.redhat.com)
+  2. Order this lab and wait for provisioning (~15-60 min)
+  3. Re-run this skill when you have access
 
-**If YES — ask the developer to run these commands on their bastion/cluster and paste the output. Do NOT run them yourself.**
-
-```
-Please run the following on your bastion host or laptop (wherever you have cluster access)
-and paste the output here:
+Without real cluster data this skill cannot generate accurate graders.
 ```
 
-**For OCP labs:**
-```bash
+← Skill ends here. Do not continue.
+
+---
+
+**If YES — first ask how they access the cluster (OCP labs only):**
+
+**For OCP-based labs**, ask:
+```
+How do you have access to the cluster right now?
+
+  A) Laptop — I have oc / kubeconfig set in my local terminal
+  B) Bastion — I have a separate terminal with SSH to the bastion host
+```
+
+WAIT for answer. (For RHEL/AAP labs with no OCP: skip this question — bastion only.)
+
+---
+
+**Then give the developer the exact commands to run. Do NOT run them yourself.**
+
+**For OCP labs — laptop (Option A):**
+```
+Run these in your laptop terminal and paste the output back here:
+
+# 1. What namespaces exist matching the lab pattern?
+oc get namespaces --no-headers | awk '{print $1}' \
+  | grep -E "<pattern detected from .adoc — e.g. wksp|mcp|librechat|gitea>"
+
+# 2. What is running in the user namespace?
+oc get pods -n <namespace-pattern with user1> --no-headers
+
+# 3. Showroom ConfigMap — credentials and URLs
+SHOW_NS=$(oc get ns --no-headers -o name | grep showroom | grep user1 \
+  | head -1 | cut -d/ -f2)
+oc get configmap showroom-userdata -n "$SHOW_NS" \
+  -o jsonpath='{.data.user_data\.yml}'
+```
+
+**For OCP labs — bastion (Option B):**
+```
+Run these on your bastion (same commands — bastion already has kubeconfig):
+
 # 1. What namespaces exist?
-oc get namespaces --no-headers | awk '{print $1}' | grep -E "user|wksp|workshop|mcp|lab|agent|gitea|librechat"
+oc get namespaces --no-headers | awk '{print $1}' \
+  | grep -E "<pattern>"
 
-# 2. What's running in the user namespace?
-oc get pods -n <user-namespace> --no-headers
+# 2. What is running in the user namespace?
+oc get pods -n <namespace-pattern with user1> --no-headers
 
-# 3. Get Showroom ConfigMap (ALL credentials — use grep/sed NOT json.loads)
-SHOW_NS=$(oc get ns --no-headers -o name | grep showroom | grep user1 | head -1 | cut -d/ -f2)
-oc get configmap showroom-userdata -n "$SHOW_NS" -o jsonpath='{.data.user_data\.yml}'
-# Fields: password, gitea_admin_username, gitea_admin_password,
-# gitea_console_url, openshift_cluster_ingress_domain, openshift_api_server_url,
-# login_command, gitea_user, gitea_password, librechat_user, litellm_virtual_key
+# 3. Showroom ConfigMap
+SHOW_NS=$(oc get ns --no-headers -o name | grep showroom | grep user1 \
+  | head -1 | cut -d/ -f2)
+oc get configmap showroom-userdata -n "$SHOW_NS" \
+  -o jsonpath='{.data.user_data\.yml}'
 ```
 
-**For AAP labs:**
-```bash
-# What job templates exist? (CRITICAL — match names EXACTLY including typos)
+**For AAP labs (bastion only):**
+```
+Run these on your bastion and paste the output back:
+
+# Job templates — match names EXACTLY including any typos from CaC
 curl -sk -u lab-user:${AAP_PASSWORD} \
   ${AAP_HOSTNAME}/api/controller/v2/job_templates/ \
-  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]" | sort
+  | python3 -c "import sys,json; \
+    [print(t['name']) for t in json.load(sys.stdin)['results']]" | sort
 
-# What workflow templates exist?
+# Workflow templates
 curl -sk -u lab-user:${AAP_PASSWORD} \
   ${AAP_HOSTNAME}/api/controller/v2/workflow_job_templates/ \
-  | python3 -c "import sys,json; [print(t['name']) for t in json.load(sys.stdin)['results']]"
+  | python3 -c "import sys,json; \
+    [print(t['name']) for t in json.load(sys.stdin)['results']]"
 ```
 
-**For unknown APIs (RHDH, LibreChat, MCP, custom services):**
+**For AAP-on-OCP labs:** run OCP commands first (laptop or bastion), then AAP curl commands from the bastion.
+
+**For unknown APIs (RHDH, LibreChat, MCP, custom):**
 ```
-I'm not familiar with the [service name] API.
-Can you run these from the bastion and paste the response?
+I am not familiar with the [service] API.
+Can you run these and paste the response?
 
 oc get routes -n <namespace> --no-headers
 curl -sk https://<service-url>/api/ | python3 -m json.tool | head -50
 ```
 
-**⚠️ CRITICAL — kubeconfig context:**
+WAIT for the developer to paste all output before proceeding.
 
-For `--podman` mode, always **export** `OCP_API_URL` and `OCP_ADMIN_PASSWORD` so the wrapper can auto-login and discover credentials from the Showroom ConfigMap. Variables set without `export` are not visible inside the container:
-
-```bash
-export OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443"
-export OCP_ADMIN_PASSWORD="<admin-pass>"
-export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io"
-bash bin/grade_lab <lab> all 1 --podman
-```
-
-Use the discovery output — combined with the Showroom content and AgV catalog already read above — to fill in Step 1.5 and Step 2 with real data, not guesses.
+Use the discovery output — combined with Showroom content and AgV catalog already read — to fill in Step 1.5 and Step 2 with real data, not guesses.
 
 ---
 
@@ -855,23 +905,35 @@ Before writing any custom `kubernetes.core.k8s_info` + `set_fact` logic, check w
 
 #### 5.0: grade_e2e_readiness.yml (Pre-deployed Infrastructure Check)
 
-Generate this file **before any module grader**. It validates that all pre-deployed components the lab depends on are healthy. Use the namespaces, components, and env vars already established in Steps 2 and 4 — no new questions needed.
+Generate this file **before any module grader**. It validates that all pre-deployed components the lab depends on are healthy. Use the namespaces, components, and env vars discovered in Step 0.5 — no new questions needed.
 
 **What goes in it:**
 - Only HC entries tagged `Source: Pre-configured` from Step 4
-- All student-action checkpoints are excluded — those belong in `grade_module_*.yml`
-- Three-play pattern (Init → Grade → Finalize) with `grader_student_report_file` set to:
+- Student-action checkpoints are excluded — those belong in `grade_module_*.yml`
+- Three-play pattern (Init → Grade → Finalize) with `grader_student_report_file`:
   `grading_report_{{ lookup('env', 'LAB_USER') | default(lookup('env', 'USER')) | default('student') }}_e2e_readiness.txt`
 
-**Structure to follow** (based on `labs/mcp-with-openshift/grade_e2e_readiness.yml`):
-1. Play 1 (Init): `ftl_run_init` role
-2. Play 2 (Grade): tasks block with:
-   - Validate required env vars (same list as module graders — `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `LAB_USER`, etc.)
-   - Set namespace variables from env (with defaults matching the namespace pattern from Step 2)
-   - Discover Showroom namespace dynamically via `kubernetes.core.k8s_info` (list all namespaces, match pattern)
-   - Read `showroom-userdata` ConfigMap for credentials/URLs if Showroom is present
-   - HC-N check per pre-deployed component (pods, routes, HTTP endpoints, API checks)
-3. Play 3 (Finalize): `ftl_run_grade_report_generation` + `ftl_run_finish` roles
+**Branch by lab type detected in Step 0.5:**
+
+**OCP lab** (based on `labs/mcp-with-openshift/grade_e2e_readiness.yml`):
+- Play 2 tasks:
+  1. Validate env vars: `OPENSHIFT_CLUSTER_INGRESS_DOMAIN`, `LAB_USER` (exact list from Step 3)
+  2. Set namespace vars from env with defaults matching the pattern from Step 0.5 discovery
+  3. Discover Showroom namespace dynamically (`kubernetes.core.k8s_info` list all ns, match pattern)
+  4. Read `showroom-userdata` ConfigMap for credentials/URLs if Showroom is present
+  5. HC-N per pre-deployed component using `grader_check_ocp_pod_running`, `grader_check_ocp_route_exists`, `grader_check_http_endpoint`, etc.
+
+**RHEL / AAP lab** (no OCP):
+- Play 2 tasks:
+  1. Validate env vars: `BASTION_HOST`, `BASTION_USER`, `AAP_HOSTNAME` (for AAP), `AAP_PASSWORD`
+  2. HC-N per pre-deployed service using:
+     - `grader_check_service_running` — systemd services on RHEL VMs
+     - `grader_check_aap_job_completed` / `grader_check_aap_workflow_completed` — AAP templates
+     - `grader_check_command_output` — SSH-based checks via bastion
+     - `grader_check_http_endpoint` — HTTP reachability checks
+
+**AAP-on-OCP lab** (AAP workload running inside OCP cluster):
+- Combine both: `kubernetes.core.k8s_info` for OCP resources + `grader_check_aap_*` for AAP templates
 
 **After generating**, tell the user:
 ```
