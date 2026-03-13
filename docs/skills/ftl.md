@@ -63,8 +63,10 @@ The skill follows a structured workflow before generating any code:
   <div class="workflow-step">
     <div class="workflow-icon">📖</div>
     <div class="workflow-content">
-      <h4>Step 0.5 — Read Lab Content First</h4>
-      <p>Reads <strong>every</strong> <code>.adoc</code> module file from the Showroom repo, reads the AgnosticV catalog and collection role defaults, then asks about the deployed environment. All cluster discovery commands are run by you and pasted back — the skill never runs commands itself.</p>
+      <h4>Step 0.5 — Read Lab Content + Environment Gate</h4>
+      <p>Reads <strong>every</strong> <code>.adoc</code> module file (GitHub URL auto-cloned to <code>/tmp/</code> if needed), reads the AgnosticV catalog and collection role defaults. Then presents detected lab type (OCP / RHEL+AAP / AAP-on-OCP) and asks: <em>"Do you have a running deployed environment?"</em></p>
+      <p><strong>No running env = hard stop.</strong> The skill ends and asks you to order from demo.redhat.com first — no placeholder generation.</p>
+      <p>If yes: OCP labs ask <em>"laptop oc or bastion SSH?"</em> then give exact commands to run and paste back. RHEL/AAP labs give bastion commands only. The skill never runs remote commands or asks for credentials.</p>
     </div>
   </div>
 
@@ -79,16 +81,23 @@ The skill follows a structured workflow before generating any code:
   <div class="workflow-step">
     <div class="workflow-icon">✅</div>
     <div class="workflow-content">
-      <h4>Step 4 — Checkpoint Analysis</h4>
-      <p>Presents every checkpoint with its source (<strong>Pre-configured</strong> = deployed by AgnosticD, <strong>Student action</strong> = student must do this) and the grader role to use. You confirm before any files are generated.</p>
+      <h4>Step 4 — Checkpoint Analysis + Module 1 Classification</h4>
+      <p>Presents every checkpoint with its source (<strong>Pre-configured</strong> = deployed by AgnosticD, <strong>Student action</strong> = student must do this) and the grader role to use.</p>
+      <p>Also classifies Module 1 as one of three types: <strong>SETUP/INTRO</strong> (all pre-configured — orientation only, no grader generated), <strong>MIXED</strong> (some pre-configured + student actions — grader covers student actions only), or <strong>EXERCISE</strong> (all student actions — normal grader). You confirm before any files are generated.</p>
     </div>
   </div>
 
   <div class="workflow-step">
     <div class="workflow-icon">⚙️</div>
     <div class="workflow-content">
-      <h4>Step 5 — Generate Module 1 Only</h4>
-      <p>Copies from <code>labs/lab-template/</code>, generates <code>grade_module_01.yml</code> and <code>solve_module_01.yml</code> using the 22 generic grader roles. Generates Module 2 only after Module 1 passes testing.</p>
+      <h4>Step 5 — Generate Files (Module 1 first)</h4>
+      <p>Copies from <code>labs/lab-template/</code> then generates in order:</p>
+      <ol style="margin: 0.5rem 0; padding-left: 1.5rem; color: #586069; font-size: 0.9rem;">
+        <li><strong>grade_e2e_readiness.yml</strong> — always first. Pre-configured checkpoints only. Branches by lab type: OCP uses <code>kubernetes.core.k8s_info</code> + Showroom ConfigMap; RHEL/AAP uses SSH-based grader roles; AAP-on-OCP is hybrid. Run standalone before students start.</li>
+        <li><strong>lab.yml</strong> — metadata</li>
+        <li><strong>grade_module_01.yml</strong> — skipped if Module 1 is SETUP/INTRO (readiness already covers it); student actions only if MIXED; full grader if EXERCISE</li>
+        <li><strong>solve_module_01.yml</strong> + <strong>README.md</strong></li>
+      </ol>
     </div>
   </div>
 
@@ -111,15 +120,16 @@ Files are generated inside your FTL repo:
   <h4>Generated files per lab:</h4>
   <pre><code>labs/
 └── &lt;lab-short-name&gt;/
+    ├── grade_e2e_readiness.yml  # Always first — pre-deployed infra checks
     ├── lab.yml                  # Lab metadata
-    ├── grade_module_01.yml      # Module 1 grader (generated first)
+    ├── grade_module_01.yml      # Module 1 grader (skipped if SETUP/INTRO)
     ├── solve_module_01.yml      # Module 1 solver
     ├── grade_module_02.yml      # Added after Module 1 passes
     ├── solve_module_02.yml
     └── README.md</code></pre>
 </div>
 
-**Note:** `grade_lab.yml` is never generated. The `bin/grade_lab` wrapper auto-discovers `grade_module_*.yml` files automatically.
+**Note:** `grade_lab.yml` is never generated. The `bin/grade_lab` wrapper auto-discovers `grade_module_*.yml` files automatically. `grade_e2e_readiness.yml` is run with module arg `e2e_readiness`: `bash bin/grade_lab <lab> <user> e2e_readiness --podman --local`
 
 ---
 

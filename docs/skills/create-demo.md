@@ -168,9 +168,12 @@ Create presenter-led demo content where YOU present and customers watch.
     <div class="workflow-icon">2.5️⃣</div>
     <div class="workflow-content">
       <h4>Step 2.5: Provide Showroom Repository Path</h4>
-      <p>Skill asks: <em>"What is the path to your RHDP-provided cloned Showroom repository?"</em></p>
-      <p>This is the repo RHDP already provisioned for you — not where to create files, but the existing repo to write into.</p>
-      <pre><code>Example: ~/work/showroom-content/your-demo-showroom</code></pre>
+      <p>Skill asks for your Showroom repo. You can provide a local path or a GitHub URL — the skill auto-clones GitHub URLs to <code>/tmp/</code>:</p>
+      <pre><code># Local path
+~/work/showroom-content/your-demo-showroom
+
+# GitHub URL (auto-cloned to /tmp/your-demo-showroom)
+https://github.com/rhpds/your-demo-showroom</code></pre>
     </div>
   </div>
 

@@ -173,7 +173,8 @@ git pull origin main</code></pre>
 <summary><strong>Check 6: Infrastructure (UPDATED)</strong></summary>
 
 <div class="check-content">
-  <p>Check 6 detects <code>config:</code> type and routes to the appropriate check file:</p>
+  <p>Check 6 detects <code>config:</code> type and routes to the appropriate check file. Four paths:</p>
+
   <h4>cloud-vms-base → <code>cloud-vms-base-validator-checks.md</code>:</h4>
   <ul>
     <li>Instances block defined with bastion VM and correct tags</li>
@@ -182,7 +183,23 @@ git pull origin main</code></pre>
     <li>Multi-user isolation warning (no per-user namespace on VMs)</li>
   </ul>
 
-  <h4>OCP → <code>ocp-validator-checks.md</code>:</h4>
+  <h4>config: namespace (Sandbox API Tenant CI) → <code>sandbox-validator-checks.md</code>:</h4>
+  <ul>
+    <li><strong>Check 6C:</strong> ERROR if <code>__meta__.sandboxes</code> missing, <code>kind</code> ≠ OcpSandbox, <code>cloud_selector.cloud</code> not valid, or <code>cloud_selector.lab</code> missing</li>
+    <li><strong>Check 6D:</strong> ERROR if <code>sandbox_api.actions.destroy.catch_all</code> not explicitly <code>false</code></li>
+    <li><strong>Check 6E:</strong> ERROR if <code>namespaced_workloads</code> collection missing, or tenant workloads (<code>tenant_keycloak_user</code>, <code>tenant_namespace</code>) absent</li>
+    <li><strong>Check 6F:</strong> WARNING if <code>remove_workloads</code> missing or incomplete</li>
+    <li><strong>Check 6G:</strong> WARNING if <code>deployer.actions.status</code> or <code>update</code> not disabled</li>
+  </ul>
+
+  <h4>config: openshift-workloads + cloud_provider: none + num_users: 0 (Sandbox API Cluster CI) → <code>sandbox-validator-checks.md</code>:</h4>
+  <ul>
+    <li><strong>Check 6H:</strong> ERROR if <code>#include /includes/sandbox-api.yaml</code> or <code>access-restriction-admins-only.yaml</code> missing</li>
+    <li><strong>Check 6I:</strong> WARNING if <code>propagate_provision_data</code> missing or incomplete (must pass api_url, token, sandbox vars to tenants)</li>
+    <li><strong>Check 6J:</strong> WARNING if <code>deployer.actions.status</code> or <code>update</code> not disabled</li>
+  </ul>
+
+  <h4>config: openshift-workloads (standard OCP lab) → <code>ocp-validator-checks.md</code>:</h4>
   <ul>
     <li><strong>Pool suffix:</strong> ERROR if pool does not end in <code>/prod</code></li>
     <li><strong>OCP version:</strong> Must be 4.18, 4.20, or 4.21 (known pool versions)</li>

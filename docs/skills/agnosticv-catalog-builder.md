@@ -60,7 +60,8 @@ cd agnosticv</code></pre>
     <ul>
       <li>Catalog name (e.g., "Agentic AI on OpenShift")</li>
       <li>Category (Workshops, Demos, or Sandboxes)</li>
-      <li>Infrastructure type (CNV multi-node, AWS, SNO, etc.)</li>
+      <li>Infrastructure type: OCP cluster / RHEL+AAP VMs / Sandbox API CI</li>
+      <li>For Sandbox API CI: Cluster CI (provision shared cluster) or Tenant CI (deploy on pre-configured cluster)</li>
       <li>Workloads to deploy</li>
       <li>Multi-user requirements (yes/no)</li>
     </ul>
@@ -180,7 +181,7 @@ cd agnosticv</code></pre>
 → Step 0: AgV path auto-detected, branch created
 → Step 1: Q1=type (Workshop/Demo/Sandbox), Q2=event?, Q3=tech
 → Step 2: Discovery searches agd_v2/ + openshift_cnv/
-→ Step 3: Infrastructure gate (OCP cluster or VMs)
+→ Step 3: Infrastructure gate (OCP cluster / RHEL+AAP VMs / Sandbox API CI)
 → Step 4: Auth (unified ocp4_workload_authentication)
 → Step 5: Workloads + LiteMaaS
 → Step 6: Showroom (recommended name shown)
@@ -238,10 +239,16 @@ cd agnosticv</code></pre>
     <li><strong>Step 0 — Setup:</strong> AgV path auto-detected; branch created from main (no feature/ prefix)</li>
     <li><strong>Step 1 — Context:</strong> 3 questions: Q1=Workshop/Demo/Sandbox, Q2=Is this for an event? (Summit 2026 / RH One 2026 / Other), Q3=Technologies. Event selection overrides category to Brand_Events and asks for Lab ID.</li>
     <li><strong>Step 2 — Discovery:</strong> Searches <code>agd_v2/</code> and <code>openshift_cnv/</code>; shows reference catalogs with <code>[OCP cluster]</code> or <code>[RHEL/AAP VMs]</code> labels</li>
-    <li><strong>Step 3 — Infrastructure gate:</strong> Asks OCP or RHEL/AAP VMs, then routes to a separate @reference file per infra type:
+    <li><strong>Step 3 — Infrastructure gate:</strong> Three options — OCP cluster, RHEL/AAP VMs, or Sandbox API CI. Routes to a separate @reference file per type:
       <ul>
         <li><strong>OCP path (<code>ocp-catalog-questions.md</code>):</strong> SNO or multinode, OCP version (4.18/4.20/4.21), pool with <code>/prod</code> suffix, autoscale, AWS gate; auth (unified <code>ocp4_workload_authentication</code> + provider); OCP workloads + LiteMaaS; Showroom with <code>ocp4_workload_ocp_console_embed</code>; multi-user with worker scaling</li>
         <li><strong>VM path (<code>cloud-vms-base-catalog-questions.md</code>):</strong> CNV or AWS, RHEL image, sizing, ports; auth skipped (OS-level only); VM workloads; <code>vm_workload_showroom</code> with <code>showroom_git_repo</code>/<code>showroom_git_ref</code>; multi-user isolation warning</li>
+        <li><strong>Sandbox API CI path:</strong> Choose Cluster CI or Tenant CI:
+          <ul>
+            <li><strong>Cluster CI (<code>sandbox-cluster-ci-questions.md</code>):</strong> Provisions a shared OCP cluster for N tenant placements. Pool type (CNV/AWS), OCP version, lab label (tenants target by this), worker sizing. Auto-sets <code>config: openshift-workloads</code>, <code>cloud_provider: none</code>, <code>num_users: 0</code>, required includes (<code>sandbox-api.yaml</code>, <code>access-restriction-admins-only.yaml</code>), full <code>propagate_provision_data</code>.</li>
+            <li><strong>Tenant CI (<code>sandbox-tenant-ci-questions.md</code>):</strong> Deploys per-user workloads on a pre-configured cluster via <code>__meta__.sandboxes.cloud_selector</code> labels. Asks cloud (cnv/aws-dedicated-shared) + lab label, namespace suffixes + quotas, optional GitOps bootstrap, optional Showroom. Auto-sets <code>config: namespace</code>, <code>cloud_provider: none</code>, username pattern <code>user-{{ guid }}</code>, <code>sandbox_api.destroy.catch_all: false</code>.</li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li><strong>Step 7 — Catalog details:</strong> Display name, short name, description (starts with product name), maintainer name and email</li>
