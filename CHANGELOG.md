@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.9.0] - 2026-03-13
+
+### AgnosticV Skills
+
+#### catalog-builder
+- **Sandbox API CI**: new third infrastructure type (alongside OCP cluster and RHEL+AAP VMs)
+  - Cluster CI (`sandbox-cluster-ci-questions.md`): provisions shared OCP cluster for N tenant placements; auto-sets `config: openshift-workloads`, `cloud_provider: none`, `num_users: 0`, required includes, full `propagate_provision_data`
+  - Tenant CI (`sandbox-tenant-ci-questions.md`): deploys per-user workloads on pre-configured cluster via `__meta__.sandboxes.cloud_selector` labels; auto-sets `config: namespace`, username `user-{{ guid }}`, `sandbox_api.destroy.catch_all: false`
+- `sandbox_api` and `deployer.actions` auto-set for Sandbox CI types — no questions asked
+
+#### validator
+- Check 6: two new branches
+  - `config: namespace` → Tenant CI checks (6C–6G): sandboxes block, catch_all, namespaced_workloads, remove_workloads, deployer actions
+  - `config: openshift-workloads` + `cloud_provider: none` + `num_users: 0` → Cluster CI checks (6H–6J): required includes, propagate_provision_data completeness, deployer actions
+
+### FTL Skills
+
+#### lab-validator
+- **Environment-first discovery**: hard stop if no running environment — no placeholder generation; skill ends and directs developer to order from demo.redhat.com
+- **Lab type detection**: auto-detect OCP / RHEL+AAP / AAP-on-OCP from Showroom content and AgV catalog before asking about environment
+- **Laptop vs bastion**: OCP labs ask connection method; commands given as "run this and paste back" — skill never runs remote commands or asks for credentials
+- **grade_e2e_readiness.yml**: generated before any module grader; pre-configured checkpoints only; branches by lab type (OCP → k8s_info; RHEL/AAP → SSH-based roles; AAP-on-OCP → hybrid)
+- **Module 1 classification**: SETUP/INTRO (all pre-configured, no grader generated — readiness already covers it) / MIXED (grader covers student actions only) / EXERCISE (normal grader)
+
+### Showroom Skills
+
+#### create-lab + create-demo
+- Step 2.5 now accepts GitHub URLs in addition to local paths — auto-clones to `/tmp/<repo-name>` using Bash tool
+
+### Docs
+- GitHub Pages updated for all changed skills: agnosticv-catalog-builder, agnosticv-validator, ftl, create-lab, create-demo
+
 ## [v2.8.4] - 2026-03-02
 
 ### AgnosticV Skills
