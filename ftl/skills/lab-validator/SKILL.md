@@ -815,9 +815,31 @@ Total: Z checkpoints across N modules
 
 ```
 
+**Classify Module 1 before confirming:**
+
+After listing all checkpoints, explicitly classify Module 1 into one of three types and include it in the summary:
+
+```
+Module 1 type: [one of the three below]
+
+  SETUP/INTRO — all checkpoints are Pre-configured.
+    Students verify the environment, log in, explore — no resources created.
+    Examples: "Verify your environment", "Access the console", "Review the services"
+    → grade_e2e_readiness.yml already covers this. No module grader needed.
+
+  MIXED — some Pre-configured + some Student actions.
+    Module 1 starts with environment orientation then moves into real exercises.
+    → grade_e2e_readiness.yml covers the Pre-configured part.
+    → grade_module_01.yml covers Student action checkpoints only.
+
+  EXERCISE — all checkpoints are Student actions.
+    Module 1 is a full hands-on exercise with resources the student must create.
+    → grade_module_01.yml covers all checkpoints normally.
+```
+
 **Ask the developer:**
 
-Does this analysis look correct? Are the pre-configured vs student action labels right? Should I add, remove, or change any checkpoints?
+Does this analysis look correct? Are the pre-configured vs student action labels right? Is the Module 1 classification correct?
 
 WAIT for confirmation before generating any files.
 
@@ -956,7 +978,34 @@ Use the template pattern from `labs/lab-template/lab.yml` in the FTL repo. Popul
 Write to: `{ftl_repo}/labs/{lab_short_name}/lab.yml`
 Confirm: "Created: lab.yml (X lines)"
 
-#### 5.2: Grader Playbook — Module 1 Only
+#### 5.2: Grader Playbook — Module 1 (or skip if Setup/Intro)
+
+**First — check the Module 1 classification from Step 4:**
+
+**If SETUP/INTRO:**
+```
+Module 1 is an environment orientation module — students verify services,
+log in, and get credentials. grade_e2e_readiness.yml already covers all
+of this. Generating a duplicate grade_module_01.yml would just re-check
+the same things.
+
+Skipping grade_module_01.yml. Starting with grade_module_02.yml.
+```
+→ Delete the `grade_module_01.yml` copied from template. Proceed to 5.3 for Module 2.
+
+**If MIXED:**
+Generate `grade_module_01.yml` but include **only Student action checkpoints** from Step 4.
+Do not include Pre-configured checkpoints — those are already in `grade_e2e_readiness.yml`.
+Add a comment at the top of the file:
+```yaml
+# Note: Pre-configured infrastructure checks for this lab are in grade_e2e_readiness.yml.
+# This grader covers only student actions from Module 1.
+```
+
+**If EXERCISE:**
+Generate normally — all checkpoints from Module 1 go here.
+
+---
 
 Edit `{ftl_repo}/labs/{lab_short_name}/grade_module_01.yml` (already copied from template). Replace the `[Lab Name]`, `[Module Name]`, placeholder variables, and placeholder exercises with real content.
 
