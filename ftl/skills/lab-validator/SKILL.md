@@ -150,17 +150,13 @@ The reason this rule exists: invented checks are hard to debug (grader always FA
 
 ### Step 0.5: Read Lab Content and Catalog — Then Confirm Deployed Environment
 
-**Ask the developer immediately:**
+**Ask the developer immediately (ONE question only):**
 
 ```
-Before we start, I need two things to write accurate graders:
+Before we start, where are the lab instructions?
 
-1. Where are the lab instructions (Showroom repo or local path)?
-   Example A: https://github.com/rhpds/my-lab-showroom
-   Example B: ~/work/showroom-content/my-lab/
-
-2. Do you have the AgnosticV catalog for this lab? (Y/n)
-   If yes: AgV repo path + catalog path (e.g., ~/work/code/agnosticv, summit-2026/lb2298-mcp-cnv)
+  Example A (GitHub URL):  https://github.com/rhpds/my-lab-showroom
+  Example B (local path):  ~/work/showroom-content/my-lab/
 
 Showroom repo or local path:
 ```
@@ -187,18 +183,19 @@ Read **every** `.adoc` file under `content/modules/ROOT/pages/` — do not skip 
 
 ---
 
-**Ask the developer (Question 2 — AgV catalog path, recommended):**
+**Then ask (second sequential question — AgV catalog):**
 
 ```
 Do you have the AgnosticV catalog for this lab?
 
-Providing it lets me read the deployed workloads, collection roles,
-and agnosticd_user_info data directly — no guesswork about namespace
+Providing it lets me read deployed workloads, collection roles, and
+agnosticd_user_info keys directly — no guesswork about namespace
 patterns or credentials.
 
-If yes, provide:
-1. AgV repo path (e.g., ~/work/code/agnosticv)
-2. Catalog path (e.g., summit-2026/lb2298-mcp-with-openshift-cnv)
+If yes, provide the catalog path relative to your AgV repo root.
+Example: summit-2026/lb2298-mcp-with-openshift-cnv
+
+AgV catalog path (or 'n' to skip):
 ```
 
 WAIT for answer.
@@ -234,14 +231,6 @@ If none are available locally, I'll clone what I need to /tmp/
 WAIT for answer. Only read paths the developer confirms. Never silently browse the filesystem.
 
 **Do not skip any collection.** Each one may define namespace patterns or credentials that affect grader logic.
-
-Ask the developer to confirm before continuing (see Step 1.5 for the format):
-
-```
-Does the analysis above look correct? [Y/n]
-```
-
-WAIT for confirmation.
 
 **If not provided:** continue — namespace patterns and services will be extracted from `.adoc` files only. Verify carefully with the developer.
 
@@ -420,21 +409,11 @@ Read these before generating any playbooks.
 
 ---
 
-### Step 1.5: Read AgnosticV Catalog (Optional — but recommended)
+### Step 1.5: Process AgnosticV Catalog (if provided in Step 0.5)
 
-Providing the AgV catalog lets the skill read the deployed workloads, collection roles, and `agnosticd_user_info` data directly — eliminating guesswork about namespace patterns, available credentials, and provisioned services.
+The AgV catalog question was already asked in Step 0.5. Do NOT ask again. If the developer provided a catalog path, process it now. If they skipped it, continue to Step 2.
 
-Ask:
-
-```
-Do you have the AgnosticV catalog for this lab? [Y/n]
-
-If yes, provide:
-1. AgV repo path (e.g., ~/work/code/agnosticv)
-2. Catalog path relative to AgV root (e.g., summit-2026/lb2298-mcp-with-openshift-cnv)
-```
-
-**If YES — read `common.yaml` and extract:**
+**If provided — read `common.yaml` and extract:**
 
 **A. Determine lab infrastructure type from `config:` field:**
 
@@ -481,9 +460,11 @@ __meta__:
 - `num_users` parameter **present** → multi-user lab. Students share one cluster, each gets their own namespaced resources derived from `LAB_USER`.
 - `num_users` parameter **absent** → single-user lab. One environment per student, no namespace isolation, `LAB_USER` not needed.
 
-**D. Collections — read CLAUDE.md, then ask:**
+**D. Collections — read CLAUDE.md, then ask (skip if already answered in Step 0.5):**
 
-Read `~/CLAUDE.md` to find the developer's declared work directories (`### Repository Locations` section). Then ask the developer which of the required collections they have locally and where, referencing those known paths. Only read paths the developer confirms — never silently browse. Clone to `/tmp/ftl-collection-<name>/` only for collections the developer says aren't available locally.
+If the developer already answered the collections location question in Step 0.5, use those confirmed paths. **Do NOT ask again.**
+
+If not yet answered: read `~/CLAUDE.md` to find the developer's declared work directories (`### Repository Locations` section). Then ask the developer which of the required collections they have locally and where, referencing those known paths. Only read paths the developer confirms — never silently browse. Clone to `/tmp/ftl-collection-<name>/` only for collections the developer says aren't available locally.
 
 Then read each workload role's `defaults/main.yml`:
 ```bash
@@ -576,25 +557,13 @@ Continue to Step 2. Namespace patterns and service types will be extracted from 
 
 ---
 
-### Step 2: Locate Workshop Content
+### Step 2: Analyze Workshop Content
 
-Ask:
+The Showroom content was already read in Step 0.5. **Do NOT ask for the path again.**
 
-```
-Where is your Showroom workshop content?
+Use the `.adoc` files already read. Now perform the deeper analysis needed for checkpoint extraction — namespace names, shared vs per-user services, and student action scope per module.
 
-I need the path to the directory containing your .adoc module files.
-
-Default: content/modules/ROOT/pages/ (relative to current directory)
-
-Your workshop content path:
-```
-
-WAIT for answer.
-
-**Validate** the path exists and contains `.adoc` files.
-
-Read ALL module `.adoc` files (files matching pattern `*module*.adoc` or numbered files like `03-*.adoc`, `04-*.adoc`, etc.).
+Read ALL module `.adoc` files if any were skipped (files matching `*module*.adoc` or numbered like `03-*.adoc`, `04-*.adoc`, etc.).
 
 **CRITICAL — extract exact project/namespace names from the module content itself.**
 
@@ -678,24 +647,7 @@ Is this correct, or do you want a different name? [Y / enter preferred name]
 
 WAIT for answer.
 
-**Auto-detect lab type and user model — confirm, do not ask cold:**
-
-By this point you have already read the Showroom content and AgV catalog. Detect from what you read:
-
-- **Lab type** → `config:` in `common.yaml`: `openshift-workloads` = OCP, `cloud-vms-base` = RHEL/AAP. If no AgV: `oc`/`kubectl` commands in `.adoc` = OCP; `ansible-playbook`/systemd = RHEL/AAP.
-- **Multi/single user** → `num_users` parameter in `__meta__.catalog.parameters` = multi-user; absent = single-user. If no AgV: `{user}` in namespace patterns in `.adoc` = multi-user.
-
-**Ask the developer to confirm:**
-
-```
-Based on what I read:
-  Lab type:   [OCP cluster / RHEL+AAP VMs]
-  User model: [Multi-user — num_users parameter found / Single-user]
-
-Does this look correct? [Y/n]
-```
-
-WAIT for confirmation. Adjust if the developer corrects either value.
+**Lab type and user model were confirmed by the developer in Step 0.5.** Do NOT re-confirm. Use those already-confirmed values to select the correct branch below.
 
 ---
 
@@ -791,12 +743,14 @@ Module 1: [Module Title]
   Checkpoints identified: X
 
   1.1: [Description]
-       Source: Pre-configured (deployed by AgnosticD, not a student task)
-       Role:   grader_check_ocp_pod_running
+       Source:        Pre-configured (deployed by AgnosticD, not a student task)
+       Grader role:   grader_check_ocp_pod_running
+       Solver action: NONE (pre-deployed; AgnosticD handles it)
 
   1.2: [Description]
-       Source: Student action — Module 1, Exercise 2 ("Upload the SBOM")
-       Role:   grader_check_http_json_response
+       Source:        Student action — Module 1, Exercise 2 ("Upload the SBOM")
+       Grader role:   grader_check_http_json_response
+       Solver action: POST /api/upload with correct token
 
   ...
 
@@ -804,14 +758,15 @@ Module 2: [Module Title]
   Checkpoints identified: Y
 
   2.1: [Description]
-       Source: Student action — Module 2, Exercise 1 ("Configure the realm")
-       Role:   grader_check_http_json_response
+       Source:        Student action — Module 2, Exercise 1 ("Configure the realm")
+       Grader role:   grader_check_http_json_response
+       Solver action: curl -X POST https://... (exact automation steps)
 
   ...
 
 Total: Z checkpoints across N modules
-  Pre-configured: A  (FAIL = environment broken, not student fault)
-  Student actions: B (FAIL = student hasn't done this step yet)
+  Pre-configured: A  (FAIL = environment broken, not student fault — no solver needed)
+  Student actions: B (FAIL = student hasn't done this step yet — solver automates each one)
 
 ```
 
@@ -825,16 +780,18 @@ Module 1 type: [one of the three below]
   SETUP/INTRO — all checkpoints are Pre-configured.
     Students verify the environment, log in, explore — no resources created.
     Examples: "Verify your environment", "Access the console", "Review the services"
-    → grade_e2e_readiness.yml already covers this. No module grader needed.
+    → grade_module_01.yml: SKIP (grade_e2e_readiness.yml already covers this)
+    → solve_module_01.yml: SKIP (no student actions to automate)
 
   MIXED — some Pre-configured + some Student actions.
     Module 1 starts with environment orientation then moves into real exercises.
-    → grade_e2e_readiness.yml covers the Pre-configured part.
-    → grade_module_01.yml covers Student action checkpoints only.
+    → grade_module_01.yml: Generate — Student action checkpoints only
+    → solve_module_01.yml: Generate — Automates only the Student action steps
 
   EXERCISE — all checkpoints are Student actions.
     Module 1 is a full hands-on exercise with resources the student must create.
-    → grade_module_01.yml covers all checkpoints normally.
+    → grade_module_01.yml: Generate — all checkpoints
+    → solve_module_01.yml: Generate — automates all student actions
 ```
 
 **Ask the developer:**
@@ -875,6 +832,12 @@ WAIT for confirmation before generating any files.
 ### Step 5: Generate Lab Files
 
 After user confirms the checkpoint analysis, generate files for **Module 1 only** (Rule 4).
+
+**ALWAYS generate both grader and solver together.** For every module with student actions, the output is a pair:
+- `grade_module_XX.yml` — checks what the student did
+- `solve_module_XX.yml` — automates what the student should have done
+
+Never generate a grader without its solver (unless the module classification is SETUP/INTRO — see Step 4).
 
 **Step 1 — Copy the lab template:**
 
@@ -1125,7 +1088,7 @@ Confirm: "Created: solve_module_01.yml (X lines)"
 Skipped: solve_module_01.yml (environment validation only, no student actions to solve)
 ```
 
-#### 5.5: README.md
+#### 5.4: README.md
 
 Generate a comprehensive README with:
 - Lab overview and modules
