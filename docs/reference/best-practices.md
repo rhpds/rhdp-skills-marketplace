@@ -487,6 +487,152 @@ The catalog-builder skill offers 4 modes. Choose the right one:
 
 ---
 
+## Managing CLAUDE.md and Rules Files {#managing-claude-md}
+
+CLAUDE.md is Claude's memory system. Unlike a chat prompt that disappears, CLAUDE.md files persist across every session. But they only work if they're kept lean and precise — a bloated file causes Claude to miss the rules that matter.
+
+### The Official File Hierarchy
+
+Claude reads CLAUDE.md files from multiple locations, all at once, on every session start:
+
+```
+~/.claude/CLAUDE.md              # Global — applies to ALL repos, ALL sessions
+~/work/code/agnosticv/CLAUDE.md  # Project — applies to this repo only
+~/work/code/agnosticv/.claude/rules/  # Rules — always active in this repo
+```
+
+Files are additive. All layers load. More specific files override general ones when there's a conflict.
+
+### What Goes Where
+
+**Global `~/.claude/CLAUDE.md`** — rules that apply everywhere, regardless of which repo you're in:
+
+- Git commit style (no AI attribution, no feature/ prefix)
+- Your default writing tone and style
+- Personal preferences that never change
+- Persistent workflows Claude should always know about (like a work log)
+
+**Project `CLAUDE.md`** — repo-specific rules checked into git:
+
+- Directory structure for this repo
+- File formats and naming conventions
+- Validation commands (`yamllint`, `ansible-lint`)
+- Common patterns for this codebase
+
+**`.claude/rules/` directory** — modular rules that auto-load, always:
+
+```
+.claude/rules/
+  git-conventions.md      # Branch naming, commit format
+  yaml-standards.md       # YAML indentation and formatting rules
+  naming-conventions.md   # Variable and file naming
+```
+
+Each `.md` file in `.claude/rules/` loads automatically every session. Use this instead of cluttering the main CLAUDE.md with sections that apply to specific languages or file types.
+
+### What to Include vs Exclude
+
+The official guidance is clear, and it matches hard-won experience:
+
+**Include:**
+- Bash commands Claude can't guess (`bun test` vs `npm test`, `yamllint -d relaxed`)
+- Rules that differ from language defaults (AsciiDoc conventions that aren't standard)
+- Repository etiquette (branch naming, PR conventions, no feature/ prefix)
+- Architectural decisions Claude can't infer from code
+- Quirks of your environment (env vars, non-standard paths)
+
+**Exclude:**
+- Anything Claude can figure out by reading the code
+- Standard language conventions Claude already knows
+- Long explanations or tutorials (put those in a separate file and `@`-import it)
+- File-by-file descriptions of the codebase
+- Information that changes frequently
+
+<div class="callout callout-warning">
+<span class="callout-icon">⚠️</span>
+<div class="callout-body">
+<strong>Size limit: under 200 lines.</strong> A bloated CLAUDE.md causes Claude to miss important rules buried further down. If Claude keeps ignoring a rule despite it being in the file, the file is probably too long. Prune it like code — remove anything Claude already knows or can discover on its own.
+</div>
+</div>
+
+### Using `@`-Imports for Shared Context
+
+CLAUDE.md supports `{{path}}` (template) and `@path` (include) syntax to pull in other files without duplicating content:
+
+```markdown
+# My Project CLAUDE.md
+
+{{~/claude/agnosticd-context}}
+{{~/claude/litemaas.md}}
+```
+
+This is useful for:
+- Large reference documents you don't want to paste inline
+- Shared context files that multiple repos reference
+- Keeping CLAUDE.md short while providing Claude with deep context
+
+### Real Example: Persistent Work Log
+
+The work log in `~/CLAUDE.md` is a concrete example of a global rule that works well. It defines a persistent behaviour — when to create log entries, what format to use, where to write them — that applies across every repo and every session.
+
+```markdown
+## Work Log
+
+Maintain a running work log in ~/work-log/ for quarterly reviews.
+One file per quarter: 2026-Q1.md, 2026-Q2.md, etc.
+
+**When the user says "log this" or "write log":**
+1. Determine the current quarter from today's date
+2. Open (or create) ~/work-log/YYYY-QN.md
+3. Find the Monday of the current week
+4. If a "Week of YYYY-MM-DD" section exists, append bullets under it
+5. If not, add a new section at the TOP of the file (most recent first)
+6. Write concise, action-oriented bullet points
+
+**Format:**
+## Week of 2026-02-10
+- Built validation role for AAP2 catalog item
+- Fixed showroom module 3 AsciiDoc formatting
+```
+
+This belongs in `~/CLAUDE.md` because:
+- It applies to **every repo** — you want the log regardless of where you're working
+- It defines a **trigger phrase** Claude watches for across all sessions
+- It specifies an **exact format** so the output is consistent every time
+- It captures work that would otherwise be forgotten between sessions
+
+### Rules Files in Practice
+
+Instead of one giant CLAUDE.md, split domain-specific rules into `.claude/rules/`:
+
+```markdown
+# .claude/rules/yaml-standards.md
+Always use 2-space indentation in YAML files.
+Never use tabs. Run yamllint before committing.
+Allowed linting profile: relaxed (-d relaxed flag).
+```
+
+```markdown
+# .claude/rules/git-conventions.md
+IMPORTANT: Never use feature/, fix/, or chore/ branch prefixes.
+Branch format: short-descriptive-name (e.g., aap-catalog-fix)
+Never add AI attribution footers to commits.
+Always branch from main, PR to main.
+```
+
+Rules files auto-load every session without you having to think about them. They also let you add granular rules without pushing the main CLAUDE.md over the size limit.
+
+### Maintaining CLAUDE.md Over Time
+
+Treat it like code — review it every few months:
+
+1. **Test your rules**: Did Claude follow them last session? If not, the file may be too long or the rule too vague.
+2. **Remove what's stale**: Project structure changed? Old env vars? Delete them.
+3. **Use `/init`**: Run it in a new repo to generate a starter CLAUDE.md from the actual codebase — then prune to only what Claude can't infer.
+4. **Use `/memory`**: In any session, run `/memory` to see what Claude has learned about the project and add anything important.
+
+---
+
 ## End-to-End Workflows {#workflows}
 
 ### New Workshop from Scratch
