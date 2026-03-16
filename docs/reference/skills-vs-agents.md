@@ -55,21 +55,22 @@ Think of it in Red Hat terms:
 
 ## Full Comparison
 
-<div style="overflow-x:auto;">
-
-| | Skill | Agent |
-|---|---|---|
-| **What it is** | Workflow instructions Claude follows | Isolated worker with its own context |
-| **Context** | Shares your main conversation window | Gets a fresh, isolated context window |
-| **Invocation** | `/namespace:skill-name` or auto-loaded | Delegated by skill or by you directly |
-| **Sees conversation history** | Yes | No — only what you pass it |
-| **Returns** | Works directly in your session | A summary back to your main session |
-| **Can modify files** | Yes (in your session) | Yes (in its own workspace) |
-| **Spawns other agents** | No | No (prevents infinite nesting) |
-| **File definition** | `SKILL.md` in `skills/<name>/` | `.md` file in `agents/` |
-| **Best for** | Interactive step-by-step workflows | Review, validation, parallel tasks |
-
-</div>
+<table>
+<thead>
+<tr><th></th><th>Skill</th><th>Agent</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>What it is</strong></td><td>Workflow instructions Claude follows</td><td>Isolated worker with its own context</td></tr>
+<tr><td><strong>Context</strong></td><td>Shares your main conversation window</td><td>Gets a fresh, isolated context window</td></tr>
+<tr><td><strong>Invocation</strong></td><td><code>/namespace:skill-name</code> or auto-loaded</td><td>Delegated by skill or by you directly</td></tr>
+<tr><td><strong>Sees conversation history</strong></td><td>Yes</td><td>No — only what you pass it</td></tr>
+<tr><td><strong>Returns</strong></td><td>Works directly in your session</td><td>A summary back to your main session</td></tr>
+<tr><td><strong>Can modify files</strong></td><td>Yes (in your session)</td><td>Yes (in its own workspace)</td></tr>
+<tr><td><strong>Spawns other agents</strong></td><td>No</td><td>No (prevents infinite nesting)</td></tr>
+<tr><td><strong>File definition</strong></td><td><code>SKILL.md</code> in <code>skills/&lt;name&gt;/</code></td><td><code>.md</code> file in <code>agents/</code></td></tr>
+<tr><td><strong>Best for</strong></td><td>Interactive step-by-step workflows</td><td>Review, validation, parallel tasks</td></tr>
+</tbody>
+</table>
 
 ---
 

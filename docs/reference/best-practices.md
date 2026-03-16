@@ -98,15 +98,14 @@ Claude Code supports three model tiers. The right model depends on what you're d
 
 ### Available Models
 
-<div style="overflow-x: auto;">
-
-| Model | Best For | Cost |
-|---|---|---|
-| **Sonnet** (default) | Daily work -- editing files, running commands, writing code, using skills | Lower |
-| **Opus** | Complex architecture, multi-file refactoring, nuanced content generation | Higher |
-| **Haiku** | Quick lookups, simple questions, fast responses | Lowest |
-
-</div>
+<table>
+<thead><tr><th>Model</th><th>Best For</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td><strong>Sonnet</strong> (default)</td><td>Daily work — editing files, running commands, writing code, using skills</td><td>Lower</td></tr>
+<tr><td><strong>Opus</strong></td><td>Complex architecture, multi-file refactoring, nuanced content generation</td><td>Higher</td></tr>
+<tr><td><strong>Haiku</strong></td><td>Quick lookups, simple questions, fast responses</td><td>Lowest</td></tr>
+</tbody>
+</table>
 
 ### How to Switch Models
 
@@ -263,41 +262,41 @@ Press `Ctrl+G` to open the current plan in your default editor (vim, VS Code, et
 
 ## Keyboard Shortcuts {#shortcuts}
 
-<div style="overflow-x: auto;">
-
-| Shortcut | Action |
-|---|---|
-| `Esc` | Stop Claude mid-action |
-| `Esc` `Esc` | Rewind / checkpoint menu |
-| `Shift+Tab` | Cycle modes: Normal > Auto-Accept > Plan |
-| `Ctrl+G` | Open plan in your editor |
-| `Ctrl+O` | Toggle verbose mode (see Claude's reasoning) |
-| `Option+T` / `Alt+T` | Toggle extended thinking on/off |
-| `Ctrl+B` | Background a running task |
-
-</div>
+<table>
+<thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>Esc</code></td><td>Stop Claude mid-action</td></tr>
+<tr><td><code>Esc</code> <code>Esc</code></td><td>Rewind / checkpoint menu</td></tr>
+<tr><td><code>Shift+Tab</code></td><td>Cycle modes: Normal &gt; Auto-Accept &gt; Plan</td></tr>
+<tr><td><code>Ctrl+G</code></td><td>Open plan in your editor</td></tr>
+<tr><td><code>Ctrl+O</code></td><td>Toggle verbose mode (see Claude's reasoning)</td></tr>
+<tr><td><code>Option+T</code> / <code>Alt+T</code></td><td>Toggle extended thinking on/off</td></tr>
+<tr><td><code>Ctrl+B</code></td><td>Background a running task</td></tr>
+</tbody>
+</table>
 
 ---
 
 ## All Slash Commands {#commands}
 
-<div style="overflow-x: auto;">
-
-| Command | What It Does |
-|---|---|
-| `/clear` | Wipe conversation history -- start fresh |
-| `/compact` | Summarize conversation to free context space |
-| `/model` | Switch between Sonnet, Opus, Haiku |
-| `/rename` | Name the current session for later resume |
-| `/resume` | Pick from previous sessions to continue |
-| `/rewind` | Undo Claude's last changes (code + conversation) |
-| `/init` | Generate a CLAUDE.md for the current repo |
-| `/memory` | View/edit persistent project memory |
-| `/cost` | Check token usage and cost (API users) |
-| `/context` | See context window usage |
-| `/config` | Open Claude Code settings |
-| `/hooks` | Configure automated checks |
-| `/help` | Show all available commands |
+<table>
+<thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+<tbody>
+<tr><td><code>/clear</code></td><td>Wipe conversation history — start fresh</td></tr>
+<tr><td><code>/compact</code></td><td>Summarize conversation to free context space</td></tr>
+<tr><td><code>/model</code></td><td>Switch between Sonnet, Opus, Haiku</td></tr>
+<tr><td><code>/rename</code></td><td>Name the current session for later resume</td></tr>
+<tr><td><code>/resume</code></td><td>Pick from previous sessions to continue</td></tr>
+<tr><td><code>/rewind</code></td><td>Undo Claude's last changes (code + conversation)</td></tr>
+<tr><td><code>/init</code></td><td>Generate a CLAUDE.md for the current repo</td></tr>
+<tr><td><code>/memory</code></td><td>View/edit persistent project memory</td></tr>
+<tr><td><code>/cost</code></td><td>Check token usage and cost (API users)</td></tr>
+<tr><td><code>/context</code></td><td>See context window usage</td></tr>
+<tr><td><code>/config</code></td><td>Open Claude Code settings</td></tr>
+<tr><td><code>/hooks</code></td><td>Configure automated checks</td></tr>
+<tr><td><code>/help</code></td><td>Show all available commands</td></tr>
+</tbody>
+</table>
 
 </div>
 
@@ -371,19 +370,18 @@ Every time Claude edits or creates a file, `yamllint` runs automatically. Claude
 
 ### Available Skills
 
-<div style="overflow-x: auto;">
-
-| Skill | What It Does | Use When |
-|---|---|---|
-| `/showroom:create-lab` | Generate a workshop module with AsciiDoc | Building hands-on lab content |
-| `/showroom:create-demo` | Create a Know/Show demo module | Building presenter-led demos |
-| `/showroom:verify-content` | Run quality checks on Showroom content | Before submitting a PR |
-| `/showroom:blog-generate` | Convert workshop/demo into a blog post | Repurposing content |
-| `/agnosticv:catalog-builder` | Create/update AgV catalog files | New catalog items or updates |
-| `/agnosticv:validator` | Validate AgV catalog configs | Before submitting AgV PRs |
-| `/health:deployment-validator` | Create Ansible validation roles | Building RHDP health checks |
-
-</div>
+<table>
+<thead><tr><th>Skill</th><th>What It Does</th><th>Use When</th></tr></thead>
+<tbody>
+<tr><td><code>/showroom:create-lab</code></td><td>Generate a workshop module with AsciiDoc</td><td>Building hands-on lab content</td></tr>
+<tr><td><code>/showroom:create-demo</code></td><td>Create a Know/Show demo module</td><td>Building presenter-led demos</td></tr>
+<tr><td><code>/showroom:verify-content</code></td><td>Run quality checks on Showroom content</td><td>Before submitting a PR</td></tr>
+<tr><td><code>/showroom:blog-generate</code></td><td>Convert workshop/demo into a blog post</td><td>Repurposing content</td></tr>
+<tr><td><code>/agnosticv:catalog-builder</code></td><td>Create/update AgV catalog files</td><td>New catalog items or updates</td></tr>
+<tr><td><code>/agnosticv:validator</code></td><td>Validate AgV catalog configs</td><td>Before submitting AgV PRs</td></tr>
+<tr><td><code>/health:deployment-validator</code></td><td>Create Ansible validation roles</td><td>Building RHDP health checks</td></tr>
+</tbody>
+</table>
 
 ### Getting Better Output from Skills
 
@@ -750,17 +748,16 @@ claude --plugin-dir ~/work/code/rhdp-skills-marketplace/showroom
 
 ### Settings Locations
 
-<div style="overflow-x: auto;">
-
-| File | Scope | What Goes Here |
-|---|---|---|
-| `~/.claude/settings.json` | Global | Default model, allowed tools, global hooks |
-| `.claude/settings.json` | Project | Project-specific hooks, permissions |
-| `~/CLAUDE.md` | Global | Universal rules (git style, commit format) |
-| `CLAUDE.md` | Project | Repo-specific conventions |
-| `.claude/rules/*.md` | Project | Auto-loaded rules (always active in this repo) |
-
-</div>
+<table>
+<thead><tr><th>File</th><th>Scope</th><th>What Goes Here</th></tr></thead>
+<tbody>
+<tr><td><code>~/.claude/settings.json</code></td><td>Global</td><td>Default model, allowed tools, global hooks</td></tr>
+<tr><td><code>.claude/settings.json</code></td><td>Project</td><td>Project-specific hooks, permissions</td></tr>
+<tr><td><code>~/CLAUDE.md</code></td><td>Global</td><td>Universal rules (git style, commit format)</td></tr>
+<tr><td><code>CLAUDE.md</code></td><td>Project</td><td>Repo-specific conventions</td></tr>
+<tr><td><code>.claude/rules/*.md</code></td><td>Project</td><td>Auto-loaded rules (always active in this repo)</td></tr>
+</tbody>
+</table>
 
 ### Open Settings
 
@@ -793,18 +790,17 @@ claude /config
 
 These apply across all RHDP repos:
 
-<div style="overflow-x: auto;">
-
-| Rule | Correct | Wrong |
-|---|---|---|
-| Branch from `main` | `git checkout -b aap-catalog-fix main` | `git checkout -b aap-catalog-fix dev` |
-| Short descriptive names | `aap-catalog-fix` | `feature/aap-update` |
-| No prefix | `showroom-module3` | `feature/showroom-module3` |
-| No AI attribution | Clean commit message | `Co-Authored-By: Claude` footer |
-| PR to `main` | `gh pr create --base main` | `gh pr create --base dev` |
-| Lint first | `yamllint common.yaml` | Commit without linting |
-
-</div>
+<table>
+<thead><tr><th>Rule</th><th>Correct</th><th>Wrong</th></tr></thead>
+<tbody>
+<tr><td>Branch from <code>main</code></td><td><code>git checkout -b aap-catalog-fix main</code></td><td><code>git checkout -b aap-catalog-fix dev</code></td></tr>
+<tr><td>Short descriptive names</td><td><code>aap-catalog-fix</code></td><td><code>feature/aap-update</code></td></tr>
+<tr><td>No prefix</td><td><code>showroom-module3</code></td><td><code>feature/showroom-module3</code></td></tr>
+<tr><td>No AI attribution</td><td>Clean commit message</td><td><code>Co-Authored-By: Claude</code> footer</td></tr>
+<tr><td>PR to <code>main</code></td><td><code>gh pr create --base main</code></td><td><code>gh pr create --base dev</code></td></tr>
+<tr><td>Lint first</td><td><code>yamllint common.yaml</code></td><td>Commit without linting</td></tr>
+</tbody>
+</table>
 
 ---
 
