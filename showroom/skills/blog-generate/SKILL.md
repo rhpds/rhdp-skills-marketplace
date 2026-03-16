@@ -59,7 +59,7 @@ Have these ready before running this skill:
 **Don't use this for**:
 - Creating new lab content → use `/create-lab`
 - Creating new demo content → use `/create-demo`
-- Editing existing blog posts → use technical-editor agent
+- Editing existing blog posts → edit the file directly with Claude
 
 ## Shared Rules
 
@@ -354,12 +354,21 @@ Want hands-on practice? Try the complete workshop: [OpenShift Pipelines Workshop
 
 ### Step 7: Validate and Deliver
 
-I'll:
-- Run technical-editor agent for tone and clarity
-- Run style-enforcer agent for Red Hat standards
-- Verify all code samples are complete
-- Check links and references
-- Validate Markdown syntax
+**Inline quality check — fix before delivering (silently, note in summary):**
+
+| Check | Rule |
+|---|---|
+| Tone | Narrative, conversational — not step-by-step instructions |
+| Prohibited terms | No "robust", "powerful", "leverage", "synergy" |
+| Product names | No bare "OCP", "AAP" without first-use expansion |
+| Inclusive language | No "he/she" — use "they/them". No "whitelist/blacklist" |
+| Headings | Sentence case — not Title Case |
+| Word count | 800–1200 words for blog audience |
+| Call to action | Clear CTA at the end — link to full lab or demo |
+| Code samples | All code blocks complete and syntactically valid |
+| Links | All external links valid, no broken references |
+
+Then:
 - **Add source traceability attribution** (REQUIRED - see below)
 
 **Source Traceability** (REQUIRED):
@@ -611,9 +620,7 @@ Every generated blog will have:
 
 ## Integration Notes
 
-**Agents invoked**:
-- `technical-editor` - Refines tone and clarity
-- `style-enforcer` - Applies Red Hat standards
+**Quality check at Step 7**: Inline — no agents. See Step 7 checklist above.
 
 **Output format**:
 - **Markdown (.md)** - DEFAULT for all platforms
