@@ -20,40 +20,25 @@ Check CWD for Showroom structure:
 
 - `content/modules/ROOT/pages/` exists and contains `.adoc` files → use it, proceed silently
 
-**If CWD is not a Showroom repo:**
-
-1. Read `~/CLAUDE.md` to find the declared Showroom content path (look for `Showroom Content:` or similar in the Repository Locations section).
-2. List all subdirectories in that path that look like Showroom repos (contain `content/modules/ROOT/`).
-3. Output:
+**If CWD is not a Showroom repo**, output:
 
 ```
 📁 No Showroom content found in [CWD].
 
-Local repos found in ~/work/showroom-content/:
-  1. my-lab-showroom
-  2. edge-fleet-showroom
-  3. ocp-virt-admin-showroom
-
-Enter a number to select, or provide a GitHub URL to clone:
+Provide a local path or GitHub URL:
 ```
 
-4. Wait for user response:
+Wait for user response:
 
-   **User picks a number** → use that local path, proceed.
+- **Local path** (e.g. `~/work/showroom-content/my-lab-showroom`) → use it, proceed
+- **GitHub URL** (e.g. `https://github.com/rhpds/my-lab-showroom`) → ask:
+  ```
+  Clone to /tmp/my-lab-showroom? Or enter a different path:
+  ```
+  User confirms or says nothing → clone to `/tmp/[repo-name]` and proceed.
+  User provides a different path → clone there and proceed.
 
-   **User provides a GitHub URL** → ask:
-   ```
-   Clone to /tmp/[repo-name]? Or enter a different path:
-   ```
-   If user confirms or says nothing → clone to `/tmp/[repo-name]` and proceed.
-   If user provides a different path → clone there and proceed.
-
-   **User types a local path directly** → use it, proceed.
-
-**If `~/CLAUDE.md` has no Showroom path and CWD has no content**, ask:
-```
-📁 No Showroom content found. Provide a local path or GitHub URL:
-```
+**Never scan directories or list repos from `~/CLAUDE.md` or `~/work/showroom-content/`.** The user knows what they want to verify — just let them say it.
 
 Detect content type from file structure (no questions):
 - Has `=== Verify` sections or numbered exercise steps → Workshop
