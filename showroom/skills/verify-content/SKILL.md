@@ -58,7 +58,22 @@ Then run all checks silently.
 
 Run every check below without pausing or outputting intermediate results. Collect all findings. Output nothing until all checks are complete.
 
-Scaffold checks run inline. Content quality checks delegate to three specialist agents — each returns findings as table rows so Phase 3 can merge everything into one table.
+All checks run inline. Before running content checks, read the appropriate prompt files based on detected content type — these are the source of truth for each pass.
+
+**For a workshop, read:**
+- `@showroom/prompts/enhanced_verification_workshop.txt`
+- `@showroom/prompts/verify_workshop_structure.txt`
+- `@showroom/prompts/verify_technical_accuracy_workshop.txt`
+- `@showroom/prompts/verify_accessibility_compliance_workshop.txt`
+- `@showroom/prompts/redhat_style_guide_validation.txt`
+
+**For a demo, read:**
+- `@showroom/prompts/enhanced_verification_demo.txt`
+- `@showroom/prompts/verify_technical_accuracy_demo.txt`
+- `@showroom/prompts/verify_accessibility_compliance_demo.txt`
+- `@showroom/prompts/redhat_style_guide_validation.txt`
+
+Read all relevant prompts first, then run all checks in one pass. Collect every finding. Output nothing until Phase 3.
 
 #### Scaffold Checks (S)
 
@@ -125,77 +140,91 @@ Missing `css/site-extra.css` or `partials/head-meta.hbs` → High.
 
 ---
 
-#### Content Checks — Agent Delegation
+#### Pass B — Structure and Learning Design
 
-After scaffold checks, delegate to the three specialist agents. Each agent reads the content files already located in Phase 1 and returns findings as table rows.
+Using criteria from the prompt files already read, check all `.adoc` files in the content path.
 
-**Instruction to give each agent:**
-
-> Read all `.adoc` files under `[content path]`. For each issue found, return a table row with these exact columns: `ID | Issue | Severity | Location`. Use IDs prefixed with your pass letter (e.g. B.3, C.7). Severity is one of: Critical, High, Medium, Low. Location is `filename:line` where possible. Return only failing items — no PASS rows needed.
-
----
-
-**Ask the `workshop-reviewer` agent** to check structure and learning design (Pass B) and demo quality if applicable (Pass F).
-
-For a **workshop**, tell it:
-```
-Read @showroom/prompts/enhanced_verification_workshop.txt and
-@showroom/prompts/verify_workshop_structure.txt before reviewing.
-Review all .adoc files in [content path] for workshop structure and learning design quality.
-Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with B (e.g. B.3, B.7).
-Return only failing items.
-```
-
-For a **demo**, tell it:
-```
-Read @showroom/prompts/enhanced_verification_demo.txt before reviewing.
-Review all .adoc files in [content path] for Know/Show structure,
-business value framing, and presenter guidance quality.
-Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with B for structure issues and F for demo-specific issues.
-Return only failing items.
-```
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| B.1 | `index.adoc` exists | Missing | Critical |
+| B.2 | `index.adoc` is learner-facing | Starts with facilitator framing | High |
+| B.3 | `01-overview.adoc` with business scenario | Missing or no scenario | High |
+| B.4 | `02-details.adoc` with technical requirements | Missing | High |
+| B.5 | At least one hands-on module (`03-*` or higher) | None found | Critical |
+| B.6 | `nav.adoc` lists all module files | Any `.adoc` not in nav | High |
+| B.7 | Conclusion module exists | Missing | High |
+| B.8 | Each module has ≥3 learning objectives | Missing or fewer than 3 | High |
+| B.9 | Each module has ≥2 exercises | Fewer than 2 | High |
+| B.10 | Exercise steps use numbered lists (`.`) | Using bullets (`*`) for steps | Medium |
+| B.11 | Learning objectives use bullets (`*`) | Using numbers for objectives | Medium |
+| B.12 | Every exercise has a `=== Verify` section | Missing after any exercise | High |
+| B.13 | No `== References` in individual modules | Present in any module | Medium |
+| B.14 | Conclusion has `== What You've Learned` | Missing | High |
+| B.15 | Conclusion has `== References` | Missing | Medium |
 
 ---
 
-**Ask the `technical-editor` agent** to check AsciiDoc formatting (Pass C) and technical accuracy (Pass E).
+#### Pass C — AsciiDoc Formatting
 
-For a **workshop**, tell it:
-```
-Read @showroom/prompts/verify_technical_accuracy_workshop.txt and
-@showroom/prompts/verify_accessibility_compliance_workshop.txt before reviewing.
-Review all .adoc files in [content path] for AsciiDoc formatting and technical accuracy.
-Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with C (formatting) and E (technical accuracy).
-Return only failing items.
-```
-
-For a **demo**, tell it:
-```
-Read @showroom/prompts/verify_technical_accuracy_demo.txt and
-@showroom/prompts/verify_accessibility_compliance_demo.txt before reviewing.
-Review all .adoc files in [content path] for AsciiDoc formatting and technical accuracy.
-Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with C (formatting) and E (technical accuracy).
-Return only failing items.
-```
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| C.1 | `image::` macros include `link=self,window=blank` | Any image without it | High |
+| C.2 | All images have descriptive alt text | Blank, "image", or filename | High |
+| C.3 | External links use `^` (new tab) | Missing caret | Medium |
+| C.4 | Internal `xref:` links do NOT use `^` | Caret on xref | Medium |
+| C.5 | Code blocks use `[source,<lang>]` | Bare `----` block | High |
+| C.6 | No em dashes (`—`) | Any em dash | Medium |
+| C.7 | Lists have blank line before and after | Lists adjacent to text | Medium |
+| C.8 | Document title uses `= ` (single equals) | Wrong heading level | High |
+| C.9 | Headings are sentence case | Title Case headings | High |
+| C.10 | No broken `include::` references | Any unresolved include | Critical |
 
 ---
 
-**Ask the `style-enforcer` agent** to check Red Hat style compliance (Pass D). Same for both content types:
+#### Pass D — Red Hat Style Guide
 
-```
-Read @showroom/prompts/redhat_style_guide_validation.txt before reviewing.
-Review all .adoc files in [content path] for Red Hat style guide compliance.
-Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with D (e.g. D.2, D.5).
-Return only failing items.
-```
+Using criteria from `redhat_style_guide_validation.txt` already read.
+
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| D.1 | No "the Red Hat OpenShift Platform" | Present | High |
+| D.2 | Acronyms expanded on first use | Bare OCP/AAP/RHOAI without expansion | High |
+| D.3 | No vague terms: "robust", "powerful", "leverage", "synergy" | Present | Medium |
+| D.4 | No unsupported superlatives without citation | "best", "leading", "most" | Medium |
+| D.5 | No non-inclusive terms (whitelist/blacklist, master/slave) | Present | Critical |
+| D.6 | Numbers 0–9 as numerals, not words | "three steps" instead of "3 steps" | Medium |
+| D.7 | Oxford comma in lists of 3+ | Missing | Low |
+| D.8 | No em dashes (style rule) | Present | Medium |
+| D.9 | Gender-neutral pronouns (they/them) | he/she used | High |
+| D.10 | Version numbers match env or use `{ocp_version}` | Hardcoded mismatched version | High |
 
 ---
 
-Collect all rows returned by the three agents. Add scaffold findings (S). Proceed to Phase 3.
+#### Pass E — Technical Accuracy
+
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
+| E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
+| E.3 | Expected output after every command | `[source,bash]` block with no expected output | High |
+| E.4 | No hardcoded cluster URLs, usernames, passwords | Literal values instead of `{user}`, `{password}` | Critical |
+| E.5 | All `{attribute}` placeholders defined in `antora.yml` or `_attributes.adoc` | Undefined attribute | High |
+| E.6 | All images have alt text | Empty first bracket in `image::` | High |
+| E.7 | No skipped heading levels | `=` then `===` skipping `==` | High |
+| E.8 | No deprecated UI paths for current OCP version | Outdated menu references | High |
+| E.9 | Code examples are syntactically valid | Invalid YAML/JSON/bash | Critical |
+
+---
+
+#### Pass F — Demo-specific (skip entirely if workshop)
+
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| F.1 | Know section before Show section | Missing Know/Show structure | Critical |
+| F.2 | Business value stated per section | No ROI/outcome framing | High |
+| F.3 | Presenter notes present | No `[NOTE]` or aside blocks | High |
+| F.4 | No hands-on exercises requiring participant input | Participant steps found | High |
+| F.5 | Key talking points highlighted | No callout blocks | Medium |
 
 ---
 
