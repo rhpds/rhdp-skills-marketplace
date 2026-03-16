@@ -7,52 +7,59 @@ title: /showroom:verify-content
 
 <div class="reference-badge">✅ Content Quality Validation</div>
 
-Validate Showroom workshop or demo content for quality and Red Hat standards compliance.
-
----
-
-## Prerequisites
-
-<div class="category-grid">
-<div class="category-card">
-<span class="category-icon">📁</span>
-<h3>Workshop Content Ready</h3>
-
-```
-# Your Showroom repository with:
-content/modules/ROOT/pages/*.adoc
-```
-
-</div>
-<div class="category-card">
-<span class="category-icon">✓</span>
-<h3>Content Complete</h3>
-<ul>
-<li>All module/section files created</li>
-<li>Navigation structure in place</li>
-<li>Images and diagrams included</li>
-<li>Code examples added</li>
-</ul>
-</div>
-<div class="category-card">
-<span class="category-icon">💾</span>
-<h3>Files Saved</h3>
-<ul>
-<li>Current directory in Showroom repo</li>
-<li>All AsciiDoc files saved</li>
-</ul>
-</div>
-</div>
+Validate Showroom workshop or demo content against Red Hat quality standards. Runs all checks silently, then gives you one findings table — pick what to fix first.
 
 ---
 
 ## Quick Start
 
+```text
+/showroom:verify-content
+```
+
+Run this from inside your Showroom repo. The skill auto-detects the content and starts immediately.
+
+---
+
+## How It Works
+
 <ol class="steps">
-<li><div class="step-content"><h4>Navigate to Repository</h4><p>Open your workshop repository directory</p></div></li>
-<li><div class="step-content"><h4>Run Verification</h4><p><code>/showroom:verify-content</code></p></div></li>
-<li><div class="step-content"><h4>Review Results</h4><p>Check validation report for issues</p></div></li>
-<li><div class="step-content"><h4>Fix Issues</h4><p>Address errors and warnings</p></div></li>
+<li>
+<div class="step-content">
+<h4>Auto-detect</h4>
+<p>Checks the current directory for Showroom content (<code>content/modules/ROOT/pages/</code>). Infers whether it's a workshop or demo from the file structure. If nothing is found in CWD, asks for a local path or GitHub URL.</p>
+</div>
+</li>
+<li>
+<div class="step-content">
+<h4>All checks run silently</h4>
+<p>Reads the appropriate verification prompt files for your content type, then runs everything in one pass — scaffold files, structure, AsciiDoc formatting, Red Hat style, and technical accuracy. No output until complete.</p>
+</div>
+</li>
+<li>
+<div class="step-content">
+<h4>One findings table</h4>
+<p>Every issue in a single sorted table: Critical first, then High, Medium, Low. Scaffold issues appear before content issues.</p>
+
+```
+| # | ID  | Issue                            | Severity | Location          |
+|---|-----|----------------------------------|----------|-------------------|
+| 1 | E.4 | Hardcoded cluster URL            | Critical | module-02.adoc:88 |
+| 2 | S.1 | site.title is a template default | High     | site.yml:3        |
+| 3 | C.5 | Code block missing language      | High     | module-01.adoc:47 |
+| 4 | D.2 | "AAP" without first-use expansion| High     | 01-overview.adoc:12|
+
+Total: 4 issues — 1 Critical, 3 High
+```
+
+</div>
+</li>
+<li>
+<div class="step-content">
+<h4>Fix by number</h4>
+<p>The skill asks: <em>"Which issue do you want to fix first?"</em> Enter the number. The skill shows before/after, applies the fix, confirms, then shows the remaining table. Repeat until done.</p>
+</div>
+</li>
 </ol>
 
 ---
@@ -61,179 +68,91 @@ content/modules/ROOT/pages/*.adoc
 
 <div class="category-grid">
 <div class="category-card">
-<span class="category-icon">📝</span>
-<h3>Content Quality</h3>
+<span class="category-icon">🏗️</span>
+<h3>Scaffold (S)</h3>
 <ul>
-<li><strong>Structure:</strong> Proper AsciiDoc formatting</li>
-<li><strong>Navigation:</strong> Links and cross-references work</li>
-<li><strong>Code blocks:</strong> Syntax highlighting and formatting</li>
-<li><strong>Images:</strong> Proper paths and alt text</li>
+<li><code>site.yml</code> — title, start_page, ui-bundle, supplemental_files</li>
+<li><code>ui-config.yml</code> — type, view_switcher, tabs configured</li>
+<li><code>content/antora.yml</code> — title, name, nav, lab_name attribute</li>
+<li><code>.github/workflows/gh-pages.yml</code> — references correct playbook</li>
+</ul>
+</div>
+<div class="category-card">
+<span class="category-icon">📐</span>
+<h3>Structure (B)</h3>
+<ul>
+<li>index, overview, details, conclusion modules exist</li>
+<li>Learning objectives ≥3 per module</li>
+<li>Exercises have numbered steps + Verify sections</li>
+<li>nav.adoc includes all module files</li>
+</ul>
+</div>
+<div class="category-card">
+<span class="category-icon">📝</span>
+<h3>AsciiDoc (C)</h3>
+<ul>
+<li>Code blocks have language specifier</li>
+<li>Images have descriptive alt text</li>
+<li>Sentence case headings</li>
+<li>External links open in new tab (<code>^</code>)</li>
 </ul>
 </div>
 <div class="category-card">
 <span class="category-icon">🎨</span>
-<h3>Red Hat Standards</h3>
+<h3>Red Hat Style (D)</h3>
 <ul>
-<li><strong>Terminology:</strong> Correct product names</li>
-<li><strong>Voice:</strong> Active, clear, direct language</li>
-<li><strong>Style:</strong> Consistent formatting</li>
-<li><strong>Branding:</strong> Red Hat guidelines compliance</li>
+<li>No prohibited terms (robust, powerful, leverage)</li>
+<li>Acronyms expanded on first use</li>
+<li>Oxford comma, numerals for 0–9</li>
+<li>Inclusive language (they/them, allowlist/denylist)</li>
 </ul>
 </div>
 <div class="category-card">
 <span class="category-icon">⚙️</span>
-<h3>Technical Accuracy</h3>
+<h3>Technical (E)</h3>
 <ul>
-<li><strong>Commands:</strong> Valid syntax</li>
-<li><strong>Examples:</strong> Working code snippets</li>
-<li><strong>Versions:</strong> Current product versions</li>
-<li><strong>URLs:</strong> Valid links to documentation</li>
+<li>No hardcoded cluster URLs, usernames, passwords</li>
+<li>Expected output after every command</li>
+<li>No skipped heading levels</li>
+<li>All <code>{attribute}</code> placeholders defined</li>
 </ul>
 </div>
 <div class="category-card">
-<span class="category-icon">🖥️</span>
-<h3>Scaffold Files</h3>
+<span class="category-icon">🎬</span>
+<h3>Demo-specific (F)</h3>
 <ul>
-<li><strong>site.yml</strong> (preferred) or <strong>default-site.yml</strong>: Title not stale, start_page, ui-bundle URL, supplemental_files pointing to <code>./content/supplemental-ui</code></li>
-<li><strong>site.yml standard:</strong> If repo has <code>default-site.yml</code> only → flag to rename to <code>site.yml</code> and update gh-pages.yml reference</li>
-<li><strong>ui-config.yml:</strong> type: showroom, view_switcher enabled, tabs configured, persist_url_state</li>
-<li><strong>content/antora.yml:</strong> title not stale, name: modules, start_page, nav, lab_name attribute</li>
-<li><strong>content/lib/:</strong> All 4 JS extension files present</li>
-<li><strong>content/supplemental-ui/:</strong> Red Hat branding files (CSS, HBS partials)</li>
+<li>Know section before Show section</li>
+<li>Business value stated per section</li>
+<li>Presenter notes present</li>
+<li>No hands-on exercises in presenter-led content</li>
 </ul>
 </div>
 </div>
 
 ---
 
-## Common Workflow
-
-<ol class="steps">
-<li>
-<div class="step-content">
-<h4>Invoke Skill</h4>
-
-```
-/showroom:verify-content
-```
-
-<p>Prompts load directly from <code>showroom/prompts/</code> in the marketplace plugin.</p>
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Scaffold File Check</h4>
-<p>Silently checks all scaffold files and surfaces issues grouped by severity:</p>
-<ul>
-<li><strong>Critical:</strong> Missing required files (site.yml or default-site.yml, ui-config.yml, antora.yml)</li>
-<li><strong>High:</strong> Stale/template titles in site.yml, ui-config.yml, antora.yml; <code>default-site.yml</code> present (rename to <code>site.yml</code>); missing view_switcher or tabs</li>
-<li><strong>High:</strong> Wrong paths (supplemental_files), missing content/lib/ JS files</li>
-</ul>
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Checklist Verification (5 passes)</h4>
-<p>Each pass produces a complete PASS/FAIL/N/A table before the next starts:</p>
-<ul>
-<li><strong>Pass B:</strong> Structure (index, modules, nav, conclusion, exercises, verify sections)</li>
-<li><strong>Pass C:</strong> AsciiDoc formatting (images, links, code blocks, lists, headings)</li>
-<li><strong>Pass D:</strong> Red Hat style (product names, prohibited terms, numerals, Oxford comma)</li>
-<li><strong>Pass E:</strong> Technical accuracy (commands, variables, hardcoded values, heading hierarchy)</li>
-<li><strong>Pass F:</strong> Demo-specific (Know/Show, presenter notes — skipped for workshops)</li>
-</ul>
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Fix Issues</h4>
-<ul>
-<li>Fix AsciiDoc formatting errors</li>
-<li>Update product terminology</li>
-<li>Correct code examples</li>
-<li>Add missing alt text</li>
-<li>Add <code>view_switcher</code> to <code>ui-config.yml</code> if warned</li>
-</ul>
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Re-verify</h4>
-
-```
-/showroom:verify-content
-→ Confirm all issues resolved
-```
-
-</div>
-</li>
-</ol>
-
----
-
-## Example Validation Report
-
-**Sample output:**
-
-<div class="callout callout-tip">
-<span class="callout-icon">✅</span>
-<div class="callout-body"><strong>Structure:</strong> All modules follow Know/Do/Check pattern</div>
-</div>
-
-<div class="callout callout-tip">
-<span class="callout-icon">✅</span>
-<div class="callout-body"><strong>Navigation:</strong> All links valid</div>
-</div>
-
-<div class="callout callout-warning">
-<span class="callout-icon">⚠️</span>
-<div class="callout-body"><strong>Terminology:</strong> Found "Openshift" (should be "OpenShift")</div>
-</div>
-
-<div class="callout callout-warning">
-<span class="callout-icon">⚠️</span>
-<div class="callout-body"><strong>Code blocks:</strong> Missing language identifier in module-02.adoc</div>
-</div>
-
-<div class="callout callout-danger">
-<span class="callout-icon">🚨</span>
-<div class="callout-body"><strong>Images:</strong> Missing alt text for diagram.png</div>
-</div>
-
----
-
-## Tips &amp; Best Practices
+## Tips
 
 <div class="category-grid">
 <div class="category-card">
 <span class="category-icon">🔍</span>
-<h3>Before Pull Requests</h3>
-<p>Run verification before creating PRs</p>
+<h3>Run from the right directory</h3>
+<p>Start Claude Code inside your Showroom repo so the skill auto-detects without asking. <code>cd ~/work/showroom-content/my-lab && claude</code></p>
 </div>
 <div class="category-card">
-<span class="category-icon">📝</span>
-<h3>Incremental Fixes</h3>
-<p>Fix issues one at a time, don't batch</p>
+<span class="category-icon">🎯</span>
+<h3>Fix Critical first</h3>
+<p>Enter the number of the Critical issue first. Critical = broken builds or broken navigation. Everything else is quality.</p>
 </div>
 <div class="category-card">
-<span class="category-icon">📚</span>
-<h3>Learning Tool</h3>
-<p>Use verification to learn standards</p>
+<span class="category-icon">🔄</span>
+<h3>Re-run after fixing</h3>
+<p>Once you've fixed everything, run <code>/showroom:verify-content</code> again to confirm clean. The table should come back empty.</p>
 </div>
 <div class="category-card">
-<span class="category-icon">🏷️</span>
-<h3>Product Names</h3>
-<p>Check capitalization carefully</p>
-</div>
-<div class="category-card">
-<span class="category-icon">⚙️</span>
-<h3>Test Code</h3>
-<p>Verify all examples actually work</p>
-</div>
-<div class="category-card">
-<span class="category-icon">📊</span>
-<h3>Priority Order</h3>
-<p>Fix ❌ first, then ⚠️, then ℹ️</p>
+<span class="category-icon">📋</span>
+<h3>Before every PR</h3>
+<p>Run verification before creating a pull request. Zero findings = ready to merge.</p>
 </div>
 </div>
 
@@ -244,37 +163,23 @@ content/modules/ROOT/pages/*.adoc
 <details>
 <summary>Skill not found?</summary>
 
-- Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/verify-content` (Claude Code) or `ls ~/.cursor/skills/showroom-verify-content` (Cursor)
-- Check the [Troubleshooting Guide](../reference/troubleshooting.html)
+- Restart Claude Code
+- Check installation: `/plugin list` — you should see `showroom`
+- See the [Troubleshooting Guide](../reference/troubleshooting.html)
 
 </details>
 
 <details>
-<summary>No issues found but content looks wrong?</summary>
+<summary>Skill lists repos from my showroom-content directory?</summary>
 
-- Manual review is still important
-- Skill checks common issues, not everything
-- Have a colleague review
-- Test the workshop end-to-end
+You're not inside a Showroom repo when you run the skill. `cd` into the specific repo first, then run `/showroom:verify-content`. The skill works on CWD — it should never present a list of available repos.
 
 </details>
 
 <details>
-<summary>Too many errors?</summary>
+<summary>Zero findings but content looks wrong?</summary>
 
-<div class="callout callout-warning">
-<span class="callout-icon">⚠️</span>
-<div class="callout-body">
-<strong>Prioritize Your Fixes:</strong>
-<ol>
-<li><strong>❌ Critical issues</strong> — Must fix (broken links, missing files)</li>
-<li><strong>⚠️ Warnings</strong> — Should fix (terminology, formatting)</li>
-<li><strong>ℹ️ Style suggestions</strong> — Optional improvements</li>
-</ol>
-Start with critical issues and work your way down.
-</div>
-</div>
+The skill checks against specific criteria. It won't catch everything — have a colleague do a manual read-through, and always test the workshop end-to-end in a live environment before publishing.
 
 </details>
 
@@ -285,15 +190,15 @@ Start with critical issues and work your way down.
 <div class="links-grid">
   <a href="create-lab.html" class="link-card">
     <h4>/showroom:create-lab</h4>
-    <p>Generate workshop content</p>
+    <p>Generate workshop content first</p>
   </a>
   <a href="create-demo.html" class="link-card">
     <h4>/showroom:create-demo</h4>
-    <p>Generate demo content</p>
+    <p>Generate demo content first</p>
   </a>
   <a href="blog-generate.html" class="link-card">
     <h4>/showroom:blog-generate</h4>
-    <p>Convert to blog format</p>
+    <p>Convert workshop to blog post</p>
   </a>
 </div>
 

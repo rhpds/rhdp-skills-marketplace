@@ -187,6 +187,99 @@ The skill orchestrates. The agents specialise. Your main context only sees the f
 
 ---
 
+## When to Use Agents Inside a Skill
+
+Once you start building skills, you'll face a choice: should the skill do checks itself (inline), or delegate to an agent?
+
+This is one of the most common design mistakes — using agents when inline is faster and simpler, or avoiding agents when they'd genuinely help.
+
+### The Core Question
+
+**Is the check the main purpose of the skill, or a secondary gate after heavy work?**
+
+---
+
+### Use Inline When
+
+**Verification is the primary purpose of the skill** — like `/showroom:verify-content`. The skill exists to check things. There's no large pre-existing context. Running checks directly in the skill's own context is faster and produces consistent output.
+
+```
+/showroom:verify-content
+  ↓
+Reads prompt files
+  ↓
+Runs all checks inline (one context)
+  ↓
+Returns single findings table
+```
+
+**Also use inline when:**
+- The check is short and focused (10 specific rules, not open-ended review)
+- Speed matters — agents add sequential spin-up overhead
+- You want deterministic, structured output (table rows, not narrative)
+- The skill already has the content in context from prior steps
+
+---
+
+### Use Agents When
+
+**The check is secondary — it runs after heavy generation work.** For example, `/showroom:create-lab` spends 9 steps generating content. At step 10, the context is large and the skill is almost done. An agent gets a fresh context and can review without bias from all the generation choices that came before.
+
+```
+/showroom:create-lab
+  ↓
+Steps 1–9: Heavy generation (large context builds up)
+  ↓
+Step 10: Ask workshop-reviewer agent to check
+         → Fresh context, unbiased view
+         → Returns specific feedback
+  ↓
+Apply fixes, deliver
+```
+
+**Also use agents when:**
+- You want true specialisation — an agent focused entirely on one domain (style, structure, technical)
+- The agent's knowledge is maintained separately and may be updated without touching the skill
+- You need parallel independent checks (though Claude Code runs agents sequentially by default)
+
+---
+
+### The Speed Trade-off
+
+Agents are **never faster** than inline. Each agent call is a separate context spin-up. If a skill invokes three agents in sequence, that's three round-trips instead of one.
+
+The reason to use agents is **quality and maintainability**, not speed:
+- Update `style-enforcer.md` once when the Red Hat style guide changes — every skill that uses it gets the update automatically
+- The agent has no memory of what the skill just generated — it sees the output with fresh eyes
+
+---
+
+### Decision Table
+
+<table>
+<thead>
+<tr><th>Situation</th><th>Use</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td>Skill's main job is checking/validating</td><td><strong>Inline</strong></td><td>Faster, one context, structured output</td></tr>
+<tr><td>Quick quality gate at end of generation</td><td><strong>Inline</strong></td><td>Content already in context, specific checklist</td></tr>
+<tr><td>Post-generation review needing fresh eyes</td><td><strong>Agent</strong></td><td>Unbiased context, specialised knowledge</td></tr>
+<tr><td>Specialist domain maintained separately</td><td><strong>Agent</strong></td><td>Update agent once, all skills benefit</td></tr>
+<tr><td>Open-ended qualitative feedback</td><td><strong>Agent</strong></td><td>Agents are better at narrative, exploratory review</td></tr>
+<tr><td>Structured table output needed</td><td><strong>Inline</strong></td><td>Easier to control output format precisely</td></tr>
+</tbody>
+</table>
+
+### Real RHDP Examples
+
+| Skill | Approach | Reason |
+|---|---|---|
+| `/showroom:verify-content` | Inline | Verification IS the skill. Reads prompts, runs all checks in one pass. |
+| `/showroom:create-lab` Step 10 | Inline | Focused 10-item checklist on just-generated module. Fast, specific. |
+| `/showroom:create-lab` (future deep review) | Agent | If you want a full post-generation review with narrative feedback from `workshop-reviewer`. |
+
+---
+
 ## File Structure Reference
 
 **Defining a Skill** (`showroom/skills/create-lab/SKILL.md`):

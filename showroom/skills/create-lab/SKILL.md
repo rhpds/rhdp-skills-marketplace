@@ -788,21 +788,28 @@ oc delete project my-project
 - Second-person narrative
 - Code blocks with syntax highlighting
 
-### Step 10: Final Quality Check (Run Agents)
+### Step 10: Final Quality Check (Inline)
 
-After generating the module, run both review agents:
+The generated module is already in context — check it directly. No agents needed.
 
-**1. Ask the workshop-reviewer agent** to validate structure, learning objectives, and hands-on exercise quality:
-```
-Ask: Review this lab module for structure and learning design quality
-```
+Read @showroom/docs/SKILL-COMMON-RULES.md for the full quality gate criteria, then verify the just-generated file against this list:
 
-**2. Ask the style-enforcer agent** to check Red Hat style compliance:
-```
-Ask: Check this lab module for Red Hat style guide compliance
-```
+**Must fix before delivering (fix silently, note in Step 12 summary):**
 
-Apply any fixes flagged before delivering. See also @showroom/docs/SKILL-COMMON-RULES.md for quality gate checks (AsciiDoc syntax, navigation, instruction clarity, module sizing).
+| Check | Rule |
+|---|---|
+| Headings | Sentence case — not Title Case |
+| Em dashes | Zero `—` — rewrite or use `--` |
+| Prohibited terms | No "robust", "powerful", "leverage", "synergy" |
+| Code blocks | All have `[source,<lang>]` language specifier — never bare `----` |
+| Exercise steps | Numbered lists (`.`) — not bullets (`*`) |
+| Verify sections | Every exercise has `=== Verify` with expected output |
+| Learning objectives | Present with ≥3 bullet points |
+| Hardcoded values | No cluster URLs, usernames, passwords — use `{user}`, `{password}`, `{openshift_console_url}` |
+| Pronouns | No "he/she" — use "they/them" |
+| Product names | No bare "OCP", "AAP" without first-use expansion |
+
+If anything fails, fix it now. Do not ask the user — just fix and note what was corrected in the Step 12 delivery summary.
 
 ### Step 11: Update Navigation (REQUIRED)
 
