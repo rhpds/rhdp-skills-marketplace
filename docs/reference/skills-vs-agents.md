@@ -276,7 +276,6 @@ The reason to use agents is **quality and maintainability**, not speed:
 |---|---|---|
 | `/showroom:verify-content` | Inline | Verification IS the skill. Reads prompts, runs all checks in one pass. |
 | `/showroom:create-lab` Step 10 | Inline | Focused 10-item checklist on just-generated module. Fast, specific. |
-| `/showroom:create-lab` (future deep review) | Agent | If you want a full post-generation review with narrative feedback from `workshop-reviewer`. |
 
 ---
 
