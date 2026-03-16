@@ -19,19 +19,41 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
 Check CWD for Showroom structure:
 
 - `content/modules/ROOT/pages/` exists and contains `.adoc` files → use it, proceed silently
-- `content/modules/ROOT/pages/` exists but is empty → output:
-  ```
-  📁 Found Showroom structure in [CWD] but no .adoc files in content/modules/ROOT/pages/.
-  Please provide the path to your .adoc files:
-  ```
-- No Showroom structure in CWD → output:
-  ```
-  📁 No Showroom content found in [CWD].
-  Please provide the path to your Showroom repo (e.g. ~/work/showroom-content/my-lab-showroom):
-  ```
-  Wait for the user to provide a path. Use that path and proceed.
 
-**CRITICAL: Never scan `~/work/showroom-content/` or any path from `~/CLAUDE.md` to list or suggest available repos. If the directory is not detected, ask for the path — do not offer a list of options.**
+**If CWD is not a Showroom repo:**
+
+1. Read `~/CLAUDE.md` to find the declared Showroom content path (look for `Showroom Content:` or similar in the Repository Locations section).
+2. List all subdirectories in that path that look like Showroom repos (contain `content/modules/ROOT/`).
+3. Output:
+
+```
+📁 No Showroom content found in [CWD].
+
+Local repos found in ~/work/showroom-content/:
+  1. my-lab-showroom
+  2. edge-fleet-showroom
+  3. ocp-virt-admin-showroom
+
+Enter a number to select, or provide a GitHub URL to clone:
+```
+
+4. Wait for user response:
+
+   **User picks a number** → use that local path, proceed.
+
+   **User provides a GitHub URL** → ask:
+   ```
+   Clone to /tmp/[repo-name]? Or enter a different path:
+   ```
+   If user confirms or says nothing → clone to `/tmp/[repo-name]` and proceed.
+   If user provides a different path → clone there and proceed.
+
+   **User types a local path directly** → use it, proceed.
+
+**If `~/CLAUDE.md` has no Showroom path and CWD has no content**, ask:
+```
+📁 No Showroom content found. Provide a local path or GitHub URL:
+```
 
 Detect content type from file structure (no questions):
 - Has `=== Verify` sections or numbered exercise steps → Workshop
