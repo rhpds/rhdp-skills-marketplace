@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v2.10.0] - 2026-03-16
+## [v2.10.0] - 2026-03-16 (updated 2026-03-16)
 
 ### Docs — Complete GitHub Pages Redesign
 
@@ -45,6 +45,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### lab-validator
 - Added visual HTML/CSS workflow diagram to docs page showing complete 8-step flow
 - Diagram includes: environment hard-stop gate, Module 1 three-way classification (SETUP/INTRO / MIXED / EXERCISE), generate/test/iterate loop, and per-module repeat pattern
+
+---
+
+### Showroom Skills (post-release improvements)
+
+#### verify-content — Complete Skill Refactor
+- **New flow**: runs all checks silently in one pass → outputs single findings table sorted by severity (Critical first) → user picks issue number to fix
+- **No more drip-feed output**: removed "shall I continue?" pauses between passes
+- **Fix loop**: user enters number, skill shows before/after, applies fix, confirms, shows remaining table
+- **Auto-detect CWD**: checks current directory for Showroom structure; if not found, asks for local path or GitHub URL — never scans `~/work/showroom-content/` or lists repos from CLAUDE.md
+- **Correct prompt files**: reads content-type-specific prompt files (`enhanced_verification_workshop.txt`, `redhat_style_guide_validation.txt`, etc.) before running checks
+- **Fully inline**: no agent delegation — all passes run in one context for speed
+
+#### create-lab, create-demo, blog-generate — Inline Quality Checks
+- Removed agent calls from Step 10 (create-lab, create-demo) and Step 7 (blog-generate)
+- Replaced with focused inline checklists: sentence case, em dashes, code block language specifiers, verify sections, no hardcoded values, product name expansion
+- **Deleted `showroom/agents/` directory** — `workshop-reviewer`, `style-enforcer`, `technical-editor` agents removed; no skill uses agents for quality checks anymore
+
+### Docs (post-release)
+
+#### New Workshops Section
+- **Workshop 1: "Your First Hour with Claude Code"** — 5 modules for any Red Hatter (not RHDP-specific): first conversation, CLAUDE.md memory, writing faster with Claude, context discipline, challenge tasks. Includes fun examples: roast your README, explain OpenShift 3 ways, weekly update as movie trailer.
+- **Workshop 2: "Write Your First Skill"** — Builds a standup generator skill (outputs in pirate mode, haiku, Hemingway, movie trailer). Teaches frontmatter, instructions, packaging, local install, iteration loop. No code required.
+- Workshops section added to sidebar navigation (red highlight block)
+
+#### Best Practices
+- Consolidated three overlapping CLAUDE.md sections into one: "Managing Your CLAUDE.md" — file hierarchy, include/exclude guidance, 200-line limit, @-imports, work log example, rules files, `/init` and `/memory`
+- Fixed markdown tables inside HTML `<div>` blocks (Jekyll/kramdown doesn't render markdown inside HTML — all tables converted to `<table>` HTML)
+
+#### Skills vs Agents
+- New section: "When to Use Agents Inside a Skill" — decision table, speed trade-off explanation, real RHDP examples showing inline vs agent choice
+
+#### verify-content Docs
+- Rewritten to match new skill flow: auto-detect, silent checks, single findings table, fix by number
+
+#### Home Page and Navigation
+- Refocused home page on skill usage (Skills section first, above the fold)
+- "Start by Role" persona section removed from primary nav — Build Your Own moved to bottom of sidebar
 
 ## [v2.9.0] - 2026-03-13
 
