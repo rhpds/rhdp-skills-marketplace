@@ -238,12 +238,18 @@ Options:
 
 ### Step 3: Locate Content
 
-**For single file**:
-- Provide file path (e.g., `content/modules/ROOT/pages/module-01-install-aap.adoc`)
+**Start with the current working directory — do NOT scan for or list available labs.**
 
-**For multiple files**:
-- Provide glob pattern (e.g., `content/modules/ROOT/pages/*.adoc`)
-- Or directory path (e.g., `content/modules/ROOT/pages/`)
+Check if CWD is a Showroom repo:
+- Does `content/modules/ROOT/pages/` exist in CWD? → Use it. Proceed silently.
+- Does `content/modules/ROOT/` exist but no `pages/`? → Ask: "No module files found. Please provide the path to your AsciiDoc files."
+- No Showroom structure found? → Ask: "What is the path to your Showroom content? (e.g. `~/work/showroom-content/my-lab-showroom`)"
+
+**CRITICAL: Never auto-discover labs from CLAUDE.md, from `~/work/showroom-content/`, or from any other directory.** Do NOT list available repos for the user to choose from — that creates confusion when people have multiple labs checked out. Always work on the directory the user provides or the current working directory.
+
+Once content is located:
+- Single file: use directly
+- Directory: glob `*.adoc` under `content/modules/ROOT/pages/`
 
 ### Step 4: Run Verification — Checklist Mode
 
