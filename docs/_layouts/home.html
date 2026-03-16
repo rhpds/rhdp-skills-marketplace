@@ -11,7 +11,6 @@
 </head>
 <body>
 
-  <!-- Mobile top bar -->
   <div class="mobile-bar">
     <button class="hamburger" id="hamburger" aria-label="Open menu">
       <span></span><span></span><span></span>
@@ -19,12 +18,10 @@
     <span class="mobile-bar-title">RHDP Skills</span>
   </div>
 
-  <!-- Overlay for mobile sidebar -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
   <div class="docs-container">
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
 
       <div class="sidebar-header">
@@ -49,28 +46,23 @@
 
       <nav class="sidebar-nav">
 
-        <!-- By Role -->
-        <div class="nav-section nav-section-roles">
-          <span class="nav-section-label">Start by Role</span>
-          <ul>
-            <li><a href="{{ '/contributing/for-sales.html' | relative_url }}"><span class="nav-icon">💼</span> Sales &amp; Pre-Sales</a></li>
-            <li><a href="{{ '/contributing/for-developers.html' | relative_url }}"><span class="nav-icon">🖥️</span> Frontend Developers</a></li>
-            <li><a href="{{ '/setup/claude-code.html' | relative_url }}"><span class="nav-icon">⚙️</span> RHDP Engineers</a></li>
-          </ul>
-        </div>
-
-        <!-- On this page (home-specific) -->
         <div class="nav-section">
           <span class="nav-section-label">On This Page</span>
           <ul>
-            <li><a href="#platforms"><span class="nav-icon">🚀</span> Choose Platform</a></li>
-            <li><a href="#quick-install"><span class="nav-icon">⚡</span> Quick Install</a></li>
-            <li><a href="#roles"><span class="nav-icon">👤</span> Start by Role</a></li>
             <li><a href="#skills"><span class="nav-icon">📦</span> Browse Skills</a></li>
+            <li><a href="#platforms"><span class="nav-icon">⚡</span> Quick Install</a></li>
           </ul>
         </div>
 
-        <!-- Skills -->
+        <div class="nav-section">
+          <span class="nav-section-label">Getting Started</span>
+          <ul>
+            <li><a href="{{ '/setup/claude-code.html' | relative_url }}"><span class="nav-icon">🚀</span> Claude Code Setup</a></li>
+            <li><a href="{{ '/setup/cursor.html' | relative_url }}"><span class="nav-icon">⚡</span> Cursor Setup</a></li>
+            <li><a href="{{ '/setup/updating.html' | relative_url }}"><span class="nav-icon">🔄</span> Updating Skills</a></li>
+          </ul>
+        </div>
+
         <div class="nav-section">
           <span class="nav-section-label">Skills</span>
           <ul>
@@ -85,11 +77,9 @@
           </ul>
         </div>
 
-        <!-- Concepts -->
         <div class="nav-section">
-          <span class="nav-section-label">Concepts</span>
+          <span class="nav-section-label">Reference</span>
           <ul>
-            <li><a href="{{ '/reference/skills-vs-agents.html' | relative_url }}"><span class="nav-icon">⚖️</span> Skills vs Agents</a></li>
             <li><a href="{{ '/reference/best-practices.html' | relative_url }}"><span class="nav-icon">💡</span> Best Practices</a></li>
             <li><a href="{{ '/reference/quick-reference.html' | relative_url }}"><span class="nav-icon">⚡</span> Quick Reference</a></li>
             <li><a href="{{ '/reference/troubleshooting.html' | relative_url }}"><span class="nav-icon">🔧</span> Troubleshooting</a></li>
@@ -97,14 +87,12 @@
           </ul>
         </div>
 
-        <!-- Build Your Own -->
         <div class="nav-section">
           <span class="nav-section-label">Build Your Own</span>
           <ul>
             <li><a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}"><span class="nav-icon">🛠️</span> Create a Skill</a></li>
+            <li><a href="{{ '/reference/skills-vs-agents.html' | relative_url }}"><span class="nav-icon">⚖️</span> Skills vs Agents</a></li>
             <li><a href="{{ '/contributing/plugin-dev-plugin.html' | relative_url }}"><span class="nav-icon">🔌</span> Plugin Dev Toolkit</a></li>
-            <li><a href="{{ '/contributing/for-sales.html' | relative_url }}"><span class="nav-icon">💼</span> Sales Walkthrough</a></li>
-            <li><a href="{{ '/contributing/for-developers.html' | relative_url }}"><span class="nav-icon">🖥️</span> Frontend Agent Guide</a></li>
           </ul>
         </div>
 
@@ -117,11 +105,10 @@
           </svg>
           GitHub
         </a>
-        <span class="version">v{{ site.version | default: '2.9.0' }}</span>
+        <span class="version">v{{ site.version | default: '2.10.0' }}</span>
       </div>
     </aside>
 
-    <!-- Main content -->
     <main class="main-content">
       {{ content }}
     </main>
