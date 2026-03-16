@@ -7,11 +7,11 @@ title: Updating Cursor Skills
 
 Keep your RHDP Skills Marketplace skills up to date in Cursor.
 
-<div class="important-note">
-⚠️ <strong>Cursor Updates are Manual</strong>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body">
+<strong>Cursor Updates are Manual</strong>
 
 Unlike Claude Code's marketplace system, Cursor requires manual updates using the update script.
-</div>
+</div></div>
 
 ---
 
@@ -122,84 +122,15 @@ bash -x /tmp/update-cursor.sh
 
 For automatic update notifications and marketplace integration, use [Claude Code](claude-code.html) instead. Claude Code's plugin marketplace provides:
 
-- ✅ Automatic update detection
-- ✅ One-command updates
-- ✅ Version management
-- ✅ Rollback capability
+- Automatic update detection
+- One-command updates
+- Version management
+- Rollback capability
 
 ---
 
-<div class="next-steps">
-  <h3>📚 Next Steps</h3>
-  <ul>
-    <li><a href="updating.html">Update Claude Code Skills →</a></li>
-    <li><a href="cursor.html">Cursor Setup Guide →</a></li>
-    <li><a href="../reference/quick-reference.html">Quick Reference →</a></li>
-  </ul>
+<div class="links-grid">
+  <a href="updating.html" class="link-card"><h4>Update Claude Code Skills</h4><p>Guide for updating Claude Code plugins</p></a>
+  <a href="cursor.html" class="link-card"><h4>Cursor Setup Guide</h4><p>Full setup guide for Cursor</p></a>
+  <a href="../reference/quick-reference.html" class="link-card"><h4>Quick Reference</h4><p>Commands at a glance</p></a>
 </div>
-
-<style>
-.important-note {
-  background: #fff3cd;
-  border-left: 4px solid #ffc107;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  border-radius: 8px;
-  color: #856404;
-}
-
-.important-note strong {
-  color: #856404;
-  font-size: 1.1rem;
-}
-
-.next-steps {
-  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  margin: 2rem 0;
-}
-
-.next-steps h3 {
-  margin-top: 0;
-  color: white;
-}
-
-.next-steps a {
-  color: white;
-  text-decoration: underline;
-}
-
-.next-steps a:hover {
-  text-decoration: none;
-}
-
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-
-summary:hover {
-  color: #EE0000;
-}
-
-details[open] {
-  padding-bottom: 1rem;
-}
-
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-</style>

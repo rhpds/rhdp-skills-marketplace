@@ -7,12 +7,12 @@ title: Updating Claude Code Skills
 
 Keep your RHDP Skills Marketplace plugins up to date to get the latest features, bug fixes, and improvements.
 
-<div class="platform-note">
-💻 <strong>For Cursor users:</strong> See the <a href="updating-cursor.html">Cursor updating guide</a> instead.
-</div>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body">
+For Cursor users: See the <a href="updating-cursor.html">Cursor updating guide</a> instead.
+</div></div>
 
-<div class="important-note">
-⚠️ <strong>IMPORTANT: Two-Step Update Process</strong>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body">
+<strong>IMPORTANT: Two-Step Update Process</strong>
 
 You must update the marketplace FIRST before updating plugins:
 
@@ -20,7 +20,7 @@ You must update the marketplace FIRST before updating plugins:
 2. **Update plugins** - Installs the new versions
 
 If you skip Step 1, the marketplace won't know new versions exist and won't show "Update now" options.
-</div>
+</div></div>
 
 ---
 
@@ -324,118 +324,8 @@ To see all past versions and changes:
 
 ---
 
-<div class="next-steps">
-  <h3>📚 Next Steps</h3>
-  <ul>
-    <li><a href="../reference/quick-reference.html">Quick Reference Guide →</a></li>
-    <li><a href="claude-code.html">Installation Guide →</a></li>
-    <li><a href="../skills/create-lab.html">Using Skills →</a></li>
-  </ul>
+<div class="links-grid">
+  <a href="../reference/quick-reference.html" class="link-card"><h4>Quick Reference Guide</h4><p>Commands at a glance</p></a>
+  <a href="claude-code.html" class="link-card"><h4>Installation Guide</h4><p>Full setup guide for Claude Code</p></a>
+  <a href="../skills/create-lab.html" class="link-card"><h4>Using Skills</h4><p>How to use the available skills</p></a>
 </div>
-
-<style>
-.important-note {
-  background: #fff3cd;
-  border-left: 4px solid #ffc107;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  border-radius: 8px;
-  color: #856404;
-}
-
-.important-note strong {
-  color: #856404;
-  font-size: 1.1rem;
-}
-
-.platform-note {
-  background: #e7f3ff;
-  border-left: 4px solid #0969da;
-  padding: 1rem;
-  margin: 1.5rem 0;
-  border-radius: 4px;
-  color: #0969da;
-}
-
-.platform-note a {
-  color: #0969da;
-  text-decoration: underline;
-  font-weight: 600;
-}
-
-.platform-note a:hover {
-  text-decoration: none;
-}
-
-.next-steps {
-  background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  margin: 2rem 0;
-}
-
-.next-steps h3 {
-  margin-top: 0;
-  color: white;
-}
-
-.next-steps a {
-  color: white;
-  text-decoration: underline;
-}
-
-.next-steps a:hover {
-  text-decoration: none;
-}
-
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-
-summary:hover {
-  color: #EE0000;
-}
-
-details[open] {
-  padding-bottom: 1rem;
-}
-
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-/* Screenshot styling */
-img[src*="/assets/images/updating/"] {
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 1.5rem 0 0.5rem 0;
-  max-width: 100%;
-  display: block;
-}
-
-img[src*="/assets/images/updating/"] + em {
-  display: block;
-  text-align: center;
-  color: #586069;
-  font-size: 0.875rem;
-  font-style: italic;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem;
-  background: #f6f8fa;
-  border-radius: 4px;
-}
-</style>

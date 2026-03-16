@@ -7,9 +7,7 @@ title: Claude Code Best Practices for RHDP
 
 <div class="reference-badge">The complete guide to working effectively with Claude Code</div>
 
-<div class="callout callout-info">
-<strong>Who this is for:</strong> RHDP developers who use Claude Code daily across AgnosticV, AgnosticD, and Showroom repos. Whether you're creating catalog items, writing workshop content, or building validation roles, this page covers how to configure Claude Code for maximum effectiveness.
-</div>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>Who this is for:</strong> RHDP developers who use Claude Code daily across AgnosticV, AgnosticD, and Showroom repos. Whether you're creating catalog items, writing workshop content, or building validation roles, this page covers how to configure Claude Code for maximum effectiveness.</div></div>
 
 ---
 
@@ -29,9 +27,7 @@ Claude reads `CLAUDE.md` files at multiple levels. Files closer to your working 
 
 When you run `claude` inside `~/work/code/agnosticv/`, Claude loads **all three levels** automatically. You don't need to reference them -- they're injected into every conversation.
 
-<div class="callout callout-tip">
-<strong>Tip:</strong> Put universal rules (git commit style, no AI attribution) in <code>~/CLAUDE.md</code>. Put repo-specific rules (file structure, AsciiDoc vs Markdown, naming conventions) in each repo's <code>CLAUDE.md</code>.
-</div>
+<div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>Tip:</strong> Put universal rules (git commit style, no AI attribution) in <code>~/CLAUDE.md</code>. Put repo-specific rules (file structure, AsciiDoc vs Markdown, naming conventions) in each repo's <code>CLAUDE.md</code>.</div></div>
 
 ### What Goes in Each Level
 
@@ -136,9 +132,7 @@ claude /config
 
 Navigate to the model setting and change it. This persists across sessions.
 
-<div class="callout callout-tip">
-<strong>Tip:</strong> Use Sonnet for everyday RHDP work (catalog items, showroom modules, validation roles). Switch to Opus when you need Claude to understand complex relationships across multiple files -- like building a new AgnosticD role that inherits from core_workload while generating matching AgnosticV catalog configs.
-</div>
+<div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>Tip:</strong> Use Sonnet for everyday RHDP work (catalog items, showroom modules, validation roles). Switch to Opus when you need Claude to understand complex relationships across multiple files -- like building a new AgnosticD role that inherits from core_workload while generating matching AgnosticV catalog configs.</div></div>
 
 ---
 
@@ -171,9 +165,7 @@ Use `/clear` when switching between unrelated tasks. If you just finished an Agn
 
 `/compact` summarizes the conversation to free up space while preserving what you specify. Use it when you're deep in a long session and don't want to start over.
 
-<div class="callout callout-warning">
-<strong>Auto-compact happens automatically</strong> when context reaches ~95%. When this fires, Claude summarizes everything -- and summaries lose detail. To avoid surprises, compact proactively with focus instructions before auto-compact triggers.
-</div>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Auto-compact happens automatically</strong> when context reaches ~95%. When this fires, Claude summarizes everything -- and summaries lose detail. To avoid surprises, compact proactively with focus instructions before auto-compact triggers.</div></div>
 
 ### What to Preserve During Compaction
 
@@ -321,9 +313,7 @@ Use extended thinking when:
 - Designing a new AgnosticV catalog item structure with multiple workloads
 - Claude keeps producing wrong output and you want it to reason more carefully
 
-<div class="callout callout-info">
-<strong>Note:</strong> Extended thinking uses more tokens and is slower. Don't leave it on for simple tasks like file edits or running commands.
-</div>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>Note:</strong> Extended thinking uses more tokens and is slower. Don't leave it on for simple tasks like file edits or running commands.</div></div>
 
 ---
 
@@ -495,9 +485,7 @@ The catalog-builder skill offers 4 modes. Choose the right one:
 - Tasks: descriptive, starts with verb
 ```
 
-<div class="callout callout-tip">
-<strong>Quick start:</strong> Run <code>/init</code> in any repo to have Claude generate a starter CLAUDE.md based on the repo's contents.
-</div>
+<div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>Quick start:</strong> Run <code>/init</code> in any repo to have Claude generate a starter CLAUDE.md based on the repo's contents.</div></div>
 
 ---
 
@@ -556,9 +544,7 @@ Choose Mode 1 (Full Catalog). Point it to your new Showroom repo.
 > Commit all modules. Create PR.
 ```
 
-<div class="callout callout-warning">
-<strong>Key discipline:</strong> Finish each repo's work in its own session before moving to the next. Don't switch between repos in a single session -- that's where context bleed happens.
-</div>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Key discipline:</strong> Finish each repo's work in its own session before moving to the next. Don't switch between repos in a single session -- that's where context bleed happens.</div></div>
 
 ### Updating an Existing Catalog Item
 
@@ -584,7 +570,7 @@ Claude consistently writes `[source,bash]` for commands. That's wrong for Showro
 ```text
 [source,bash,role=execute,subs=attributes+]
 ----
-oc get pods -n %user%-project
+ oc get pods -n %user%-project
 ----
 ```
 
@@ -848,142 +834,3 @@ These apply across all RHDP repos:
 <div class="navigation-footer">
   <a href="../index.html" class="nav-button">Back to Home</a>
 </div>
-
-<style>
-/* Page badge */
-.reference-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  margin: 1rem 0;
-}
-
-/* Callout boxes */
-.callout {
-  padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
-  border-radius: 6px;
-  border-left: 4px solid;
-}
-.callout-warning {
-  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
-  border-left-color: #ffc107;
-}
-.callout-tip {
-  background: linear-gradient(135deg, #d4edda 0%, #f0fff4 100%);
-  border-left-color: #28a745;
-}
-.callout-info {
-  background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
-  border-left-color: #0969da;
-}
-.callout-danger {
-  background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
-  border-left-color: #dc3545;
-}
-
-/* Tables */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1.5em 0;
-}
-table th {
-  background-color: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  padding: 8px 12px;
-  text-align: left;
-  font-weight: 600;
-}
-table td {
-  border: 1px solid #e1e4e8;
-  padding: 8px 12px;
-}
-table tr:nth-child(even) {
-  background-color: #f6f8fa;
-}
-
-/* Collapsible sections */
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-summary:hover {
-  color: #EE0000;
-}
-details[open] {
-  padding-bottom: 1rem;
-}
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-/* Links grid */
-.links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
-}
-.link-card {
-  display: block;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-}
-.link-card:hover {
-  border-color: #EE0000;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-.link-card h4 {
-  margin: 0 0 0.5rem 0;
-  color: #24292e;
-}
-.link-card p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-/* Navigation footer */
-.navigation-footer {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-  padding-top: 2rem;
-  border-top: 1px solid #e1e4e8;
-}
-.nav-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #24292e;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-.nav-button:hover {
-  border-color: #EE0000;
-  color: #EE0000;
-  transform: translateY(-2px);
-}
-</style>

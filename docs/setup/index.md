@@ -272,20 +272,20 @@ rm -rf ~/.claude/docs
 
 ## Choose Your Platform
 
-<div class="grid">
-  <div class="card">
+<div class="category-grid">
+  <div class="category-card">
     <h3>🎯 Claude Code (Recommended)</h3>
     <p>Native plugin and Agent Skills support</p>
     <a href="claude-code.html">Claude Code Setup →</a>
   </div>
 
-  <div class="card">
+  <div class="category-card">
     <h3>💻 VS Code with Claude</h3>
     <p>Native plugin and Agent Skills support</p>
     <a href="claude-code.html">Same as Claude Code →</a>
   </div>
 
-  <div class="card">
+  <div class="category-card">
     <h3>✨ Cursor 2.4+</h3>
     <p>Agent Skills standard support</p>
     <a href="cursor.html">Cursor Setup →</a>

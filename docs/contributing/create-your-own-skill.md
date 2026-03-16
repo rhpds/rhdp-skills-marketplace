@@ -7,9 +7,7 @@ title: Create Your Own Skills
 
 <div class="reference-badge">From idea to marketplace in 5 phases</div>
 
-<div class="callout callout-info">
-<strong>Who this is for:</strong> RHDP team members who want to automate a workflow as a reusable Claude Code skill. You don't write skills by hand -- you use Claude to help you build them step by step.
-</div>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>Who this is for:</strong> RHDP team members who want to automate a workflow as a reusable Claude Code skill. You don't write skills by hand -- you use Claude to help you build them step by step.</div></div>
 
 ---
 
@@ -25,9 +23,7 @@ Creating a skill is a 5-phase process. Each phase builds on the previous one:
 | **4. Test** | Install locally and run through your workflow | A validated, working skill |
 | **5. Publish** | Push to a marketplace repo | Your team can install it |
 
-<div class="callout callout-tip">
-<strong>Key insight:</strong> Most people skip Phase 1 and jump straight to writing a SKILL.md. This fails because you can't articulate every step, edge case, and decision in a single prompt. The iterative documentation phase is where the real value creation happens.
-</div>
+<div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>Key insight:</strong> Most people skip Phase 1 and jump straight to writing a SKILL.md. This fails because you can't articulate every step, edge case, and decision in a single prompt. The iterative documentation phase is where the real value creation happens.</div></div>
 
 ---
 
@@ -74,9 +70,7 @@ Each `.md` file should cover:
 - **Edge cases** -- what to do when things fail
 - **Outputs** -- what gets created or changed
 
-<div class="callout callout-warning">
-<strong>Don't rush this step.</strong> If you already have documentation, runbooks, shell scripts, or team wiki pages, point Claude at those instead: <code>"Read docs/deployment-process.md and help me restructure it as step-by-step reference files."</code>
-</div>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Don't rush this step.</strong> If you already have documentation, runbooks, shell scripts, or team wiki pages, point Claude at those instead: <code>"Read docs/deployment-process.md and help me restructure it as step-by-step reference files."</code></div></div>
 
 ---
 
@@ -177,9 +171,7 @@ Every SKILL.md has two YAML blocks separated by `---`:
 | `context` | How the skill runs | `main` (shares conversation), `fork` (isolated thread) |
 | `model` | Which Claude model to use | `claude-opus-4-6`, `sonnet`, `haiku` |
 
-<div class="callout callout-tip">
-<strong>When to use <code>context: fork</code>:</strong> Use it for validation or analysis tasks that should not pollute the main conversation. The <code>verify-content</code> skill uses this. For skills that create files or need ongoing conversation context, use <code>context: main</code>.
-</div>
+<div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>When to use <code>context: fork</code>:</strong> Use it for validation or analysis tasks that should not pollute the main conversation. The <code>verify-content</code> skill uses this. For skills that create files or need ongoing conversation context, use <code>context: main</code>.</div></div>
 
 ### Iterate with Claude
 
@@ -257,9 +249,7 @@ Here is the actual `showroom/.claude-plugin/plugin.json` from the RHDP marketpla
 | `description` | Yes | Description shown in marketplace listings |
 | `author` | No | Your contact info |
 
-<div class="callout callout-warning">
-<strong>Critical:</strong> The <code>name</code> in plugin.json becomes the namespace prefix for all your skills. If your plugin name is <code>my-tools</code> and your skill name is <code>deploy</code>, users will invoke it as <code>/my-tools:deploy</code>.
-</div>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Critical:</strong> The <code>name</code> in plugin.json becomes the namespace prefix for all your skills. If your plugin name is <code>my-tools</code> and your skill name is <code>deploy</code>, users will invoke it as <code>/my-tools:deploy</code>.</div></div>
 
 ### Ask Claude to do it
 
@@ -401,11 +391,9 @@ cd rhdp-skills-marketplace
 
 3. **Submit a pull request** -- requires [CODEOWNERS](https://github.com/rhpds/rhdp-skills-marketplace/blob/main/.github/CODEOWNERS) approval
 
-<div class="callout callout-info">
-<strong>RHDP marketplace users install with:</strong><br>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>RHDP marketplace users install with:</strong><br>
 <code>/plugin marketplace add rhpds/rhdp-skills-marketplace</code><br>
-<code>/plugin install my-tools@rhdp-marketplace</code>
-</div>
+<code>/plugin install my-tools@rhdp-marketplace</code></div></div>
 
 ---
 
@@ -587,117 +575,3 @@ Then we'll add confirmation prompts. Then error handling.
 <div class="navigation-footer">
   <a href="../index.html" class="nav-button">Back to Home</a>
 </div>
-
-<style>
-/* Page badge */
-.reference-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #0969da 0%, #0550ae 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  margin: 1rem 0;
-}
-
-/* Callout boxes */
-.callout {
-  padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
-  border-radius: 6px;
-  border-left: 4px solid;
-}
-.callout-warning {
-  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
-  border-left-color: #ffc107;
-}
-.callout-tip {
-  background: linear-gradient(135deg, #d4edda 0%, #f0fff4 100%);
-  border-left-color: #28a745;
-}
-.callout-info {
-  background: linear-gradient(135deg, #e7f3ff 0%, #f0f7ff 100%);
-  border-left-color: #0969da;
-}
-.callout-danger {
-  background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
-  border-left-color: #dc3545;
-}
-
-/* Tables */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1.5em 0;
-}
-table th {
-  background-color: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  padding: 8px 12px;
-  text-align: left;
-  font-weight: 600;
-}
-table td {
-  border: 1px solid #e1e4e8;
-  padding: 8px 12px;
-}
-table tr:nth-child(even) {
-  background-color: #f6f8fa;
-}
-
-/* Links grid */
-.links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
-}
-.link-card {
-  display: block;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-}
-.link-card:hover {
-  border-color: #EE0000;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-.link-card h4 {
-  margin: 0 0 0.5rem 0;
-  color: #24292e;
-}
-.link-card p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-/* Navigation footer */
-.navigation-footer {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-  padding-top: 2rem;
-  border-top: 1px solid #e1e4e8;
-}
-.nav-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #24292e;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-.nav-button:hover {
-  border-color: #EE0000;
-  color: #EE0000;
-  transform: translateY(-2px);
-}
-</style>

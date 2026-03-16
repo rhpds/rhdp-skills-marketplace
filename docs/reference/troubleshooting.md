@@ -5,7 +5,7 @@ title: Troubleshooting
 
 # Troubleshooting
 
-<div class="page-badge">🔧 Common Issues & Solutions</div>
+<div class="reference-badge">🔧 Common Issues & Solutions</div>
 
 Complete troubleshooting guide for RHDP Skills Marketplace.
 
@@ -16,7 +16,7 @@ Complete troubleshooting guide for RHDP Skills Marketplace.
 <details>
 <summary><strong>Marketplace Shows "(no content)"</strong></summary>
 
-<div class="issue-card">
+<div class="category-card">
   <h4>Symptom:</h4>
   <p>After adding marketplace, plugin list shows "(no content)"</p>
 
@@ -40,7 +40,7 @@ Complete troubleshooting guide for RHDP Skills Marketplace.
 <details>
 <summary><strong>Skills Don't Show Namespace Prefix</strong></summary>
 
-<div class="issue-card">
+<div class="category-card">
   <h4>Symptom:</h4>
   <p>Skills listed incorrectly without namespace prefix</p>
 
@@ -64,7 +64,7 @@ Complete troubleshooting guide for RHDP Skills Marketplace.
 <details>
 <summary><strong>SSH Clone Fails (Permission Denied)</strong></summary>
 
-<div class="issue-card warning">
+<div class="category-card warning">
   <h4>Symptom:</h4>
   <p><code>Permission denied (publickey)</code> when adding marketplace</p>
 
@@ -221,9 +221,7 @@ rm -rf ~/.claude/plugins/marketplaces/*
 
 ## File-Based Installation Issues (Legacy)
 
-<div class="warning">
-  <strong>Note:</strong> File-based installation is deprecated. Please use <a href="../setup/migration.html">plugin-based installation</a>.
-</div>
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Note:</strong> File-based installation is deprecated. Please use <a href="../setup/migration.html">plugin-based installation</a>.</div></div>
 
 ## Installation Issues
 
@@ -688,166 +686,3 @@ python3 --version
   <a href="../" class="nav-button">← Back to Home</a>
   <a href="../setup/" class="nav-button">Setup Guide →</a>
 </div>
-
-<style>
-.page-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  margin: 1rem 0;
-}
-
-.issue-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-left: 4px solid #0969da;
-  padding: 1.5rem;
-  border-radius: 4px;
-  margin-top: 1rem;
-}
-
-.issue-card.warning {
-  border-left-color: #ffc107;
-}
-
-.issue-card.error {
-  border-left-color: #dc3545;
-}
-
-.issue-card h4 {
-  margin-top: 0;
-  color: #24292e;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.issue-card p {
-  color: #586069;
-  margin: 0.5rem 0;
-}
-
-.issue-card ul {
-  margin: 0.5rem 0;
-  padding-left: 1.25rem;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.issue-card pre {
-  background: #f6f8fa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.75rem 0 0 0;
-}
-
-.issue-card code {
-  background: #f6f8fa;
-  padding: 0.125rem 0.375rem;
-  border-radius: 3px;
-  font-size: 0.875rem;
-  color: #EE0000;
-}
-
-.navigation-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 2rem 0;
-  padding-top: 2rem;
-  border-top: 1px solid #e1e4e8;
-}
-
-.nav-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #24292e;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.nav-button:hover {
-  border-color: #EE0000;
-  color: #EE0000;
-  transform: translateY(-2px);
-}
-
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-
-summary:hover {
-  color: #0969da;
-}
-
-details[open] {
-  padding-bottom: 1rem;
-}
-
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-.warning {
-  background: #fff3cd;
-  border-left: 4px solid #ffc107;
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 4px;
-}
-
-.warning strong {
-  color: #856404;
-}
-
-.warning a {
-  color: #0969da;
-  text-decoration: none;
-}
-
-.warning a:hover {
-  text-decoration: underline;
-}
-
-h2 {
-  color: #24292e;
-  border-bottom: 2px solid #e1e4e8;
-  padding-bottom: 0.5rem;
-  margin-top: 2rem;
-}
-
-h3 {
-  color: #24292e;
-  margin-top: 1.5rem;
-}
-
-code {
-  background: #f6f8fa;
-  padding: 0.125rem 0.375rem;
-  border-radius: 3px;
-  font-size: 0.875rem;
-  color: #EE0000;
-}
-
-pre code {
-  color: #24292e;
-}
-</style>

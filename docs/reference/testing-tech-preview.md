@@ -7,9 +7,7 @@ title: Testing & Tech Preview
 
 <div class="reference-badge">Try changes before they land in main</div>
 
-<div style="background: linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%); border-left: 4px solid #1976d2; padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 6px;">
-<strong>Why this matters:</strong> Skill changes (new prompts, restructured SKILL.md files, template extraction) can break workflows if pushed to <code>main</code> untested. The <code>tech-preview</code> branch lets you test changes in real sessions before anyone else is affected.
-</div>
+<div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>Why this matters:</strong> Skill changes (new prompts, restructured SKILL.md files, template extraction) can break workflows if pushed to <code>main</code> untested. The <code>tech-preview</code> branch lets you test changes in real sessions before anyone else is affected.</div></div>
 
 ---
 

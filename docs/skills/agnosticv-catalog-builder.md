@@ -5,13 +5,13 @@ title: /agnosticv:catalog-builder
 
 # /agnosticv:catalog-builder
 
-<div class="skill-badge">🔧 Catalog Builder</div>
+<div class="reference-badge">🔧 Catalog Builder</div>
 
 Create or update AgnosticV catalog files for RHDP deployments (unified skill).
 
 ---
 
-## 📋 What You'll Need Before Starting
+## What You'll Need Before Starting
 
 <div class="workflow-diagram">
   <a href="catalog-builder-workflow.svg" target="_blank">
@@ -22,17 +22,17 @@ Create or update AgnosticV catalog files for RHDP deployments (unified skill).
 
 ### Prerequisites
 
-<div class="prereq-grid">
-  <div class="prereq-item">
-    <div class="prereq-icon">📁</div>
+<div class="category-grid">
+  <div class="category-card">
+    <div class="category-icon">📁</div>
     <h4>Clone AgnosticV Repository</h4>
     <pre><code>cd ~/work/code
 git clone git@github.com:rhpds/agnosticv.git
 cd agnosticv</code></pre>
   </div>
 
-  <div class="prereq-item">
-    <div class="prereq-icon">🔐</div>
+  <div class="category-card">
+    <div class="category-icon">🔐</div>
     <h4>Verify RHDP Access</h4>
     <ul>
       <li>Write access to AgnosticV repository</li>
@@ -41,8 +41,8 @@ cd agnosticv</code></pre>
     </ul>
   </div>
 
-  <div class="prereq-item">
-    <div class="prereq-icon">📝</div>
+  <div class="category-card">
+    <div class="category-icon">📝</div>
     <h4>Workshop Content Ready</h4>
     <ul>
       <li>Workshop lab content (from <code>/showroom:create-lab</code>)</li>
@@ -94,52 +94,19 @@ cd agnosticv</code></pre>
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-<div class="quick-start-steps">
-  <div class="quick-step">
-    <div class="quick-step-number">1</div>
-    <div class="quick-step-content">
-      <h4>Navigate to Repository</h4>
-      <p>Open your AgnosticV repository directory</p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">2</div>
-    <div class="quick-step-content">
-      <h4>Run Catalog Builder</h4>
-      <p><code>/agnosticv:catalog-builder</code></p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">3</div>
-    <div class="quick-step-content">
-      <h4>Choose Mode</h4>
-      <p>Select: Full Catalog / Description Only / Info Template</p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">4</div>
-    <div class="quick-step-content">
-      <h4>Answer Questions</h4>
-      <p>Follow guided prompts</p>
-    </div>
-  </div>
-
-  <div class="quick-step">
-    <div class="quick-step-number">5</div>
-    <div class="quick-step-content">
-      <h4>Review & Commit</h4>
-      <p>Files auto-committed to new branch</p>
-    </div>
-  </div></div>
+<ol class="steps">
+  <li><div class="step-content"><h4>Navigate to Repository</h4><p>Open your AgnosticV repository directory</p></div></li>
+  <li><div class="step-content"><h4>Run Catalog Builder</h4><p><code>/agnosticv:catalog-builder</code></p></div></li>
+  <li><div class="step-content"><h4>Choose Mode</h4><p>Select: Full Catalog / Description Only / Info Template</p></div></li>
+  <li><div class="step-content"><h4>Answer Questions</h4><p>Follow guided prompts</p></div></li>
+  <li><div class="step-content"><h4>Review & Commit</h4><p>Files auto-committed to new branch</p></div></li>
+</ol>
 
 ---
 
-## 📁 What It Can Generate
+## What It Can Generate
 
 <div class="mode-generation-grid">
   <div class="mode-generation-card">
@@ -169,12 +136,11 @@ cd agnosticv</code></pre>
 
 ---
 
-## 🔄 Common Workflows
+## Common Workflows
 
-<div class="workflow-steps">
-  <div class="workflow-step">
-    <div class="workflow-icon">1️⃣</div>
-    <div class="workflow-content">
+<ol class="steps">
+  <li>
+    <div class="step-content">
       <h4>Workflow 1: Create Full Catalog from Scratch</h4>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
@@ -190,11 +156,10 @@ cd agnosticv</code></pre>
 → Step 10: Path auto-generated (event) or asked (no-event)
 → Generate all 4 files, auto-commit to branch</code></pre>
     </div>
-  </div>
+  </li>
 
-  <div class="workflow-step">
-    <div class="workflow-icon">2️⃣</div>
-    <div class="workflow-content">
+  <li>
+    <div class="step-content">
       <h4>Workflow 2: Update Description After Content Changes</h4>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 2 (Description Only)
@@ -203,11 +168,10 @@ cd agnosticv</code></pre>
 → Generates description.adoc
 → Auto-commits to branch</code></pre>
     </div>
-  </div>
+  </li>
 
-  <div class="workflow-step">
-    <div class="workflow-icon">3️⃣</div>
-    <div class="workflow-content">
+  <li>
+    <div class="step-content">
       <h4>Workflow 3: Add Info Template for User Data</h4>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 3 (Info Template)
@@ -215,12 +179,12 @@ cd agnosticv</code></pre>
 → Generates template with placeholders
 → Shows how to use agnosticd_user_info</code></pre>
     </div>
-  </div>
-</div>
+  </li>
+</ol>
 
 ---
 
-## 📝 Mode Details
+## Mode Details
 
 <details>
 <summary><strong>Mode 1: Full Catalog - Detailed Workflow</strong></summary>
@@ -290,7 +254,7 @@ cd agnosticv</code></pre>
 
 <div class="detail-content">
   <h4>v1.8.0: Enhanced with full module analysis</h4>
-  
+
   <p><strong>With Showroom content:</strong></p>
   <ul>
     <li>Reads ALL modules (not just index.adoc)</li>
@@ -330,7 +294,7 @@ cd agnosticv</code></pre>
 
 <div class="detail-content">
   <h4>Documents how to share data with users:</h4>
-  
+
   <pre><code># In your workload:
 - name: Save user data
   agnosticd.core.agnosticd_user_info:
@@ -354,30 +318,30 @@ cd agnosticv</code></pre>
 
 ---
 
-## 💡 Tips & Best Practices
+## Tips & Best Practices
 
-<div class="tips-grid">
-  <div class="tip-card">
+<div class="category-grid">
+  <div class="category-card">
     <h4>🏷️ Start with Product Name</h4>
     <p>Description overview must start with product, not "This workshop"</p>
   </div>
-  <div class="tip-card">
+  <div class="category-card">
     <h4>📚 Use Real Examples</h4>
     <p>Reference existing catalogs for patterns</p>
   </div>
-  <div class="tip-card">
+  <div class="category-card">
     <h4>✓ Validate Before PR</h4>
     <p>Always run <code>/agnosticv:validator</code></p>
   </div>
-  <div class="tip-card">
+  <div class="category-card">
     <h4>🧪 Test in Dev First</h4>
     <p>Use dev.yaml for testing</p>
   </div>
-  <div class="tip-card">
+  <div class="category-card">
     <h4>🌿 No feature/ Prefix</h4>
     <p>Branch names should be descriptive without feature/</p>
   </div>
-  <div class="tip-card">
+  <div class="category-card">
     <h4>📝 Convert Lists to Strings</h4>
     <p>For info templates: <code>{{ my_list | join(', ') }}</code></p>
   </div>
@@ -385,7 +349,7 @@ cd agnosticv</code></pre>
 
 ---
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 <details>
 <summary><strong>Skill not found?</strong></summary>
@@ -438,11 +402,11 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 
 ---
 
-## 📊 Git Workflow
+## Git Workflow
 
 <div class="git-workflow-box">
   <h3>Always follows this pattern:</h3>
-  
+
   <div class="git-step">
     <h4>1. Pull latest main</h4>
     <pre><code>git checkout main
@@ -479,31 +443,22 @@ git commit -m "Add your-catalog catalog"</code></pre>
 
 ---
 
-## 🔗 Related Skills
+## Related Skills
 
-<div class="related-skills">
-  <a href="agnosticv-validator.html" class="related-skill-card">
-    <div class="related-skill-icon">✓</div>
-    <div class="related-skill-content">
-      <h4>/agnosticv:validator</h4>
-      <p>Validate catalog before PR</p>
-    </div>
+<div class="links-grid">
+  <a href="agnosticv-validator.html" class="link-card">
+    <h4>/agnosticv:validator</h4>
+    <p>Validate catalog before PR</p>
   </a>
 
-  <a href="create-lab.html" class="related-skill-card">
-    <div class="related-skill-icon">📝</div>
-    <div class="related-skill-content">
-      <h4>/showroom:create-lab</h4>
-      <p>Create Showroom workshop first</p>
-    </div>
+  <a href="create-lab.html" class="link-card">
+    <h4>/showroom:create-lab</h4>
+    <p>Create Showroom workshop first</p>
   </a>
 
-  <a href="deployment-health-checker.html" class="related-skill-card">
-    <div class="related-skill-icon">🏥</div>
-    <div class="related-skill-content">
-      <h4>/health:deployment-validator</h4>
-      <p>Create automated health checks</p>
-    </div>
+  <a href="deployment-health-checker.html" class="link-card">
+    <h4>/health:deployment-validator</h4>
+    <p>Create automated health checks</p>
   </a>
 </div>
 
@@ -513,424 +468,3 @@ git commit -m "Add your-catalog catalog"</code></pre>
   <a href="index.html" class="nav-button">← Back to Skills</a>
   <a href="agnosticv-validator.html" class="nav-button">Next: /agnosticv:validator →</a>
 </div>
-
-<style>
-.skill-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  margin: 1rem 0;
-}
-
-.workflow-diagram {
-  margin: 2rem 0;
-  text-align: center;
-}
-
-.prereq-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.prereq-item {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.prereq-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.prereq-item h4 {
-  margin: 0.5rem 0;
-  color: #24292e;
-}
-
-.prereq-item pre {
-  background: #f6f8fa;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin: 0.5rem 0 0 0;
-}
-
-.prereq-item ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.25rem;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.mode-tabs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.mode-tab {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.mode-tab h4 {
-  margin-top: 0;
-  color: #3B82F6;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-}
-
-.mode-tab ul {
-  margin: 0;
-  padding-left: 1.25rem;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.quick-start-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.quick-step {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.quick-step-number {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-  color: white;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.quick-step-content h4 {
-  margin: 0.5rem 0;
-  color: #24292e;
-}
-
-.quick-step-content p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.mode-generation-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.mode-generation-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.mode-header {
-  font-weight: 700;
-  color: #3B82F6;
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-}
-
-.mode-generation-card p {
-  color: #586069;
-  margin: 0.5rem 0;
-  font-size: 0.875rem;
-}
-
-.mode-generation-card pre {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.75rem 0 0 0;
-}
-
-.workflow-steps {
-  margin: 2rem 0;
-}
-
-.workflow-step {
-  display: flex;
-  gap: 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.workflow-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.workflow-content {
-  flex: 1;
-}
-
-.workflow-content h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #24292e;
-}
-
-.workflow-content pre {
-  background: #f6f8fa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0 0 0;
-}
-
-.detail-content {
-  padding: 1rem 0;
-}
-
-.detail-content h4 {
-  color: #24292e;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.detail-content ul,
-.detail-content ol {
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.detail-content pre {
-  background: #f6f8fa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0;
-}
-
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.tip-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.tip-card h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #24292e;
-  font-size: 0.875rem;
-}
-
-.tip-card p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.priority-box {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-top: 1rem;
-}
-
-.priority-box h4 {
-  margin-top: 0;
-  color: #24292e;
-}
-
-.priority-box p {
-  margin: 0.5rem 0;
-}
-
-.git-workflow-box {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2rem 0;
-}
-
-.git-workflow-box h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  color: #24292e;
-}
-
-.git-step {
-  margin-bottom: 1.5rem;
-}
-
-.git-step h4 {
-  color: #3B82F6;
-  margin-bottom: 0.5rem;
-}
-
-.git-step pre {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  margin: 0.5rem 0 0 0;
-}
-
-.example-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.example {
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid;
-}
-
-.example.good {
-  background: #d4edda;
-  border-color: #28a745;
-}
-
-.example.bad {
-  background: #f8d7da;
-  border-color: #dc3545;
-}
-
-.example-header {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.example code {
-  display: block;
-  margin: 0.25rem 0;
-  font-size: 0.875rem;
-}
-
-.related-skills {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.related-skill-card {
-  display: flex;
-  gap: 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-}
-
-.related-skill-card:hover {
-  border-color: #3B82F6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.related-skill-icon {
-  font-size: 2rem;
-  flex-shrink: 0;
-}
-
-.related-skill-content h4 {
-  margin: 0 0 0.25rem 0;
-  color: #24292e;
-  font-size: 1rem;
-}
-
-.related-skill-content p {
-  margin: 0;
-  color: #586069;
-  font-size: 0.875rem;
-}
-
-.navigation-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 2rem 0;
-  padding-top: 2rem;
-  border-top: 1px solid #e1e4e8;
-}
-
-.nav-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border: 2px solid #e1e4e8;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #24292e;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.nav-button:hover {
-  border-color: #3B82F6;
-  color: #3B82F6;
-  transform: translateY(-2px);
-}
-
-details {
-  background: #f6f8fa;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  padding: 1rem;
-  margin: 1rem 0;
-}
-
-summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #24292e;
-}
-
-summary:hover {
-  color: #3B82F6;
-}
-
-details[open] {
-  padding-bottom: 1rem;
-}
-
-details[open] summary {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e1e4e8;
-}
-</style>

@@ -3,105 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title | default: site.title }}</title>
+  <title>{{ page.title | default: site.title }} — RHDP Skills</title>
   <link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}">
   {% if site.plugins contains 'jekyll-seo-tag' %}
     {% seo %}
   {% endif %}
 </head>
 <body>
+
+  <!-- Mobile top bar -->
+  <div class="mobile-bar">
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="mobile-bar-title">RHDP Skills</span>
+  </div>
+
+  <!-- Overlay for mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <div class="docs-container">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+
       <div class="sidebar-header">
-        <h2>RHDP Skills</h2>
+        <div class="sidebar-logo">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <h2>RHDP Skills<span>Marketplace</span></h2>
+        </div>
       </div>
 
       <div class="sidebar-search">
-        <input type="text" placeholder="Search..." id="search-input">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" placeholder="Search docs..." id="search-input" autocomplete="off">
+        </div>
       </div>
 
       <nav class="sidebar-nav">
-        <div class="nav-section">
-          <h3>Getting Started</h3>
+
+        <!-- By Role -->
+        <div class="nav-section nav-section-roles">
+          <span class="nav-section-label">Start by Role</span>
           <ul>
-            <li><a href="{{ '/' | relative_url }}">Home</a></li>
-            <li><a href="{{ '/setup/claude-code.html' | relative_url }}">Claude Code Setup</a></li>
-            <li><a href="{{ '/setup/cursor.html' | relative_url }}">Cursor Setup</a></li>
+            <li><a href="{{ '/contributing/for-sales.html' | relative_url }}"><span class="nav-icon">💼</span> Sales &amp; Pre-Sales</a></li>
+            <li><a href="{{ '/contributing/for-developers.html' | relative_url }}"><span class="nav-icon">🖥️</span> Frontend Developers</a></li>
+            <li><a href="{{ '/setup/claude-code.html' | relative_url }}"><span class="nav-icon">⚙️</span> RHDP Engineers</a></li>
           </ul>
         </div>
 
+        <!-- Getting Started -->
         <div class="nav-section">
-          <h3>Updating</h3>
+          <span class="nav-section-label">Getting Started</span>
           <ul>
-            <li><a href="{{ '/setup/updating.html' | relative_url }}">Claude Code</a></li>
-            <li><a href="{{ '/setup/updating-cursor.html' | relative_url }}">Cursor</a></li>
+            <li><a href="{{ '/' | relative_url }}"><span class="nav-icon">🏠</span> Home</a></li>
+            <li><a href="{{ '/setup/claude-code.html' | relative_url }}"><span class="nav-icon">🚀</span> Claude Code Setup</a></li>
+            <li><a href="{{ '/setup/cursor.html' | relative_url }}"><span class="nav-icon">⚡</span> Cursor Setup</a></li>
+            <li><a href="{{ '/setup/updating.html' | relative_url }}"><span class="nav-icon">🔄</span> Updating Skills</a></li>
           </ul>
         </div>
 
-        <div class="nav-section" style="background: linear-gradient(135deg, #EE0000 0%, #CC0000 100%); padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem;">
-          <h3 style="color: white;">Create Your Own</h3>
+        <!-- Skills -->
+        <div class="nav-section">
+          <span class="nav-section-label">Skills</span>
           <ul>
-            <li><a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}" style="color: white; font-weight: 600;">Build Custom Skills</a></li>
+            <li><a href="{{ '/skills/create-lab.html' | relative_url }}"><span class="nav-icon">📝</span> Create Lab</a></li>
+            <li><a href="{{ '/skills/create-demo.html' | relative_url }}"><span class="nav-icon">🎬</span> Create Demo</a></li>
+            <li><a href="{{ '/skills/verify-content.html' | relative_url }}"><span class="nav-icon">✅</span> Verify Content</a></li>
+            <li><a href="{{ '/skills/blog-generate.html' | relative_url }}"><span class="nav-icon">✍️</span> Blog Generate</a></li>
+            <li><a href="{{ '/skills/agnosticv-catalog-builder.html' | relative_url }}"><span class="nav-icon">🗂️</span> Catalog Builder</a></li>
+            <li><a href="{{ '/skills/agnosticv-validator.html' | relative_url }}"><span class="nav-icon">🔍</span> Validator</a></li>
+            <li><a href="{{ '/skills/deployment-health-checker.html' | relative_url }}"><span class="nav-icon">🏥</span> Health Checker</a></li>
+            <li><a href="{{ '/skills/ftl.html' | relative_url }}"><span class="nav-icon">🧪</span> FTL Lab Validator</a></li>
           </ul>
         </div>
 
+        <!-- Concepts -->
         <div class="nav-section">
-          <h3>Setup Guides</h3>
+          <span class="nav-section-label">Concepts</span>
           <ul>
-            <li><a href="{{ '/setup/claude-code.html' | relative_url }}">Claude Code</a></li>
-            <li><a href="{{ '/setup/cursor.html' | relative_url }}">Cursor</a></li>
+            <li><a href="{{ '/reference/skills-vs-agents.html' | relative_url }}"><span class="nav-icon">⚖️</span> Skills vs Agents</a></li>
+            <li><a href="{{ '/reference/best-practices.html' | relative_url }}"><span class="nav-icon">💡</span> Best Practices</a></li>
+            <li><a href="{{ '/reference/quick-reference.html' | relative_url }}"><span class="nav-icon">⚡</span> Quick Reference</a></li>
+            <li><a href="{{ '/reference/troubleshooting.html' | relative_url }}"><span class="nav-icon">🔧</span> Troubleshooting</a></li>
+            <li><a href="{{ '/reference/glossary.html' | relative_url }}"><span class="nav-icon">📖</span> Glossary</a></li>
           </ul>
         </div>
 
+        <!-- Build Your Own -->
         <div class="nav-section">
-          <h3>Migration</h3>
+          <span class="nav-section-label">Build Your Own</span>
           <ul>
-            <li><a href="{{ '/setup/migration.html' | relative_url }}">Claude Code Migration</a></li>
-            <li><a href="{{ '/setup/cursor-migration.html' | relative_url }}">Cursor Migration</a></li>
+            <li><a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}"><span class="nav-icon">🛠️</span> Create a Skill</a></li>
+            <li><a href="{{ '/contributing/plugin-dev-plugin.html' | relative_url }}"><span class="nav-icon">🔌</span> Plugin Dev Toolkit</a></li>
+            <li><a href="{{ '/contributing/for-sales.html' | relative_url }}"><span class="nav-icon">💼</span> Sales Skill Walkthrough</a></li>
+            <li><a href="{{ '/contributing/for-developers.html' | relative_url }}"><span class="nav-icon">🖥️</span> Frontend Agent Guide</a></li>
           </ul>
         </div>
 
+        <!-- Migration -->
         <div class="nav-section">
-          <h3>Skills</h3>
+          <span class="nav-section-label">Migration</span>
           <ul>
-            <li><a href="{{ '/skills/create-lab.html' | relative_url }}">Create Lab</a></li>
-            <li><a href="{{ '/skills/create-demo.html' | relative_url }}">Create Demo</a></li>
-            <li><a href="{{ '/skills/verify-content.html' | relative_url }}">Verify Content</a></li>
-            <li><a href="{{ '/skills/blog-generate.html' | relative_url }}">Blog Generate</a></li>
-            <li><a href="{{ '/skills/agnosticv-catalog-builder.html' | relative_url }}">Catalog Builder</a></li>
-            <li><a href="{{ '/skills/agnosticv-validator.html' | relative_url }}">Validator</a></li>
-            <li><a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Deployment Validator</a></li>
-            <li><a href="{{ '/skills/ftl.html' | relative_url }}">FTL Lab Validator</a></li>
+            <li><a href="{{ '/setup/migration.html' | relative_url }}"><span class="nav-icon">📦</span> Claude Code</a></li>
+            <li><a href="{{ '/setup/cursor-migration.html' | relative_url }}"><span class="nav-icon">📦</span> Cursor</a></li>
           </ul>
         </div>
 
-        <div class="nav-section">
-          <h3>Reference</h3>
-          <ul>
-            <li><a href="{{ '/reference/quick-reference.html' | relative_url }}">Quick Reference</a></li>
-            <li><a href="{{ '/reference/best-practices.html' | relative_url }}">Claude Code Best Practices</a></li>
-            <li><a href="{{ '/reference/testing-tech-preview.html' | relative_url }}">Testing & Tech Preview</a></li>
-            <li><a href="{{ '/reference/troubleshooting.html' | relative_url }}">Troubleshooting</a></li>
-          </ul>
-        </div>
       </nav>
 
       <div class="sidebar-footer">
-        <a href="https://github.com/rhpds/rhdp-skills-marketplace" target="_blank">
+        <a href="https://github.com/rhpds/rhdp-skills-marketplace" target="_blank" rel="noopener">
           <svg height="16" width="16" viewBox="0 0 16 16">
-            <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
           </svg>
           GitHub
         </a>
-        <span class="version">v{{ site.version | default: '2.4.2' }}</span>
+        <span class="version">v{{ site.version | default: '2.9.0' }}</span>
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main content -->
     <main class="main-content">
       {{ content }}
     </main>
+
   </div>
 
   <script src="{{ '/assets/js/search.js' | relative_url }}"></script>

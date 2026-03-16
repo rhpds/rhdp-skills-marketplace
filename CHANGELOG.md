@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.0] - 2026-03-16
+
+### Docs — Complete GitHub Pages Redesign
+
+#### Design System
+- Full CSS overhaul: Red Hat Display, Red Hat Text, and Red Hat Mono fonts (official RH brand typefaces)
+- Dark hero section with grid overlay and red radial glow
+- Dark code blocks with red top-bar accent
+- Unified design token system via CSS custom properties (colors, shadows, radii, transitions)
+- Mobile-responsive sidebar with hamburger toggle and overlay backdrop
+- Active nav link highlighting
+- New component classes: `persona-card`, `vs-grid`/`vs-card`, `steps` ordered list, icon-slot callouts
+
+#### New Content Pages
+- `reference/skills-vs-agents.md` — Red Hat persona-driven explainer (Sales, Frontend Dev, SA, RHDP Engineer)
+- `contributing/for-sales.md` — End-to-end walkthrough: Sales Engineer builds `/sales:demo-brief` skill
+- `contributing/for-developers.md` — Frontend Developer builds `frontend-reviewer` agent with PostToolUse hook
+- `contributing/plugin-dev-plugin.md` — Anthropic's official `plugin-dev` toolkit guide
+
+#### Navigation
+- "Start by Role" red-gradient nav block: Sales & Pre-Sales, Frontend Developers, RHDP Engineers
+- "Concepts" nav section: Skills vs Agents, Best Practices, Quick Reference, Glossary
+- "Build Your Own" nav section: all contributing guides
+- Home page persona grid with 4 role cards above the fold
+
+#### All Pages Modernised
+- Stripped all per-page inline `<style>` blocks (300–400 lines each) across 24 pages
+- Replaced every custom component class with unified design system classes
+- setup/: claude-code, cursor, migration, cursor-migration, updating, updating-cursor, showroom, agnosticv, index
+- skills/: create-lab, create-demo, verify-content, blog-generate, agnosticv-catalog-builder, agnosticv-validator, deployment-health-checker, ftl, index
+- reference/: best-practices, glossary, quick-reference, troubleshooting, testing-tech-preview
+- contributing/: create-your-own-skill
+
+### FTL Skills
+
+#### lab-validator
+- Added visual HTML/CSS workflow diagram to docs page showing complete 8-step flow
+- Diagram includes: environment hard-stop gate, Module 1 three-way classification (SETUP/INTRO / MIXED / EXERCISE), generate/test/iterate loop, and per-module repeat pattern
+
 ## [v2.9.0] - 2026-03-13
 
 ### AgnosticV Skills
