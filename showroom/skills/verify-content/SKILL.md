@@ -18,11 +18,20 @@ Verify workshop or demo content against Red Hat quality standards, style guideli
 
 Check CWD for Showroom structure:
 
-- `content/modules/ROOT/pages/` exists → use it, proceed
-- Showroom structure found but no pages → ask: "Where are your `.adoc` files?"
-- No Showroom structure → ask: "What is the path to your Showroom repo?"
+- `content/modules/ROOT/pages/` exists and contains `.adoc` files → use it, proceed silently
+- `content/modules/ROOT/pages/` exists but is empty → output:
+  ```
+  📁 Found Showroom structure in [CWD] but no .adoc files in content/modules/ROOT/pages/.
+  Please provide the path to your .adoc files:
+  ```
+- No Showroom structure in CWD → output:
+  ```
+  📁 No Showroom content found in [CWD].
+  Please provide the path to your Showroom repo (e.g. ~/work/showroom-content/my-lab-showroom):
+  ```
+  Wait for the user to provide a path. Use that path and proceed.
 
-**CRITICAL: Never scan `~/work/showroom-content/` or any path from `~/CLAUDE.md` to list available repos. Work only on the directory the user specifies or CWD.**
+**CRITICAL: Never scan `~/work/showroom-content/` or any path from `~/CLAUDE.md` to list or suggest available repos. If the directory is not detected, ask for the path — do not offer a list of options.**
 
 Detect content type from file structure (no questions):
 - Has `=== Verify` sections or numbered exercise steps → Workshop
