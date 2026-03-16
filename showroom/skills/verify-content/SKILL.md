@@ -135,36 +135,62 @@ After scaffold checks, delegate to the three specialist agents. Each agent reads
 
 ---
 
-**Ask the `workshop-reviewer` agent** to check structure and learning design (Pass B) and demo quality if applicable (Pass F):
+**Ask the `workshop-reviewer` agent** to check structure and learning design (Pass B) and demo quality if applicable (Pass F).
 
+For a **workshop**, tell it:
 ```
-Ask the workshop-reviewer agent:
-Review [content path] for workshop structure and learning design quality.
-[If demo: also check Know/Show structure, business value framing, and presenter guidance.]
+Read @showroom/prompts/enhanced_verification_workshop.txt and
+@showroom/prompts/verify_workshop_structure.txt before reviewing.
+Review all .adoc files in [content path] for workshop structure and learning design quality.
 Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with B (structure) and F (demo-specific, if applicable).
+Use IDs starting with B (e.g. B.3, B.7).
+Return only failing items.
+```
+
+For a **demo**, tell it:
+```
+Read @showroom/prompts/enhanced_verification_demo.txt before reviewing.
+Review all .adoc files in [content path] for Know/Show structure,
+business value framing, and presenter guidance quality.
+Return findings as table rows: ID | Issue | Severity | Location
+Use IDs starting with B for structure issues and F for demo-specific issues.
+Return only failing items.
 ```
 
 ---
 
-**Ask the `technical-editor` agent** to check AsciiDoc formatting (Pass C) and technical accuracy (Pass E):
+**Ask the `technical-editor` agent** to check AsciiDoc formatting (Pass C) and technical accuracy (Pass E).
 
+For a **workshop**, tell it:
 ```
-Ask the technical-editor agent:
-Review [content path] for AsciiDoc formatting and technical accuracy.
+Read @showroom/prompts/verify_technical_accuracy_workshop.txt and
+@showroom/prompts/verify_accessibility_compliance_workshop.txt before reviewing.
+Review all .adoc files in [content path] for AsciiDoc formatting and technical accuracy.
 Return findings as table rows: ID | Issue | Severity | Location
 Use IDs starting with C (formatting) and E (technical accuracy).
+Return only failing items.
+```
+
+For a **demo**, tell it:
+```
+Read @showroom/prompts/verify_technical_accuracy_demo.txt and
+@showroom/prompts/verify_accessibility_compliance_demo.txt before reviewing.
+Review all .adoc files in [content path] for AsciiDoc formatting and technical accuracy.
+Return findings as table rows: ID | Issue | Severity | Location
+Use IDs starting with C (formatting) and E (technical accuracy).
+Return only failing items.
 ```
 
 ---
 
-**Ask the `style-enforcer` agent** to check Red Hat style compliance (Pass D):
+**Ask the `style-enforcer` agent** to check Red Hat style compliance (Pass D). Same for both content types:
 
 ```
-Ask the style-enforcer agent:
-Review [content path] for Red Hat style guide compliance.
+Read @showroom/prompts/redhat_style_guide_validation.txt before reviewing.
+Review all .adoc files in [content path] for Red Hat style guide compliance.
 Return findings as table rows: ID | Issue | Severity | Location
-Use IDs starting with D.
+Use IDs starting with D (e.g. D.2, D.5).
+Return only failing items.
 ```
 
 ---
