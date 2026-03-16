@@ -290,12 +290,11 @@ Add lightweight visual guidance without forcing asset creation:
 - Helps presenters prepare assets if they want
 - Keeps demos tight without forcing asset creation
 
-### Step 10: Validate
+### Step 10: Validate (Inline)
 
-I'll automatically run:
-- **workshop-reviewer** agent: Validates structure
-- **style-enforcer** agent: Applies Red Hat style standards
-- Verify Know/Show balance and business focus
+Inline quality check — see SKILL.md Step 10 checklist. No agents.
+Key checks: Know/Show structure present, business value per section,
+presenter notes, sentence case, no prohibited terms.
 
 ### Step 11: Update Navigation (REQUIRED)
 
