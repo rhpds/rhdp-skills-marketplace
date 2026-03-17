@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.4] - 2026-03-17
+
+### AgnosticV Skills
+
+#### validator — 3 new checks
+- **Check 19: common_password pattern** — ERROR if catalog uses hash/GUID-based password generation (`hash('sha256')`, `hash('md5')`, GUID-derived). Must use `lookup('password', output_dir ~ '/common_password', ...)` pattern.
+- **Check 20: showroom namespace in tenant catalogs** — WARNING if `ocp4_workload_showroom_namespace` is set or a `showroom` suffix exists in `ocp4_workload_tenant_namespace_namespaces` for `config: namespace` catalogs. Showroom creates its own namespace; students only get a route.
+- **Check 21: EE image date** — WARNING if `execution_environment.image` chained date is more than 90 days old. Includes recommended current image (`chained-2026-02-23`).
+
+#### catalog-builder — fixes and new examples
+- **`common.yaml.template`**: fixed `common_password` from md5 hash pattern to `lookup('password', ...)` pattern
+- **SKILL.md**: explicit rules — never hash passwords, never set showroom namespace in tenant catalogs, EE image updated to `chained-2026-02-23` in both template references
+- **`examples/ocp-demo/`**: fixed `common_password` (was md5 hash), EE image updated `2025-10-09` → `2026-02-23`
+- **`examples/cloud-vms-base/`**: fixed broken `lookup('password')` syntax, EE image updated `2025-12-17` → `2026-02-23`
+- **`examples/ocp-aws/`**: EE image updated `2025-10-09` → `2026-02-23`
+- **New: `examples/sandbox-tenant/`** — canonical Tenant CI example (`config: namespace`): correct password pattern, no showroom namespace override, no showroom in tenant namespace list, EE `chained-2026-02-23`
+- **New: `examples/sandbox-cluster/`** — canonical Cluster CI example (`config: openshift-workloads`, `cloud_provider: none`, `num_users: 0`): full `propagate_provision_data`, `access-restriction-admins-only`, correct deployer actions
+
+#### Shared docs updated
+- `sandbox-validator-checks.md`, `sandbox-tenant-ci-questions.md`, `sandbox-cluster-ci-questions.md`: both skills now reference the new canonical examples when handling Sandbox API catalog types
+
+### Skill Audit (plugin-dev:skill-development)
+- Audited all 6 skills (catalog-builder, validator, create-lab, create-demo, verify-content, blog-generate)
+- Fixed broken `@agnosticv/tests/` references in 4 files — these paths exist in the agnosticv repo, not the plugin; updated to plain repo paths
+
 ## [v2.10.0] - 2026-03-16 (updated 2026-03-17)
 
 ### Docs — Complete GitHub Pages Redesign
