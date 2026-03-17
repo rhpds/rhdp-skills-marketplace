@@ -232,7 +232,8 @@ elif choice == 2:
                    "deployer", "reporting_labels", "components", "asciidoc",
                    "anarchy_namespace", "best_practices",
                    "litemaas", "event_restriction", "duplicate_includes",
-                   "event_catalog"]  # event_catalog only runs if event_context != none
+                   "event_catalog",   # event_catalog only runs if event_context != none
+                   "password_pattern", "showroom_namespace", "ee_image_date"]
 
 elif choice == 3:
   validation_scope = "full"
@@ -1850,6 +1851,139 @@ def check_duplicate_includes(catalog_path, agv_path):
       })
     else:
       passed_checks.append(f"✓ No duplicate include: {inc}")
+```
+
+---
+
+### Check 19: Password Pattern
+
+```python
+def check_password_pattern(config):
+  """common_password must use lookup('password') pattern — no hashes or GUIDs"""
+
+  import re
+
+  password_val = str(config.get('common_password', ''))
+  if not password_val:
+    return  # Not defined in this catalog — skip
+
+  # Bad patterns: hash filter, guid-derived passwords
+  bad_patterns = [
+    r'hash\(',          # Jinja hash filter: guid | hash('sha256')
+    r'\bsha\b',         # sha256, sha1, etc.
+    r'\bmd5\b',         # md5sum
+    r'\bguid\b.*hash',  # guid piped to hash
+    r'\bpassword_hash\b',
+  ]
+
+  has_bad_pattern = any(re.search(p, password_val) for p in bad_patterns)
+  uses_lookup = "lookup('password'" in password_val or 'lookup("password"' in password_val
+
+  if has_bad_pattern and not uses_lookup:
+    errors.append({
+      'check': 'password_pattern',
+      'severity': 'ERROR',
+      'message': 'common_password uses hash/GUID-based generation — not allowed',
+      'location': 'common.yaml:common_password',
+      'current': password_val.strip()[:80],
+      'fix': '''Replace with:
+common_password: >-
+  {{ lookup(\'password\', output_dir ~ \'/common_password\', length=12, chars=[\'ascii_letters\', \'digits\']) }}''',
+      'reason': 'Hash-based passwords are predictable and not allowed per platform standards'
+    })
+  elif uses_lookup:
+    passed_checks.append("✓ common_password uses lookup('password') pattern")
+```
+
+---
+
+### Check 20: Showroom Namespace Override (Tenant Catalogs Only)
+
+This check applies only to **Sandbox API Tenant CI** catalogs (`config: namespace`). The Showroom workload creates and manages its own namespace — catalog files must not override `ocp4_workroom_showroom_namespace` or add a showroom namespace entry to `ocp4_workload_tenant_namespace_namespaces`.
+
+```python
+def check_showroom_namespace(config):
+  """Showroom namespace must not be manually set in tenant (config: namespace) catalogs"""
+
+  config_type = config.get('config', '')
+
+  # Only applies to Sandbox API Tenant CI catalogs
+  if config_type != 'namespace':
+    return
+
+  # Check 1: ocp4_workload_showroom_namespace must not be set
+  if 'ocp4_workload_showroom_namespace' in config:
+    warnings.append({
+      'check': 'showroom_namespace',
+      'severity': 'WARNING',
+      'message': 'ocp4_workload_showroom_namespace should not be set in tenant catalogs',
+      'location': 'common.yaml:ocp4_workload_showroom_namespace',
+      'current': config['ocp4_workload_showroom_namespace'],
+      'fix': 'Remove — the Showroom workload creates and manages its own namespace',
+      'reason': 'Users only get a route. Showroom namespace creation is handled by the workload.'
+    })
+  else:
+    passed_checks.append("✓ ocp4_workload_showroom_namespace not set (correct for tenant catalog)")
+
+  # Check 2: showroom suffix in ocp4_workload_tenant_namespace_namespaces must not exist
+  tenant_namespaces = config.get('ocp4_workload_tenant_namespace_namespaces', [])
+  showroom_ns = [ns for ns in tenant_namespaces if ns.get('suffix') == 'showroom']
+
+  if showroom_ns:
+    warnings.append({
+      'check': 'showroom_namespace',
+      'severity': 'WARNING',
+      'message': 'showroom namespace entry in ocp4_workload_tenant_namespace_namespaces — not needed',
+      'location': 'common.yaml:ocp4_workload_tenant_namespace_namespaces',
+      'fix': 'Remove the "- suffix: showroom" entry and its quota/limit_range block',
+      'reason': 'Showroom creates its own namespace with its own resource limits. '
+                'Users do not need access to it — they only get the Showroom route.'
+    })
+  else:
+    passed_checks.append("✓ No showroom namespace entry in tenant namespaces (correct)")
+```
+
+---
+
+### Check 21: Execution Environment Image Date
+
+```python
+import re
+from datetime import datetime
+
+def check_ee_image_date(config):
+  """Warn if execution environment image date is more than 3 months old"""
+
+  ee_image = config.get('__meta__', {}).get('deployer', {}).get(
+    'execution_environment', {}).get('image', '')
+
+  if not ee_image:
+    return  # No EE image — caught by Check 14
+
+  # Extract date from chained-YYYY-MM-DD tag
+  match = re.search(r'chained-(\d{4}-\d{2}-\d{2})', ee_image)
+  if not match:
+    return  # Non-standard tag — skip date check
+
+  image_date = datetime.strptime(match.group(1), '%Y-%m-%d')
+  today = datetime.today()
+  age_days = (today - image_date).days
+
+  # Recommended current image
+  recommended = 'quay.io/agnosticd/ee-multicloud:chained-2026-02-23'
+
+  if age_days > 90:
+    warnings.append({
+      'check': 'ee_image_date',
+      'severity': 'WARNING',
+      'message': f'Execution environment image is {age_days} days old',
+      'location': 'common.yaml:__meta__.deployer.execution_environment.image',
+      'current': ee_image,
+      'recommended': recommended,
+      'fix': f'Update to: image: {recommended}'
+    })
+  else:
+    passed_checks.append(f"✓ EE image date is recent: {match.group(1)} ({age_days} days old)")
 ```
 
 ---

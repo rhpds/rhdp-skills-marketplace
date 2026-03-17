@@ -576,6 +576,25 @@ Please confirm: which variables from this workload do you want to set?
 
 **Never invent a variable name.** If unsure, ask — do not guess.
 
+**CRITICAL — Password generation:**
+
+Always use the `lookup('password')` pattern. Never use hash/GUID-based passwords:
+
+```yaml
+# CORRECT
+common_password: >-
+  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
+
+# WRONG — never use any of these:
+# common_password: "{{ guid | hash('sha256') }}"
+# common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+# common_password: "Aap{{ (guid | hash('sha256'))[:8] }}!"
+```
+
+**CRITICAL — Tenant catalogs (`config: namespace`) — Showroom namespace:**
+
+Never add `ocp4_workload_showroom_namespace` or a `showroom` suffix entry in `ocp4_workload_tenant_namespace_namespaces`. The Showroom workload creates and manages its own namespace — students only get a route.
+
 **Auto-add `#include` lines at the top — only what's needed:**
 
 **CRITICAL — Avoid duplicate includes (causes include loop):**
@@ -687,14 +706,14 @@ __meta__:
 
 If user says No or unsure → omit `deployer.actions` entirely.
 
-**deployer.ee** — use the current chained EE image (from summit-2026/lb2298-ibm-fusion reference):
+**deployer.ee** — use the current chained EE image:
 
 ```yaml
   deployer:
     scm_url: https://github.com/agnosticd/agnosticd-v2
     scm_ref: main
     execution_environment:
-      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-16
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
       pull: missing
 ```
 
@@ -845,7 +864,7 @@ __meta__:
     scm_url: https://github.com/agnosticd/agnosticd-v2
     scm_ref: main
     execution_environment:
-      image: <latest ee-multicloud chained from AgV grep>
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
       pull: missing
     # actions:          # Only add if workload touches external resources
     #   stop:
