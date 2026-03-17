@@ -556,8 +556,25 @@ cd ~/work/code/experiment/ftl
 export OCP_API_URL="https://api.cluster-xxx.dynamic.redhatworkshops.io:6443"
 export OCP_ADMIN_PASSWORD="<admin-password>"
 export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshops.io"
+```
 
-# Test locally (no git push needed — mounts local repo into container)
+### Step 0 — Run readiness check first (before students start)
+
+`grade_e2e_readiness.yml` checks that all pre-deployed infrastructure is healthy. Run this **before** students begin — if it fails, the environment is broken, not the student.
+
+```bash
+# Check pre-deployed infra (Showroom, OCP components, services)
+bash bin/grade_lab <lab> <user> e2e_readiness --podman --local
+
+# Expected: all PASS — environment is healthy and ready
+```
+
+If anything fails here, fix the environment before students start. Do not proceed to module graders until `e2e_readiness` is clean.
+
+### Steps 1+ — Run module graders
+
+```bash
+# Test Module 1 locally (no git push needed — mounts local repo)
 bash bin/grade_lab <lab> <user> 1 --podman --local
 
 # Run solver then grade again (expect all PASS)
