@@ -560,14 +560,37 @@ export OPENSHIFT_CLUSTER_INGRESS_DOMAIN="apps.cluster-xxx.dynamic.redhatworkshop
 
 ### Step 0 — Run readiness check first (before students start)
 
-`grade_e2e_readiness.yml` checks that all pre-deployed infrastructure is healthy. Run this **before** students begin — if it fails, the environment is broken, not the student.
+`grade_e2e_readiness.yml` checks that all **pre-deployed infrastructure** is healthy — the things AgnosticD provisioned, not things students do. Run this **before** students begin. If it fails, the environment is broken, not the student.
 
 ```bash
-# Check pre-deployed infra (Showroom, OCP components, services)
+# Check pre-deployed infra — all lab types
 bash bin/grade_lab <lab> <user> e2e_readiness --podman --local
 
 # Expected: all PASS — environment is healthy and ready
 ```
+
+What the readiness check contains depends on lab type:
+
+<table>
+<thead><tr><th>Lab type</th><th>What it checks</th><th>Env vars needed</th></tr></thead>
+<tbody>
+<tr>
+<td><strong>OCP lab</strong></td>
+<td>Showroom ConfigMap readable, pre-deployed pods running, routes accessible, services reachable via <code>kubernetes.core.k8s_info</code></td>
+<td><code>OCP_API_URL</code>, <code>OCP_ADMIN_PASSWORD</code>, <code>OPENSHIFT_CLUSTER_INGRESS_DOMAIN</code></td>
+</tr>
+<tr>
+<td><strong>RHEL / AAP lab</strong></td>
+<td>systemd services running on RHEL VMs via SSH, AAP controller reachable, job templates present — uses <code>grader_check_service_running</code>, <code>grader_check_command_output</code>, <code>grader_check_http_endpoint</code></td>
+<td><code>BASTION_HOST</code>, <code>BASTION_USER</code>, <code>AAP_HOSTNAME</code>, <code>AAP_PASSWORD</code></td>
+</tr>
+<tr>
+<td><strong>AAP-on-OCP</strong></td>
+<td>Both — OCP resources via <code>kubernetes.core.k8s_info</code> + AAP templates via <code>grader_check_aap_*</code></td>
+<td>Both sets above</td>
+</tr>
+</tbody>
+</table>
 
 If anything fails here, fix the environment before students start. Do not proceed to module graders until `e2e_readiness` is clean.
 
