@@ -1859,40 +1859,70 @@ def check_duplicate_includes(catalog_path, agv_path):
 
 ```python
 def check_password_pattern(config):
-  """common_password must use lookup('password') pattern — no hashes or GUIDs"""
+  """Password variables must use lookup('password') with unique file paths — no hashes or GUIDs"""
 
   import re
 
-  password_val = str(config.get('common_password', ''))
-  if not password_val:
-    return  # Not defined in this catalog — skip
-
   # Bad patterns: hash filter, guid-derived passwords
   bad_patterns = [
-    r'hash\(',          # Jinja hash filter: guid | hash('sha256')
-    r'\bsha\b',         # sha256, sha1, etc.
-    r'\bmd5\b',         # md5sum
-    r'\bguid\b.*hash',  # guid piped to hash
+    r'hash\(',
+    r'\bsha\b',
+    r'\bmd5\b',
+    r'\bguid\b.*hash',
     r'\bpassword_hash\b',
   ]
 
-  has_bad_pattern = any(re.search(p, password_val) for p in bad_patterns)
-  uses_lookup = "lookup('password'" in password_val or 'lookup("password"' in password_val
+  # Collect all password-like variables (any key containing 'password', 'secret', 'key', 'token')
+  password_vars = {
+    k: str(v) for k, v in config.items()
+    if any(word in k.lower() for word in ['password', 'secret', 'access_key'])
+    and isinstance(v, str)
+    and v.strip()
+  }
 
-  if has_bad_pattern and not uses_lookup:
-    errors.append({
-      'check': 'password_pattern',
-      'severity': 'ERROR',
-      'message': 'common_password uses hash/GUID-based generation — not allowed',
-      'location': 'common.yaml:common_password',
-      'current': password_val.strip()[:80],
-      'fix': '''Replace with:
-common_password: >-
-  {{ lookup(\'password\', output_dir ~ \'/common_password\', length=12, chars=[\'ascii_letters\', \'digits\']) }}''',
-      'reason': 'Hash-based passwords are predictable and not allowed per platform standards'
-    })
-  elif uses_lookup:
-    passed_checks.append("✓ common_password uses lookup('password') pattern")
+  # Check each for bad patterns
+  for var_name, var_val in password_vars.items():
+    has_bad = any(re.search(p, var_val) for p in bad_patterns)
+    uses_lookup = "lookup('password'" in var_val or 'lookup("password"' in var_val
+
+    if has_bad and not uses_lookup:
+      errors.append({
+        'check': 'password_pattern',
+        'severity': 'ERROR',
+        'message': f'{var_name} uses hash/GUID-based generation — not allowed',
+        'location': f'common.yaml:{var_name}',
+        'current': var_val.strip()[:80],
+        'fix': f'''Replace with:
+{var_name}: >-
+  {{{{ lookup(\'password\', output_dir ~ \'/{var_name}\', length=12, chars=[\'ascii_letters\', \'digits\']) }}}}''',
+        'reason': 'Hash-based passwords are predictable and not allowed per platform standards'
+      })
+
+  # Check for duplicate lookup paths across all lookup('password') calls
+  # Each password variable must use a unique output_dir path — otherwise they generate the same value
+  path_pattern = re.compile(r"lookup\(['\"]password['\"],\s*output_dir\s*~\s*['\"]([^'\"]+)['\"]")
+  lookup_paths = {}  # path → variable name
+
+  for var_name, var_val in password_vars.items():
+    match = path_pattern.search(var_val)
+    if match:
+      path = match.group(1)
+      if path in lookup_paths:
+        errors.append({
+          'check': 'password_pattern',
+          'severity': 'ERROR',
+          'message': f'Duplicate lookup path "{path}" used by both {lookup_paths[path]} and {var_name}',
+          'location': f'common.yaml:{var_name}',
+          'fix': f'Use a unique path for each password variable:\n'
+                 f'  {var_name}: >-\n'
+                 f'    {{{{ lookup(\'password\', output_dir ~ \'/{var_name}\', length=12, chars=[\'ascii_letters\', \'digits\']) }}}}',
+          'reason': 'Two variables using the same lookup path generate identical passwords'
+        })
+      else:
+        lookup_paths[path] = var_name
+
+  if lookup_paths and not errors:
+    passed_checks.append(f"✓ All {len(lookup_paths)} password variable(s) use unique lookup paths")
 ```
 
 ---

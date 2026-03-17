@@ -586,17 +586,25 @@ Please confirm: which variables from this workload do you want to set?
 
 **CRITICAL — Password generation:**
 
-Always use the `lookup('password')` pattern. Never use hash/GUID-based passwords:
+Always use the `lookup('password')` pattern. Never use hash/GUID-based passwords.
+**Each password variable must use a unique file path** — two variables with the same path generate identical passwords.
 
 ```yaml
-# CORRECT
-common_password: >-
-  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
+# CORRECT — unique path per variable
+common_admin_password: >-
+  {{ lookup('password', output_dir ~ '/common_admin_password', length=12, chars=['ascii_letters', 'digits']) }}
+common_user_password: >-
+  {{ lookup('password', output_dir ~ '/common_user_password', length=12, chars=['ascii_letters', 'digits']) }}
 
-# WRONG — never use any of these:
+# WRONG — same path = same password value for both variables
+# common_admin_password: >-
+#   {{ lookup('password', output_dir ~ '/common_password', ...) }}
+# common_user_password: >-
+#   {{ lookup('password', output_dir ~ '/common_password', ...) }}  ← identical!
+
+# WRONG — hash/GUID patterns never allowed:
 # common_password: "{{ guid | hash('sha256') }}"
 # common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
-# common_password: "Aap{{ (guid | hash('sha256'))[:8] }}!"
 ```
 
 **CRITICAL — Tenant catalogs (`config: namespace`) — Showroom namespace:**

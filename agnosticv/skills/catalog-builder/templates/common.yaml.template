@@ -79,10 +79,16 @@ ai_workers_cores: 32
 ai_workers_memory: 128Gi
 
 # -------------------------------------------------------------------
-# Common Password
+# Passwords — each variable must use a unique output_dir path.
+# Using the same path for multiple variables generates identical passwords.
 # -------------------------------------------------------------------
 common_password: >-
   {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
+# If you need separate admin/user passwords, use unique paths:
+# common_admin_password: >-
+#   {{ lookup('password', output_dir ~ '/common_admin_password', length=12, chars=['ascii_letters', 'digits']) }}
+# common_user_password: >-
+#   {{ lookup('password', output_dir ~ '/common_user_password', length=12, chars=['ascii_letters', 'digits']) }}
 
 # -------------------------------------------------------------------
 # Student User on Bastion (if needed)

@@ -71,12 +71,14 @@ ai_workers_cores: 16
 ai_workers_memory: 64Gi
 
 # -------------------------------------------------------------------
-# Common Password
+# Passwords
+# Each password variable must use a unique output_dir path.
+# Using the same path for two variables generates identical passwords.
 # -------------------------------------------------------------------
-common_password: >-
-  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
-common_admin_password: "{{ common_password }}"
-common_user_password: "{{ common_password }}"
+common_admin_password: >-
+  {{ lookup('password', output_dir ~ '/common_admin_password', length=12, chars=['ascii_letters', 'digits']) }}
+common_user_password: >-
+  {{ lookup('password', output_dir ~ '/common_user_password', length=12, chars=['ascii_letters', 'digits']) }}
 common_admin_username: admin
 
 # -------------------------------------------------------------------
