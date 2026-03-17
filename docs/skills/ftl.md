@@ -580,17 +580,9 @@ What the readiness check contains depends on lab type:
 <td><code>OCP_API_URL</code>, <code>OCP_ADMIN_PASSWORD</code>, <code>OPENSHIFT_CLUSTER_INGRESS_DOMAIN</code></td>
 </tr>
 <tr>
-<td><strong>RHEL / AAP lab</strong></td>
-<td>
-Varies by what's deployed — the skill reads the AgV catalog to determine. Common checks:<br><br>
-<strong>AAP Controller:</strong> HTTPS responds, CaC loader completed, inventory populated, EE pulled<br>
-<strong>Cockpit:</strong> port 9090 reachable, SSH keyscan done for all nodes<br>
-<strong>VS Code Server:</strong> /editor/ or port 8080 responds<br>
-<strong>Satellite repos (RIPU-style):</strong> entitlement certs present on nodes, upgrade repo files exist (e.g. <code>rhel8-for-ripu.repo</code> on RHEL 7 nodes), nodes can reach Satellite<br>
-<strong>Node connectivity:</strong> bastion can SSH to each node, RHEL versions match expected<br>
-<strong>Student setup:</strong> workshop directory cloned, student user created
-</td>
-<td><code>BASTION_HOST</code>, <code>BASTION_USER</code>, <code>AAP_HOSTNAME</code>, <code>AAP_PASSWORD</code> — plus any lab-specific vars</td>
+<td><strong>RHEL / VM lab</strong></td>
+<td><strong>Derived from the Showroom content and AgV catalog — not assumed.</strong> A RHEL lab might have AAP + Cockpit + Satellite + 4 upgrade nodes, or it might just have RHEL nodes with httpd. The skill reads <code>software_workloads:</code> in common.yaml and collection role defaults to determine what was actually deployed, then generates checks only for those components.</td>
+<td><code>BASTION_HOST</code>, <code>BASTION_USER</code> always. <code>AAP_HOSTNAME</code>, <code>AAP_PASSWORD</code> only if AAP is in the catalog. Lab-specific vars only if needed by the derived checks.</td>
 </tr>
 <tr>
 <td><strong>AAP-on-OCP</strong></td>
@@ -603,7 +595,7 @@ Varies by what's deployed — the skill reads the AgV catalog to determine. Comm
 <div class="callout callout-tip">
 <span class="callout-icon">💡</span>
 <div class="callout-body">
-<strong>For RHEL labs:</strong> every role in <code>software_workloads: bastions:</code> in the AgV catalog created something — those are your readiness checks. Every role in <code>software_workloads: nodes:</code> modified the nodes — verify those changes too. The FTL skill reads the catalog and collection role defaults to determine this automatically.
+<strong>For RHEL / VM labs:</strong> the readiness checklist is derived from the catalog, not assumed. Every role in <code>software_workloads: bastions:</code> created something to check. Every service students interact with in the Showroom modules is pre-deployed and must be reachable. The skill reads both before generating any checks.
 </div>
 </div>
 
