@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v2.10.0] - 2026-03-16 (updated 2026-03-16)
+## [v2.10.0] - 2026-03-16 (updated 2026-03-17)
 
 ### Docs — Complete GitHub Pages Redesign
 
@@ -48,6 +48,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### FTL Skills (post-release improvements)
+
+#### lab-validator
+- **grade_e2e_readiness — all 3 lab types**: readiness check now properly documented for OCP (k8s_info + ConfigMap), RHEL/VM (SSH-based via bastion), and AAP-on-OCP (hybrid). Docs show exact command and env vars per lab type.
+- **RHEL e2e_readiness is catalog-driven**: checklist derived from `software_workloads:` roles in common.yaml + Showroom content — never assumed. A plain RHEL lab gets different checks than a RIPU lab with AAP + Satellite + 4 upgrade nodes.
+- **Satellite checks documented**: no dedicated grader role needed. `grader_check_file_exists` for repo files and certs, `grader_check_command_output` for subscription-manager via SSH, `grader_check_http_json_response` for Satellite API host registration queries.
+- **Checkpoint-to-role mapping expanded**: table now split into OCP, RHEL/VM, and Both sections. RHEL section includes AAP, Satellite, systemd, package, user, file, and SSH command checks with exact role names.
+- **RHEL software_workloads lookup table**: each role in `software_workloads: bastions/nodes:` maps to exact grader roles for e2e_readiness generation.
+
 ### Showroom Skills (post-release improvements)
 
 #### verify-content — Complete Skill Refactor
@@ -83,6 +92,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Home Page and Navigation
 - Refocused home page on skill usage (Skills section first, above the fold)
 - "Start by Role" persona section removed from primary nav — Build Your Own moved to bottom of sidebar
+
+#### FTL Docs
+- Running Graders section: added Step 0 with `grade_e2e_readiness` command, explanation, and env vars per lab type
+- Readiness check table: three rows (OCP / RHEL-VM / AAP-on-OCP) with what each checks and required env vars
+- New "Grader Roles Reference" section: three tables (OCP, RHEL/VM, Satellite) with every grader role and when to use it
+- Satellite section: explicit role-per-check table showing no dedicated Satellite role is needed; callout explaining why
+- RHEL/VM row updated: "derived from catalog, not assumed" with tip about software_workloads as the source of truth
+
+#### Showroom Skill Review (code correctness)
+- Ran skill-reviewer agent across all four showroom skills (create-lab, create-demo, verify-content, blog-generate)
+- Fixed stale agent reference in `create-demo/references/content-rules.md` Step 10 (still referenced workshop-reviewer/style-enforcer after agents were removed)
+- All four SKILL.md files confirmed clean: no agent references, inline checks present, verify-content Phase 1–4 complete
 
 ## [v2.9.0] - 2026-03-13
 
