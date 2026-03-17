@@ -1,0 +1,11 @@
+---
+# Dev overrides for sandbox-cluster catalog
+
+purpose: development
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  deployer:
+    scm_ref: main

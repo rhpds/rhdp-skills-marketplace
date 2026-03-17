@@ -1,0 +1,17 @@
+---
+# Dev overrides for sandbox-tenant catalog
+# purpose: development is required in dev.yaml
+
+purpose: development
+
+# -------------------------------------------------------------------
+# Workload: ocp4_workload_showroom
+# -------------------------------------------------------------------
+ocp4_workload_showroom_antora_enable_dev_mode: "true"
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+__meta__:
+  deployer:
+    scm_ref: main

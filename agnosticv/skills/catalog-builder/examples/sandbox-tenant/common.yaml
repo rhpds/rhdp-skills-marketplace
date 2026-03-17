@@ -1,0 +1,218 @@
+---
+# -------------------------------------------------------------------
+# --- Example: Sandbox API Tenant CI
+# --- config: namespace — per-user workloads on a shared pre-provisioned cluster
+# --- Sandbox API provides the cluster; workloads create per-user resources
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# AgnosticV includes
+# -------------------------------------------------------------------
+#include /includes/agd-v2-mapping.yaml
+#include /includes/sandbox-api.yaml
+#include /includes/catalog-icon-openshift.yaml
+#include /includes/terms-of-service.yaml
+
+#include /includes/parameters/purpose.yaml
+#include /includes/parameters/salesforce-id.yaml
+
+# ===================================================================
+# Mandatory Variables
+# ===================================================================
+config: namespace
+cloud_provider: none
+
+# ===================================================================
+# Common Password
+# CRITICAL: Never use hash/GUID-based passwords. Always use lookup().
+# ===================================================================
+common_password: >-
+  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
+
+# ===================================================================
+# Collections
+# ===================================================================
+tag: main
+
+requirements_content:
+  collections:
+  # Tenant roles (keycloak_user, namespace)
+  - name: https://github.com/agnosticd/namespaced_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+  # GitOps bootstrap
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+  # Showroom
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.7
+
+# ===================================================================
+# Workloads
+# Order matters: tenant user → namespaces → workloads → showroom
+# ===================================================================
+workloads:
+- agnosticd.namespaced_workloads.ocp4_workload_tenant_keycloak_user
+- agnosticd.namespaced_workloads.ocp4_workload_tenant_namespace
+- agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
+- agnosticd.showroom.ocp4_workload_ocp_console_embed
+- agnosticd.showroom.ocp4_workload_showroom
+
+# config: namespace auto-reverses this list for destroy if omitted.
+# Define explicitly when destroy order differs from provision order.
+remove_workloads:
+- agnosticd.showroom.ocp4_workload_showroom
+- agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
+- agnosticd.namespaced_workloads.ocp4_workload_tenant_namespace
+- agnosticd.namespaced_workloads.ocp4_workload_tenant_keycloak_user
+
+# ===================================================================
+# Workload Variables
+# ===================================================================
+
+# -------------------------------------------------------------------
+# ocp4_workload_tenant_keycloak_user
+# -------------------------------------------------------------------
+ocp4_workload_tenant_keycloak_username: "user-{{ guid }}"
+ocp4_workload_tenant_keycloak_user_password: "{{ common_password }}"
+
+# -------------------------------------------------------------------
+# ocp4_workload_tenant_namespace
+#
+# Creates namespaces in format {username}-{suffix}.
+# IMPORTANT: Do NOT add a "showroom" suffix here.
+# The Showroom workload creates and manages its own namespace.
+# Users only get a route — they do not need access to the namespace.
+# -------------------------------------------------------------------
+ocp4_workload_tenant_namespace_username: "user-{{ guid }}"
+ocp4_workload_tenant_namespace_use_cluster_quota: true
+
+ocp4_workload_tenant_namespace_suffixes:
+- suffix: myapp
+  # Optional per-suffix quota (overrides default_quota for this namespace)
+  # quota:
+  #   limits.cpu: "4"
+  #   limits.memory: 8Gi
+
+# Shared resource pool across all tenant namespaces (ClusterResourceQuota)
+ocp4_workload_tenant_namespace_default_quota:
+  limits.cpu: "8"
+  requests.cpu: "4"
+  limits.memory: 16Gi
+  requests.memory: 8Gi
+  requests.storage: 50Gi
+
+ocp4_workload_tenant_namespace_default_limit_range:
+  default:
+    cpu: "2"
+    memory: 4Gi
+  defaultRequest:
+    cpu: 250m
+    memory: 128Mi
+
+# -------------------------------------------------------------------
+# ocp4_workload_gitops_bootstrap
+# -------------------------------------------------------------------
+ocp4_workload_gitops_bootstrap_repo_url: https://github.com/rhpds/my-lab-gitops.git
+ocp4_workload_gitops_bootstrap_repo_revision: main
+ocp4_workload_gitops_bootstrap_application_name: "bootstrap-tenant"
+
+ocp4_workload_gitops_bootstrap_helm_values:
+  tenant:
+    name: "{{ guid }}"
+    user:
+      name: "{{ ocp4_workload_tenant_keycloak_username }}"
+  myapp:
+    namespace: "{{ ocp4_workload_tenant_keycloak_username }}-myapp"
+
+# -------------------------------------------------------------------
+# ocp4_workload_showroom
+#
+# IMPORTANT: Do NOT set ocp4_workload_showroom_namespace in tenant catalogs.
+# The Showroom workload creates its own namespace. Users only get a route.
+# -------------------------------------------------------------------
+openshift_api_url: "{{ sandbox_openshift_api_url }}"
+openshift_cluster_admin_token: "{{ cluster_admin_agnosticd_sa_token }}"
+
+ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/my-lab-showroom.git
+ocp4_workload_showroom_content_git_repo_ref: main
+ocp4_workload_showroom_terminal_type: ""
+ocp4_workload_showroom_content_ui_config: |
+  type: showroom
+  default_width: 40
+  persist_url_state: true
+  view_switcher:
+    enabled: true
+    default_mode: split
+  tabs:
+  - name: OpenShift Console
+    url: 'https://console-openshift-console.{{ openshift_cluster_ingress_domain }}'
+
+# Dev Mode overridden in dev.yaml
+ocp4_workload_showroom_antora_enable_dev_mode: "false"
+
+# ===================================================================
+# Babylon meta variables
+# ===================================================================
+__meta__:
+  asset_uuid: <generate-with-uuidgen>
+  owners:
+    maintainer:
+    - name: Your Name
+      email: you@redhat.com
+
+  sandboxes:
+  - kind: OcpSandbox
+    cloud_selector:
+      cloud: cnv-dedicated-shared
+      lab: my-lab-name
+      purpose: prod
+    quota:
+      limits.cpu: "2"
+      requests.cpu: "2"
+      limits.memory: 4Gi
+      requests.memory: 4Gi
+      requests.storage: 10Gi
+    limit_range:
+      default:
+        cpu: 500m
+        memory: 512Mi
+      defaultRequest:
+        cpu: 50m
+        memory: 128Mi
+
+  sandbox_api:
+    actions:
+      destroy:
+        catch_all: false
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
+      pull: missing
+    actions:
+      start:
+        disable: true
+      stop:
+        disable: true
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "My Lab (Tenant)"
+    category: Labs
+    multiuser: false
+    workshopLabUiRedirect: false
+    keywords:
+    - my-technology
+    labels:
+      Product: Red_Hat_OpenShift_Container_Platform
+      Product_Family: Red_Hat_Cloud
+      Provider: RHDP
+    reportingLabels:
+      primaryBU: Hybrid_Platforms

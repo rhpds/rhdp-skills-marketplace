@@ -546,6 +546,12 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 - `@agnosticv/skills/catalog-builder/examples/ocp-aws/` — OCP via AWS pool (Route53 includes)
 - `@agnosticv/skills/catalog-builder/examples/cloud-vms-base/` — RHEL VMs on AWS
 - `@agnosticv/skills/catalog-builder/examples/published-virtual-ci/` — Virtual CI structure (MODE 4)
+- `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — Sandbox API Tenant CI (config: namespace)
+- `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — Sandbox API Cluster CI (config: openshift-workloads, cloud_provider: none, num_users: 0)
+
+**Official agnosticv test examples (also available for reference):**
+- `@agnosticv/tests/ex-multi-user-ocp-tenant/` — canonical tenant CI pattern (Nate Stephany)
+- `@agnosticv/tests/ex-multi-user-ocp-cluster/` — canonical cluster CI pattern (Nate Stephany / Judd Maltin)
 
 **Developer Guidelines** (naming, __meta__ rules, FTL requirement): `@agnosticv/skills/catalog-builder/references/developer-guidelines.md`
 

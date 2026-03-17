@@ -1,0 +1,187 @@
+---
+# -------------------------------------------------------------------
+# --- Example: Sandbox API Cluster CI
+# --- config: openshift-workloads + cloud_provider: none + num_users: 0
+# --- Provisions a shared OCP cluster for N tenant (namespace) placements
+# --- No per-user workloads here — tenants deploy their own via sandbox-tenant pattern
+# -------------------------------------------------------------------
+
+# -------------------------------------------------------------------
+# AgnosticV includes
+# IMPORTANT: access-restriction-admins-only restricts catalog to RHDP
+# admins only during setup. Do not remove.
+# -------------------------------------------------------------------
+#include /includes/access-restriction-admins-only.yaml
+
+#include /includes/agd-v2-mapping.yaml
+#include /includes/catalog-icon-openshift.yaml
+#include /includes/terms-of-service.yaml
+#include /includes/sandbox-api.yaml
+
+#include /includes/parameters/purpose.yaml
+
+# ===================================================================
+# Mandatory Variables
+# config: openshift-workloads + cloud_provider: none + num_users: 0
+# identifies this as a Sandbox API Cluster CI catalog.
+# ===================================================================
+config: openshift-workloads
+cloud_provider: none
+num_users: 0
+
+clusters:
+- default:
+    api_url: "{{ openshift_api_url }}"
+    api_token: "{{ openshift_cluster_admin_token }}"
+
+# ===================================================================
+# Collections
+# ===================================================================
+tag: main
+
+requirements_content:
+  collections:
+  # Core workloads (auth, gitops, showroom, etc.)
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+  # Namespaced workloads (tenant roles — for testing tenant pattern)
+  - name: https://github.com/agnosticd/namespaced_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+# ===================================================================
+# Cluster Sizing
+# Size the cluster to support the expected number of tenant placements.
+# Tenant workloads typically need 4-8Gi RAM per user.
+# Leave a comment showing your math.
+# ===================================================================
+openshift_cnv_scale_cluster: true
+
+# Example: 10 tenants × 8Gi RAM per tenant = 80Gi → 3 workers × 32Gi
+# Adjust based on your workload resource requirements
+worker_instance_count: 3
+ai_workers_cores: 8
+ai_workers_memory: 32Gi
+
+# ===================================================================
+# Workloads
+# Install platform-level services only. Tenant-level workloads are
+# deployed separately by the sandbox-tenant catalog pattern.
+# ===================================================================
+workloads:
+- agnosticd.core_workloads.ocp4_workload_authentication
+- agnosticd.core_workloads.ocp4_workload_openshift_gitops
+- agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
+
+# ===================================================================
+# Workload Variables
+# ===================================================================
+
+# -------------------------------------------------------------------
+# ocp4_workload_authentication
+# Uses Keycloak (RHBK) — required for tenant user provisioning
+# -------------------------------------------------------------------
+ocp4_workload_authentication_provider: keycloak
+ocp4_workload_authentication_keycloak_channel: stable-v26.4
+ocp4_workload_authentication_admin_username: admin
+ocp4_workload_authentication_remove_kubeadmin: true
+
+# -------------------------------------------------------------------
+# ocp4_workload_openshift_gitops
+# Platform-level ArgoCD for infra GitOps management
+# -------------------------------------------------------------------
+ocp4_workload_openshift_gitops_channel: latest
+ocp4_workload_openshift_gitops_setup_cluster_admin: true
+ocp4_workload_openshift_gitops_update_route_tls: true
+ocp4_workload_openshift_gitops_rbac_update: true
+ocp4_workload_openshift_gitops_rbac_policy: |
+  g, system:cluster-admins, role:admin
+  g, admin, role:admin
+ocp4_workload_openshift_gitops_rbac_scopes: "[name,groups]"
+
+# -------------------------------------------------------------------
+# ocp4_workload_gitops_bootstrap
+# Bootstrap infra-level ArgoCD app-of-apps
+# -------------------------------------------------------------------
+ocp4_workload_gitops_bootstrap_repo_url: https://github.com/rhpds/my-lab-gitops.git
+ocp4_workload_gitops_bootstrap_repo_revision: main
+ocp4_workload_gitops_bootstrap_application_name: "bootstrap-infra"
+
+# ===================================================================
+# Babylon meta variables
+# ===================================================================
+__meta__:
+  asset_uuid: <generate-with-uuidgen>
+  owners:
+    maintainer:
+    - name: Your Name
+      email: you@redhat.com
+
+  catalog:
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    display_name: "My Lab — Shared Cluster (CI)"
+    category: Labs
+    multiuser: false
+    keywords:
+    - my-technology
+    labels:
+      Provider: RHDP
+    reportingLabels:
+      primaryBU: Hybrid_Platforms
+    parameters: []
+
+  # -----------------------------------------------------------------
+  # components: defines the OCP cluster pool this catalog provisions.
+  # propagate_provision_data: passes cluster credentials to tenant
+  # catalogs that run on this cluster.
+  # -----------------------------------------------------------------
+  components:
+  - name: openshift
+    display_name: OpenShift Cluster
+    item: agd-v2/ocp-cluster-cnv-pools
+    parameter_values:
+      cluster_size: multinode
+      host_ocp4_installer_version: "4.20"
+    propagate_provision_data:
+    - name: openshift_api_ca_cert
+      var: openshift_api_ca_cert
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
+    - name: openshift_cluster_admin_token
+      var: openshift_cluster_admin_token
+    - name: bastion_public_hostname
+      var: bastion_ansible_host
+    - name: bastion_ssh_user_name
+      var: bastion_ansible_user
+    - name: bastion_ssh_password
+      var: bastion_ansible_ssh_pass
+    - name: bastion_ssh_port
+      var: bastion_ansible_port
+    - name: sandbox_openshift_api_key
+      var: sandbox_openshift_api_key
+    - name: sandbox_openshift_api_url
+      var: sandbox_openshift_api_url
+    - name: sandbox_openshift_namespace
+      var: sandbox_openshift_namespace
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
+      pull: missing
+    actions:
+      destroy:
+        disable: false
+      start:
+        disable: false
+      status:
+        disable: true
+      stop:
+        disable: false
+      update:
+        disable: true
