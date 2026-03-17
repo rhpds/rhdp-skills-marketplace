@@ -622,6 +622,82 @@ The user arg comes from the `"user"` field in the Showroom ConfigMap output — 
 
 ---
 
+## Grader Roles Reference
+
+All checks use generic grader roles — write custom tasks only when none of these apply.
+
+### OCP Labs
+
+<table>
+<thead><tr><th>Student Action</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Deploy / create pod</td><td><code>grader_check_ocp_pod_running</code></td></tr>
+<tr><td>Create deployment</td><td><code>grader_check_ocp_deployment</code></td></tr>
+<tr><td>Create route</td><td><code>grader_check_ocp_route_exists</code></td></tr>
+<tr><td>Create service</td><td><code>grader_check_ocp_service_exists</code></td></tr>
+<tr><td>Create secret</td><td><code>grader_check_ocp_secret_exists</code></td></tr>
+<tr><td>Create configmap</td><td><code>grader_check_ocp_configmap_exists</code></td></tr>
+<tr><td>Create PVC</td><td><code>grader_check_ocp_pvc_exists</code></td></tr>
+<tr><td>Run S2I build</td><td><code>grader_check_ocp_build_completed</code></td></tr>
+<tr><td>Run Tekton pipeline</td><td><code>grader_check_ocp_pipeline_run</code></td></tr>
+<tr><td>Any K8s resource</td><td><code>grader_check_ocp_resource</code></td></tr>
+</tbody>
+</table>
+
+### RHEL / VM Labs
+
+<table>
+<thead><tr><th>Student Action</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Start / enable systemd service</td><td><code>grader_check_service_running</code></td></tr>
+<tr><td>Install package</td><td><code>grader_check_package_installed</code></td></tr>
+<tr><td>Create user</td><td><code>grader_check_user_exists</code></td></tr>
+<tr><td>Create file</td><td><code>grader_check_file_exists</code></td></tr>
+<tr><td>File contains content</td><td><code>grader_check_file_contains</code></td></tr>
+<tr><td>Run command with expected output (SSH)</td><td><code>grader_check_command_output</code></td></tr>
+<tr><td>Run AAP job template</td><td><code>grader_check_aap_job_completed</code></td></tr>
+<tr><td>Run AAP workflow</td><td><code>grader_check_aap_workflow_completed</code></td></tr>
+<tr><td>AAP licensed and ready</td><td><code>grader_check_aap_licensed</code></td></tr>
+<tr><td>Run container</td><td><code>grader_check_container_running</code></td></tr>
+</tbody>
+</table>
+
+### Satellite-Managed Repos (RHEL Upgrade Labs)
+
+No dedicated Satellite grader role is needed — existing generic roles cover all common checks:
+
+<table>
+<thead><tr><th>What to check</th><th>Role</th><th>How</th></tr></thead>
+<tbody>
+<tr><td>Upgrade repo file present on node</td><td><code>grader_check_file_exists</code></td><td><code>/etc/yum.repos.d/rhel8-for-ripu.repo</code> on RHEL 7 nodes, <code>rhel9-for-ripu.repo</code> on RHEL 8 nodes</td></tr>
+<tr><td>Entitlement cert present</td><td><code>grader_check_command_output</code></td><td><code>ls /etc/pki/entitlement/*.pem</code> via SSH to each node</td></tr>
+<tr><td>Host registered (subscription-manager)</td><td><code>grader_check_command_output</code></td><td><code>subscription-manager status</code> — check output contains "Current"</td></tr>
+<tr><td>Satellite API reachable</td><td><code>grader_check_http_endpoint</code></td><td><code>GET /api/v2/status</code> on Satellite FQDN</td></tr>
+<tr><td>Host registered in Satellite DB</td><td><code>grader_check_http_json_response</code></td><td><code>GET /api/v2/hosts?search=name=node1</code> — check <code>total</code> &gt; 0</td></tr>
+<tr><td>Node reachable via SSH from bastion</td><td><code>grader_check_command_output</code></td><td><code>ssh node1 hostname</code> — check exit code 0</td></tr>
+</tbody>
+</table>
+
+<div class="callout callout-info">
+<span class="callout-icon">ℹ️</span>
+<div class="callout-body">
+<strong>No Satellite-specific grader role needed.</strong> <code>grader_check_file_exists</code> handles repo files and certs. <code>grader_check_command_output</code> handles subscription-manager checks over SSH. <code>grader_check_http_json_response</code> handles Satellite API queries. Write custom tasks only when none of these cover your check.
+</div>
+</div>
+
+### Both Lab Types
+
+<table>
+<thead><tr><th>Student Action</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>HTTP/HTTPS endpoint accessible</td><td><code>grader_check_http_endpoint</code></td></tr>
+<tr><td>HTTP JSON response validation</td><td><code>grader_check_http_json_response</code></td></tr>
+<tr><td>Multi-step custom check</td><td>Direct tasks + <code>ftl_run_log_grade_to_log</code></td></tr>
+</tbody>
+</table>
+
+---
+
 ## Key Rules
 
 <div class="category-grid">
@@ -643,7 +719,7 @@ The user arg comes from the `"user"` field in the Showroom ConfigMap output — 
   </div>
   <div class="category-card">
     <h4>Generic roles first</h4>
-    <p>22 built-in grader roles cover most checks. Write custom tasks only when no generic role applies.</p>
+    <p>No Satellite-specific role needed — <code>grader_check_file_exists</code>, <code>grader_check_command_output</code>, and <code>grader_check_http_json_response</code> cover all Satellite checks.</p>
   </div>
   <div class="category-card">
     <h4>Read real environment</h4>

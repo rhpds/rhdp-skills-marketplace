@@ -802,6 +802,8 @@ WAIT for confirmation before generating any files.
 
 **Checkpoint-to-Role Mapping Guide:**
 
+*OCP labs:*
+
 | Student Action | Grader Role |
 |---------------|-------------|
 | Create/deploy pod | `grader_check_ocp_pod_running` |
@@ -813,18 +815,34 @@ WAIT for confirmation before generating any files.
 | Create PVC | `grader_check_ocp_pvc_exists` |
 | Run S2I build | `grader_check_ocp_build_completed` |
 | Create/run Tekton pipeline | `grader_check_ocp_pipeline_run` |
-| Run command with expected output | `grader_check_command_output` |
-| Create file | `grader_check_file_exists` |
-| File contains content | `grader_check_file_contains` |
-| Start systemd service | `grader_check_service_running` |
+| Generic K8s resource check | `grader_check_ocp_resource` |
+
+*RHEL / VM labs:*
+
+| Student Action | Grader Role |
+|---------------|-------------|
+| Start / enable systemd service | `grader_check_service_running` |
 | Install package | `grader_check_package_installed` |
 | Create user | `grader_check_user_exists` |
-| Run container | `grader_check_container_running` |
+| Create file | `grader_check_file_exists` |
+| File contains specific content | `grader_check_file_contains` |
+| Run command with expected output (via SSH) | `grader_check_command_output` |
 | Run AAP job template | `grader_check_aap_job_completed` |
 | Run AAP workflow | `grader_check_aap_workflow_completed` |
-| Endpoint accessible via HTTP | `grader_check_http_endpoint` |
+| AAP licensed and ready | `grader_check_aap_licensed` |
+| Register host to Satellite / subscription-manager | `grader_check_command_output` (run `subscription-manager status` via SSH) |
+| Satellite repo file present on node | `grader_check_file_exists` (e.g. `/etc/yum.repos.d/rhel8-for-ripu.repo`) |
+| Entitlement cert present on node | `grader_check_command_output` (`ls /etc/pki/entitlement/*.pem`) |
+| Satellite API reachable | `grader_check_http_endpoint` (`GET /api/v2/status`) |
+| Host registered in Satellite DB | `grader_check_http_json_response` (`GET /api/v2/hosts?search=name=<hostname>`, check `total` > 0) |
+| Run container | `grader_check_container_running` |
+
+*Both lab types:*
+
+| Student Action | Grader Role |
+|---------------|-------------|
+| Endpoint accessible via HTTP/HTTPS | `grader_check_http_endpoint` |
 | JSON API response validation | `grader_check_http_json_response` |
-| Generic K8s resource check | `grader_check_ocp_resource` |
 | Custom multi-step validation | Direct tasks + `ftl_run_log_grade_to_log` |
 
 ---
@@ -918,16 +936,18 @@ Derive the readiness checks as follows:
 
 For each role in `software_workloads: bastions:` and `software_workloads: nodes:` — that role created or configured something. Use the role defaults already read to determine what to check:
 
-| If a role like this was in software_workloads | Then check |
-|---|---|
-| `deploy_automationcontroller` / `configure_aap` | AAP Controller URL responds on HTTPS |
-| `automation_platform_loader` / CaC loader | AAP inventory populated, project synced, EE present |
-| `cockpit` / `rhpds.ripu.cockpit` | Port 9090 reachable, SSH keyscan done for nodes |
-| `vscode-server` / `code_server` | /editor/ or port 8080 responds |
-| `enable_upgrade_repos` / Satellite repo roles | Entitlement certs on nodes, repo files present per node's RHEL version |
-| `bastion-lite` / SSH setup roles | Bastion can SSH to each node in inventory |
-| Workshop setup roles | Workshop directory cloned, student user exists |
-| Any HTTP service | `grader_check_http_endpoint` on its port/path |
+| If a role like this was in software_workloads | Then check | Grader role to use |
+|---|---|---|
+| `deploy_automationcontroller` / `configure_aap` | AAP Controller URL responds on HTTPS | `grader_check_http_endpoint` |
+| `automation_platform_loader` / CaC loader | AAP inventory populated, project synced, EE present | `grader_check_aap_licensed` + `grader_check_command_output` (check via API) |
+| `cockpit` / `rhpds.ripu.cockpit` | Port 9090 reachable | `grader_check_http_endpoint` |
+| `vscode-server` / `code_server` | /editor/ or port 8080 responds | `grader_check_http_endpoint` |
+| `enable_upgrade_repos` / Satellite repo roles | Repo file exists on node (per RHEL version: `rhel8-for-ripu.repo`, `rhel9-for-ripu.repo`) | `grader_check_file_exists` on each node |
+| `enable_upgrade_repos` / Satellite repo roles | Entitlement cert present on node | `grader_check_command_output` (`ls /etc/pki/entitlement/*.pem`) |
+| Any role registering hosts to Satellite | Host registered in Satellite DB | `grader_check_http_json_response` (`GET /api/v2/hosts?search=name=<node>`, check `total > 0`) |
+| `bastion-lite` / SSH setup roles | Bastion can SSH to each node | `grader_check_command_output` (`ssh node1 hostname`) |
+| Workshop setup roles | Workshop directory cloned, student user exists | `grader_check_file_exists` + `grader_check_user_exists` |
+| Any HTTP service | Service port/path responds | `grader_check_http_endpoint` |
 
 If a role is NOT in the catalog — do not generate a check for it.
 
