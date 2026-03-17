@@ -576,13 +576,21 @@ What the readiness check contains depends on lab type:
 <tbody>
 <tr>
 <td><strong>OCP lab</strong></td>
-<td>Showroom ConfigMap readable, pre-deployed pods running, routes accessible, services reachable via <code>kubernetes.core.k8s_info</code></td>
+<td>Showroom ConfigMap readable, pre-deployed pods running, routes accessible via <code>kubernetes.core.k8s_info</code></td>
 <td><code>OCP_API_URL</code>, <code>OCP_ADMIN_PASSWORD</code>, <code>OPENSHIFT_CLUSTER_INGRESS_DOMAIN</code></td>
 </tr>
 <tr>
 <td><strong>RHEL / AAP lab</strong></td>
-<td>systemd services running on RHEL VMs via SSH, AAP controller reachable, job templates present — uses <code>grader_check_service_running</code>, <code>grader_check_command_output</code>, <code>grader_check_http_endpoint</code></td>
-<td><code>BASTION_HOST</code>, <code>BASTION_USER</code>, <code>AAP_HOSTNAME</code>, <code>AAP_PASSWORD</code></td>
+<td>
+Varies by what's deployed — the skill reads the AgV catalog to determine. Common checks:<br><br>
+<strong>AAP Controller:</strong> HTTPS responds, CaC loader completed, inventory populated, EE pulled<br>
+<strong>Cockpit:</strong> port 9090 reachable, SSH keyscan done for all nodes<br>
+<strong>VS Code Server:</strong> /editor/ or port 8080 responds<br>
+<strong>Satellite repos (RIPU-style):</strong> entitlement certs present on nodes, upgrade repo files exist (e.g. <code>rhel8-for-ripu.repo</code> on RHEL 7 nodes), nodes can reach Satellite<br>
+<strong>Node connectivity:</strong> bastion can SSH to each node, RHEL versions match expected<br>
+<strong>Student setup:</strong> workshop directory cloned, student user created
+</td>
+<td><code>BASTION_HOST</code>, <code>BASTION_USER</code>, <code>AAP_HOSTNAME</code>, <code>AAP_PASSWORD</code> — plus any lab-specific vars</td>
 </tr>
 <tr>
 <td><strong>AAP-on-OCP</strong></td>
@@ -591,6 +599,13 @@ What the readiness check contains depends on lab type:
 </tr>
 </tbody>
 </table>
+
+<div class="callout callout-tip">
+<span class="callout-icon">💡</span>
+<div class="callout-body">
+<strong>For RHEL labs:</strong> every role in <code>software_workloads: bastions:</code> in the AgV catalog created something — those are your readiness checks. Every role in <code>software_workloads: nodes:</code> modified the nodes — verify those changes too. The FTL skill reads the catalog and collection role defaults to determine this automatically.
+</div>
+</div>
 
 If anything fails here, fix the environment before students start. Do not proceed to module graders until `e2e_readiness` is clean.
 

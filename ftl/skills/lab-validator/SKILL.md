@@ -908,14 +908,40 @@ Generate this file **before any module grader**. It validates that all pre-deplo
   4. Read `showroom-userdata` ConfigMap for credentials/URLs if Showroom is present
   5. HC-N per pre-deployed component using `grader_check_ocp_pod_running`, `grader_check_ocp_route_exists`, `grader_check_http_endpoint`, etc.
 
-**RHEL / AAP lab** (no OCP):
+**RHEL / AAP lab** (`config: cloud-vms-base`, no OCP cluster):
+
+These labs have more varied infrastructure — read the AgV catalog and Showroom content carefully to know what's deployed. Common components to check:
+
 - Play 2 tasks:
   1. Validate env vars: `BASTION_HOST`, `BASTION_USER`, `AAP_HOSTNAME` (for AAP), `AAP_PASSWORD`
-  2. HC-N per pre-deployed service using:
-     - `grader_check_service_running` — systemd services on RHEL VMs
-     - `grader_check_aap_job_completed` / `grader_check_aap_workflow_completed` — AAP templates
-     - `grader_check_command_output` — SSH-based checks via bastion
-     - `grader_check_http_endpoint` — HTTP reachability checks
+  2. HC-N per pre-deployed component. Common checks for RHEL labs:
+
+  **AAP Controller** (if present):
+  - `grader_check_http_endpoint` — Controller URL responds on HTTPS
+  - `grader_check_aap_job_completed` / `grader_check_aap_workflow_completed` — verify CaC loader completed
+  - `grader_check_command_output` — check inventory hosts populated, project synced, EE pulled
+
+  **Cockpit / Web Console** (if present):
+  - `grader_check_http_endpoint` — port 9090 reachable
+  - `grader_check_command_output` — SSL cert present, SSH keyscan completed for all nodes
+
+  **VS Code Server / Code Server** (if present):
+  - `grader_check_http_endpoint` — port 8080 or /editor/ path responds
+
+  **Satellite-managed repos on upgrade nodes** (RIPU-style labs):
+  - `grader_check_command_output` — entitlement certs present (`/etc/pki/entitlement/*.pem`)
+  - `grader_check_command_output` — upgrade repo files exist on nodes (e.g. `/etc/yum.repos.d/rhel8-for-ripu.repo` on RHEL 7 nodes, `/etc/yum.repos.d/rhel9-for-ripu.repo` on RHEL 8 nodes)
+  - `grader_check_command_output` — nodes can reach Satellite FQDN
+
+  **Node SSH connectivity** (multi-node labs):
+  - `grader_check_command_output` — bastion can SSH to each node (node1, node2, node3...)
+  - `grader_check_command_output` — each node's RHEL version matches expected (e.g. RHEL 7.9 on node1 for RIPU)
+
+  **Student setup** (workshop exercises):
+  - `grader_check_command_output` — workshop directory cloned (`~/ripu-workshop/` or equivalent)
+  - `grader_check_command_output` — student user created with correct password
+
+**Key principle for RHEL labs:** Read the `software_workloads` and collection role defaults carefully. Every role in `software_workloads:bastions:` created something — those are your readiness checks. Every role in `software_workloads:nodes:` modified the nodes — verify those changes too.
 
 **AAP-on-OCP lab** (AAP workload running inside OCP cluster):
 - Combine both: `kubernetes.core.k8s_info` for OCP resources + `grader_check_aap_*` for AAP templates
