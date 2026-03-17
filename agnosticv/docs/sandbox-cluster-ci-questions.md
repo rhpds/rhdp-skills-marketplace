@@ -5,6 +5,10 @@ This file is referenced from `SKILL.md` Step 3 Branch 3A.
 A **Cluster CI** provisions a shared OCP cluster that multiple tenants will deploy workloads onto.
 It does NOT provision per-user workloads — those come from a companion Tenant CI.
 
+**Reference examples (read before generating):**
+- `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — canonical cluster CI example
+- `@agnosticv/tests/ex-multi-user-ocp-cluster/` — official agnosticv test example (Nate Stephany / Judd Maltin)
+
 ---
 
 ## Auto-set (no questions needed)

@@ -6,6 +6,12 @@ This file is referenced from `validator/SKILL.md` Check 6 for two CI types:
 
 Detect which type first, then run the appropriate checks.
 
+**Reference examples (read before validating):**
+- `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — canonical tenant CI pattern
+- `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — canonical cluster CI pattern
+- `@agnosticv/tests/ex-multi-user-ocp-tenant/` — official agnosticv test tenant example
+- `@agnosticv/tests/ex-multi-user-ocp-cluster/` — official agnosticv test cluster example
+
 ---
 
 ## Tenant CI Checks (config: namespace)

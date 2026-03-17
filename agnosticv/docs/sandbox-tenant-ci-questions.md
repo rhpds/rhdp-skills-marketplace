@@ -5,6 +5,10 @@ This file is referenced from `SKILL.md` Step 3 Branch 3B.
 A **Tenant CI** deploys per-user workloads on a pre-configured OCP cluster selected
 via sandbox labels. It requires a companion Cluster CI to be provisioned first.
 
+**Reference examples (read before generating):**
+- `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — canonical tenant CI example
+- `@agnosticv/tests/ex-multi-user-ocp-tenant/` — official agnosticv test example (Nate Stephany)
+
 ---
 
 ## Auto-set (no questions needed)
