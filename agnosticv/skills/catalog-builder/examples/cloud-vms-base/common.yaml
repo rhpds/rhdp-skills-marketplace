@@ -179,9 +179,7 @@ post_software_final_workloads:
 # Workload Variables
 # -------------------------------------------------------------------
 common_password: >-
-  {{
-    lookup('password', output_dir ~ '/common_password length=12 chars=ascii_letters,digits')
-  }}
+  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
 student_password: "{{ common_password }}"
 
 # -------------------------------------------------------------------
@@ -310,7 +308,7 @@ __meta__:
     scm_url: https://github.com/agnosticd/agnosticd-v2
     scm_ref: main
     execution_environment:
-      image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
       pull: missing
 
   catalog:
