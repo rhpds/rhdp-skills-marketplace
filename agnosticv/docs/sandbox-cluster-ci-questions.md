@@ -7,7 +7,7 @@ It does NOT provision per-user workloads — those come from a companion Tenant 
 
 **Reference examples (read before generating):**
 - `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — canonical cluster CI example
-- `@agnosticv/tests/ex-multi-user-ocp-cluster/` — official agnosticv test example (Nate Stephany / Judd Maltin)
+- `~/work/code/agnosticv/tests/ex-multi-user-ocp-cluster/` (in your agnosticv repo) — official agnosticv test example (Nate Stephany / Judd Maltin)
 
 ---
 

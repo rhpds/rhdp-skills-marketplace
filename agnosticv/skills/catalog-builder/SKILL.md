@@ -549,9 +549,11 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 - `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — Sandbox API Tenant CI (config: namespace)
 - `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — Sandbox API Cluster CI (config: openshift-workloads, cloud_provider: none, num_users: 0)
 
-**Official agnosticv test examples (also available for reference):**
-- `@agnosticv/tests/ex-multi-user-ocp-tenant/` — canonical tenant CI pattern (Nate Stephany)
-- `@agnosticv/tests/ex-multi-user-ocp-cluster/` — canonical cluster CI pattern (Nate Stephany / Judd Maltin)
+**Official agnosticv test examples (in your agnosticv repo — not in this plugin):**
+- `~/work/code/agnosticv/tests/ex-multi-user-ocp-tenant/` — canonical tenant CI pattern (Nate Stephany)
+- `~/work/code/agnosticv/tests/ex-multi-user-ocp-cluster/` — canonical cluster CI pattern (Nate Stephany / Judd Maltin)
+
+Read from CLAUDE.md to find your agnosticv repo path, then read these directly.
 
 **Developer Guidelines** (naming, __meta__ rules, FTL requirement): `@agnosticv/skills/catalog-builder/references/developer-guidelines.md`
 

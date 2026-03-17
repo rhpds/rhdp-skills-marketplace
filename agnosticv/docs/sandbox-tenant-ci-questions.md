@@ -7,7 +7,7 @@ via sandbox labels. It requires a companion Cluster CI to be provisioned first.
 
 **Reference examples (read before generating):**
 - `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — canonical tenant CI example
-- `@agnosticv/tests/ex-multi-user-ocp-tenant/` — official agnosticv test example (Nate Stephany)
+- `~/work/code/agnosticv/tests/ex-multi-user-ocp-tenant/` (in your agnosticv repo) — official agnosticv test example (Nate Stephany)
 
 ---
 
