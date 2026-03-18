@@ -540,7 +540,18 @@ Now generate all four files:
 
 Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.template` and use it as the base structure. Replace all `<placeholders>` with actual values collected from the user in previous steps.
 
-**Bundled real examples — read the one matching the infra type:**
+**Step 1 — Look for a real catalog in the AgnosticV repo first:**
+
+Read CLAUDE.md to find the AgnosticV repo path (look for `AgnosticV:` in Repository Locations). Then find an existing catalog that matches the same infra type:
+
+```bash
+# Find a similar existing catalog by config type
+grep -rl "config: <type>" <agv_path>/**/common.yaml 2>/dev/null | head -3
+```
+
+Read that real catalog as the primary reference — it reflects current patterns and conventions actually in use. Prefer this over the bundled examples below.
+
+**Step 2 — Fall back to bundled examples if no real catalog found:**
 - `@agnosticv/skills/catalog-builder/examples/ocp-demo/` — OCP openshift-workloads via CNV pool
 - `@agnosticv/skills/catalog-builder/examples/ocp-cnv/` — OCP via openshift_cnv pool
 - `@agnosticv/skills/catalog-builder/examples/ocp-aws/` — OCP via AWS pool (Route53 includes)
@@ -549,11 +560,9 @@ Read the template at `@agnosticv/skills/catalog-builder/templates/common.yaml.te
 - `@agnosticv/skills/catalog-builder/examples/sandbox-tenant/` — Sandbox API Tenant CI (config: namespace)
 - `@agnosticv/skills/catalog-builder/examples/sandbox-cluster/` — Sandbox API Cluster CI (config: openshift-workloads, cloud_provider: none, num_users: 0)
 
-**Official agnosticv test examples (in your agnosticv repo — not in this plugin):**
+**Also available — official test examples in the AgnosticV repo:**
 - `~/work/code/agnosticv/tests/ex-multi-user-ocp-tenant/` — canonical tenant CI pattern (Nate Stephany)
 - `~/work/code/agnosticv/tests/ex-multi-user-ocp-cluster/` — canonical cluster CI pattern (Nate Stephany / Judd Maltin)
-
-Read from CLAUDE.md to find your agnosticv repo path, then read these directly.
 
 **Developer Guidelines** (naming, __meta__ rules, FTL requirement): `@agnosticv/skills/catalog-builder/references/developer-guidelines.md`
 
