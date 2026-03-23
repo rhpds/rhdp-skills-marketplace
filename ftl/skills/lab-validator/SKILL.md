@@ -192,44 +192,29 @@ Providing it lets me read deployed workloads, collection roles, and
 agnosticd_user_info keys directly — no guesswork about namespace
 patterns or credentials.
 
-If yes, provide the catalog path relative to your AgV repo root.
-Example: summit-2026/lb2298-mcp-with-openshift-cnv
+If yes, provide the catalog path(s) relative to your AgV repo root.
+Example (standard lab):    summit-2026/lb2298-mcp-with-openshift-cnv
+Example (Sandbox API CI):  summit-2026/lb2645-agentic-devops-cluster
+                           summit-2026/lb2645-agentic-devops-tenant
 
-AgV catalog path (or 'n' to skip):
+⚠️  Sandbox API CI labs always come in pairs (Cluster CI + Tenant CI).
+    If your lab uses this pattern, share the AgnosticV directory so I
+    can find both catalogs — or provide both paths above.
+
+AgV catalog path(s) (or 'n' to skip):
 ```
 
 WAIT for answer.
 
-**If provided — read common.yaml, then ask about collections before cloning:**
+**If provided — read common.yaml for each path, then ask about collections before cloning:**
 
-From `common.yaml`:
+From each `common.yaml`:
 - `config:` field → OCP or cloud-vms-base
 - `workloads:` list → every role deployed
 - `num_users` parameter → multi-user or single-user
 - `requirements_content.collections` → GitHub URLs for each collection
 
-**Sandbox API CI detection — always comes in pairs:**
-
-After reading `common.yaml`, check the config type:
-
-- `config: openshift-workloads` + `cloud_provider: none` + `num_users: 0` → **Cluster CI** (provisions the shared OCP cluster)
-- `config: namespace` → **Tenant CI** (deploys per-user workloads on the shared cluster)
-
-If either pattern is detected, say:
-
-```
-This is a Sandbox API CI catalog — these always come in pairs:
-  - Cluster CI:  provisions the shared OCP cluster
-  - Tenant CI:   deploys per-user workloads on top of that cluster
-
-You've shared the [Cluster CI / Tenant CI]. Please also share the path
-to the [Tenant CI / Cluster CI] catalog — I need both to understand
-the full deployment (namespaces, workloads, credentials, user scope).
-
-[Cluster CI / Tenant CI] catalog path:
-```
-
-WAIT for answer. Read the second catalog's `common.yaml` the same way. For FTL purposes, **the Tenant CI catalog drives grader logic** (it has the per-user workloads, namespace patterns, and credentials). The Cluster CI catalog provides shared cluster context (storage, cert-manager, auth).
+For FTL purposes, **the Tenant CI catalog drives grader logic** (per-user workloads, namespace patterns, credentials). The Cluster CI catalog provides shared cluster context (storage, cert-manager, auth).
 
 Before looking for collections anywhere, read `~/CLAUDE.md` to find the developer's declared repository locations (the `### Repository Locations` section). Then **tell the developer what you found and ask:**
 
