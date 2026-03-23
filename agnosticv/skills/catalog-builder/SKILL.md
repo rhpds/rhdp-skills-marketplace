@@ -593,9 +593,39 @@ Please confirm: which variables from this workload do you want to set?
 
 **Never invent a variable name.** If unsure, ask — do not guess.
 
+**CRITICAL — File structure: `requirements_content` must be near the top:**
+
+Place `requirements_content` (collections list) and `workloads` immediately after the mandatory vars section — before passwords, bastion config, and workload-specific variables. It must appear within the first 200 lines of `common.yaml`.
+
+This is a platform standard enforced by the validator (Check 22). Burying collections at line 400+ in a large config makes troubleshooting harder — reviewers need to see what collections are in use immediately.
+
+```yaml
+# CORRECT — collections near the top, right after mandatory vars
+---
+#include /includes/...
+config: openshift-workloads
+cloud_provider: none
+tag: main
+
+requirements_content:      # ← HERE, before everything else
+  collections:
+    - name: https://github.com/agnosticd/core_workloads.git
+      type: git
+      version: "{{ tag }}"
+
+workloads:                 # ← immediately after collections
+  - agnosticd.core_workloads.ocp4_workload_...
+
+# passwords, bastion, workload vars below...
+
+# WRONG — collections buried in the middle:
+# [500 lines of workload config]
+# requirements_content:   ← not visible without scrolling
+```
+
 **CRITICAL — Password generation:**
 
-Always use the `lookup('password')` pattern. Never use hash/GUID-based passwords.
+Always use the `lookup('password')` pattern. Never use hash/GUID-based passwords and never use plain static strings. A hardcoded value like `password: "ansible123!"` is an ERROR (validator Check 19).
 **Each password variable must use a unique file path** — two variables with the same path generate identical passwords.
 
 ```yaml
@@ -614,6 +644,23 @@ common_user_password: >-
 # WRONG — hash/GUID patterns never allowed:
 # common_password: "{{ guid | hash('sha256') }}"
 # common_password: "{{ (guid[:5] | hash('md5') | int(base=16) | b64encode)[:8] }}"
+
+# WRONG — plain static string never allowed:
+# common_password: "ansible123!"
+# admin_password: "redhat"
+```
+
+**CRITICAL — Image tagging (prod/event catalogs):**
+
+All container image references must use explicit pinned version tags. Never use `:latest`, `:main`, `:master`, or no tag at all in prod or event catalogs. This is enforced by validator Check 23.
+
+```yaml
+# CORRECT
+image: quay.io/agnosticd/ee-multicloud:chained-2025-12-17
+
+# WRONG — unacceptable in prod/event
+# image: quay.io/someorg/sometool:latest
+# image: quay.io/someorg/sometool        # no tag
 ```
 
 **CRITICAL — Tenant catalogs (`config: namespace`) — Showroom namespace:**

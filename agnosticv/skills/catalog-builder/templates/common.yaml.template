@@ -67,38 +67,9 @@ clusters:
 platform: rhpds
 
 # -------------------------------------------------------------------
-# CNV Specific (if using CNV pools)
-# -------------------------------------------------------------------
-bastion_instance_image: rhel-9.6
-bastion_cores: 2
-bastion_memory: 4Gi
-
-# Worker scaling formula
-worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
-ai_workers_cores: 32
-ai_workers_memory: 128Gi
-
-# -------------------------------------------------------------------
-# Passwords — each variable must use a unique output_dir path.
-# Using the same path for multiple variables generates identical passwords.
-# -------------------------------------------------------------------
-common_password: >-
-  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
-# If you need separate admin/user passwords, use unique paths:
-# common_admin_password: >-
-#   {{ lookup('password', output_dir ~ '/common_admin_password', length=12, chars=['ascii_letters', 'digits']) }}
-# common_user_password: >-
-#   {{ lookup('password', output_dir ~ '/common_user_password', length=12, chars=['ascii_letters', 'digits']) }}
-
-# -------------------------------------------------------------------
-# Student User on Bastion (if needed)
-# -------------------------------------------------------------------
-install_student_user: true
-student_name: lab-user
-student_sudo: true
-
-# -------------------------------------------------------------------
-# Custom collections for this environment
+# Collections — keep near the top for fast troubleshooting visibility
+# Per platform standard: requirements_content must appear within the
+# first 200 lines of common.yaml (validated by agnosticv:validator Check 22)
 # -------------------------------------------------------------------
 requirements_content:
   collections:
@@ -118,6 +89,38 @@ workloads:
   - agnosticd.showroom.ocp4_workload_ocp_console_embed
   - agnosticd.showroom.ocp4_workload_showroom
   # Add technology-specific workloads
+
+# -------------------------------------------------------------------
+# CNV Specific (if using CNV pools)
+# -------------------------------------------------------------------
+bastion_instance_image: rhel-9.6
+bastion_cores: 2
+bastion_memory: 4Gi
+
+# Worker scaling formula
+worker_instance_count: "{{ [2, ((num_users | int / 5.0) | round(0, 'ceil') | int) + 1] | max }}"
+ai_workers_cores: 32
+ai_workers_memory: 128Gi
+
+# -------------------------------------------------------------------
+# Passwords — each variable must use a unique output_dir path.
+# Using the same path for multiple variables generates identical passwords.
+# Plain static strings (e.g. "ansible123!") are NOT allowed — validator Check 19.
+# -------------------------------------------------------------------
+common_password: >-
+  {{ lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits']) }}
+# If you need separate admin/user passwords, use unique paths:
+# common_admin_password: >-
+#   {{ lookup('password', output_dir ~ '/common_admin_password', length=12, chars=['ascii_letters', 'digits']) }}
+# common_user_password: >-
+#   {{ lookup('password', output_dir ~ '/common_user_password', length=12, chars=['ascii_letters', 'digits']) }}
+
+# -------------------------------------------------------------------
+# Student User on Bastion (if needed)
+# -------------------------------------------------------------------
+install_student_user: true
+student_name: lab-user
+student_sudo: true
 
 # ===================================================================
 # Workload: ocp4_workload_authentication

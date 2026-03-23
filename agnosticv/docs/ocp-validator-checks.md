@@ -116,6 +116,11 @@ def check_ocp_infrastructure(config):
 def check_ocp_authentication(config):
   """OCP authentication workload validation"""
 
+  # CNV Pool CI: pool clusters handle auth at the sandbox level — no auth workload needed
+  if config.get('config') == 'openshift-cluster' and config.get('cloud_provider') == 'openshift_cnv':
+    passed_checks.append("✓ Pool CI — authentication workload not required (handled at sandbox level)")
+    return
+
   workloads = config.get('workloads', [])
   auth_workloads = [w for w in workloads if 'authentication' in w]
 
@@ -296,6 +301,12 @@ def check_ocp_showroom(config):
 ```python
 def check_ocp_multiuser(config):
   """OCP multi-user specific validation"""
+
+  # CNV Pool CI: worker_instance_count: 0 is correct (SNO/compact multinode, no separate workers)
+  # multiuser: true on a pool means multiple customers can order it, not per-order user counts
+  if config.get('config') == 'openshift-cluster' and config.get('cloud_provider') == 'openshift_cnv':
+    passed_checks.append("✓ Pool CI — worker_instance_count: 0 is correct (SNO/compact, no separate workers)")
+    return
 
   multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
 
