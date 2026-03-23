@@ -208,6 +208,29 @@ From `common.yaml`:
 - `num_users` parameter → multi-user or single-user
 - `requirements_content.collections` → GitHub URLs for each collection
 
+**Sandbox API CI detection — always comes in pairs:**
+
+After reading `common.yaml`, check the config type:
+
+- `config: openshift-workloads` + `cloud_provider: none` + `num_users: 0` → **Cluster CI** (provisions the shared OCP cluster)
+- `config: namespace` → **Tenant CI** (deploys per-user workloads on the shared cluster)
+
+If either pattern is detected, say:
+
+```
+This is a Sandbox API CI catalog — these always come in pairs:
+  - Cluster CI:  provisions the shared OCP cluster
+  - Tenant CI:   deploys per-user workloads on top of that cluster
+
+You've shared the [Cluster CI / Tenant CI]. Please also share the path
+to the [Tenant CI / Cluster CI] catalog — I need both to understand
+the full deployment (namespaces, workloads, credentials, user scope).
+
+[Cluster CI / Tenant CI] catalog path:
+```
+
+WAIT for answer. Read the second catalog's `common.yaml` the same way. For FTL purposes, **the Tenant CI catalog drives grader logic** (it has the per-user workloads, namespace patterns, and credentials). The Cluster CI catalog provides shared cluster context (storage, cert-manager, auth).
+
 Before looking for collections anywhere, read `~/CLAUDE.md` to find the developer's declared repository locations (the `### Repository Locations` section). Then **tell the developer what you found and ask:**
 
 ```
