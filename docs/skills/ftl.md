@@ -28,7 +28,7 @@ Generate production-quality FTL (Full Test Lifecycle) grader and solver playbook
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 0.5</div>
       <div class="ftl-step-title">Read Lab Content</div>
-      <div class="ftl-step-body">Ask for Showroom repo URL or path → clone/read ALL .adoc files → ask for AgV catalog (optional) → present detected lab type, user model, pre-deployed components</div>
+      <div class="ftl-step-body">Ask for Showroom repo URL or path → clone/read ALL .adoc files → ask for AgV catalog path(s) — if Sandbox API CI, provide both Cluster CI + Tenant CI upfront → confirm detected lab type, user model, pre-deployed components</div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
@@ -74,7 +74,7 @@ Generate production-quality FTL (Full Test Lifecycle) grader and solver playbook
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 1.5</div>
       <div class="ftl-step-title">Process AgV Catalog</div>
-      <div class="ftl-step-body">Read <code>common.yaml</code> → determine OCP vs RHEL/VM → extract workloads, <code>num_users</code>, namespace patterns, service URLs, <code>agnosticd_user_info</code> keys. Confirm with developer.</div>
+      <div class="ftl-step-body">Read <code>common.yaml</code> for each catalog → determine OCP vs RHEL/VM → extract workloads, <code>num_users</code>, namespace patterns, service URLs, <code>agnosticd_user_info</code> keys. For Sandbox API CI: <strong>Tenant CI drives grader logic</strong> (per-user workloads, namespaces, credentials); Cluster CI provides shared context. Confirm with developer.</div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>

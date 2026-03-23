@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.6] - 2026-03-23
+
+### AgnosticV Skills
+
+#### validator — 3 new checks + CNV Pool CI false-positive fix
+- **Check 22: requirements_content position** — WARNING if `requirements_content:` appears after line 200 in `common.yaml`. Per Nate Stencell: collections must be visible near the top for fast troubleshooting.
+- **Check 23: untagged images** — ERROR if any container image reference in prod/event catalogs uses `:latest`, `:main`, `:master`, or no tag at all. Per Nate Stencell: all images must be explicitly pinned.
+- **Check 19 (update): plain static passwords** — Rule 2 added: hardcoded static password strings (e.g. `password: "redhat"`) are now an ERROR alongside the existing hash/GUID pattern check.
+- **CNV Pool CI false-positive fix**: `config: openshift-cluster` + `cloud_provider: openshift_cnv` now routes to a dedicated pool CI branch in Check 6. Skips Check 7 (no auth workload needed — handled at sandbox level) and Check 11 (`worker_instance_count: 0` is correct for SNO/compact pools).
+
+#### catalog-builder
+- `requirements_content` and `workloads` moved to the top of `common.yaml.template` — matches new validator Check 22 position rule.
+- SKILL.md updated with rules for static password strings, image tagging, and collections position.
+- Step 9 now checks real catalogs in the developer's AgV repo first, falls back to bundled examples.
+
+### FTL Skills
+
+#### lab-validator
+- **Sandbox API CI pair detection**: AgV catalog question now prompts for both Cluster CI and Tenant CI paths upfront when the lab uses the Sandbox API CI pattern. Tenant CI drives grader logic; Cluster CI provides shared cluster context.
+
 ## [v2.10.4] - 2026-03-17
 
 ### AgnosticV Skills
