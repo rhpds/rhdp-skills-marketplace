@@ -1871,10 +1871,13 @@ def check_duplicate_includes(catalog_path, agv_path):
 
 ### Check 19: Password Pattern
 
-Enforces three rules per Nate Stencell's review standard:
+Applies to **all credential-like variables** — any key containing `password`, `passwd`, `secret`, `token`, `access_key`, `api_key`, or `credential` (excluding benign suffixes like `_length`, `_policy`, `_type`).
+
+Enforces four rules:
 1. No hash/GUID-based generation (`hash()`, `sha`, `md5`)
-2. No plain static strings — every password must use `lookup('password')` or be Jinja2-templated with sufficient complexity
+2. No plain static strings — every credential must use `lookup('password')`, reference `{{ common_password }}`, or be empty (`""` for workload auto-generation)
 3. No duplicate `output_dir` lookup paths (two vars with same path generate identical passwords)
+4. No clear text credentials in `dev.yaml` or `test.yaml` — these files are committed to git
 
 ```python
 def check_password_pattern(config):
@@ -1892,10 +1895,16 @@ def check_password_pattern(config):
     r'\bpassword_hash\b',
   ]
 
-  # Collect all password-like variables
+  # Collect all credential-like variables by key name
+  # Covers: password, passwd, secret, token, access_key, api_key, credential
+  # Excludes: variables that are clearly non-secret (e.g. 'token_length', 'password_policy')
+  credential_words = ['password', 'passwd', 'secret', 'token', 'access_key', 'api_key', 'credential']
+  skip_suffixes = ['_length', '_policy', '_type', '_format', '_expires', '_name', '_url', '_path', '_label']
+
   password_vars = {
     k: str(v) for k, v in config.items()
-    if any(word in k.lower() for word in ['password', 'secret', 'access_key'])
+    if any(word in k.lower() for word in credential_words)
+    and not any(k.lower().endswith(s) for s in skip_suffixes)
     and isinstance(v, str)
     and v.strip()
   }
@@ -1959,6 +1968,43 @@ def check_password_pattern(config):
 
   if lookup_paths and not errors:
     passed_checks.append(f"✓ All {len(lookup_paths)} password variable(s) use lookup('password') with unique paths")
+
+  # Rule 4: scan dev.yaml and test.yaml for clear text passwords
+  # Developers sometimes hardcode passwords in stage override files for convenience and forget to remove them.
+  # These files are committed to git — clear text passwords in them are just as dangerous as in common.yaml.
+  for stage_file in ['dev.yaml', 'test.yaml']:
+    stage_path = os.path.join(catalog_path, stage_file)
+    if not os.path.exists(stage_path):
+      continue
+    try:
+      with open(stage_path) as f:
+        stage_config = yaml.safe_load(f) or {}
+    except:
+      continue
+
+    stage_password_vars = {
+      k: str(v) for k, v in stage_config.items()
+      if any(word in k.lower() for word in credential_words)
+      and not any(k.lower().endswith(s) for s in skip_suffixes)
+      and isinstance(v, str)
+      and v.strip()
+    }
+
+    for var_name, var_val in stage_password_vars.items():
+      val = var_val.strip()
+      is_jinja2 = bool(jinja2_pattern.search(val))
+      uses_lookup = "lookup('password'" in val or 'lookup("password"' in val
+
+      if not is_jinja2 and not uses_lookup and val not in ('""', "''", ''):
+        errors.append({
+          'check': 'password_pattern',
+          'severity': 'ERROR',
+          'message': f'{var_name} is a clear text password in {stage_file} — never commit credentials to git',
+          'location': f'{stage_file}:{var_name}',
+          'current': val[:80],
+          'fix': f'Remove from {stage_file}. Use lookup("password") in common.yaml or leave empty ("") for workload auto-generation.',
+          'reason': f'{stage_file} is committed to git. Clear text passwords in any stage file are a security risk.'
+        })
 ```
 
 ---
