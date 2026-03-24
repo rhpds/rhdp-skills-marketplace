@@ -874,11 +874,11 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
           'message': 'Showroom collection must use a fixed pinned version, not {{ tag }}',
           'location': 'common.yaml:requirements_content.collections',
           'current': coll_version,
-          'fix': 'Set version: v1.5.1 (or highest in use across AgV)'
+          'fix': 'Set version: v1.6.0 (or highest in use across AgV)'
         })
         continue
 
-      # Showroom must be v1.5.1 or above
+      # Showroom must be v1.6.0 or above
       version_nums = re.findall(r'\d+', coll_version)
       if version_nums:
         major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
@@ -889,10 +889,10 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
             'severity': 'ERROR',
             'message': f'Showroom collection version below minimum: {coll_version}',
             'location': 'common.yaml:requirements_content.collections',
-            'fix': 'Set version: v1.5.1 or above'
+            'fix': 'Set version: v1.6.0 or above'
           })
         else:
-          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.5.1)")
+          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.6.0)")
 
     else:
       # Standard collections should use {{ tag }}
@@ -941,7 +941,7 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
         'fix': '''Add:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.1'''
+    version: v1.6.0'''
       })
     else:
       warnings.append({
@@ -952,7 +952,7 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
         'fix': '''Add:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.1'''
+    version: v1.6.0'''
       })
 
   passed_checks.append(f"✓ Collections defined ({len(collections)} collections)")
@@ -1287,22 +1287,22 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
         'fix': '''Add:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.1''',
+    version: v1.6.0''',
       })
   else:
     version = showroom_coll.get('version', '')
-    if version != 'v1.5.1':
+    if version < 'v1.6.0':
       warnings.append({
         'check': 'event_catalog',
         'severity': 'WARNING',
-        'message': f'Showroom collection version is not v1.5.1',
+        'message': f'Showroom collection version is below v1.6.0',
         'location': 'common.yaml:requirements_content.collections',
         'current': version,
-        'expected': 'v1.5.1',
-        'fix': 'Set version: v1.5.1 for showroom collection',
+        'expected': 'v1.6.0',
+        'fix': 'Set version: v1.6.0 for showroom collection',
       })
     else:
-      passed_checks.append("✓ Showroom collection version: v1.5.1")
+      passed_checks.append("✓ Showroom collection version: v1.6.0 or above")
 
   # --- ocp4_workload_ocp_console_embed present (OCP only — skip for cloud-vms-base) ---
   workloads = config.get('workloads', [])
@@ -1657,7 +1657,7 @@ Save this checklist for comprehensive review:
 - [ ] anarchy.namespace NOT defined
 - [ ] Showroom repo named: <short-name>-showroom
 - [ ] Showroom repo in github.com/rhpds organization
-- [ ] showroom collection version: v1.5.1
+- [ ] showroom collection version: v1.6.0
 - [ ] Both workloads present: ocp4_workload_ocp_console_embed + ocp4_workload_showroom
 - [ ] ocp4_workload_showroom_antora_enable_dev_mode: "false" in common.yaml
 - [ ] ocp4_workload_showroom_antora_enable_dev_mode: "true" in dev.yaml

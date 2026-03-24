@@ -190,14 +190,14 @@ Does this tenant need a Showroom lab UI? [Y/n]
 
 If YES:
   Showroom content repo URL:
-  Showroom version (default: v1.5.6):
+  Showroom version (default: v1.6.0):
 ```
 
 If YES — add to collections:
 ```yaml
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.6
+    version: v1.6.0
 ```
 
 Add to workloads:
@@ -255,7 +255,7 @@ Add Showroom if Q-T4 = yes:
 ```yaml
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.6
+    version: v1.6.0
 ```
 
 ---

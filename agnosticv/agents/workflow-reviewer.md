@@ -33,7 +33,7 @@ Check that **everything the builder generates, the validator checks** and vice v
 | `host_ocp4_installer_version` in known pool versions | Check 6B: OCP version in known pools list |
 | `item:` ending with `/prod` | Check 6B: /prod suffix |
 | `tag: main` + `{{ tag }}` for collections | Check 13: tag variable defined, standard collections use `{{ tag }}` |
-| showroom collection `version: v1.5.1` (fixed) | Check 13: showroom must NOT use `{{ tag }}` |
+| showroom collection `version: v1.6.0` (fixed) | Check 13: showroom must NOT use `{{ tag }}` |
 | LiteMaaS models + duration | Check 17: models defined, duration set |
 | multiuser: true + num_users parameter + workshopLabUiRedirect | Check 11: num_users param, workshopLabUiRedirect |
 

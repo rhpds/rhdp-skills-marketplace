@@ -190,7 +190,7 @@ Add the showroom collection to `requirements_content.collections` if not already
 ```yaml
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.6
+    version: v1.6.0
 ```
 
 Authentication vars (always keycloak for Cluster CI):

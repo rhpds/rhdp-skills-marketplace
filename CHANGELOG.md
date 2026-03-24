@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.7] - 2026-03-24
+
+### AgnosticV Skills
+
+#### Showroom collection version — minimum v1.6.0
+- All AgV skill files updated: minimum Showroom collection version raised from v1.5.x to v1.6.0
+- Affects: `ocp-catalog-questions.md`, `cloud-vms-base-catalog-questions.md`, `sandbox-tenant-ci-questions.md`, `sandbox-cluster-ci-questions.md`, template, bundled examples, validator Check 13
+
+#### validator — Check 24 + display name WARNING
+- **Check 24**: catalog directory name ≤ 50 characters (ERROR). Platform limit is 52; skill enforces 50 per JK's request.
+- **display_name**: upgraded from suggestion to WARNING at > 60 characters
+
+#### Sandbox API CI: ocp_console_embed placement
+- `ocp4_workload_ocp_console_embed` belongs in Cluster CI only — ERROR in `sandbox-validator-checks.md` Check 6E if found in Tenant CI
+- Added to `sandbox-cluster-ci-questions.md` Q-C5; removed from `sandbox-tenant-ci-questions.md`
+
+### Showroom Skills
+
+#### role="execute" standard
+- All workshop and demo template/example files updated to `[source,role="execute"]`
+- `verify-content` E.3a (Critical): bulk-fix for repos cloned from nookbag before March 2026
+- `create-lab`: detects old nookbag repos and offers bulk-fix; always generates `[source,role="execute"]`
+- `SKILL-COMMON-RULES.md`: documents output block and config block exemptions; nookbag migration note
+
+#### Skill reviewer fixes (all four Showroom skills)
+- SKILL-COMMON-RULES.md: removed contradictory "References in every module" rule
+- verify-content: B.5/B.8/B.9/B.12 add demo carve-outs; C.5 exempts output blocks; E.3a bulk-fix
+- create-demo: Step 6 example and Step 10 gate corrected for `role="execute"`
+- blog-generate: `workflow.svg` stale agent reference removed
+
+### Showroom Template (showroom_template_nookbag — separate repo)
+- Demo example and template: added `[source,role="execute"]` command blocks
+- All workshop and demo modules: `[source,bash]` → `[source,role="execute"]`
+
 ## [v2.10.6] - 2026-03-23
 
 ### AgnosticV Skills

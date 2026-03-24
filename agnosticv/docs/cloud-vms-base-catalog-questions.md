@@ -214,7 +214,7 @@ grep -r "agnosticd/showroom" "$AGV_PATH" --include="*.yaml" -h \
   | grep "version:" | grep -v "tag" | sort -V | tail -1
 ```
 
-Use that version, or `v1.5.4` as minimum if nothing higher found.
+Use that version, or `v1.6.0` as minimum if nothing higher found.
 
 **EE image:** Grep AgV for most recent `ee-multicloud` chained image in use and write to `__meta__.deployer.execution_environment.image` — same as OCP catalogs.
 
@@ -289,7 +289,7 @@ requirements_content:
   collections:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.4   # fixed — minimum v1.5.4
+    version: v1.6.0   # fixed — minimum v1.6.0
 
 workloads:
 - agnosticd.showroom.vm_workload_showroom

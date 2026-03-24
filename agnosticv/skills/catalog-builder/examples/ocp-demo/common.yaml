@@ -63,7 +63,7 @@ requirements_content:
     # Showroom Collection
     - name: https://github.com/agnosticd/showroom.git
       type: git
-      version: v1.5.4
+      version: v1.6.0
 
 # worker count for Auto-scaling
 worker_instance_count: 4

@@ -289,7 +289,7 @@ grep -r "agnosticd/showroom.git" "$AGV_PATH" --include="*.yaml" -h -A2 \
   | grep "version:" | grep "v1\." | sort -V | tail -1
 ```
 
-Use that version, or `v1.5.4` as minimum if nothing higher found.
+Use that version, or `v1.6.0` as minimum if nothing higher found.
 
 **If showroom version ≥ v1.5.2**: OCP console embedding is supported — add `ocp4_workload_ocp_console_embed` **before** `ocp4_workload_showroom` in the workloads list (see Step 6).
 
@@ -351,7 +351,7 @@ requirements_content:
   collections:
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.5.4   # fixed — minimum v1.5.4
+    version: v1.6.0   # fixed — minimum v1.6.0
 
 workloads:
 - agnosticd.showroom.ocp4_workload_ocp_console_embed   # before showroom
