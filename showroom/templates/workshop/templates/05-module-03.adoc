@@ -12,28 +12,28 @@ Deploy your {{ application type }} to {{ platform }}:
 
 * {{ Step 1 description }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ login or connection command }}
 ----
 
 * {{ Step 2 description }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ project/namespace creation }}
 ----
 
 * {{ Step 3 description }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ verification command }}
 ----
 
 * {{ Step 4 deployment }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 # Tag for {{ platform }} registry
 {{ image tagging command }}
@@ -44,21 +44,21 @@ Deploy your {{ application type }} to {{ platform }}:
 
 * {{ Step 5 description }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ deployment command }}
 ----
 
 * {{ Step 6 verification }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ status check commands }}
 ----
 
 * {{ Step 7 exposure }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ service exposure }}
 {{ route creation }}
@@ -66,7 +66,7 @@ Deploy your {{ application type }} to {{ platform }}:
 
 * {{ Final verification }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ URL retrieval }}
 ----
@@ -81,56 +81,56 @@ Configure scaling and high availability:
 
 * {{ Step 1 scaling }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ scaling command }}
 ----
 
 * {{ Step 2 verification }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ pod listing command }}
 ----
 
 * {{ Step 3 resource limits }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ resource configuration command }}
 ----
 
 * {{ Step 4 health checks }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ health check configuration }}
 ----
 
 * {{ Step 5 autoscaling }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ autoscaler setup }}
 ----
 
 * {{ Step 6 verification }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ autoscaler status }}
 ----
 
 * {{ Step 7 rolling updates }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ update command }}
 ----
 
 * {{ Step 8 monitoring }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ rollout status }}
 ----
@@ -146,21 +146,21 @@ Explore monitoring and troubleshooting:
 
 * {{ Step 1 logs }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ log viewing command }}
 ----
 
 * {{ Step 2 events }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ events command }}
 ----
 
 * {{ Step 3 resource monitoring }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ resource usage command }}
 ----
@@ -173,7 +173,7 @@ Explore monitoring and troubleshooting:
 
 * {{ Load simulation }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 # Get the route URL
 ROUTE_URL=$({{ route command }})
@@ -184,21 +184,21 @@ for i in {1..100}; do {{ load command }} & done
 
 * {{ Monitoring response }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ monitoring command }}
 ----
 
 * {{ Autoscaler status }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ autoscaler description }}
 ----
 
 * {{ Troubleshooting }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ troubleshooting command }}
 ----

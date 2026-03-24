@@ -34,14 +34,14 @@ By the end of this module, you will be able to:
 
 . {{ Step 1 preparation }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ setup commands }}
 ----
 
 . {{ Step 2 creation }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 cat > {{ filename }} << 'EOF'
 {{ file content example }}
@@ -50,14 +50,14 @@ EOF
 
 . {{ Step 3 build/process }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ build command }}
 ----
 
 . {{ Step 4 verification }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ verification commands }}
 ----
@@ -82,21 +82,21 @@ image::{{ exercise1-success }}.png[align="center",width=600,title="Exercise 1 Su
 
 . {{ Test setup }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ test preparation }}
 ----
 
 . {{ Execute tests }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ test execution commands }}
 ----
 
 . {{ Monitor results }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ monitoring commands }}
 ----
@@ -110,7 +110,7 @@ image::{{ exercise1-success }}.png[align="center",width=600,title="Exercise 1 Su
 **Issue**: {{ Specific error message or symptom }}
 **Cause**: {{ Why this happens }}
 **Solution**:
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ Resolution commands }}
 ----
@@ -131,28 +131,28 @@ image::{{ exercise1-success }}.png[align="center",width=600,title="Exercise 1 Su
 
 . {{ Advanced configuration }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ advanced setup commands }}
 ----
 
 . {{ Implementation }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ complex implementation commands }}
 ----
 
 . {{ Testing and validation }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ comprehensive testing }}
 ----
 
 . {{ Performance or security check }}:
 +
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 {{ validation commands }}
 ----

@@ -142,7 +142,7 @@ image::after-scaling.png[align="right",link=self,window=blank,width=300,title="M
 === Basic Bash Commands
 [source,asciidoc]
 ----
-[source,bash]
+[source,role="execute"]
 ----
 podman version
 oc login --server=<your-cluster-url>
@@ -152,7 +152,7 @@ oc login --server=<your-cluster-url>
 === Multi-line Code with Comments
 [source,asciidoc]
 ----
-[source,bash]
+[source,role="execute"]
 ----
 # Tag for OpenShift registry
 podman tag acme/web-app:v2.0 registry.example.com/project/web-app:v2.0
@@ -165,7 +165,7 @@ podman push registry.example.com/project/web-app:v2.0
 === File Content Creation
 [source,asciidoc]
 ----
-[source,bash]
+[source,role="execute"]
 ----
 cat > Dockerfile << 'EOF'
 FROM registry.redhat.io/ubi8/python-39
@@ -212,14 +212,14 @@ spec:
 ----
 * Step description:
 +
-[source,bash]
+[source,role="execute"]
 ----
 command-to-execute
 ----
 
 * Next step description:
 +
-[source,bash]
+[source,role="execute"]
 ----
 another-command
 ----
@@ -230,14 +230,14 @@ another-command
 ----
 * Create a deployment:
 +
-[source,bash]
+[source,role="execute"]
 ----
 oc create deployment my-app --image=registry.example.com/my-app:latest
 ----
 
 * Verify the deployment:
 +
-[source,bash]
+[source,role="execute"]
 ----
 oc get deployments
 oc get pods
@@ -251,7 +251,7 @@ oc get pods
 ----
 * Configure resource limits:
 +
-[source,bash]
+[source,role="execute"]
 ----
 oc patch deployment my-app -p '{
   "spec": {
@@ -330,7 +330,7 @@ Use consistent naming patterns that match your content structure.
 === Container-Based Development
 Set up consistent development environment:
 
-[source,bash]
+[source,role="execute"]
 ----
 # Using Podman/Docker for development
 podman run --rm -it -p 35729:35729 -p 8080:8080 \
