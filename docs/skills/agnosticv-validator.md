@@ -340,13 +340,102 @@ git pull origin main</code></pre>
 </details>
 
 <details>
-<summary><strong>Check 17a: Event Restriction Include (NEW)</strong></summary>
+<summary><strong>Check 17a: Event Restriction Include</strong></summary>
 
   <ul>
     <li>Triggered when catalog is in an event directory (e.g. <code>summit-2026/</code> or <code>rh1-2026/</code>)</li>
     <li><strong>WARNING</strong> if event restriction include is missing from <code>common.yaml</code></li>
     <li>Expected includes: <code>summit-devs.yaml</code> (for Summit) or <code>rh1-2026-devs.yaml</code> (for RH1)</li>
     <li>These restrict catalog access to event participants until the event <code>event.yaml</code> file is created</li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 18: Duplicate Includes</strong></summary>
+
+  <ul>
+    <li><strong>ERROR</strong> if the same <code>#include</code> line appears in multiple files loaded together (<code>account.yaml</code>, <code>common.yaml</code>, <code>dev.yaml</code>)</li>
+    <li>Prevents <em>"included more than once / include loop"</em> errors at deploy time</li>
+    <li>Common case: event directory <code>account.yaml</code> already includes the restriction file, and <code>common.yaml</code> adds it again</li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 19: Password Pattern</strong></summary>
+
+  <ul>
+    <li><strong>Rule 1 — No hash/GUID generation:</strong> ERROR if any password variable uses <code>hash()</code>, <code>sha</code>, <code>md5</code>, or GUID-derived values</li>
+    <li><strong>Rule 2 — No plain static strings:</strong> ERROR if a password variable is a hardcoded string (e.g. <code>password: "redhat"</code>)</li>
+    <li><strong>Rule 3 — Unique lookup paths:</strong> ERROR if two password variables use the same <code>output_dir ~</code> path (generates identical passwords)</li>
+    <li>Correct pattern: <code>lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits'])</code></li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 20: Showroom Namespace in Tenant Catalogs</strong></summary>
+
+  <ul>
+    <li>Applies to Sandbox API Tenant CI catalogs only (<code>config: namespace</code>)</li>
+    <li><strong>WARNING</strong> if <code>ocp4_workload_showroom_namespace</code> is set — Showroom manages its own namespace</li>
+    <li><strong>WARNING</strong> if a <code>showroom</code> suffix entry exists in <code>ocp4_workload_tenant_namespace_namespaces</code></li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 21: EE Image Date</strong></summary>
+
+  <ul>
+    <li><strong>WARNING</strong> if <code>execution_environment.image</code> uses a <code>chained-YYYY-MM-DD</code> tag that is more than 90 days old</li>
+    <li>Recommended current image: <code>quay.io/agnosticd/ee-multicloud:chained-2026-02-23</code></li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 22: requirements_content Position</strong></summary>
+
+  <ul>
+    <li><strong>WARNING</strong> if <code>requirements_content:</code> appears after line 200 in <code>common.yaml</code></li>
+    <li>Collections must be visible near the top for fast troubleshooting — reviewers look there first</li>
+    <li>Per Nate Stencell's review standard</li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 23: Untagged Images</strong></summary>
+
+  <ul>
+    <li>Applies to <strong>prod and event stage catalogs only</strong></li>
+    <li><strong>ERROR</strong> if any container image reference uses <code>:latest</code>, <code>:main</code>, <code>:master</code>, or has no tag at all</li>
+    <li>Mutable tags cause non-reproducible deployments — all images must be pinned</li>
+    <li>Per Nate Stencell's review standard</li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 24: Catalog Directory Name Length</strong></summary>
+
+  <ul>
+    <li><strong>ERROR</strong> if the catalog directory name exceeds 50 characters</li>
+    <li>Platform limit is 52 chars (<code>babylon_checks.py</code>); skill enforces 50 to catch violations before CI</li>
+    <li>Per JK's request</li>
+  </ul>
+
+</details>
+
+<details>
+<summary><strong>CNV Pool CI — false-positive suppression</strong></summary>
+
+  <ul>
+    <li>Catalogs with <code>config: openshift-cluster</code> + <code>cloud_provider: openshift_cnv</code> are pool CIs — they provision shared OCP clusters for sandbox allocation, not user-facing labs</li>
+    <li>Check 7 (authentication workload) is <strong>skipped</strong> — pool clusters handle auth at the sandbox level</li>
+    <li>Check 11 (worker scaling) is <strong>skipped</strong> — <code>worker_instance_count: 0</code> is correct for SNO/compact pools</li>
   </ul>
 
 </details>

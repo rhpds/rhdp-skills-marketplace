@@ -115,6 +115,7 @@ Total: 4 issues — 1 Critical, 3 High
 <li>Expected output after every command</li>
 <li>No skipped heading levels</li>
 <li>All <code>{attribute}</code> placeholders defined</li>
+<li><strong>E.3a (Critical):</strong> All executable command blocks use <code>[source,role="execute"]</code> — without it the Showroom copy/execute button does not render. Common in repos cloned from nookbag before March 2026. <strong>Bulk-fixable</strong> — pick E.3a in the fix loop to update all module files at once.</li>
 </ul>
 </div>
 <div class="category-card">

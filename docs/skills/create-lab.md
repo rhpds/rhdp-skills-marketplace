@@ -171,6 +171,8 @@ ui-config.yml          # Split view + tabs (view_switcher.enabled: true)
 <span class="callout-icon">ℹ️</span>
 <div class="callout-body">
 <strong>Showroom 1.5.3+ required</strong> for split-view and OCP console embedding. Clone from <code>showroom_template_nookbag</code> as your starting template.
+<br><br>
+<strong>Existing nookbag repos:</strong> If your repo was cloned before March 2026, it may have <code>[source,bash]</code> blocks without <code>role="execute"</code>. The skill detects this and offers to bulk-fix all existing modules. New content is always generated with <code>[source,role="execute"]</code> regardless.
 </div>
 </div>
 </div>
