@@ -492,7 +492,7 @@ See @showroom/docs/SKILL-COMMON-RULES.md for image path conventions and clickabl
 - Use `[source,role="execute"]` — the execute button lets the presenter click to run commands directly in the Showroom terminal during the demonstration.
 - Add presenter notes about what to emphasize:
   ```asciidoc
-  [source,bash]
+  [source,role="execute"]
   ----
   oc new-app https://github.com/example/nodejs-ex
   ----
@@ -606,7 +606,8 @@ Read @showroom/docs/SKILL-COMMON-RULES.md for full quality gate criteria, then v
 | Headings | Sentence case — not Title Case |
 | Em dashes | Zero `—` — rewrite or use `--` |
 | Prohibited terms | No "robust", "powerful", "leverage", "synergy" |
-| Code blocks | All have `[source,<lang>]` language specifier |
+| Presenter command blocks | All commands the presenter runs use `[source,role="execute"]` — not bare `[source,bash]` |
+| Code blocks | Config/data blocks use `[source,yaml]` / `[source,json]` without `role="execute"` |
 | Hardcoded values | No cluster URLs, usernames, passwords — use `{user}`, `{password}`, `{openshift_console_url}` |
 | Product names | No bare "OCP", "AAP" without first-use expansion |
 

@@ -150,14 +150,14 @@ Using criteria from the prompt files already read, check all `.adoc` files in th
 | B.2 | Workshop: `index.adoc` is learner-facing. Demo: `index.adoc` is facilitator-facing (invert check) | Wrong framing for content type | High |
 | B.3 | `01-overview.adoc` present with scenario/value framing appropriate to content type | Missing or no framing | High |
 | B.4 | `02-details.adoc` present | Missing | High |
-| B.5 | At least one hands-on module (`03-*` or higher) | None found | Critical |
+| B.5 | Workshop: at least one hands-on module (`03-*` or higher). Demo: at least one Know/Show module | None found | Critical |
 | B.6 | `nav.adoc` lists all module files | Any `.adoc` not in nav | High |
 | B.7 | Conclusion module exists | Missing | High |
-| B.8 | Each module has ≥3 learning objectives | Missing or fewer than 3 | High |
-| B.9 | Each module has ≥2 exercises | Fewer than 2 | High |
+| B.8 | Workshop: each module has ≥3 learning objectives. Demo: skip (Know sections provide context instead) | Missing or fewer than 3 | High |
+| B.9 | Workshop: each module has ≥2 exercises. Demo: skip (Know/Show modules have no exercises by design) | Fewer than 2 | High |
 | B.10 | Exercise steps use numbered lists (`.`) | Using bullets (`*`) for steps | Medium |
 | B.11 | Learning objectives use bullets (`*`) | Using numbers for objectives | Medium |
-| B.12 | Every exercise has a `=== Verify` section | Missing after any exercise | High |
+| B.12 | Workshop: every exercise has a `=== Verify` section. Demo: skip (no exercises) | Missing after any exercise | High |
 | B.13 | No `== References` in individual modules | Present in any module | Medium |
 | B.14 | Conclusion has `== What You've Learned` | Missing | High |
 | B.15 | Conclusion has `== References` | Missing | Medium |
@@ -172,7 +172,7 @@ Using criteria from the prompt files already read, check all `.adoc` files in th
 | C.2 | All images have descriptive alt text | Blank, "image", or filename | High |
 | C.3 | External links use `^` (new tab) | Missing caret | Medium |
 | C.4 | Internal `xref:` links do NOT use `^` | Caret on xref | Medium |
-| C.5 | Code blocks use `[source,<lang>]` | Bare `----` block | High |
+| C.5 | Code blocks use `[source,<lang>]` or `[source,role="execute"]` | Bare `----` block that is NOT an expected output block following a command | High |
 | C.6 | No em dashes (`—`) | Any em dash | Medium |
 | C.7 | Lists have blank line before and after | Lists adjacent to text | Medium |
 | C.8 | Document title uses `= ` (single equals) | Wrong heading level | High |
@@ -207,7 +207,7 @@ Using criteria from `redhat_style_guide_validation.txt` already read.
 | E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
 | E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
 | E.3 | Expected output after every command | `[source,role="execute"]` block with no following plain `----` output block | High |
-| E.3a | All student command blocks have `role="execute"` | `[source,...]` block missing `role="execute"` — Showroom will not render the copy/execute button | Critical |
+| E.3a | All executable command blocks (student or presenter) have `role="execute"` | `[source,...]` block missing `role="execute"` — Showroom will not render the copy/execute button. Common in repos cloned from nookbag before the standard was introduced — use bulk fix. | Critical |
 | E.4 | No hardcoded cluster URLs, usernames, passwords | Literal values instead of `{user}`, `{password}` | Critical |
 | E.5 | All `{attribute}` placeholders defined in `antora.yml` or `_attributes.adoc` | Undefined attribute | High |
 | E.6 | All images have alt text | Empty first bracket in `image::` | High |
@@ -282,6 +282,36 @@ When the user picks an issue:
 Repeat until the user says "done", "skip", or there are no issues left.
 
 **Never fix multiple issues at once unless the user explicitly says "all critical" or similar.**
+
+---
+
+#### Special fix — E.3a: missing `role="execute"` (bulk replace)
+
+This issue is common in repos originally cloned from `showroom_template_nookbag` before the `role="execute"` standard was introduced. The fix is a bulk find/replace across all module files.
+
+When E.3a is selected:
+
+1. Inform the user:
+   ```
+   This fix will replace [source,bash] → [source,role="execute"] across all
+   .adoc files in content/modules/ROOT/pages/.
+
+   It will NOT touch [source,bash] lines that appear inside [source,asciidoc]
+   or [source,text] documentation blocks (those are showing syntax examples,
+   not student commands).
+
+   Apply bulk fix to all module files? [Y/n]
+   ```
+
+2. If YES — use the Edit tool to replace in each module file:
+   - Target: `[source,bash]` on its own line (not inside another source block)
+   - Replacement: `[source,role="execute"]`
+   - Skip any `.adoc` files where the line appears inside a `[source,asciidoc]----...----` fence
+
+3. Report:
+   ```
+   Fixed: replaced [source,bash] → [source,role="execute"] in N files (M occurrences).
+   ```
 
 ---
 

@@ -440,7 +440,10 @@ Every generated blog must include attribution to prevent over-claiming and confu
 All skills must pass these gates before delivering content:
 
 **1. AsciiDoc Sanity Checks**:
-- ✓ All command blocks students run use `[source,role="execute"]` — the `role="execute"` attribute is required for the Showroom UI to render the copy/execute button. Blocks without it will not show the button.
+- ✓ All executable command blocks (student or presenter) use `[source,role="execute"]` — required for the Showroom UI copy/execute button. Blocks without it will not show the button.
+- ✓ Expected output blocks use a plain `----` listing with no source declaration (no language, no `role="execute"`).
+- ✓ Config/data blocks (`[source,yaml]`, `[source,json]`, etc.) do not use `role="execute"`.
+- ⚠️ Repos cloned from nookbag before 2026-03-24 may have `[source,bash]` throughout — use the verify-content E.3a bulk fix to update them all at once.
 - ✓ No broken includes
 - ✓ All attributes defined or listed in "Attributes Needed"
 - ✓ Image paths follow convention

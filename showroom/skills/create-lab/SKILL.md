@@ -592,6 +592,8 @@ ls {showroom_repo_path}/examples/workshop/templates/ # if exists use examples/ 2
 - `{showroom_repo_path}/examples/workshop/example/02-details.adoc` — Details example
 - `{showroom_repo_path}/examples/workshop/example/03-module-01.adoc` — Module example
 
+**⚠️ Old nookbag repos:** If the repo's examples contain `[source,bash]` without `role="execute"`, treat them as `[source,role="execute"]` when generating new content. Many repos were cloned from nookbag before this standard was introduced — the reference is still valid for structure and storytelling, but always generate command blocks with `[source,role="execute"]` regardless of what the reference shows. Offer to bulk-fix existing modules: "I see your existing modules use `[source,bash]`. Want me to update them all to `[source,role="execute"]`?"
+
 **If `examples/workshop/templates/` does NOT exist — use bundled plugin templates:**
 - `@showroom/templates/workshop/templates/00-index-learner.adoc` — Learner-facing index
 - `@showroom/templates/workshop/templates/03-module-01.adoc` — Module template
