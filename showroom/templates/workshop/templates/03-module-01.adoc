@@ -25,35 +25,35 @@ You prepare to {{ first action }} to meet {{ Company name }}'s business requirem
 
 . First, verify your environment is ready:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ verification command }}
 ----
 
 . {{ Step description }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ main command }}
 ----
 
 . Check what's available:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ inspection command }}
 ----
 
 . {{ Action description }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ execution command }}
 ----
 
 . Verify the results:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ verification command }}
 ----
@@ -77,14 +77,14 @@ image::{{ exercise1-result }}.png[align="center",link=self,window=blank,width=50
 
 . {{ Step 1 description }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ command or code }}
 ----
 
 . {{ Step 2 with file creation }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 cat > {{ filename }} << 'EOF'
 {{ file content }}
@@ -93,14 +93,14 @@ EOF
 
 . {{ Step 3 description }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ build or process command }}
 ----
 
 . {{ Verification and testing }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ test commands }}
 ----
@@ -120,28 +120,28 @@ EOF
 
 . {{ Advanced step 1 }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ advanced command }}
 ----
 
 . {{ Advanced step 2 }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ configuration command }}
 ----
 
 . {{ Verification and testing }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ comprehensive test }}
 ----
 
 . {{ Cleanup if needed }}:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 {{ cleanup commands }}
 ----
