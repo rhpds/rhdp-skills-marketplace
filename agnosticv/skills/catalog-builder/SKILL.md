@@ -297,8 +297,8 @@ Store: `event_name`, `lab_id`, `catalog_type`, `category`, `technologies`.
 
 | Item | Pattern | Example |
 |---|---|---|
-| AgnosticV directory (event) | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` | `summit-2026/lb1234-ocp-fish-swim-aws` |
-| AgnosticV directory (no event) | `<subdirectory>/<short-name>` | `agd_v2/ocp-fish-swim` |
+| AgnosticV directory (event) | `<event-name>/<lab-id>-<short-name>-<cloud_provider>` **≤ 50 chars** | `summit-2026/lb1234-ocp-fish-swim-aws` |
+| AgnosticV directory (no event) | `<subdirectory>/<short-name>` **≤ 50 chars** | `agd_v2/ocp-fish-swim` |
 | Showroom repo | `<short-name>-showroom` | `ocp-fish-swim-showroom` |
 | Slack channel (event) | `<event-name>-<lab-id>-<short-name>` | `summit-2026-lb1234-ocp-fish-swim` |
 
@@ -466,15 +466,25 @@ Name:
 Email:
 ```
 
-**Validate directory doesn't exist across entire repo:**
+**Validate directory name before writing any files:**
 ```bash
-# Check if directory name exists anywhere in AgV repo
-if find "$AGV_PATH" -maxdepth 2 -type d -name "$short_name" 2>/dev/null | grep -q .; then
-  echo "⚠️  Directory '$short_name' already exists in AgnosticV repo"
+# 1. Length check — platform limit is 52 chars; skill enforces 50 (per JK)
+dir_name="<full-directory-name>"   # e.g. lb1234-ocp-fish-swim-aws
+if [ ${#dir_name} -gt 50 ]; then
+  echo "❌ Directory name too long (${#dir_name} chars, max 50): $dir_name"
+  echo "Shorten the short name and try again."
+  exit 1
+fi
+
+# 2. Uniqueness check — must not already exist in AgV repo
+if find "$AGV_PATH" -maxdepth 2 -type d -name "$dir_name" 2>/dev/null | grep -q .; then
+  echo "⚠️  Directory '$dir_name' already exists in AgnosticV repo"
   echo "Choose a different name."
   exit 1
 fi
 ```
+
+Tell the developer how many characters the proposed name uses: `"Directory name: {dir_name} ({N}/50 chars) ✓"` or flag it before proceeding.
 
 ### Step 7a: Repository Setup
 

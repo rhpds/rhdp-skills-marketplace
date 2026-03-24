@@ -234,7 +234,8 @@ elif choice == 2:
                    "litemaas", "event_restriction", "duplicate_includes",
                    "event_catalog",   # event_catalog only runs if event_context != none
                    "password_pattern", "showroom_namespace", "ee_image_date",
-                   "requirements_content_position", "untagged_images"]
+                   "requirements_content_position", "untagged_images",
+                   "catalog_name_length"]
 
 elif choice == 3:
   validation_scope = "full"
@@ -629,12 +630,16 @@ def check_best_practices(config):
   display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '')
   
   if len(display_name) > 60:
-    suggestions.append({
+    warnings.append({
       'check': 'best_practices',
-      'message': 'Display name is quite long',
-      'current_length': len(display_name),
-      'recommendation': 'Keep display names under 60 characters for better UX'
+      'severity': 'WARNING',
+      'message': f'Display name too long ({len(display_name)} chars) — must be 60 characters or fewer',
+      'location': 'common.yaml:__meta__.catalog.display_name',
+      'current': display_name,
+      'fix': 'Shorten the display name to 60 characters or fewer'
     })
+  elif display_name:
+    passed_checks.append(f"✓ Display name length OK ({len(display_name)} chars)")
   
   # Check keywords exist and are meaningful
   # Count doesn't matter — search indexes display_name and description already.
@@ -2159,6 +2164,38 @@ def check_untagged_images(config, stage):
 
   if not errors:
     passed_checks.append(f"✓ All image references use explicit version tags")
+```
+
+---
+
+### Check 24: Catalog Directory Name Length
+
+The platform (`babylon_checks.py`) enforces a maximum component name length of 52 characters. The skill enforces **50 characters** (two chars under the platform limit) so developers catch it before CI does.
+
+Per JK's request: 50 characters maximum.
+
+```python
+def check_catalog_name_length(catalog_path):
+  """Catalog directory name must be 50 characters or fewer.
+  Platform limit is 52 (babylon_checks.py check_component_name).
+  Skill enforces 50 to catch violations before CI."""
+
+  name = os.path.basename(catalog_path)
+  name_len = len(name)
+
+  if name_len > 50:
+    errors.append({
+      'check': 'catalog_name_length',
+      'severity': 'ERROR',
+      'message': f'Catalog directory name too long ({name_len} chars) — maximum is 50',
+      'location': catalog_path,
+      'current': name,
+      'fix': f'Rename the directory to 50 characters or fewer',
+      'reason': 'Platform limit is 52 characters (babylon_checks.py). '
+                'The skill enforces 50 to catch violations before CI fails.'
+    })
+  else:
+    passed_checks.append(f"✓ Catalog directory name length OK ({name_len}/50 chars): {name}")
 ```
 
 ---
