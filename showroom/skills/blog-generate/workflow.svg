@@ -40,7 +40,7 @@
   <text x="60" y="405" font-size="12">4. Generates Markdown (.md) format by default</text>
   <text x="60" y="425" font-size="12">5. Applies platform-specific formatting (code blocks, syntax highlighting)</text>
   <text x="60" y="445" font-size="12">6. Adds source traceability attribution (links back to Showroom lab)</text>
-  <text x="60" y="465" font-size="12">7. Validates with technical-editor and style-enforcer agents</text>
+  <text x="60" y="465" font-size="12">7. Applies inline quality checks (style, tone, product names, Red Hat standards)</text>
 
   <!-- Arrow -->
   <path d="M 400 490 L 400 520" class="arrow"/>
