@@ -68,6 +68,14 @@ Add to __meta__:
 
 ### Check 6E: namespaced_workloads collection and tenant workloads
 
+**ERROR** if `ocp4_workload_ocp_console_embed` is in `workloads`:
+```
+ERROR: ocp4_workload_ocp_console_embed must NOT be in Tenant CI workloads.
+It configures cluster-level OAuth and CORS for the OCP console embed — a
+one-time cluster operation. Move it to the Cluster CI catalog.
+Fix: Remove from Tenant CI workloads. Add to Cluster CI workloads instead.
+```
+
 **ERROR** if `namespaced_workloads` collection not present in `requirements_content.collections`:
 ```
 ERROR: Tenant CI requires the namespaced_workloads collection.

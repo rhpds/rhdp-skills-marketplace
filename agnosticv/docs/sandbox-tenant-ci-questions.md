@@ -202,9 +202,10 @@ If YES — add to collections:
 
 Add to workloads:
 ```yaml
-  - agnosticd.showroom.ocp4_workload_ocp_console_embed
   - agnosticd.showroom.ocp4_workload_showroom
 ```
+
+**Do NOT add `ocp4_workload_ocp_console_embed` here.** It configures cluster-level OAuth and CORS for the OCP console embed — a one-time cluster operation. It belongs in the **Cluster CI** catalog, not in the Tenant CI (which runs per-user).
 
 Add to remove_workloads (first item):
 ```yaml

@@ -165,10 +165,12 @@ Add a comment showing the math:
 Which cluster-level workloads to deploy?
 (These run once on the shared cluster — not per-tenant)
 
-  ✓ ocp4_workload_authentication  (keycloak — required for tenant user creation)
-  + ocp4_workload_openshift_gitops (cluster-level GitOps — optional)
+  ✓ ocp4_workload_authentication    (keycloak — required for tenant user creation)
+  + ocp4_workload_ocp_console_embed (required if tenants use Showroom with OCP console embed)
+  + ocp4_workload_openshift_gitops  (cluster-level GitOps — optional)
   + other?
 
+Include OCP console embed (needed for Showroom)? [Y/n]
 Include GitOps? [Y/n]
 Any other cluster workloads?
 ```
@@ -177,6 +179,18 @@ Always include authentication:
 ```yaml
 workloads:
 - agnosticd.core_workloads.ocp4_workload_authentication
+```
+
+If tenants use Showroom with OCP console embed, add to Cluster CI (not Tenant CI — this is a one-time cluster operation):
+```yaml
+- agnosticd.showroom.ocp4_workload_ocp_console_embed
+```
+
+Add the showroom collection to `requirements_content.collections` if not already present:
+```yaml
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.5.6
 ```
 
 Authentication vars (always keycloak for Cluster CI):
