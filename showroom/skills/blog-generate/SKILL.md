@@ -435,7 +435,7 @@ metadata:
 
 . Apply the task:
 +
-[source,bash]
+[source,role="execute"]
 ----
 oc apply -f task.yaml
 ----

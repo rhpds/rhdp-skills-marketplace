@@ -48,14 +48,8 @@ This lab requires OpenShift 4.18 with Pipelines 1.14.
 - If yes: Continue
 - If no: Mark clearly: `**Reference needed**: <claim>`
 
-**Mandatory References Section**:
-Every lab/demo module must end with:
-```asciidoc
-== References
-
-* link:https://docs.openshift.com/...[OpenShift Pipelines documentation] - Pipeline syntax and examples
-* link:https://tekton.dev/...[Tekton documentation] - Task definitions
-```
+**References placement**:
+Do NOT add a `== References` section to individual modules. References are consolidated in the conclusion module only (`99-conclusion.adoc`). Adding a References section to an individual module is a verify-content defect (check B.13).
 
 **Conflicting References**:
 - If references conflict, call out the conflict

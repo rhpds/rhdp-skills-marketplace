@@ -147,9 +147,9 @@ Using criteria from the prompt files already read, check all `.adoc` files in th
 | ID | Check | Fail condition | Severity |
 |---|---|---|---|
 | B.1 | `index.adoc` exists | Missing | Critical |
-| B.2 | `index.adoc` is learner-facing | Starts with facilitator framing | High |
-| B.3 | `01-overview.adoc` with business scenario | Missing or no scenario | High |
-| B.4 | `02-details.adoc` with technical requirements | Missing | High |
+| B.2 | Workshop: `index.adoc` is learner-facing. Demo: `index.adoc` is facilitator-facing (invert check) | Wrong framing for content type | High |
+| B.3 | `01-overview.adoc` present with scenario/value framing appropriate to content type | Missing or no framing | High |
+| B.4 | `02-details.adoc` present | Missing | High |
 | B.5 | At least one hands-on module (`03-*` or higher) | None found | Critical |
 | B.6 | `nav.adoc` lists all module files | Any `.adoc` not in nav | High |
 | B.7 | Conclusion module exists | Missing | High |
@@ -206,7 +206,7 @@ Using criteria from `redhat_style_guide_validation.txt` already read.
 |---|---|---|---|
 | E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
 | E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
-| E.3 | Expected output after every command | `[source,bash,role="execute"]` block with no expected output | High |
+| E.3 | Expected output after every command | `[source,role="execute"]` block with no following plain `----` output block | High |
 | E.3a | All student command blocks have `role="execute"` | `[source,...]` block missing `role="execute"` — Showroom will not render the copy/execute button | Critical |
 | E.4 | No hardcoded cluster URLs, usernames, passwords | Literal values instead of `{user}`, `{password}` | Critical |
 | E.5 | All `{attribute}` placeholders defined in `antora.yml` or `_attributes.adoc` | Undefined attribute | High |

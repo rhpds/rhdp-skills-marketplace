@@ -783,7 +783,7 @@ If module changes shared state:
 
 To reset your environment:
 
-[source,bash]
+[source,role="execute"]
 ----
 oc delete project my-project
 ----
@@ -809,7 +809,9 @@ Read @showroom/docs/SKILL-COMMON-RULES.md for the full quality gate criteria, th
 | Headings | Sentence case — not Title Case |
 | Em dashes | Zero `—` — rewrite or use `--` |
 | Prohibited terms | No "robust", "powerful", "leverage", "synergy" |
-| Code blocks | All have `[source,<lang>]` language specifier — never bare `----` |
+| Student command blocks | All commands students run use `[source,role="execute"]` — never bare `[source,bash]` |
+| Expected output blocks | Use plain `----` with no source declaration — no language specifier, no `role="execute"` |
+| Config/code blocks | Non-executable content (YAML, JSON, config) uses `[source,yaml]` / `[source,json]` without `role="execute"` |
 | Exercise steps | Numbered lists (`.`) — not bullets (`*`) |
 | Verify sections | Every exercise has `=== Verify` with expected output |
 | Learning objectives | Present with ≥3 bullet points |
