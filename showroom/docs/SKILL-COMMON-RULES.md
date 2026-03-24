@@ -446,7 +446,7 @@ Every generated blog must include attribution to prevent over-claiming and confu
 All skills must pass these gates before delivering content:
 
 **1. AsciiDoc Sanity Checks**:
-- ✓ All bash command blocks use `[source,bash,role="execute"]` — the `role="execute"` attribute is required for the Showroom UI to render the copy/execute button. Plain `[source,bash]` without it will not show the button.
+- ✓ All command blocks students run use `[source,role="execute"]` — the `role="execute"` attribute is required for the Showroom UI to render the copy/execute button. Blocks without it will not show the button.
 - ✓ No broken includes
 - ✓ All attributes defined or listed in "Attributes Needed"
 - ✓ Image paths follow convention

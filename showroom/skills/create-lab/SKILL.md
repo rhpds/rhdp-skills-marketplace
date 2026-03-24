@@ -526,14 +526,21 @@ See @showroom/docs/SKILL-COMMON-RULES.md for image path conventions and clickabl
 **For code blocks**:
 - If you provide code snippets: Format them in AsciiDoc
 - Detect language (bash, yaml, python, etc.)
-- Bash commands that students run **must** use `role="execute"` — this renders the copy/execute button in the Showroom UI. Without it the button does not appear.
+- Commands that students run **must** use `role="execute"` — this renders the copy/execute button in the Showroom UI. Without it the button does not appear.
   ```asciidoc
-  [source,bash,role="execute"]
+  [source,role="execute"]
   ----
   oc create deployment my-app --image=myimage:latest
   ----
   ```
-- Non-executable blocks (expected output, config file content, informational snippets) use plain `[source,bash]` or `[source,yaml]` without `role="execute"`.
+- Expected output blocks use a plain listing block with no source declaration:
+  ```asciidoc
+  ----
+  NAME                     READY   STATUS    RESTARTS   AGE
+  my-app-xxxxx-xxxxx      1/1     Running   0          2m
+  ----
+  ```
+- Config file content and other non-bash code uses the appropriate language without `role="execute"`: `[source,yaml]`, `[source,json]`, etc.
 
 
 ### Step 7: Fetch and Analyze References
@@ -721,7 +728,7 @@ Each major step must include:
 
 Run the following to confirm success:
 
-[source,bash,role="execute"]
+[source,role="execute"]
 ----
 oc get pods
 ----

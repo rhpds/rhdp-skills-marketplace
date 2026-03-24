@@ -207,7 +207,7 @@ Using criteria from `redhat_style_guide_validation.txt` already read.
 | E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
 | E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
 | E.3 | Expected output after every command | `[source,bash,role="execute"]` block with no expected output | High |
-| E.3a | All bash blocks have `role="execute"` | `[source,bash]` without `role="execute"` — Showroom will not render the copy/execute button | Critical |
+| E.3a | All student command blocks have `role="execute"` | `[source,...]` block missing `role="execute"` — Showroom will not render the copy/execute button | Critical |
 | E.4 | No hardcoded cluster URLs, usernames, passwords | Literal values instead of `{user}`, `{password}` | Critical |
 | E.5 | All `{attribute}` placeholders defined in `antora.yml` or `_attributes.adoc` | Undefined attribute | High |
 | E.6 | All images have alt text | Empty first bracket in `image::` | High |
