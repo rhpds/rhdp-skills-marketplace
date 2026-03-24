@@ -489,7 +489,7 @@ See @showroom/docs/SKILL-COMMON-RULES.md for image path conventions and clickabl
 
 **For demo scripts or commands**:
 - Format in code blocks with syntax highlighting
-- Use `[source,bash]` without `role="execute"` — demo commands are run by the **presenter**, not by a student in the Showroom terminal. Adding `role="execute"` would incorrectly imply student interaction.
+- Use `[source,role="execute"]` — the execute button lets the presenter click to run commands directly in the Showroom terminal during the demonstration.
 - Add presenter notes about what to emphasize:
   ```asciidoc
   [source,bash]
