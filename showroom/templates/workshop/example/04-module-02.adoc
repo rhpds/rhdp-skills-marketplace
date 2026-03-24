@@ -12,7 +12,7 @@ Create a Dockerfile for a sample web application:
 
 * Create a new directory for your project:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 mkdir ~/container-workshop
 cd ~/container-workshop
@@ -20,7 +20,7 @@ cd ~/container-workshop
 
 * Create a simple web application:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 cat > app.py << 'EOF'
 from flask import Flask
@@ -43,7 +43,7 @@ EOF
 
 * Create a requirements file:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 cat > requirements.txt << 'EOF'
 Flask==2.3.2
@@ -52,7 +52,7 @@ EOF
 
 * Create your first Dockerfile:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 cat > Dockerfile << 'EOF'
 # Use Red Hat Universal Base Image for Python
@@ -81,14 +81,14 @@ EOF
 
 * Build your container image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman build -t acme/web-app:v1.0 .
 ----
 
 * Verify the image was created:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman images acme/web-app
 ----
@@ -100,21 +100,21 @@ Test your containerized application:
 
 * Run your newly built image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman run -d --name acme-web-app -p 8081:8080 acme/web-app:v1.0
 ----
 
 * Verify the container is running:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman ps
 ----
 
 * Test the application endpoints:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 curl http://localhost:8081/
 curl http://localhost:8081/health
@@ -122,14 +122,14 @@ curl http://localhost:8081/health
 
 * Check application logs:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman logs acme-web-app
 ----
 
 * Monitor resource usage:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman stats acme-web-app --no-stream
 ----
@@ -138,7 +138,7 @@ podman stats acme-web-app --no-stream
 
 * Stop and remove the test container:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman stop acme-web-app
 podman rm acme-web-app
@@ -151,7 +151,7 @@ Improve your Dockerfile with advanced techniques:
 
 * Create an enhanced Dockerfile:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 cat > Dockerfile.advanced << 'EOF'
 # Multi-stage build for better security and size
@@ -195,28 +195,28 @@ EOF
 
 * Build the improved image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman build -f Dockerfile.advanced -t acme/web-app:v2.0 .
 ----
 
 * Compare image sizes:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman images acme/web-app
 ----
 
 * Test the improved image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman run -d --name acme-web-app-v2 -p 8082:8080 acme/web-app:v2.0
 ----
 
 * Verify health check functionality:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman ps
 sleep 10
@@ -225,7 +225,7 @@ podman inspect acme-web-app-v2 | grep -A 5 '"Health":'
 
 * Clean up test containers:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman stop acme-web-app-v2
 podman rm acme-web-app-v2

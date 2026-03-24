@@ -12,28 +12,28 @@ Deploy your containerized application to OpenShift:
 
 * Log in to your OpenShift cluster:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc login --server=<your-cluster-url>
 ----
 
 * Create a new project for ACME applications:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc new-project acme-applications --display-name="ACME Corporation Apps"
 ----
 
 * Verify you're in the correct project:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc project
 ----
 
 * Push your container image to the OpenShift registry:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 # Tag for OpenShift registry
 podman tag acme/web-app:v2.0 default-route-openshift-image-registry.apps.<cluster>/acme-applications/web-app:v2.0
@@ -44,14 +44,14 @@ podman push default-route-openshift-image-registry.apps.<cluster>/acme-applicati
 
 * Create a deployment for your application:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc create deployment acme-web-app --image=image-registry.openshift-image-registry.svc:5000/acme-applications/web-app:v2.0
 ----
 
 * Verify the deployment:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get deployments
 oc get pods
@@ -59,21 +59,21 @@ oc get pods
 
 * Expose the application as a service:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc expose deployment acme-web-app --port=8080
 ----
 
 * Create a route to make the application accessible:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc expose service acme-web-app
 ----
 
 * Get the application URL:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get route acme-web-app
 ----
@@ -87,56 +87,56 @@ Configure scaling and high availability for your application:
 
 * Scale your application to multiple replicas:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc scale deployment acme-web-app --replicas=3
 ----
 
 * Verify multiple pods are running:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get pods -l app=acme-web-app
 ----
 
 * Configure resource limits for your deployment:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc patch deployment acme-web-app -p '{"spec":{"template":{"spec":{"containers":[{"name":"web-app","resources":{"requests":{"memory":"128Mi","cpu":"100m"},"limits":{"memory":"256Mi","cpu":"200m"}}}]}}}}'
 ----
 
 * Add health checks to your deployment:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc patch deployment acme-web-app -p '{"spec":{"template":{"spec":{"containers":[{"name":"web-app","readinessProbe":{"httpGet":{"path":"/health","port":8080},"initialDelaySeconds":5,"periodSeconds":10},"livenessProbe":{"httpGet":{"path":"/health","port":8080},"initialDelaySeconds":15,"periodSeconds":20}}]}}}}'
 ----
 
 * Set up horizontal pod autoscaling:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc autoscale deployment acme-web-app --min=2 --max=10 --cpu-percent=70
 ----
 
 * Verify the autoscaler configuration:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get hpa
 ----
 
 * Test rolling updates by updating the image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc set image deployment/acme-web-app web-app=image-registry.openshift-image-registry.svc:5000/acme-applications/web-app:v2.0
 ----
 
 * Watch the rolling update process:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc rollout status deployment/acme-web-app
 ----
@@ -148,21 +148,21 @@ Explore monitoring and troubleshooting capabilities:
 
 * View application logs:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc logs -l app=acme-web-app --tail=50
 ----
 
 * Monitor application events:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc get events --sort-by='.lastTimestamp'
 ----
 
 * Check resource usage:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc top pods -l app=acme-web-app
 ----
@@ -175,7 +175,7 @@ oc top pods -l app=acme-web-app
 
 * Simulate application load to see autoscaling:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 # Get the route URL
 ROUTE_URL=$(oc get route acme-web-app -o jsonpath='{.spec.host}')
@@ -186,21 +186,21 @@ for i in {1..100}; do curl http://$ROUTE_URL/ & done
 
 * Monitor the autoscaling response:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 watch oc get pods -l app=acme-web-app
 ----
 
 * View autoscaler status:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc describe hpa acme-web-app
 ----
 
 * Troubleshoot a problem by examining pod details:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 oc describe pod <pod-name>
 ----

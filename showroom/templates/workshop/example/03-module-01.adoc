@@ -25,35 +25,35 @@ You prepare to deploy your first containerized application to test container cap
 
 . Verify that Podman is installed and working:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman version
 ----
 
 . Download a pre-built web server image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman pull registry.redhat.io/rhel8/httpd-24
 ----
 
 . List the images available on your system:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman images
 ----
 
 . Run your first container:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman run -d --name my-web-server -p 8080:8080 registry.redhat.io/rhel8/httpd-24
 ----
 
 . Check that the container is running:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman ps
 ----
@@ -79,28 +79,28 @@ Now you need to understand how to manage these containers in production scenario
 
 . Check the status of all containers (running and stopped):
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman ps -a
 ----
 
 . View container logs to see what the web server is doing:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman logs my-web-server
 ----
 
 . Execute a command inside the running container:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman exec -it my-web-server /bin/bash
 ----
 
 . Inside the container, explore the filesystem and then exit:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 ls -la /opt/app-root/src/
 ps aux
@@ -109,21 +109,21 @@ exit
 
 . Stop the container:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman stop my-web-server
 ----
 
 . Verify the container is stopped:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman ps -a
 ----
 
 . Restart the container and verify it works:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman start my-web-server
 curl http://localhost:8080
@@ -146,42 +146,42 @@ In this exercise, you will explore container registries and practice image manag
 
 . Search for available Red Hat images:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman search registry.redhat.io/rhel8 --limit 5
 ----
 
 . Examine detailed information about your image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman inspect registry.redhat.io/rhel8/httpd-24
 ----
 
 . View the layers that make up the image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman history registry.redhat.io/rhel8/httpd-24
 ----
 
 . Create a custom tag for your image:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman tag registry.redhat.io/rhel8/httpd-24 acme/web-server:v1.0
 ----
 
 . List all images including your new tag:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman images
 ----
 
 . Clean up by stopping and removing the container:
 +
-[source,bash]
+[source,bash,role="execute"]
 ----
 podman stop my-web-server
 podman rm my-web-server
