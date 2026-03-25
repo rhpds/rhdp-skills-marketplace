@@ -406,7 +406,10 @@ Two files to create or fix:
 1. **`site.yml`** (repo root) — correct title and ui-bundle theme URL. If `default-site.yml` exists → rename to `site.yml` + update `.github/workflows/gh-pages.yml` reference.
 2. **`ui-config.yml`** (repo root) — split view enabled (`view_switcher.enabled: true`, `default_mode: split`) and correct tabs for OCP or VM
 
-Ask OCP vs VM type first (OCP needs `ocp4_workload_ocp_console_embed` + `ocp4_workload_showroom`; VM needs `vm_workload_showroom`), then which consoles to embed.
+**Ask all three questions in order — do NOT skip any:**
+- **Q0** — OCP or VM catalog? (determines workloads)
+- **Q1** — Which tabs/consoles in the right panel? (configures `ui-config.yml`)
+- **Q2** — Which Red Hat theme? (sets the `ui-bundle` URL in `site.yml` — this is what the user reported missing)
 
 → Full questions, file templates, AgnosticV workload vars: `@showroom/skills/create-lab/references/showroom-scaffold.md`
 

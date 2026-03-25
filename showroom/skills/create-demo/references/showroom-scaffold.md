@@ -237,5 +237,5 @@ showroom_content_antora_playbook: site.yml
 ```yaml
 - name: https://github.com/agnosticd/showroom.git
   type: git
-  version: "v1.5.4"   # fixed — minimum v1.5.4, always pin to latest
+  version: "v1.6.0"   # fixed — minimum v1.5.1, always pin to latest
 ```
