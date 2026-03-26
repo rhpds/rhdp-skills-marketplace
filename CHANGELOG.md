@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.8] - 2026-03-26
+
+### Showroom Skills
+
+#### create-lab / create-demo: scaffold Q2 (theme) was being skipped
+- Step 3.1 in both SKILL.md files now explicitly lists all three scaffold questions — Q0 (catalog type), Q1 (tabs), Q2 (theme)
+- Previously only Q0 and Q1 were mentioned in the summary; Claude would skip Q2 (ui-bundle theme) and never write the correct theme URL to `site.yml`
+- `create-demo` Step 3.1 had no question list at all — now consistent with `create-lab`
+- Both `showroom-scaffold.md` reference files: showroom collection version updated to `v1.6.0`
+
+### AgnosticV Skills
+
+#### validator — Check 19: plain-text credentials in any file
+- Detects hardcoded passwords, tokens, and API keys across all catalog files
+
 ## [v2.10.7] - 2026-03-24
 
 ### AgnosticV Skills
