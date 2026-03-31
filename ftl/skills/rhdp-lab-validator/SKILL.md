@@ -122,7 +122,8 @@ Claude will diagnose the failure and fix the playbook on the spot.
 3. Warn about AgV prerequisites BEFORE generating anything
 4. Tell developer to ORDER the environment BEFORE starting module generation
 5. Read existing scripts/playbooks before generating from scratch
-6. **ALWAYS use multi-task ✅/❌ pattern** — every validation.yml must show per-task status. Never use a single pass/fail. Labs are multi-step by default.
+6. **ALWAYS use multi-task ✅/❌ pattern**
+7. **Handle non-automatable steps with ⚠️ warnings** — browser/GitHub/manual steps use `check: true` in solve (shows instructions) and `⚠️` in validation (never fails). `skipModuleEnabled: true` is always the safety net. — every validation.yml must show per-task status. Never use a single pass/fail. Labs are multi-step by default.
 
 **Multi-task validation is MANDATORY.** Every `validation.yml` must:
 - Run each check independently and register a separate variable
@@ -361,6 +362,14 @@ Help them convert the template to a plain `.sh` file if needed.
 ---
 
 ### Step 5: Per-Module Questions (for modules WITHOUT existing content)
+
+**For EACH task, first ask:** *"Can this be automated, or does it require browser / GitHub / OAuth / manual UI action?"*
+
+- **Automatable** → generate normally with ✅/❌
+- **Manual (partial)** → automate what's possible, add `⚠️ Task N: manual step` in validation without failing
+- **Manual (full module)** → solve shows instructions (`check: true`), validation always passes with ⚠️ warning
+
+`skipModuleEnabled: true` in `ui-config.yml` is the safety net — students can always proceed past manual modules. See `@ftl/skills/rhdp-lab-validator/references/ocp-tenant-patterns.md` — "Non-Automatable Steps Pattern".
 
 **For each module without existing scripts, ask based on lab type:**
 
