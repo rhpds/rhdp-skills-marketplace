@@ -351,7 +351,7 @@ Auth: [Bearer token from CM / lab-user + password]
 
 ---
 
-### Step 6: Wait for Environment → Generate Module (One at a Time)
+### Step 6: Wait for Environment → Connect → Generate Module (One at a Time)
 
 Before generating the first module playbook, confirm the environment is up:
 
@@ -365,7 +365,35 @@ RHEL labs: bastion SSH details (host, port, password)
 WAIT for the developer to share environment details. Do NOT generate module
 playbooks without a running environment — there's no way to test them.
 
-Once environment is confirmed, generate modules one at a time:
+**Once environment is confirmed — establish access immediately:**
+
+**OCP labs — log in as admin:**
+```
+Run this in your terminal so I can inspect the cluster directly:
+
+  oc login <api-url> --username admin --password <password> --insecure-skip-tls-verify
+
+I'll use this to verify the zt-runner SA, kubeconfig Secret, RoleBindings,
+showroom-userdata CM, and pod logs when debugging.
+```
+
+**RHEL VM labs — connect to bastion:**
+```
+Share your bastion SSH credentials:
+  Host:     <bastion-host>
+  Port:     <port>
+  User:     lab-user
+  Password: <password>
+
+I'll SSH to the bastion to check the SSH config, runner logs,
+and run curl commands directly without you copy-pasting everything.
+```
+
+After access is established, verify ZT infrastructure is working:
+- OCP: check `zt-runner` SA + `zt-runner-kubeconfig` Secret in showroom namespace
+- RHEL: check `/opt/showroom/.ssh/id_rsa` and `/opt/showroom/.ssh/config` exist, `curl -s http://localhost:8501/api/config` returns module list
+
+Then generate modules one at a time:
 
 ### Step 6b: Generate Module (One at a Time)
 
