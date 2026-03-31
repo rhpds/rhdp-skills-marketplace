@@ -1,6 +1,6 @@
 ---
 name: ftl:rhdp-lab-validator
-description: This skill should be used when the user asks to "add ZT grading to my RHDP lab", "create runtime-automation playbooks", "generate solve and validation for my showroom lab", "add validation to my summit lab", "create module graders for RHDP", "generate runtime-automation for OCP lab", "add solve and validate buttons to my lab", "write ZT validation playbooks", or "create grading for my RHEL lab".
+description: This skill should be used when the user asks to "add ZT grading to my RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create ZT graders for RHDP", "wrap my bash scripts into ZT validation", "add Solve and Validate buttons to my showroom lab", "write zero-touch validation playbooks", "create grading for my RHEL lab", "generate nookbag module graders", or "add ZT grading to my AAP lab".
 version: 1.0.0
 ---
 
@@ -52,6 +52,16 @@ showroom_ansible_runner_image_tag: v2.3.0
 ```
 
 See `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` for complete AgV snippets per lab type.
+## Working Examples
+
+Use these as templates when generating — all patterns are verified from real labs:
+
+- `@ftl/skills/rhdp-lab-validator/examples/ocp-tenant/module-01/` — ConfigMap + data key check (2 tasks)
+- `@ftl/skills/rhdp-lab-validator/examples/ocp-dedicated/module-01/` — Namespace + RoleBinding check
+- `@ftl/skills/rhdp-lab-validator/examples/ocp-dedicated/module-02/` — Bash script via ansible.builtin.script
+- `@ftl/skills/rhdp-lab-validator/examples/rhel-vm/module-01/` — Bastion + node multi-host, hostvars aggregation
+
+---
 
 ---
 
@@ -238,7 +248,7 @@ Does this look correct? [Y/n]
 
 ### Step 3b: Scaffold the Showroom Repo → Then Order the Environment
 
-**Scaffold BEFORE ordering** — the provisioner clones the showroom repo at provision time, so the scaffold must be committed first. This is also the right moment: you now know the lab type and module count.
+**Scaffold BEFORE ordering** — the provisioner clones the showroom repo at provision time, so the scaffold must be committed first. This is also the right moment: the lab type is now known and module count.
 
 Generate the showroom scaffolding now:
 
