@@ -122,6 +122,29 @@ Claude will diagnose the failure and fix the playbook on the spot.
 3. Warn about AgV prerequisites BEFORE generating anything
 4. Tell developer to ORDER the environment BEFORE starting module generation
 5. Read existing scripts/playbooks before generating from scratch
+6. **ALWAYS use multi-task ✅/❌ pattern** — every validation.yml must show per-task status. Never use a single pass/fail. Labs are multi-step by default.
+
+**Multi-task validation is MANDATORY.** Every `validation.yml` must:
+- Run each check independently and register a separate variable
+- Build `_taskN_ok` booleans for each task
+- Use `validation_check` with `pass_msg` and `error_msg` showing ✅/❌ per task
+- Include fix commands in `error_msg` for each failed task
+
+Example (minimum 2 tasks per module):
+```yaml
+- ansible.builtin.set_fact:
+    _task1_ok: "{{ check1_result }}"
+    _task2_ok: "{{ check2_result }}"
+- validation_check:
+    check: "{{ _task1_ok and _task2_ok }}"
+    pass_msg: |
+      ✅ Task 1: <description>
+      ✅ Task 2: <description>
+    error_msg: |
+      {{ '✅' if _task1_ok else '❌' }} Task 1: <description>
+      {{ '✅' if _task2_ok else '❌' }} Task 2: <description>
+      Fix: ...
+```
 
 ---
 
@@ -312,6 +335,28 @@ For modules with nothing — I'll generate from scratch based on follow-up quest
 ```
 
 If the developer provides GitHub URLs, fetch and read the files directly.
+
+**When the developer provides a `.sh` solve script:**
+Read it thoroughly. From the script content, understand:
+- What commands it runs (oc, kubectl, dnf, systemctl, etc.)
+- What resources/state it creates or changes
+- What the expected end state is
+
+Then generate the `validation.yml` automatically based on what the solve script does:
+- If solve script creates a ConfigMap → validation checks ConfigMap exists + data keys
+- If solve script installs a package → validation checks `rpm -q <package>` returns 0
+- If solve script creates a file → validation checks `stat.exists`
+- If solve script enables a service → validation checks `systemctl is-active`
+
+Always show the inferred tasks to the developer for confirmation before generating.
+
+**Handling `.sh.j2` Jinja2 templates:**
+If the developer shares `.sh.j2` files (Ansible role templates), ask them to either:
+- Rename to `.sh` and remove any Jinja2 vars (replace with hardcoded values or env vars)
+- Or paste the rendered content directly
+
+Do NOT attempt to generate from `.sh.j2` — the Jinja2 vars won't resolve in the runner context.
+Help them convert the template to a plain `.sh` file if needed.
 
 ---
 

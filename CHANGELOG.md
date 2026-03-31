@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.11.3] - 2026-04-01
+
+### Added
+
+#### ftl plugin
+- **New skill: `ftl:rhdp-lab-validator`** — Zero Touch grading for RHDP showroom labs
+  - Covers 4 lab types: OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, AAP
+  - Guides developer to add AgV prereqs, scaffold showroom repo, order env, generate module playbooks
+  - Checks for existing bash scripts (.sh/.sh.j2) and wraps them — no rewrite needed
+  - Generates multi-task ✅/❌ validation (mandatory for all modules)
+  - curl test commands after each module (laptop for OCP, bastion for RHEL)
+  - Asks developer to `oc login` as admin / share bastion SSH so Claude can troubleshoot directly
+  - `/rename` session tip for resuming after provisioning wait
+  - 4 reference files: ocp-tenant-patterns, ocp-dedicated-patterns, rhel-patterns, aap-patterns
+  - AgV prereqs reference with complete snippets per lab type
+  - Working examples from 3 reference CI catalogs
+
 ## [v2.10.8] - 2026-03-26
 
 ### Showroom Skills

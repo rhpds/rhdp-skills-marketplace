@@ -92,7 +92,8 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 - `/health:deployment-validator` - Create Ansible validation roles
 
 **FTL Plugin** (`ftl@rhdp-marketplace`) - Full Test Lifecycle:
-- `/ftl:lab-validator` - Generate lab grader/solver playbooks for workshop testing
+- `/ftl:lab-validator` - Generate FTL grader/solver playbooks (external container pattern)
+- `/ftl:rhdp-lab-validator` - Generate ZT runtime-automation playbooks for RHDP showroom labs (OCP/RHEL/AAP)
 
 ---
 
@@ -167,11 +168,13 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 
 | Skill | Description | Use Case |
 |-------|-------------|----------|
-| `lab-validator` | Generate grade/solve playbooks | Automated workshop lab validation and testing |
+| `lab-validator` | Generate FTL grade/solve playbooks | External container graders (grade_lab/solve_lab) |
+| `rhdp-lab-validator` | Generate ZT runtime-automation | Inline Solve/Validate buttons in showroom nookbag UI — OCP, RHEL VM, AAP |
 
 **Workflow:**
 ```
-/create-lab → /ftl:lab-validator → Generate graders/solvers → Test workshop
+/create-lab → /ftl:rhdp-lab-validator → Generate runtime-automation → Test with curl
+/create-lab → /ftl:lab-validator → Generate FTL graders/solvers → Test with grade_lab
 ```
 
 **Documentation:** [ftl/README.md](ftl/README.md)
