@@ -363,13 +363,36 @@ Help them convert the template to a plain `.sh` file if needed.
 
 ### Step 5: Per-Module Questions (for modules WITHOUT existing content)
 
-**For EACH task, first ask:** *"Can this be automated, or does it require browser / GitHub / OAuth / manual UI action?"*
+**Auto-detect non-automatable steps** while reading module instructions and any scripts shared. Do NOT ask upfront — detect inline, flag, and handle per module.
 
-- **Automatable** → generate normally with ✅/❌
-- **Manual (partial)** → automate what's possible, add `⚠️ Task N: manual step` in validation without failing
-- **Manual (full module)** → solve shows instructions (`check: true`), validation always passes with ⚠️ warning
+**Signals that a step cannot be automated — detect these in .adoc files and scripts:**
 
-`skipModuleEnabled: true` in `ui-config.yml` is the safety net — students can always proceed past manual modules. See `@ftl/skills/rhdp-lab-validator/references/ocp-tenant-patterns.md` — "Non-Automatable Steps Pattern".
+From `.adoc` module content:
+- *"Go to GitHub / GitLab and..."*, *"Open your browser"*, *"Click on..."*, *"Navigate to the UI"*
+- *"Log in to..."* (when it requires OAuth/SSO browser flow)
+- *"Fork the repository"*, *"Configure the webhook"*, *"In the settings page..."*
+- *"Approve the pull request"*, *"Merge the PR"*
+
+From shared `.sh` scripts:
+- Script is a stub / mostly comments / `echo "TODO"` / `# manual step`
+- Script contains `echo "Please manually..."` or `echo "Open your browser..."`
+- Script is incomplete — does some steps then stops before the browser part
+
+**When detected — handle automatically per module:**
+- **Partial** → automate what the script/instructions say to automate, add `⚠️` for the manual part
+- **Full module** → solve shows instructions (`check: true`), validation always passes with ⚠️
+
+Present findings to developer before generating:
+```
+Module 2 analysis:
+  Task 1: Create configmap — ✅ automatable
+  Task 2: Configure GitHub webhook — ⚠️ requires browser, cannot be automated
+  Task 3: Trigger pipeline — ✅ automatable (curl or oc)
+
+I'll automate Tasks 1+3 and show a ⚠️ warning for Task 2. OK? [Y/n]
+```
+
+See `@ftl/skills/rhdp-lab-validator/references/ocp-tenant-patterns.md` — "Non-Automatable Steps Pattern".
 
 **For each module without existing scripts, ask based on lab type:**
 
