@@ -1,0 +1,28 @@
+---
+# Module 2 — bash scripts live in showroom repo, copied to bastion via
+# ansible.builtin.script and executed there as lab-user (system:admin)
+- name: Build SSH inventory
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ bastion_host }}"
+        ansible_port: "{{ bastion_port | default(22) }}"
+        ansible_user: "{{ student_user }}"
+        ansible_password: "{{ bastion_password }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+- name: Module 2 Solve — copy and run solve-module2.sh on bastion
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Run solve-module2.sh
+      ansible.builtin.script:
+        executable: /bin/bash
+        cmd: "{{ playbook_dir }}/solve-module2.sh"
+      register: r_solve
+
+    - name: Show output
+      ansible.builtin.debug:
+        msg: "{{ r_solve.stdout }}"

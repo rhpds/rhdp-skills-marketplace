@@ -1,0 +1,66 @@
+---
+- name: Module 1 Validation — tasks on node and bastion
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add node to inventory
+      ansible.builtin.add_host:
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+- name: Check tasks on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - name: Task 1 — check myproject directory
+      ansible.builtin.stat:
+        path: /home/lab-user/myproject
+      register: r_dir
+
+    - name: Task 2 — check README.md
+      ansible.builtin.stat:
+        path: /home/lab-user/myproject/README.md
+      register: r_readme
+
+- name: Check task on bastion
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Task 3 — check lab-notes.txt
+      ansible.builtin.stat:
+        path: /home/lab-user/lab-notes.txt
+      register: r_notes
+
+    - name: Build task summary
+      ansible.builtin.set_fact:
+        _task1_ok: "{{ hostvars['node']['r_dir'].stat.exists and hostvars['node']['r_dir'].stat.isdir }}"
+        _task2_ok: "{{ hostvars['node']['r_readme'].stat.exists }}"
+        _task3_ok: "{{ r_notes.stat.exists }}"
+
+    - name: Validate all tasks
+      validation_check:
+        check: "{{ _task1_ok and _task2_ok and _task3_ok }}"
+        pass_msg: |
+          ✅ Task 1: Directory /home/lab-user/myproject exists on node
+          ✅ Task 2: README.md exists in myproject on node
+          ✅ Task 3: File lab-notes.txt exists on bastion
+        error_msg: |
+          {{ '✅' if _task1_ok else '❌' }} Task 1: Directory /home/lab-user/myproject exists on node
+          {{ '✅' if _task2_ok else '❌' }} Task 2: README.md exists in myproject on node
+          {{ '✅' if _task3_ok else '❌' }} Task 3: File lab-notes.txt exists on bastion
+
+          Fix:
+          {% if not _task1_ok %}  ssh node "mkdir -p /home/lab-user/myproject"
+          {% endif %}{% if not _task2_ok %}  ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
+          {% endif %}{% if not _task3_ok %}  touch /home/lab-user/lab-notes.txt
+          {% endif %}

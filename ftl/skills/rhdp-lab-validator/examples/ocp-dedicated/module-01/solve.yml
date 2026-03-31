@@ -1,0 +1,20 @@
+---
+- name: Module 1 Solve — create ConfigMap with multiple data keys
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Task 1+2 — create zt-test-config ConfigMap with env=test
+      kubernetes.core.k8s:
+        kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+        validate_certs: false
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: zt-test-config
+            namespace: "{{ student_ns }}"
+          data:
+            env: test
+            solved-by: zerotouch

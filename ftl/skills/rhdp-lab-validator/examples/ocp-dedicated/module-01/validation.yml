@@ -1,0 +1,44 @@
+---
+- name: Module 1 Validation — namespace and developer access
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check Task 1 — demo-project namespace exists
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+        validate_certs: false
+        api_version: v1
+        kind: Namespace
+        name: demo-project
+      register: r_ns
+
+    - name: Check Task 2 — developer has admin RoleBinding
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+        validate_certs: false
+        api_version: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        name: developer-admin
+        namespace: demo-project
+      register: r_rb
+      ignore_errors: true
+
+    - name: Build task summary
+      ansible.builtin.set_fact:
+        _task1_ok: "{{ r_ns.resources | length > 0 }}"
+        _task2_ok: "{{ r_rb.resources | default([]) | length > 0 }}"
+
+    - name: Validate all tasks
+      validation_check:
+        check: "{{ _task1_ok and _task2_ok }}"
+        pass_msg: |
+          ✅ Task 1: Namespace demo-project exists
+          ✅ Task 2: developer user has admin access in demo-project
+        error_msg: |
+          {{ '✅' if _task1_ok else '❌' }} Task 1: Namespace demo-project exists
+          {{ '✅' if _task2_ok else '❌' }} Task 2: developer user has admin access in demo-project
+
+          Fix:
+            oc new-project demo-project
+            oc adm policy add-role-to-user admin developer -n demo-project

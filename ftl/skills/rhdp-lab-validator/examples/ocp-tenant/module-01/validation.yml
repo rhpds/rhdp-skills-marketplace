@@ -1,0 +1,36 @@
+---
+- name: Module 1 Validation — ConfigMap exists and has correct data
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check Task 1 — ConfigMap zt-test-config exists
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+        validate_certs: false
+        api_version: v1
+        kind: ConfigMap
+        name: zt-test-config
+        namespace: "{{ student_ns }}"
+      register: r_cm
+
+    - name: Build task results
+      ansible.builtin.set_fact:
+        _task1_ok: "{{ r_cm.resources | length > 0 }}"
+        _task2_ok: >-
+          {{ r_cm.resources | length > 0 and
+             r_cm.resources[0].data is defined and
+             r_cm.resources[0].data.get('env', '') == 'test' }}
+
+    - name: Validate all tasks
+      validation_check:
+        check: "{{ _task1_ok and _task2_ok }}"
+        pass_msg: |
+          ✅ Task 1: ConfigMap zt-test-config exists in {{ student_ns }}
+          ✅ Task 2: ConfigMap has data key env=test
+        error_msg: |
+          {{ '✅' if _task1_ok else '❌' }} Task 1: ConfigMap zt-test-config exists in {{ student_ns }}
+          {{ '✅' if _task2_ok else '❌' }} Task 2: ConfigMap has data key env=test
+
+          Fix:
+            oc create configmap zt-test-config --from-literal=env=test -n {{ student_ns }}

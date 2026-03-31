@@ -1,0 +1,45 @@
+---
+- name: Module 1 Solve — tasks on node and bastion
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add node to inventory
+      ansible.builtin.add_host:
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+- name: Task 1+2 — create project directory and README on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - name: Task 1 — create /home/lab-user/myproject directory
+      ansible.builtin.file:
+        path: /home/lab-user/myproject
+        state: directory
+        mode: "0755"
+
+    - name: Task 2 — create README.md in myproject
+      ansible.builtin.copy:
+        content: "# My Project\nCreated by ZT lab.\n"
+        dest: /home/lab-user/myproject/README.md
+        mode: "0644"
+
+- name: Task 3 — create lab-notes.txt on bastion
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Task 3 — create /home/lab-user/lab-notes.txt
+      ansible.builtin.file:
+        path: /home/lab-user/lab-notes.txt
+        state: touch
+        mode: "0644"
