@@ -55,6 +55,65 @@ See `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` for complete AgV 
 
 ---
 
+## Tips: Getting the Most from This Skill
+
+### 1. Rename Your Session — Resume Any Time
+
+This skill may take multiple sessions (waiting for env provisioning, testing modules, iterating). Rename the session so you can find and resume it:
+
+```
+/rename ZT grading — my-lab-name
+```
+
+When you come back, just open the renamed session — full context is preserved. You can say "resume where we left off" and continue from the last module.
+
+### 2. Log In to Your Cluster — Let Claude Help Troubleshoot
+
+If you run `oc login` in your terminal before using this skill, Claude can:
+- Inspect what's actually deployed in your namespaces
+- Check if the zt-runner SA and kubeconfig Secret were created correctly
+- Verify RoleBindings and permissions
+- Read pod logs when a module fails
+- Check the showroom-userdata ConfigMap contents
+
+```bash
+# OCP tenant/dedicated — log in as admin
+oc login https://api.cluster-{guid}.dynamic.redhatworkshops.io:6443 \
+  --username admin --password <password> --insecure-skip-tls-verify
+
+# Then tell Claude: "I'm logged in, can you check the showroom namespace?"
+```
+
+Claude will run `oc` commands on your behalf and explain what it finds.
+
+### 3. Share Bastion Access for RHEL Labs
+
+For RHEL VM labs, share your SSH credentials at the start:
+
+```
+bastion: ssh.ocpvXX.rhdp.net port 31XXX
+user: lab-user
+password: <password>
+```
+
+Claude can SSH to the bastion, check runner logs, inspect the SSH config, and debug failed validation/solve jobs directly — no copy-paste needed.
+
+### 4. Paste Failing Job Output
+
+When a module fails, paste the raw job output:
+
+```bash
+# OCP: from laptop
+curl -sk "https://<showroom-url>/runner/api/job/<job-id>" | python3 -m json.tool
+
+# RHEL: from bastion
+curl -s http://localhost:8501/api/job/<job-id>
+```
+
+Claude will diagnose the failure and fix the playbook on the spot.
+
+---
+
 ## Workflow
 
 **CRITICAL RULES:**
