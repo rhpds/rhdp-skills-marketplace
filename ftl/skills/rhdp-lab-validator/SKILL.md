@@ -61,7 +61,38 @@ See `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` for complete AgV 
 1. Ask ONE question at a time — wait for answer before next
 2. Generate ONE module at a time — give curl test commands after each
 3. Warn about AgV prerequisites BEFORE generating anything
-4. Read existing scripts/playbooks before generating from scratch
+4. Tell developer to ORDER the environment BEFORE starting module generation
+5. Read existing scripts/playbooks before generating from scratch
+
+---
+
+### Step 0: Confirm AgV is Ready → Order the Environment
+
+**Before writing a single playbook, ask:**
+
+```
+Before we start, two things need to happen first:
+
+1. Is the ZT grading infrastructure already in your AgV catalog?
+   Required: rhpds.ftl.ocp4_workload_runtime_automation_k8s (OCP)
+             rhpds.ftl.vm_workload_runtime_automation (RHEL VM)
+
+   If NOT — stop here. Add the required workload roles and vars to your
+   AgV catalog first. See the prereqs below.
+   Then come back when AgV is updated.
+
+2. Have you ordered the lab environment from RHDP?
+   - Go to integration.demo.redhat.com
+   - Order your catalog item
+   - It will take 15-60 min to provision
+
+Provisioning takes time. Start it NOW — we'll set up your showroom repo
+while you wait. Share your GUID once it's ready for the curl testing step.
+
+Is your AgV catalog ready? And have you ordered the environment? [Y/n]
+```
+
+If AgV is NOT ready — show the correct snippet from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` and **stop**. Do not proceed until they confirm AgV is updated and environment is ordered.
 
 ---
 
@@ -114,6 +145,86 @@ Based on what I read:
 
 Does this look correct? [Y/n]
 ```
+
+---
+
+### Step 3b: Scaffold the Showroom Repo (While Env Provisions)
+
+Generate the showroom scaffolding now — the environment is provisioning, use this time productively.
+
+**Create `ui-config.yml`** based on lab type and detected modules:
+
+```yaml
+# ui-config.yml
+---
+type: zero-touch
+default_width: 35
+persist_url_state: true
+view_switcher:
+  enabled: true
+  default_mode: split
+
+antora:
+  name: modules
+  dir: www
+  modules:
+    - name: index
+      label: "Welcome"
+    - name: module-01
+      label: "Module 1: <title from .adoc>"
+      scripts: [setup, validation, solve]
+      solveButton: true
+    # ... repeat per module
+    - name: conclusion
+      label: "Conclusion"
+
+tabs:
+  - name: OCP Console                          # OCP labs
+    url: 'https://console-openshift-console.${DOMAIN}'
+    external: false
+  # OR for RHEL/dedicated:
+  - name: Terminal
+    url: '/wetty'
+    external: false
+
+skipModuleEnabled: true
+```
+
+**Create `runtime-automation/` directory structure** with stub files per module:
+
+```
+runtime-automation/
+├── module-01/
+│   ├── setup.yml       # stub — debug msg
+│   ├── solve.yml       # TODO — fill in next
+│   └── validation.yml  # TODO — fill in next
+├── module-02/
+│   └── ...
+```
+
+Write stub `setup.yml` for each module:
+```yaml
+---
+- name: Module N Setup
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Setup complete — proceed with the module instructions."
+```
+
+**Also verify `site.yml`** uses nookbag bundle:
+```yaml
+ui:
+  bundle:
+    url: https://github.com/rhpds/nookbag-bundle/releases/download/v0.0.3/ui-bundle.zip
+    snapshot: true
+```
+
+Commit the scaffold to the showroom repo so it's ready when the environment comes up.
+
+Confirm: "Scaffold created — ui-config.yml, runtime-automation/ stubs for N modules. Now waiting for your environment GUID to start generating module playbooks."
 
 ---
 
@@ -179,7 +290,23 @@ Auth: [Bearer token from CM / lab-user + password]
 
 ---
 
-### Step 6: Generate Module (One at a Time)
+### Step 6: Wait for Environment → Generate Module (One at a Time)
+
+Before generating the first module playbook, confirm the environment is up:
+
+```
+Is your lab environment ready? Share the GUID (and showroom URL if OCP).
+
+OCP labs: showroom URL (https://showroom-{guid}.apps....)
+RHEL labs: bastion SSH details (host, port, password)
+```
+
+WAIT for the developer to share environment details. Do NOT generate module
+playbooks without a running environment — there's no way to test them.
+
+Once environment is confirmed, generate modules one at a time:
+
+### Step 6b: Generate Module (One at a Time)
 
 Generate all three files per module using patterns from:
 - `@ftl/skills/rhdp-lab-validator/references/ocp-tenant-patterns.md`
