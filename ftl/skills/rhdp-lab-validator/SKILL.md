@@ -116,14 +116,31 @@ Claude will diagnose the failure and fix the playbook on the spot.
 
 ## Workflow
 
-**CRITICAL RULES:**
+**CRITICAL RULES — ALL MANDATORY, NO EXCEPTIONS.**
+
 1. Ask ONE question at a time — wait for answer before next
-2. Generate ONE module at a time — give curl test commands after each
+
+2. **ONE MODULE AT A TIME — ABSOLUTE RULE.**
+   Generate solve.yml + validation.yml for Module 1 ONLY.
+   Give curl test commands. WAIT for developer to confirm it passes.
+   Only then generate Module 2. Never generate multiple modules in one response.
+   Labs are complex — wrong namespace, SSH host, or resource name in Module 1
+   cascades silently through every subsequent module. One module = one feedback loop.
+
 3. Warn about AgV prerequisites BEFORE generating anything
-4. Tell developer to ORDER the environment BEFORE starting module generation
+
+4. Scaffold showroom + order environment before module generation
+
 5. Read existing scripts/playbooks before generating from scratch
-6. **ALWAYS use multi-task ✅/❌ pattern**
-7. **Handle non-automatable steps with ⚠️ warnings** — browser/GitHub/manual steps use `check: true` in solve (shows instructions) and `⚠️` in validation (never fails). `skipModuleEnabled: true` is always the safety net. — every validation.yml must show per-task status. Never use a single pass/fail. Labs are multi-step by default.
+
+6. **ALWAYS use multi-task ✅/❌ pattern** — every validation.yml shows per-task status.
+   Never single pass/fail. Labs are multi-step by default. Focus on one module means
+   more time to get each task's check exactly right.
+
+7. **Detect non-automatable steps automatically** from .adoc content and scripts.
+   Use ⚠️ warning pattern — never fail manual steps. `skipModuleEnabled: true` is the safety net.
+
+8. **After each module — give curl commands and STOP. Wait for results before proceeding.**
 
 **Multi-task validation is MANDATORY.** Every `validation.yml` must:
 - Run each check independently and register a separate variable
@@ -472,7 +489,16 @@ After access is established, verify ZT infrastructure is working:
 
 Then generate modules one at a time:
 
-### Step 6b: Generate Module (One at a Time)
+### Step 6b: Generate Module N (One at a Time — Full Focus)
+
+**Before generating:** re-read the module's .adoc content and any scripts for THIS module only.
+Focus entirely on Module N. Identify:
+- Every task the student performs in this module (not other modules)
+- Whether each task is automatable or manual (detect from content — do not ask)
+- Exact resource names, namespaces, file paths, commands from the instructions
+
+**Quality over speed.** One module with correct, tested playbooks is worth more
+than five modules generated quickly that all need debugging.
 
 Generate all three files per module using patterns from:
 - `@ftl/skills/rhdp-lab-validator/references/ocp-tenant-patterns.md`
