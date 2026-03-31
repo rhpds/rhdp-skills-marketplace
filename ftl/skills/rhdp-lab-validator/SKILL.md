@@ -125,33 +125,21 @@ Claude will diagnose the failure and fix the playbook on the spot.
 
 ---
 
-### Step 0: Confirm AgV is Ready → Order the Environment
+### Step 0: Confirm AgV is Ready
 
-**Before writing a single playbook, ask:**
+**Before anything else, ask:**
 
 ```
-Before we start, two things need to happen first:
+Is the ZT grading infrastructure already in your AgV catalog?
+  Required for OCP:  rhpds.ftl.ocp4_workload_runtime_automation_k8s
+  Required for RHEL: rhpds.ftl.vm_workload_runtime_automation
 
-1. Is the ZT grading infrastructure already in your AgV catalog?
-   Required: rhpds.ftl.ocp4_workload_runtime_automation_k8s (OCP)
-             rhpds.ftl.vm_workload_runtime_automation (RHEL VM)
-
-   If NOT — stop here. Add the required workload roles and vars to your
-   AgV catalog first. See the prereqs below.
-   Then come back when AgV is updated.
-
-2. Have you ordered the lab environment from RHDP?
-   - Go to integration.demo.redhat.com
-   - Order your catalog item
-   - It will take 15-60 min to provision
-
-Provisioning takes time. Start it NOW — we'll set up your showroom repo
-while you wait. Share your GUID once it's ready for the curl testing step.
-
-Is your AgV catalog ready? And have you ordered the environment? [Y/n]
+AgV catalog ready? [Y/n]
 ```
 
-If AgV is NOT ready — show the correct snippet from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` and **stop**. Do not proceed until they confirm AgV is updated and environment is ordered.
+If NOT ready — show the correct snippet from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` and **stop**. Do not proceed until AgV is updated.
+
+**Do NOT ask them to order yet — showroom repo must be scaffolded and committed first so the provisioner picks it up.**
 
 ---
 
@@ -207,9 +195,11 @@ Does this look correct? [Y/n]
 
 ---
 
-### Step 3b: Scaffold the Showroom Repo (While Env Provisions)
+### Step 3b: Scaffold the Showroom Repo → Then Order the Environment
 
-Generate the showroom scaffolding now — the environment is provisioning, use this time productively.
+**Scaffold BEFORE ordering** — the provisioner clones the showroom repo at provision time, so the scaffold must be committed first. This is also the right moment: you now know the lab type and module count.
+
+Generate the showroom scaffolding now:
 
 **Create `ui-config.yml`** based on lab type and detected modules:
 
@@ -281,9 +271,21 @@ ui:
     snapshot: true
 ```
 
-Commit the scaffold to the showroom repo so it's ready when the environment comes up.
+Commit and push the scaffold to the showroom repo.
 
-Confirm: "Scaffold created — ui-config.yml, runtime-automation/ stubs for N modules. Now waiting for your environment GUID to start generating module playbooks."
+Then tell the developer:
+```
+✅ Scaffold committed to your showroom repo.
+
+Now order the environment:
+  1. Go to integration.demo.redhat.com
+  2. Order your catalog item — it will provision in 15-60 min
+  3. Share your GUID once it's up
+
+While you wait, share any existing bash scripts or playbooks
+for the modules (Step 4) so I can generate the full playbooks
+as soon as the environment is ready.
+```
 
 ---
 
