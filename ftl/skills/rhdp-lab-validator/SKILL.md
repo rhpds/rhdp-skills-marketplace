@@ -175,7 +175,13 @@ Read ONLY the `= Title` heading from each `.adoc` to get module count and labels
 
 Generate immediately:
 - `ui-config.yml` — type: zero-touch, module list, correct tabs per lab type
-- Verify `site.yml` has nookbag bundle v0.0.3
+- Check `site.yml` — the bundle URL MUST use `nookbag-bundle` (not `nookbag`):
+  ```yaml
+  ui:
+    bundle:
+      url: https://github.com/rhpds/nookbag-bundle/releases/download/v0.0.3/ui-bundle.zip
+  ```
+  If it says `rhpds/nookbag/` → fix it to `rhpds/nookbag-bundle/` — wrong repo name causes a 404 crash in antora-builder.
 - `runtime-automation/module-N/` stub files
 
 Commit + push. Do NOT order yet.
