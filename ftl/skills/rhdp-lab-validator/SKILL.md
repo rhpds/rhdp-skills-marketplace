@@ -176,61 +176,54 @@ Example (minimum 2 tasks per module):
 
 ---
 
-### Step 0: Read Content First → Then Check AgV
+### Step 0: Check AgV — Automatically If Provided, Ask If Not
 
-**First** — ask for the showroom repo and AgV catalog path (Steps 1+2 are run NOW before the prereq check):
+**Ask for showroom + optionally AgV catalog (one question):**
 
 ```
-Two things to get started:
+To get started:
 
 1. Showroom repo: (GitHub URL or local path)
-2. AgV catalog path: (e.g. summit-2026/lb1390-my-lab-cnv  OR  'skip')
+2. AgV catalog path: (optional — e.g. summit-2026/lb1390-my-lab-cnv
+   or 'skip' if not accessible)
 ```
 
-Read both immediately. From them, detect:
-- Lab type: OCP tenant / OCP dedicated / RHEL VM / AAP
-- Whether `rhpds.ftl.ocp4_workload_runtime_automation_k8s` or `rhpds.ftl.vm_workload_runtime_automation` is already in the catalog
+**If AgV catalog IS provided — read it and detect automatically:**
 
-**Then ask the prereq question with the lab type already known:**
+Check the `workloads:` list in `common.yaml`.
 
-```
-Based on what I read — this lab is [OCP tenant / RHEL VM / ...].
-
-The infrastructure and showroom content are already in place. Now adding the runtime-automation playbooks.
-
-Is the ZT grading infrastructure already in your AgV catalog?
-  Required: rhpds.ftl.<correct-role-for-this-lab-type>
-
-AgV catalog ready? [Y/n]
-```
-
-If NOT ready — offer to set it up:
+- FTL role **present** → great, proceed. No question needed.
+- FTL role **missing** → tell the developer what was found:
 
 ```
-No problem — I can add the ZT grading infrastructure to your AgV catalog.
+I read your catalog: summit-2026/lb1390-my-lab-cnv
 
-I'll need:
-  1. Your AgV repo path: (e.g. ~/work/code/agnosticv)
-  2. Your catalog directory: (e.g. summit-2026/lb1390-my-lab-cnv)
+This is an [OCP tenant / RHEL VM / AAP] lab.
+The ZT grading role is not in the workloads list:
 
-I'll create a new branch, add the required workload roles and vars,
-commit and push — then you can order from that branch.
+  Missing: rhpds.ftl.<correct-role>
 
-Want me to set it up? [Y/n]
+Want me to create a branch and add it? [Y/n]
 ```
 
-**If YES — set up AgV automatically:**
-1. Read the existing `common.yaml` to understand the lab type (OCP/RHEL) and what's already there
-2. Create a new branch: `zt-grading-<lab-short-name>`
-3. Add the correct workload role + vars from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md`
-4. Commit and push
-5. Tell developer: *"Branch `zt-grading-<name>` pushed. Order from that branch on integration.demo.redhat.com."*
+**If AgV catalog is NOT provided — ask directly:**
 
-**If NO — show the snippet and stop.** Do not proceed until AgV is updated.
+```
+Is the ZT grading role already in your AgV workloads?
+  OCP:  rhpds.ftl.ocp4_workload_runtime_automation_k8s
+  RHEL: rhpds.ftl.vm_workload_runtime_automation
 
-**Do NOT ask them to order yet — showroom repo must be scaffolded and committed first so the provisioner picks it up.**
+Already there? [Y/n]
+```
 
----
+**If setup is needed (either case) — offer to do it:**
+
+Share AgV repo path + catalog directory → create branch `zt-grading-<lab-short-name>` → add correct role + vars from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` → commit + push.
+
+Tell developer: *"Branch pushed. Scaffold the showroom repo next, then order from that branch."*
+
+**Do NOT ask to order yet — showroom must be scaffolded and committed first.**
+
 
 ### Step 1: Get Showroom Repo (Mandatory)
 
