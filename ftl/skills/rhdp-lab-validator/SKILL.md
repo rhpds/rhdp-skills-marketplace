@@ -149,55 +149,51 @@ Never assume a bastion means the runner is on the bastion. Confirm `config:` fir
 
 ---
 
-### Step 1: Get Showroom Repo → Scaffold Immediately
+### Step 0: What type of lab?
+
+**Ask ONE question first:**
+
+```
+What type of lab are you adding ZT grading to?
+
+1. OCP multi-user  — shared cluster, students get scoped namespaces
+2. OCP dedicated   — student has cluster-admin, lab has a bastion VM
+3. RHEL VM         — bastion + node VMs (showroom runs on bastion)
+```
+
+This determines everything: runner location, SSH patterns, kubernetes.core vs shell.
+
+---
+
+### Step 1: Showroom Repo → Scaffold
 
 ```
 Showroom repo? (GitHub URL or local path)
 ```
 
-**As soon as the repo is provided — do a lightweight read for scaffolding only.**
-
-Read ONLY the first heading (`= Title`) from each `.adoc` file to get:
-- Module count and order
-- Module titles (for `ui-config.yml` labels)
-
-Do NOT read the exercise content, commands, or steps yet — that happens per module in Step 5.
+Read ONLY the `= Title` heading from each `.adoc` to get module count and labels.
 
 Generate immediately:
+- `ui-config.yml` — type: zero-touch, module list, correct tabs per lab type
+- Verify `site.yml` has nookbag bundle v0.0.3
+- `runtime-automation/module-N/` stub files
 
-**`ui-config.yml`** — based on lab type (ask if not obvious from repo name):
-```yaml
-type: zero-touch
-default_width: 35
-persist_url_state: true
-view_switcher: {enabled: true, default_mode: split}
-antora:
-  name: modules
-  dir: www
-  modules:
-    - {name: index, label: "Welcome"}
-    - {name: module-01, label: "Module 1", scripts: [setup, validation, solve], solveButton: true}
-    # ... one entry per module
-    - {name: conclusion, label: "Conclusion"}
-tabs:
-  - {name: OCP Console, url: 'https://console-openshift-console.${DOMAIN}', external: false}
-  # OR for RHEL/dedicated:
-  - {name: Terminal, url: '/wetty', external: false}
-skipModuleEnabled: true
-```
-
-**Verify `site.yml`** has nookbag bundle v0.0.3.
-
-**Create `runtime-automation/module-N/` stub files** for each module:
-```yaml
-# setup.yml, solve.yml, validation.yml — all stubs with debug msg
-```
-
-**Commit + push** the scaffold to the showroom repo.
-
-Do NOT ask to order yet — AgV must be confirmed first.
+Commit + push. Do NOT order yet.
 
 ---
+
+### Step 2: AgV Catalog (Optional)
+
+```
+AgV catalog path? (e.g. summit-2026/lb1390-my-lab-cnv  or 'skip')
+```
+
+Read ONLY to check if the ZT workload role is in `workloads:`.
+- Present → proceed
+- Missing → offer to create branch and add it
+
+Once AgV confirmed: *"Now order the lab from integration.demo.redhat.com"*
+
 
 ### Step 2: AgV Catalog (Optional)
 
@@ -244,19 +240,20 @@ If scripts are NOT in the showroom repo (already on target from provisioning) �
 
 ### Step 4: Env Ready → Connect
 
-GUID shared? Confirm runner location from the AgV `config:` field (already read in Step 2):
-- `config: cloud-vms-base` → runner is **Podman on the bastion** (vm_workload_showroom). The bastion is the runner host.
-- `config: namespace` / `config: openshift-workloads` / any other config → runner is an **OCP pod** (zerotouch chart). This is true even when the lab has a dedicated bastion VM — the runner pod SSHes to the bastion as a target, it does not run there.
+GUID shared? Connect based on lab type from Step 0.
 
-If `config:` was not read (AgV skipped) — **default to OCP pod**. Switch to RHEL only if developer explicitly mentions RHEL VM or cloud-vms-base.
+**OCP multi-user / OCP dedicated** (runner is OCP pod):
+```
+Run in your terminal:
+  oc login <api-url> --username admin --password <pw> --insecure-skip-tls-verify
+```
+Claude then verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
+Confirm: `curl https://<showroom-url>/runner/api/config` returns module list
 
-**OCP (all non-cloud-vms-base configs):** `oc login <api-url> --username admin --insecure-skip-tls-verify`
-→ Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · `curl https://<showroom>/runner/api/config`
-
-**RHEL (cloud-vms-base only):** share bastion host/port/password
-→ Claude SSHes to bastion: checks SSH config · node hosts · `curl localhost:8501/api/config`
-
-Confirm runner returns the module list before generating anything.
+**RHEL VM** (runner is Podman on bastion):
+Share: bastion host / port / password
+Claude SSHes to bastion, checks SSH config + node hosts
+Confirm: `curl http://localhost:8501/api/config` returns module list
 
 ---
 
