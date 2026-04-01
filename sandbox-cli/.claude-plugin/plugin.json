@@ -1,5 +1,5 @@
 {
-  "name": "sandbox",
+  "name": "sandbox-cli",
   "version": "1.0.0",
   "description": "Sandbox CLI skills for OCP shared cluster lifecycle management - setup, onboard, offboard, and rotation workflows",
   "author": {

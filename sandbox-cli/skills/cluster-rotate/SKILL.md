@@ -1,5 +1,5 @@
 ---
-name: sandbox:cluster-rotate
+name: sandbox-cli:cluster-rotate
 description: This skill should be used when the user asks to "rotate a cluster", "replace a cluster", "swap clusters", "offboard old and onboard new cluster", "cluster rotation", "replace an old cluster with a new one", or "refresh cluster".
 ---
 
@@ -29,7 +29,7 @@ which sandbox-cli
 which oc
 ```
 
-If sandbox-cli is not installed, tell the user to run `/sandbox:sandbox-setup` first and stop.
+If sandbox-cli is not installed, tell the user to run `/sandbox-cli:sandbox-setup` first and stop.
 
 ### Step 2: Verify Red Hat VPN Connection
 

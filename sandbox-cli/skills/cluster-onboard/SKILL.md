@@ -1,5 +1,5 @@
 ---
-name: sandbox:cluster-onboard
+name: sandbox-cli:cluster-onboard
 description: This skill should be used when the user asks to "onboard a cluster", "add a cluster to sandbox", "register a cluster", "onboard OCP cluster", "sandbox onboard", or "add a new shared cluster".
 ---
 
@@ -28,7 +28,7 @@ Check that sandbox-cli is installed:
 which sandbox-cli
 ```
 
-If sandbox-cli is not installed, tell the user to run `/sandbox:sandbox-setup` first and stop.
+If sandbox-cli is not installed, tell the user to run `/sandbox-cli:sandbox-setup` first and stop.
 
 ### Step 2: Verify Red Hat VPN Connection
 

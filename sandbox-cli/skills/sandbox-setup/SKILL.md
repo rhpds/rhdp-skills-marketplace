@@ -1,5 +1,5 @@
 ---
-name: sandbox:sandbox-setup
+name: sandbox-cli:sandbox-setup
 description: This skill should be used when the user asks to "install sandbox-cli", "setup sandbox", "configure sandbox-cli", "get sandbox-cli working", "download sandbox-cli", or "I don't have sandbox-cli installed".
 ---
 
