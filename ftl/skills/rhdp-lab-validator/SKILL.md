@@ -144,9 +144,13 @@ Claude will diagnose the failure and fix the playbook on the spot.
 Showroom repo? (GitHub URL or local path)
 ```
 
-**As soon as the repo is provided — scaffold WITHOUT reading any .adoc files yet.**
+**As soon as the repo is provided — do a lightweight read for scaffolding only.**
 
-List the module files (`ls content/modules/ROOT/pages/`) to get module count and names only.
+Read ONLY the first heading (`= Title`) from each `.adoc` file to get:
+- Module count and order
+- Module titles (for `ui-config.yml` labels)
+
+Do NOT read the exercise content, commands, or steps yet — that happens per module in Step 5.
 
 Generate immediately:
 
