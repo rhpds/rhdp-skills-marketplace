@@ -251,10 +251,17 @@ If scripts are NOT in the showroom repo (already on target from provisioning) �
 
 ### Step 4: Connect to Environment
 
-**OCP multi-user (type 1) — cluster is already running, login now:**
+**OCP multi-user (type 1) — two CIs involved:**
+
+The shared cluster (Cluster CI) is already running — you do NOT order a cluster.
+What you order is the **Tenant CI** which provisions: namespaces, Keycloak user, showroom, ZT runner.
+
 ```
-Share your lab credentials (cluster is already provisioned):
-  oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
+1. Order the TENANT CI from integration.demo.redhat.com
+   (catalog item like "lb1390-hashi-aap-tenant" or your lab's tenant item)
+2. Share the GUID when tenant provisioning is complete (5-15 min)
+3. Log in to the SHARED cluster using the admin token from the tenant's lab info:
+   oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
 ```
 Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
 Confirm `curl https://<showroom-url>/runner/api/config` returns module list.
