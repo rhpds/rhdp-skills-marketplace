@@ -1,4 +1,4 @@
-# Sandbox Plugin
+# Sandbox CLI Plugin
 
 Claude Code plugin for managing OCP shared clusters via [sandbox-cli](https://github.com/rhpds/sandbox).
 
@@ -6,10 +6,10 @@ Claude Code plugin for managing OCP shared clusters via [sandbox-cli](https://gi
 
 | Skill | Invoke | Description |
 |-------|--------|-------------|
-| Setup | `/sandbox:sandbox-setup` | Install and configure sandbox-cli |
-| Onboard | `/sandbox:cluster-onboard` | Onboard a new OCP shared cluster |
-| Offboard | `/sandbox:cluster-offboard` | Offboard an existing cluster |
-| Rotate | `/sandbox:cluster-rotate` | Offboard old + onboard new cluster |
+| Setup | `/sandbox-cli:sandbox-setup` | Install and configure sandbox-cli |
+| Onboard | `/sandbox-cli:cluster-onboard` | Onboard a new OCP shared cluster |
+| Offboard | `/sandbox-cli:cluster-offboard` | Offboard an existing cluster |
+| Rotate | `/sandbox-cli:cluster-rotate` | Offboard old + onboard new cluster |
 
 ## Prerequisites
 

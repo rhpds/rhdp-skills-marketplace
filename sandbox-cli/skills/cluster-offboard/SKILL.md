@@ -1,5 +1,5 @@
 ---
-name: sandbox:cluster-offboard
+name: sandbox-cli:cluster-offboard
 description: This skill should be used when the user asks to "offboard a cluster", "remove a cluster from sandbox", "decommission a cluster", "sandbox offboard", "take a cluster offline", or "remove a shared cluster".
 ---
 
@@ -28,7 +28,7 @@ Check that sandbox-cli is installed:
 which sandbox-cli
 ```
 
-If sandbox-cli is not installed, tell the user to run `/sandbox:sandbox-setup` first and stop.
+If sandbox-cli is not installed, tell the user to run `/sandbox-cli:sandbox-setup` first and stop.
 
 ### Step 2: Verify Red Hat VPN Connection
 
