@@ -1,6 +1,6 @@
 ---
 name: ftl:rhdp-lab-validator
-description: This skill should be used when the user asks to "add ZT grading to my RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create ZT graders for RHDP", "wrap my bash scripts into ZT validation", "add Solve and Validate buttons to my showroom lab", "write zero-touch validation playbooks", "create grading for my RHEL lab", "generate nookbag module graders", or "add ZT grading to my AAP lab".
+description: This skill should be used when the user asks to "add ZT grading to my existing RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create ZT graders for RHDP", "wrap my bash scripts into ZT validation", "add Solve and Validate buttons to my showroom lab", "write zero-touch validation playbooks", "create grading for my RHEL lab", "generate nookbag module graders", or "add ZT grading to my AAP lab".
 version: 1.0.0
 ---
 
@@ -11,7 +11,7 @@ model: claude-sonnet-4-6
 
 # RHDP Lab Validator — Zero Touch Grading
 
-Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks for RHDP showroom labs using the Zero Touch (nookbag) grading system. Works for OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, and AAP labs.
+Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks for labs that already have their infrastructure and showroom content in place. Adds Zero Touch (nookbag) Solve/Validate buttons without touching the existing lab setup. Works for OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, and AAP labs.
 
 ## ⚠️ Prerequisites — AgV Must Be Set Up First
 
@@ -176,19 +176,57 @@ Example (minimum 2 tasks per module):
 
 ---
 
-### Step 0: Confirm AgV is Ready
+### Step 0: Read Content First → Then Check AgV
 
-**Before anything else, ask:**
+**First** — ask for the showroom repo and AgV catalog path (Steps 1+2 are run NOW before the prereq check):
 
 ```
+Two things to get started:
+
+1. Showroom repo: (GitHub URL or local path)
+2. AgV catalog path: (e.g. summit-2026/lb1390-my-lab-cnv  OR  'skip')
+```
+
+Read both immediately. From them, detect:
+- Lab type: OCP tenant / OCP dedicated / RHEL VM / AAP
+- Whether `rhpds.ftl.ocp4_workload_runtime_automation_k8s` or `rhpds.ftl.vm_workload_runtime_automation` is already in the catalog
+
+**Then ask the prereq question with the lab type already known:**
+
+```
+Based on what I read — this lab is [OCP tenant / RHEL VM / ...].
+
+The infrastructure and showroom content are already in place. Now adding the runtime-automation playbooks.
+
 Is the ZT grading infrastructure already in your AgV catalog?
-  Required for OCP:  rhpds.ftl.ocp4_workload_runtime_automation_k8s
-  Required for RHEL: rhpds.ftl.vm_workload_runtime_automation
+  Required: rhpds.ftl.<correct-role-for-this-lab-type>
 
 AgV catalog ready? [Y/n]
 ```
 
-If NOT ready — show the correct snippet from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` and **stop**. Do not proceed until AgV is updated.
+If NOT ready — offer to set it up:
+
+```
+No problem — I can add the ZT grading infrastructure to your AgV catalog.
+
+I'll need:
+  1. Your AgV repo path: (e.g. ~/work/code/agnosticv)
+  2. Your catalog directory: (e.g. summit-2026/lb1390-my-lab-cnv)
+
+I'll create a new branch, add the required workload roles and vars,
+commit and push — then you can order from that branch.
+
+Want me to set it up? [Y/n]
+```
+
+**If YES — set up AgV automatically:**
+1. Read the existing `common.yaml` to understand the lab type (OCP/RHEL) and what's already there
+2. Create a new branch: `zt-grading-<lab-short-name>`
+3. Add the correct workload role + vars from `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md`
+4. Commit and push
+5. Tell developer: *"Branch `zt-grading-<name>` pushed. Order from that branch on integration.demo.redhat.com."*
+
+**If NO — show the snippet and stop.** Do not proceed until AgV is updated.
 
 **Do NOT ask them to order yet — showroom repo must be scaffolded and committed first so the provisioner picks it up.**
 
