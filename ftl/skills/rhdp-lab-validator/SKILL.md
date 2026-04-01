@@ -215,33 +215,33 @@ Now order the lab:
 
 ### Step 3: Ask About Existing Scripts
 
+**Default assumption: all automation lives in the showroom repo.** Only ask if they mention they have something.
+
 **While the lab provisions, ask:**
 
 ```
-Do you already have solve or validation scripts for any modules?
-  - Bash scripts (.sh files)
-  - Jinja2 templates (.sh.j2)
-  - Existing Ansible playbooks
-  - curl commands or API tests
-
-Share them module by module (GitHub URL or paste) — I'll wrap them.
-For modules with nothing, I'll generate from scratch.
+Do you already have bash scripts or Ansible playbooks for any modules?
+Share them (GitHub URL or paste) — I'll wrap them into the ZT pattern.
+For modules with nothing I'll generate from scratch.
 ```
 
-If `.sh.j2` provided → ask to strip Jinja2 to plain `.sh`.
-If `.sh` provided → read the script, infer what it does, auto-generate matching validation.
+If `.sh.j2` provided → ask to strip Jinja2 to plain `.sh` first.
+If `.sh` provided → read it, infer what it creates/changes, auto-generate matching validation.
+If scripts are NOT in the showroom repo (already on target from provisioning) → use `ansible.builtin.shell` instead of `ansible.builtin.script`.
 
 ---
 
 ### Step 4: Env Ready → Connect
 
-GUID shared? Get showroom URL / bastion SSH.
+GUID shared? Confirm runner location from the AgV `config:` field (already read):
+- `config: namespace` / `config: openshift-workloads` → runner is an **OCP pod** (zerotouch chart)
+- `config: cloud-vms-base` → runner is **Podman on bastion** (vm_workload_showroom)
 
 **OCP:** `oc login <api-url> --username admin --insecure-skip-tls-verify`
-→ Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · `curl /runner/api/config`
+→ Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · `curl https://<showroom>/runner/api/config`
 
 **RHEL:** share bastion host/port/password
-→ Claude SSHes: checks SSH config · node hosts · `curl localhost:8501/api/config`
+→ Claude SSHes to bastion: checks SSH config · node hosts · `curl localhost:8501/api/config`
 
 Confirm runner returns the module list before generating anything.
 
