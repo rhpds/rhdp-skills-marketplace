@@ -249,23 +249,28 @@ If scripts are NOT in the showroom repo (already on target from provisioning) �
 
 ---
 
-### Step 4: Env Ready → Connect
+### Step 4: Connect to Environment
 
-GUID shared? Connect based on lab type from Step 0.
-
-**OCP multi-user / OCP dedicated** (runner is OCP pod):
+**OCP multi-user (type 1) — cluster is already running, login now:**
 ```
-Run in your terminal:
+Share your lab credentials (cluster is already provisioned):
   oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
-  # Use the cluster-admin token from your lab credentials (not username/password)
 ```
-Claude then verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
-Confirm: `curl https://<showroom-url>/runner/api/config` returns module list
+Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
+Confirm `curl https://<showroom-url>/runner/api/config` returns module list.
 
-**RHEL VM** (runner is Podman on bastion):
-Share: bastion host / port / password
-Claude SSHes to bastion, checks SSH config + node hosts
-Confirm: `curl http://localhost:8501/api/config` returns module list
+**OCP dedicated (type 2) — wait for provisioning first:**
+Provisioning takes 15-60 min. Share GUID when the cluster is up, then:
+```
+  oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
+```
+Claude verifies: zt-runner SA · ClusterRoleBinding · kubeconfig Secret · showroom-userdata CM
+Confirm `curl https://<showroom-url>/runner/api/config` returns module list.
+
+**RHEL VM (type 3) — wait for provisioning, then connect to bastion:**
+Share bastion host / port / password when lab is up.
+Claude SSHes to bastion, checks SSH config + node hosts.
+Confirm `curl http://localhost:8501/api/config` returns module list.
 
 ---
 
