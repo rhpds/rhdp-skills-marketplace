@@ -10,7 +10,7 @@ requirements_content:
     version: "{{ tag }}"
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.6.3
+    version: v1.6.4
   - name: https://github.com/rhpds/rhpds-ftl.git
     type: git
     version: "{{ tag }}"
@@ -52,7 +52,7 @@ requirements_content:
     version: "{{ tag }}"
   - name: https://github.com/agnosticd/showroom.git
     type: git
-    version: v1.6.3
+    version: v1.6.4
   - name: https://github.com/rhpds/rhpds-ftl.git
     type: git
     version: "{{ tag }}"
@@ -112,7 +112,7 @@ requirements_content:
       version: "{{ tag }}"
     - name: https://github.com/agnosticd/showroom.git
       type: git
-      version: v1.6.3   # must be >= v1.6.3 (traefik fix)
+      version: v1.6.4   # must be >= v1.6.4 (traefik fix merged in PR #53)
     - name: https://github.com/rhpds/rhpds-ftl.git
       type: git
       version: "{{ tag }}"

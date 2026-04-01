@@ -28,7 +28,7 @@ workloads:
   version: "{{ tag }}"
 - name: https://github.com/agnosticd/showroom.git
   type: git
-  version: v1.6.3
+  version: v1.6.4
 
 # Required showroom vars:
 ocp4_workload_showroom_deployer_chart_name: zerotouch
