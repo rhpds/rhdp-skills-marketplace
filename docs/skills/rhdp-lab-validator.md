@@ -22,15 +22,30 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
-  <!-- Step 1: Showroom + lightweight read + scaffold -->
+  <!-- Step 0: Lab type -->
+  <div class="ftl-row">
+    <div class="ftl-node ftl-step">
+      <div class="ftl-step-label">Step 0 — First question</div>
+      <div class="ftl-step-title">What type of lab?</div>
+      <div class="ftl-step-body">
+        <strong>1. OCP multi-user</strong> — shared cluster, student gets scoped namespaces<br>
+        <strong>2. OCP dedicated</strong> — student has cluster-admin, lab has a bastion VM<br>
+        <strong>3. RHEL VM</strong> — bastion + node VMs, runner runs ON the bastion<br><br>
+        This determines runner location, SSH patterns, kubernetes.core vs shell.
+      </div>
+    </div>
+  </div>
+  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
+
+  <!-- Step 1: Scaffold -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step ftl-generate">
       <div class="ftl-step-label">Step 1 — Immediately</div>
       <div class="ftl-step-title">Showroom Repo → Scaffold</div>
       <div class="ftl-step-body">
-        Read <strong>titles only</strong> (<code>= Title</code> heading per .adoc) for module count and labels.<br><br>
-        Generate: <code>ui-config.yml</code> · verify <code>site.yml</code> nookbag bundle · <code>runtime-automation/module-N/</code> stubs<br><br>
-        <strong>Commit + push.</strong> Do NOT order yet — AgV must be confirmed first.
+        Read <strong>titles only</strong> (<code>= Title</code> per .adoc) for module count and labels.<br><br>
+        Generate: <code>ui-config.yml</code> · verify <code>site.yml</code> nookbag v0.0.3 · <code>runtime-automation/module-N/</code> stubs<br><br>
+        <strong>Commit + push. Do NOT order yet.</strong>
       </div>
     </div>
   </div>
@@ -40,27 +55,27 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 2 — Optional</div>
-      <div class="ftl-step-title">AgV Catalog Check</div>
+      <div class="ftl-step-title">AgV Catalog — Check ZT Roles</div>
       <div class="ftl-step-body">
-        <strong>If provided:</strong> read <code>common.yaml</code> → detect lab type + FTL role presence automatically<br>
-        <strong>If missing:</strong> offer to create branch + add required workload roles<br>
-        <strong>If not provided:</strong> ask directly whether role is in workloads<br><br>
-        <strong>Once both showroom AND AgV confirmed ready → "Order the lab from integration.demo.redhat.com"</strong>
+        Reads <code>workloads:</code> only — is the FTL ZT role present?<br>
+        Missing → offer to create branch and add it<br><br>
+        <strong>Once both scaffold + AgV ready:</strong><br>
+        <em>"Order the lab from integration.demo.redhat.com"</em><br>
+        <code>💡 /rename ZT grading — &lt;lab-name&gt;</code> to resume after wait
       </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
-  <!-- Step 3: Existing scripts -->
+  <!-- Step 3: Scripts -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 3 — While env provisions</div>
-      <div class="ftl-step-title">Gather Existing Scripts</div>
+      <div class="ftl-step-title">Existing Scripts?</div>
       <div class="ftl-step-body">
-        Do you have solve/validate scripts? (<code>.sh</code> · <code>.sh.j2</code> · playbooks) — share module by module<br><br>
-        <strong>.sh provided</strong> → read it, infer what it does, auto-generate matching validation<br>
-        <strong>.sh.j2</strong> → ask to strip Jinja2 to plain <code>.sh</code><br>
-        <strong>Nothing</strong> → generate from scratch in Step 5
+        Share any <code>.sh</code> scripts or playbooks — module by module.<br>
+        Claude reads them and auto-generates matching validation tasks.<br>
+        Nothing → generate from scratch in Step 5.
       </div>
     </div>
   </div>
@@ -72,11 +87,12 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
       <div class="ftl-step-label">Step 4 — Required</div>
       <div class="ftl-step-title">GUID Ready → Connect</div>
       <div class="ftl-step-body">
-        <strong>OCP:</strong> <code>oc login &lt;api&gt; --username admin --insecure-skip-tls-verify</code><br>
-        Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM<br><br>
-        <strong>RHEL:</strong> share bastion host/port/password<br>
-        Claude SSHes: SSH config · node hosts · <code>curl localhost:8501/api/config</code><br><br>
-        Confirm runner returns module list before proceeding.
+        <strong>OCP (types 1 + 2):</strong><br>
+        <code>oc login &lt;api-url&gt; --token &lt;admin-token&gt; --insecure-skip-tls-verify</code><br>
+        Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings<br><br>
+        <strong>RHEL VM (type 3):</strong><br>
+        Share bastion host / port / password → Claude SSHes to check runner<br><br>
+        Confirm <code>/runner/api/config</code> returns module list.
       </div>
     </div>
   </div>
@@ -86,14 +102,12 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
   <div class="ftl-row">
     <div class="ftl-node ftl-step ftl-generate">
       <div class="ftl-step-label">Step 5 — ONE MODULE AT A TIME</div>
-      <div class="ftl-step-title">Read Module N → Generate</div>
+      <div class="ftl-step-title">Read Module N .adoc → Generate</div>
       <div class="ftl-step-body">
-        <strong>Now</strong> read full content of this module's .adoc. Extract:<br>
-        · Every student task · Exact resource names / paths / commands<br>
-        · Auto-detect manual steps (browser/GitHub) → ⚠️ warning pattern<br><br>
-        Generate <code>solve.yml</code> + <code>validation.yml</code> (replaces stubs)<br>
-        Multi-task ✅/❌ per task — mandatory.<br><br>
-        <strong>STOP. Give curl test commands.</strong>
+        Full content read of this module only. Extract every student task.<br>
+        Auto-detect manual steps (browser/GitHub) → ⚠️ warning pattern.<br><br>
+        Generate <code>solve.yml</code> + <code>validation.yml</code> — multi-task ✅/❌ mandatory.<br><br>
+        <strong>STOP. Give curl commands immediately.</strong>
         <div class="ftl-files" style="margin-top:0.5rem">
           <div class="ftl-file">OCP: <code>curl -sk https://&lt;showroom&gt;/runner/api/module-N/solve</code></div>
           <div class="ftl-file">RHEL: <code>curl -s http://localhost:8501/api/module-N/solve</code></div>
@@ -103,14 +117,14 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
-  <!-- Test + loop decision -->
+  <!-- Test + loop -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 6</div>
-      <div class="ftl-step-title">Paste Results → Debug</div>
+      <div class="ftl-step-title">Paste Results → Debug → Repeat</div>
       <div class="ftl-step-body">
-        Developer pastes curl output → Claude diagnoses and fixes inline → re-test<br>
-        ✅ Module N passes → proceed to Module N+1
+        Developer pastes curl output → Claude diagnoses and fixes → re-test<br>
+        ✅ Module N passes → proceed to Module N+1 (back to Step 5)
       </div>
     </div>
   </div>
@@ -125,7 +139,7 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
     <div class="ftl-branch-left">
       <div class="ftl-branch-label ftl-label-yes">YES</div>
       <div class="ftl-node ftl-variant">
-        <div class="ftl-step-body">Back to Step 5 for next module.<br><strong>Read that module's .adoc only then.</strong></div>
+        <div class="ftl-step-body">Back to Step 5 — read that module's .adoc only then.</div>
       </div>
       <div class="ftl-loop-arrow">↑ Step 5</div>
     </div>
