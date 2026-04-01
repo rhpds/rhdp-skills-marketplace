@@ -124,6 +124,46 @@ Claude will diagnose the failure and fix the playbook on the spot.
 
 ---
 
+## Quick Reference: Testing the Runner API
+
+Use these curl commands to test solve/validate without clicking the UI buttons:
+
+```bash
+# OCP labs — from laptop
+SHOWROOM=https://<showroom-url>
+
+# Check detected modules
+curl -sk $SHOWROOM/runner/api/config | python3 -m json.tool
+
+# Trigger solve / validation (returns Job_id)
+curl -sk -X POST $SHOWROOM/runner/api/module-01/solve
+curl -sk -X POST $SHOWROOM/runner/api/module-01/validation
+
+# Poll job result (replace {Job_id} from POST response)
+curl -sk $SHOWROOM/runner/api/job/{Job_id} | python3 -m json.tool
+```
+
+```bash
+# RHEL VM labs — from bastion (SSH in first)
+SHOWROOM=http://localhost:8501
+
+curl -s $SHOWROOM/api/config | python3 -m json.tool
+curl -s -X POST $SHOWROOM/api/module-01/solve
+curl -s -X POST $SHOWROOM/api/module-01/validation
+curl -s $SHOWROOM/api/job/{Job_id}
+```
+
+Run all modules at once (for quick testing after solve-all):
+```bash
+for module in module-01 module-02 module-03; do
+  JOB=$(curl -sk -X POST $SHOWROOM/runner/api/${module}/validation     | python3 -c "import json,sys; print(json.load(sys.stdin)['Job_id'])")
+  sleep 30
+  echo "$module: $(curl -sk $SHOWROOM/runner/api/job/$JOB     | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['Status'])")"
+done
+```
+
+---
+
 ## Workflow
 
 **NOTE: RUNNER LOCATION — GET THIS WRONG AND EVERY STEP FAILS.**
