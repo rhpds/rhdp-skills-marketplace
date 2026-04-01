@@ -215,7 +215,10 @@ If not provided — ask: *"Is `rhpds.ftl.ocp4_workload_runtime_automation_k8s` (
 
 Now order the lab:
   go to integration.demo.redhat.com → order your catalog item
-  Share your GUID when it's up.
+  Share your GUID when it's up (provisioning takes 15-60 min).
+
+💡 Tip: Rename this session so you can come back and resume:
+  /rename ZT grading — <your-lab-name>
 ```
 
 ---
@@ -245,7 +248,8 @@ GUID shared? Connect based on lab type from Step 0.
 **OCP multi-user / OCP dedicated** (runner is OCP pod):
 ```
 Run in your terminal:
-  oc login <api-url> --username admin --password <pw> --insecure-skip-tls-verify
+  oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
+  # Use the cluster-admin token from your lab credentials (not username/password)
 ```
 Claude then verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
 Confirm: `curl https://<showroom-url>/runner/api/config` returns module list
