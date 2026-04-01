@@ -289,4 +289,4 @@ Wait for results. Debug inline if needed. Only proceed to Module N+1 after this 
 
 - `/showroom:create-lab` -- Create showroom content (run before this skill)
 - `/agnosticv:catalog-builder` -- Set up the AgV catalog (run before this skill)
-- `/ftl:zt-lab-validator` -- For pure ZT labs (zt-ansiblebu pattern, shell scripts)
+

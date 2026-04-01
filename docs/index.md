@@ -61,7 +61,7 @@ title: Home
       <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
         <li><code>/ftl:lab-validator</code> — Generate grade/solve playbooks</li>
       </ul>
-      <a href="{{ '/skills/ftl.html' | relative_url }}">Learn more →</a>
+      <a href="{{ '/skills/rhdp-lab-validator.html' | relative_url }}">Learn more →</a>
     </div>
   </div>
 </div>

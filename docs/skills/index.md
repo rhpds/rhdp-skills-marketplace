@@ -163,20 +163,6 @@ For generating automated grader and solver playbooks for Showroom workshop labs.
 </div>
 
 <div class="category-grid">
-  <a href="ftl.html" class="category-card health">
-    <div class="category-icon">🧪</div>
-    <h3>/ftl:lab-validator</h3>
-    <p>Generate grade_module and solve_module playbooks by reading your Showroom .adoc modules.</p>
-    <div class="skill-meta">
-      <div class="meta-item">
-        <strong>Before:</strong> Showroom content with student exercises
-      </div>
-      <div class="meta-item">
-        <strong>Use when:</strong> Adding automated grading to your lab
-      </div>
-    </div>
-    <div class="skill-status available">✅ Available</div>
-  </a>
 </div>
 
 ---
@@ -237,11 +223,6 @@ For generating automated grader and solver playbooks for Showroom workshop labs.
         <td><span class="status-badge available">✅ Available</span></td>
       </tr>
       <tr>
-        <td><code>/ftl:lab-validator</code></td>
-        <td>FTL</td>
-        <td>Showroom .adoc modules</td>
-        <td><span class="status-badge available">✅ Available</span></td>
-      </tr>
     </tbody>
   </table>
 </div>
