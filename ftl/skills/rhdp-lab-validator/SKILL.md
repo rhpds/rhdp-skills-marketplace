@@ -233,18 +233,14 @@ antora:
 ```
 The `name:` must match the `.adoc` filename (without extension) in `content/modules/ROOT/pages/`.
 
-**2. `setup-automation/main.yml`** — if it exists, replace with a no-op:
-```yaml
----
-- name: Setup — no-op (zerotouch chart handles content serving)
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  tasks:
-    - ansible.builtin.debug:
-        msg: "Setup complete."
+**2. `setup-automation/` directory** — **DELETE IT ENTIRELY if it exists. NEVER CREATE IT.**
+The zerotouch chart does not need setup-automation. If a showroom repo has it, delete:
+```bash
+git rm -r setup-automation/
+git commit -m "Remove setup-automation — not needed with zerotouch chart"
+git push
 ```
-This old pattern conflicts with the zerotouch chart and causes the setup init container to crash.
+Do NOT replace with a no-op. Do NOT scaffold it. If it doesn't exist, do not create it.
 
 ---
 
