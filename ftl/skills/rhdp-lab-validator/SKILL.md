@@ -126,6 +126,17 @@ Claude will diagnose the failure and fix the playbook on the spot.
 
 ## Workflow
 
+**NOTE: RUNNER LOCATION — GET THIS WRONG AND EVERY STEP FAILS.**
+
+The runner is NOT always on the bastion. Check the AgV `config:` field:
+
+- `config: cloud-vms-base` → runner is a **Podman container running ON the bastion**. The bastion IS the runner host. SSH there to check runner logs, invoke API, deploy playbooks.
+- Any other config (`namespace`, `openshift-workloads`, etc.) → runner is an **OCP pod** (zerotouch Helm chart). This applies even if the lab has a bastion VM. The runner SSHes TO the bastion as a target; the bastion is not where the runner lives.
+
+Never assume a bastion means the runner is on the bastion. Confirm `config:` first.
+
+---
+
 **CRITICAL RULES — ALL MANDATORY, NO EXCEPTIONS.**
 
 1. Ask ONE question at a time — wait for answer before next
@@ -233,14 +244,16 @@ If scripts are NOT in the showroom repo (already on target from provisioning) �
 
 ### Step 4: Env Ready → Connect
 
-GUID shared? Confirm runner location from the AgV `config:` field (already read):
-- `config: namespace` / `config: openshift-workloads` → runner is an **OCP pod** (zerotouch chart)
-- `config: cloud-vms-base` → runner is **Podman on bastion** (vm_workload_showroom)
+GUID shared? Confirm runner location from the AgV `config:` field (already read in Step 2):
+- `config: cloud-vms-base` → runner is **Podman on the bastion** (vm_workload_showroom). The bastion is the runner host.
+- `config: namespace` / `config: openshift-workloads` / any other config → runner is an **OCP pod** (zerotouch chart). This is true even when the lab has a dedicated bastion VM — the runner pod SSHes to the bastion as a target, it does not run there.
 
-**OCP:** `oc login <api-url> --username admin --insecure-skip-tls-verify`
+If `config:` was not read yet, ask for it now. Do not guess.
+
+**OCP (all non-cloud-vms-base configs):** `oc login <api-url> --username admin --insecure-skip-tls-verify`
 → Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · `curl https://<showroom>/runner/api/config`
 
-**RHEL:** share bastion host/port/password
+**RHEL (cloud-vms-base only):** share bastion host/port/password
 → Claude SSHes to bastion: checks SSH config · node hosts · `curl localhost:8501/api/config`
 
 Confirm runner returns the module list before generating anything.
