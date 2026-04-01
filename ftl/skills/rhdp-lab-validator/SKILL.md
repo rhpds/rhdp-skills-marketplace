@@ -248,7 +248,7 @@ GUID shared? Confirm runner location from the AgV `config:` field (already read 
 - `config: cloud-vms-base` → runner is **Podman on the bastion** (vm_workload_showroom). The bastion is the runner host.
 - `config: namespace` / `config: openshift-workloads` / any other config → runner is an **OCP pod** (zerotouch chart). This is true even when the lab has a dedicated bastion VM — the runner pod SSHes to the bastion as a target, it does not run there.
 
-If `config:` was not read yet, ask for it now. Do not guess.
+If `config:` was not read (AgV skipped) — **default to OCP pod**. Switch to RHEL only if developer explicitly mentions RHEL VM or cloud-vms-base.
 
 **OCP (all non-cloud-vms-base configs):** `oc login <api-url> --username admin --insecure-skip-tls-verify`
 → Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · `curl https://<showroom>/runner/api/config`
