@@ -92,6 +92,30 @@
         "ansible",
         "workshop"
       ]
+    },
+    {
+      "name": "sandbox",
+      "source": "./sandbox",
+      "description": "Sandbox CLI skills for OCP shared cluster lifecycle management — setup, onboard, offboard, and rotation workflows",
+      "version": "1.0.0",
+      "author": {
+        "name": "Ritesh Shah",
+        "email": "ritesh@redhat.com"
+      },
+      "homepage": "https://github.com/rhpds/sandbox",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "sandbox",
+        "ocp",
+        "cluster",
+        "onboard",
+        "offboard",
+        "rotation",
+        "rhdp",
+        "shared-cluster",
+        "sandbox-cli"
+      ]
     }
   ]
 }
