@@ -17,112 +17,175 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
 
 <div class="ftl-workflow">
 
+  <!-- Start -->
   <div class="ftl-row">
-    <div class="ftl-node ftl-start">
-      <span>▶ /ftl:rhdp-lab-validator</span>
-    </div>
+    <div class="ftl-node ftl-start"><span>▶ /ftl:rhdp-lab-validator</span></div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Step 0 -->
   <div class="ftl-row">
-    <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 0</div>
+    <div class="ftl-node ftl-stop">
+      <div class="ftl-step-label">Step 0 — Gate</div>
       <div class="ftl-step-title">⚠️ AgV Prereqs Check</div>
-      <div class="ftl-step-body">Confirm FTL workload roles are in the AgV catalog. <strong>Stop here if missing</strong> — show the correct snippet and wait.<br><br>
-      OCP: <code>rhpds.ftl.ocp4_workload_runtime_automation_k8s</code><br>
-      RHEL: <code>rhpds.ftl.vm_workload_runtime_automation</code><br><br>
-      <em>Do NOT order the environment yet — showroom must be committed first.</em></div>
+      <div class="ftl-step-body">
+        Confirm FTL workload roles are in the AgV catalog. <strong>Stop if missing — show snippet, wait.</strong><br><br>
+        OCP: <code>rhpds.ftl.ocp4_workload_runtime_automation_k8s</code><br>
+        RHEL: <code>rhpds.ftl.vm_workload_runtime_automation</code><br><br>
+        ✅ Only proceed when AgV is confirmed ready.
+      </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Steps 1+2 -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 1</div>
-      <div class="ftl-step-title">Read Showroom Repo (Mandatory)</div>
-      <div class="ftl-step-body">All <code>.adoc</code> module pages + existing <code>runtime-automation/</code></div>
+      <div class="ftl-step-label">Steps 1 + 2</div>
+      <div class="ftl-step-title">Read Content</div>
+      <div class="ftl-step-body">
+        <strong>Showroom repo (mandatory):</strong> all <code>.adoc</code> module pages + existing <code>runtime-automation/</code><br><br>
+        <strong>AgV catalog (optional):</strong> detect <code>config:</code>, <code>instances:</code>, namespace suffixes, node names
+      </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Step 3 -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 2</div>
-      <div class="ftl-step-title">Read AgV Catalog (Optional)</div>
-      <div class="ftl-step-body">Detect <code>config:</code>, <code>instances:</code>, namespace suffixes, node names, missing FTL roles</div>
+      <div class="ftl-step-label">Step 3 — Confirm</div>
+      <div class="ftl-step-title">Lab Type Detection</div>
+      <div class="ftl-step-body">
+        Present detected type + confirm with developer:<br>
+        <em>OCP tenant · OCP dedicated+bastion · RHEL VM+bastion · AAP</em><br><br>
+        Module count · namespace patterns · node names
+      </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
-  <div class="ftl-row">
-    <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 3</div>
-      <div class="ftl-step-title">Confirm Lab Type</div>
-      <div class="ftl-step-body">OCP tenant / OCP dedicated+bastion / RHEL VM+bastion / AAP — module count, namespaces, nodes</div>
-    </div>
-  </div>
-  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
-
+  <!-- Step 3b -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step ftl-generate">
-      <div class="ftl-step-label">Step 3b — BEFORE ordering</div>
+      <div class="ftl-step-label">Step 3b — Before ordering ⬇</div>
       <div class="ftl-step-title">Scaffold Showroom Repo</div>
       <div class="ftl-step-body">
-        Generate <code>ui-config.yml</code> (zero-touch, module list, tabs) · Verify <code>site.yml</code> uses nookbag bundle v0.0.3 · Create <code>runtime-automation/module-N/</code> stub files · <strong>Commit + push</strong><br><br>
-        Then: <em>"Now order from integration.demo.redhat.com — share GUID when ready"</em>
+        <strong>Generate:</strong> <code>ui-config.yml</code> (type: zero-touch, module list, correct tabs)<br>
+        <strong>Verify:</strong> <code>site.yml</code> has nookbag bundle v0.0.3<br>
+        <strong>Create:</strong> <code>runtime-automation/module-N/{setup,solve,validation}.yml</code> stubs<br>
+        <strong>Commit + push →</strong> <em>then order environment from integration.demo.redhat.com</em>
       </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Step 4 -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 4 — while env provisions</div>
+      <div class="ftl-step-label">Step 4 — While env provisions</div>
       <div class="ftl-step-title">Gather Existing Scripts</div>
-      <div class="ftl-step-body">Bash scripts / Jinja2 templates / FTL playbooks / curl commands — module by module.<br>Will wrap into ZT pattern. For modules with nothing → generate from Step 5 questions.</div>
-    </div>
-  </div>
-  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
-
-  <div class="ftl-row">
-    <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 5</div>
-      <div class="ftl-step-title">Per-Module Task Questions</div>
-      <div class="ftl-step-body">For modules without existing scripts — what tasks, where (namespace / bastion / node / AAP), what to verify per task</div>
-    </div>
-  </div>
-  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
-
-  <div class="ftl-row">
-    <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 6</div>
-      <div class="ftl-step-title">Env Ready → Connect → Generate</div>
       <div class="ftl-step-body">
-        <strong>OCP:</strong> <code>oc login &lt;api&gt; --username admin --password &lt;pw&gt;</code> → Claude verifies zt-runner SA, kubeconfig Secret, RoleBindings<br><br>
-        <strong>RHEL:</strong> share bastion SSH credentials → Claude SSHes to verify SSH config, runner logs<br><br>
-        Then generate <code>solve.yml</code> + <code>validation.yml</code> for module 1 (replacing stubs)
+        Share any existing <code>.sh</code> / <code>.sh.j2</code> / FTL playbooks — module by module.<br><br>
+        <strong>Claude reads scripts and auto-generates matching validation tasks.</strong><br>
+        <code>.sh.j2</code> → ask to strip Jinja2 to plain <code>.sh</code><br>
+        Nothing exists → generate from scratch in Step 5
       </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Step 5 -->
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 7 — repeat per module</div>
-      <div class="ftl-step-title">Test with curl</div>
+      <div class="ftl-step-label">Step 5 — Auto-detect</div>
+      <div class="ftl-step-title">Per-Module Analysis</div>
       <div class="ftl-step-body">
-        <strong>OCP (from laptop):</strong> <code>curl -sk https://&lt;showroom&gt;/runner/api/module-N/solve</code><br>
-        <strong>RHEL (from bastion):</strong> <code>curl -s http://localhost:8501/api/module-N/solve</code><br><br>
-        Paste result → Claude debugs inline → repeat until all modules pass ✅
+        For each module task — detect automatically from <code>.adoc</code> content and scripts:<br><br>
+        <strong>✅ Automatable</strong> → generate ✅/❌ multi-task validation<br>
+        <strong>⚠️ Manual</strong> (browser/GitHub/OAuth) → use warning pattern, never fail<br><br>
+        Present findings per module, confirm before generating.
       </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
+  <!-- Step 6 -->
   <div class="ftl-row">
-    <div class="ftl-node ftl-end">
-      <span>✅ All Modules Generated &amp; Tested</span>
+    <div class="ftl-node ftl-step">
+      <div class="ftl-step-label">Step 6 — Required</div>
+      <div class="ftl-step-title">Connect to Environment</div>
+      <div class="ftl-step-body">
+        <strong>OCP labs:</strong><br>
+        <code>oc login &lt;api-url&gt; --username admin --insecure-skip-tls-verify</code><br>
+        Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM<br><br>
+        <strong>RHEL VM labs:</strong><br>
+        Share bastion host / port / password<br>
+        Claude SSHes: checks SSH config · node host entries · <code>curl localhost:8501/api/config</code>
+      </div>
     </div>
+  </div>
+  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
+
+  <!-- Generate loop -->
+  <div class="ftl-row">
+    <div class="ftl-node ftl-step ftl-generate">
+      <div class="ftl-step-label">Step 7 — ONE MODULE AT A TIME</div>
+      <div class="ftl-step-title">Generate Module N</div>
+      <div class="ftl-step-body">
+        <strong>Focus entirely on Module N.</strong> Re-read its content. Generate:<br>
+        <div class="ftl-files">
+          <div class="ftl-file">solve.yml — creates resources / runs scripts</div>
+          <div class="ftl-file">validation.yml — ✅/❌ per task (mandatory)</div>
+          <div class="ftl-file">setup.yml — debug stub</div>
+        </div>
+        <strong>STOP.</strong> Give curl test commands. Wait for results.
+      </div>
+    </div>
+  </div>
+  <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
+
+  <!-- Test -->
+  <div class="ftl-row">
+    <div class="ftl-node ftl-step">
+      <div class="ftl-step-label">Step 8 — Test</div>
+      <div class="ftl-step-title">curl → Paste → Debug</div>
+      <div class="ftl-step-body">
+        <strong>OCP (laptop):</strong> <code>curl -sk https://&lt;showroom&gt;/runner/api/module-N/solve</code><br>
+        <strong>RHEL (bastion):</strong> <code>curl -s http://localhost:8501/api/module-N/solve</code><br><br>
+        Paste result → Claude debugs inline → fix → re-test<br>
+        ✅ Module N passes → proceed to Module N+1
+      </div>
+    </div>
+  </div>
+
+  <!-- Decision loop -->
+  <div class="ftl-row ftl-decision-row">
+    <div class="ftl-node ftl-decision">
+      <div class="ftl-decision-text">More<br>modules?</div>
+    </div>
+  </div>
+
+  <div class="ftl-row ftl-branches">
+    <div class="ftl-branch-left">
+      <div class="ftl-branch-label ftl-label-yes">YES</div>
+      <div class="ftl-node ftl-variant">
+        <div class="ftl-step-body">Return to Step 7 for next module.<br><strong>Never generate ahead.</strong></div>
+      </div>
+      <div class="ftl-loop-arrow">↑ back to Step 7</div>
+    </div>
+    <div class="ftl-branch-right">
+      <div class="ftl-branch-label ftl-label-no" style="background:#f3faf2;color:#2a5f1e;">DONE</div>
+      <div class="ftl-node ftl-variant">
+        <div class="ftl-step-body">All modules generated and tested ✅</div>
+      </div>
+    </div>
+  </div>
+  <div class="ftl-row ftl-rejoin-arrow"><div class="ftl-arrow">↓</div></div>
+
+  <!-- End -->
+  <div class="ftl-row">
+    <div class="ftl-node ftl-end"><span>✅ All Modules Generated &amp; Tested</span></div>
   </div>
 
 </div>
