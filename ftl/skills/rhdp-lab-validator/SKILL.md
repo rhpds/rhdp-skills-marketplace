@@ -145,6 +145,26 @@ Never assume a bastion means the runner is on the bastion. Confirm `config:` fir
 4. **Read .adoc files per module when generating — not upfront.** Focus gives quality.
 5. **Detect non-automatable steps automatically** from content and scripts. Use ⚠️ warnings.
 6. **ALWAYS multi-task ✅/❌ pattern** — every validation.yml shows per-task status. Never single pass/fail.
+
+7. **validation.yml: never use `ansible.builtin.fail`** — Output is empty when fail is used. Always use `validation_check`:
+   ```yaml
+   # WRONG — Output will be empty, developer sees nothing
+   - ansible.builtin.fail:
+       msg: "validation failed"
+
+   # CORRECT — Output shows in the runner API response
+   - validation_check:
+       check: "{{ r_validate.rc == 0 }}"
+       pass_msg: "{{ r_validate.stdout | trim }}"
+       error_msg: "{{ r_validate.stdout | trim }}"
+   ```
+   When wrapping existing scripts, **always check** if the provided playbook uses `ansible.builtin.fail` and replace it with `validation_check`.
+
+8. **Bastion SSH: use `bastion_user` not `student_user`** — `student_user` is the OCP username (e.g. `user1`).
+   Bastion SSH always needs the Linux user on the bastion VM (`lab-user`).
+   ```yaml
+   ansible_user: "{{ bastion_user | default('lab-user') }}"   # NOT student_user
+   ```
 7. **After each module — give curl commands and STOP. Wait for results.**
 
 ---
