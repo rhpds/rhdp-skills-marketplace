@@ -30,7 +30,7 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
       <div class="ftl-step-body">
         Read <strong>titles only</strong> (<code>= Title</code> heading per .adoc) for module count and labels.<br><br>
         Generate: <code>ui-config.yml</code> · verify <code>site.yml</code> nookbag bundle · <code>runtime-automation/module-N/</code> stubs<br><br>
-        <strong>Commit + push → "Now order the lab from integration.demo.redhat.com"</strong>
+        <strong>Commit + push.</strong> Do NOT order yet — AgV must be confirmed first.
       </div>
     </div>
   </div>
@@ -44,7 +44,8 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
       <div class="ftl-step-body">
         <strong>If provided:</strong> read <code>common.yaml</code> → detect lab type + FTL role presence automatically<br>
         <strong>If missing:</strong> offer to create branch + add required workload roles<br>
-        <strong>If not provided:</strong> ask directly whether role is in workloads
+        <strong>If not provided:</strong> ask directly whether role is in workloads<br><br>
+        <strong>Once both showroom AND AgV confirmed ready → "Order the lab from integration.demo.redhat.com"</strong>
       </div>
     </div>
   </div>

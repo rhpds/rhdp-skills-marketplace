@@ -184,13 +184,7 @@ skipModuleEnabled: true
 
 **Commit + push** the scaffold to the showroom repo.
 
-Then tell the developer:
-```
-✅ Scaffold committed.
-
-Now order the lab from integration.demo.redhat.com
-Share your GUID when it's up.
-```
+Do NOT ask to order yet — AgV must be confirmed first.
 
 ---
 
@@ -205,6 +199,17 @@ If provided — read `common.yaml`, detect lab type and whether FTL role is in w
 - FTL role missing → offer to create branch and add it (see agv-prereqs.md)
 
 If not provided — ask: *"Is `rhpds.ftl.ocp4_workload_runtime_automation_k8s` (OCP) or `rhpds.ftl.vm_workload_runtime_automation` (RHEL) already in your workloads?"*
+
+**Once both showroom AND AgV are confirmed committed/ready — tell the developer to order:**
+
+```
+✅ Showroom scaffold pushed.
+✅ AgV catalog ready (role present / branch pushed).
+
+Now order the lab:
+  go to integration.demo.redhat.com → order your catalog item
+  Share your GUID when it's up.
+```
 
 ---
 
