@@ -194,10 +194,13 @@ Showroom repo? (GitHub URL or local path)
 Read ONLY the `= Title` heading from each `.adoc` to get module count and labels.
 
 Generate immediately:
-- `ui-config.yml` — type: zero-touch, module list, correct tabs per lab type
-- Check for `site.yml`:
-  - **If `default-site.yml` exists but `site.yml` does not** → rename it to `site.yml`
-  - **If `site.yml` exists** → check the bundle URL uses `nookbag-bundle` (not `nookbag`):
+- `ui-config.yml`:
+  - **If existing `ui-config.yml` uses old `page:` format** → convert to `antora:` format
+  - **Generate/overwrite** with correct type: zero-touch, `antora:` module list, correct tabs
+  - The `name:` in modules MUST match `.adoc` filenames (without extension) in `content/modules/ROOT/pages/`
+- `site.yml`:
+  - **If `default-site.yml` exists but `site.yml` does not** → rename to `site.yml` and set `nookbag-bundle` URL
+  - **If `site.yml` exists** → enforce bundle URL uses `nookbag-bundle` (not `nookbag`):
   ```yaml
   ui:
     bundle:
@@ -207,6 +210,41 @@ Generate immediately:
 - `runtime-automation/module-N/` stub files
 
 Commit + push. Do NOT order yet.
+
+When scaffolding, check for these old patterns and fix them:
+
+**1. Old `ui-config.yml` format** — `page:` format doesn't work with nookbag v0.0.3.
+If the existing `ui-config.yml` uses `page:` (old format), convert to `antora:`:
+```yaml
+# OLD — causes 404 on content
+modules:
+  - name: Module 1
+    page: module-01.html
+
+# CORRECT for nookbag v0.0.3
+antora:
+  name: modules
+  dir: www
+  modules:
+    - name: module-01      # matches the .adoc filename without extension
+      label: "Module 1"
+      scripts: [solve, validation]
+      solveButton: true
+```
+The `name:` must match the `.adoc` filename (without extension) in `content/modules/ROOT/pages/`.
+
+**2. `setup-automation/main.yml`** — if it exists, replace with a no-op:
+```yaml
+---
+- name: Setup — no-op (zerotouch chart handles content serving)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Setup complete."
+```
+This old pattern conflicts with the zerotouch chart and causes the setup init container to crash.
 
 ---
 
