@@ -7,6 +7,8 @@ Claude Code plugin for managing OCP shared clusters via [sandbox-cli](https://gi
 | Skill | Invoke | Description |
 |-------|--------|-------------|
 | Setup | `/sandbox-cli:sandbox-setup` | Install and configure sandbox-cli |
+| List | `/sandbox-cli:cluster-list` | List all registered clusters |
+| Details | `/sandbox-cli:cluster-details` | Get detailed config of a specific cluster |
 | Onboard | `/sandbox-cli:cluster-onboard` | Onboard a new OCP shared cluster |
 | Offboard | `/sandbox-cli:cluster-offboard` | Offboard an existing cluster |
 | Rotate | `/sandbox-cli:cluster-rotate` | Offboard old + onboard new cluster |
