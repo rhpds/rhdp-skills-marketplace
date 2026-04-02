@@ -13,6 +13,7 @@ Claude Code plugin for managing OCP shared clusters via [sandbox-cli](https://gi
 
 ## Examples
 
+- [Cluster List & Get Details](examples/cluster-list-and-get-example.md) — View all registered clusters and inspect a specific cluster's configuration
 - [Cluster Rotation](examples/cluster-rotate-example.md) — End-to-end example of offboarding an old cluster and onboarding a new one using `/sandbox-cli:cluster-rotate`
 
 ## Prerequisites
