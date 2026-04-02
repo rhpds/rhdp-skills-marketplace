@@ -11,6 +11,10 @@ Claude Code plugin for managing OCP shared clusters via [sandbox-cli](https://gi
 | Offboard | `/sandbox-cli:cluster-offboard` | Offboard an existing cluster |
 | Rotate | `/sandbox-cli:cluster-rotate` | Offboard old + onboard new cluster |
 
+## Examples
+
+- [Cluster Rotation](examples/cluster-rotate-example.md) — End-to-end example of offboarding an old cluster and onboarding a new one using `/sandbox-cli:cluster-rotate`
+
 ## Prerequisites
 
 - Red Hat VPN connection (verified automatically by each skill)
