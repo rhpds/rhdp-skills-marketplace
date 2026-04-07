@@ -267,17 +267,34 @@ antora:
   modules:
     - name: module-01      # matches the .adoc filename without extension
       label: "Module 1"
-      scripts: [solve, validation]
-      solveButton: true
 ```
 The `name:` must match the `.adoc` filename (without extension) in `content/modules/ROOT/pages/`.
 
-**Note:** Solve/Validate buttons are now injected via AsciiDoc includes in the lab content itself:
+**Note:** Solve/Validate buttons use reusable AsciiDoc includes. Create these two files in the content repo:
+
+```
+content/modules/ROOT/pages/common/solve-button.adoc    ← CSS + JS for 🚀 Solve button
+content/modules/ROOT/pages/common/validate-button.adoc ← CSS + JS for ✓ Validate button
+```
+
+Then add to each module page that has a `solve.yml` / `validation.yml`:
+
 ```asciidoc
 include::common/solve-button.adoc[]
+
+++++
+<div class="solve-button-placeholder" data-module="module-01"></div>
+++++
+
 include::common/validate-button.adoc[]
+
+++++
+<div class="validate-button-placeholder" data-module="module-01"></div>
+++++
 ```
-These are provided by the showroom theme — do NOT add them manually.
+
+The `data-module` value must match the directory name under `runtime-automation/` (e.g. `module-01`, `module-02-model`).
+Copy the button files from `rhpds/ocp-zt-tenant-showroom/content/modules/ROOT/pages/common/` as the reference implementation.
 
 **2. `setup-automation/` directory** — **DELETE IT ENTIRELY if it exists. NEVER CREATE IT.**
 The showroom-single-pod chart does not need setup-automation. If a showroom repo has it, delete:
