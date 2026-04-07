@@ -303,15 +303,34 @@ Read ONLY to check if the workload role is in `workloads:`.
 Once AgV confirmed: *"Now order the lab from integration.demo.redhat.com"*
 
 
-### Step 2: AgV Catalog (Optional)
+### Step 2: AgV Catalog — Check and Update
 
 ```
 AgV catalog path? (e.g. summit-2026/lb1390-my-lab-cnv  or 'skip')
 ```
 
-If provided — read `common.yaml`, detect lab type and whether FTL role is in workloads.
-- FTL role present → proceed
-- FTL role missing → offer to create branch and add it (see agv-prereqs.md)
+If provided — read `common.yaml`, detect lab type, then:
+
+**Check** if the following are present in `workloads:` and `common.yaml`:
+- `rhpds.ftl.ocp4_workload_runtime_automation_k8s` in workloads (OCP labs)
+- `rhpds.ftl.vm_workload_runtime_automation` in post_software_final_workloads (RHEL labs)
+- Correct chart, image, and sandbox settings (see `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md`)
+
+**If anything is missing or outdated — create a branch and update it:**
+
+```bash
+# Create branch from main
+git checkout main && git pull
+git checkout -b add-e2e-grading-<lab-name>
+
+# Update common.yaml with required settings (see agv-prereqs.md for full snippets)
+# Then commit and push
+git add <catalog-path>/common.yaml
+git commit -m "Add E2E grading: runtime_automation_k8s role + showroom-single-pod chart"
+git push origin add-e2e-grading-<lab-name>
+```
+
+Tell the developer exactly what was added/changed and show the diff.
 
 If not provided — ask: *"Is `rhpds.ftl.ocp4_workload_runtime_automation_k8s` (OCP) or `rhpds.ftl.vm_workload_runtime_automation` (RHEL) already in your workloads?"*
 
@@ -319,7 +338,7 @@ If not provided — ask: *"Is `rhpds.ftl.ocp4_workload_runtime_automation_k8s` (
 
 ```
 ✅ Showroom scaffold pushed.
-✅ AgV catalog ready (role present / branch pushed).
+✅ AgV catalog updated on branch add-e2e-grading-<lab-name> (or already correct).
 
 Now order the lab:
   go to integration.demo.redhat.com → order your catalog item
