@@ -260,13 +260,28 @@ When scaffolding, check for these old patterns and fix them:
 #   solveButton: true
 #   view_switcher:
 
-# CORRECT minimal ui-config.yml:
+# CORRECT — based on ~/work/showroom-content/showroom_template_nookbag/ui-config.yml:
 type: showroom
+
+default_width: 30
 persist_url_state: true
-# tabs: (optional — add OCP Console or Terminal if needed)
-# skipModuleEnabled: true (optional)
+
+# Add tabs only if the lab needs split view (terminal, OCP console, etc.)
+# tabs:
+#   - name: OCP Console
+#     url: 'https://console-openshift-console.${DOMAIN}'
+#   - name: Terminal
+#     path: /wetty
+#     port: 443
+#   - name: Terminal (Bastion)
+#     path: /wetty
+#     port: 443
+#     secondary_name: Terminal (Node)
+#     secondary_path: /wetty_node
+#     secondary_port: 443
 ```
 Do NOT add an `antora.modules` list — nav.adoc handles module navigation.
+Reference template: `~/work/showroom-content/showroom_template_nookbag/ui-config.yml`
 
 **Note:** Solve/Validate buttons use reusable AsciiDoc includes. Create these two files in the content repo:
 
