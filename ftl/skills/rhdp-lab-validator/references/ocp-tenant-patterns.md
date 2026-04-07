@@ -1,6 +1,6 @@
 # OCP Tenant Patterns
 
-Runner: inside showroom pod (zerotouch chart). Uses `k8s_kubeconfig` extravar.
+Runner: inside showroom pod (showroom-single-pod chart). Uses `k8s_kubeconfig` extravar.
 Auth: `zt-runner` SA with admin RoleBinding in each student namespace.
 
 ## Extravars Available
@@ -131,15 +131,11 @@ For tasks the student does as a non-admin user:
 ```bash
 SHOWROOM="https://<showroom-url>"
 
-# Solve
-JOB=$(curl -sk -X POST "$SHOWROOM/runner/api/module-N/solve" \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['Job_id'])")
-sleep 30 && curl -sk "$SHOWROOM/runner/api/job/$JOB" | python3 -m json.tool
+# Solve (SSE streaming — output streams in real time)
+curl -sk -N "$SHOWROOM/stream/solve/module-N"
 
 # Validate
-JOB=$(curl -sk -X POST "$SHOWROOM/runner/api/module-N/validation" \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['Job_id'])")
-sleep 30 && curl -sk "$SHOWROOM/runner/api/job/$JOB" | python3 -m json.tool
+curl -sk -N "$SHOWROOM/stream/validate/module-N"
 ```
 
 ## Non-Automatable Steps Pattern (Browser / GitHub / Manual Actions)

@@ -1,4 +1,4 @@
-# AgV Prerequisites for ZT Grading
+# AgV Prerequisites for E2E Test Grading
 
 ## OCP Tenant Lab (config: namespace)
 
@@ -32,13 +32,13 @@ ocp4_workload_tenant_namespace_suffixes:
 - suffix: zttest       # → student_ns  = devuser-{guid}-zttest
 - suffix: ztworkspace  # → student_ns2 = devuser-{guid}-ztworkspace
 
-# Showroom — zerotouch chart required
+# Showroom — showroom-single-pod chart required
 ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/my-lab-showroom.git
 ocp4_workload_showroom_content_git_repo_ref: main
-ocp4_workload_showroom_deployer_chart_name: zerotouch
-ocp4_workload_showroom_deployer_chart_version: "1.9.18"
-ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.3.0"
-ocp4_workload_showroom_zero_touch_ui_enabled: true
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: "2.1.4"
+ocp4_workload_showroom_deployer_chart_package_url: https://prakhar1985.github.io/showroom-deployer
+ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
 ocp4_workload_showroom_terminal_type: ""
 ```
 
@@ -82,10 +82,10 @@ ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/my-lab-showroo
 ocp4_workload_showroom_content_git_repo_ref: main
 ocp4_workload_showroom_terminal_type: wetty
 ocp4_workload_showroom_wetty_ssh_bastion_login: true
-ocp4_workload_showroom_deployer_chart_name: zerotouch
-ocp4_workload_showroom_deployer_chart_version: "1.9.18"
-ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.3.0"
-ocp4_workload_showroom_zero_touch_ui_enabled: true
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: "2.1.4"
+ocp4_workload_showroom_deployer_chart_package_url: https://prakhar1985.github.io/showroom-deployer
+ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
 
 # Component propagation — bastion SSH port required for runner
 components:
@@ -138,7 +138,10 @@ showroom_git_repo: https://github.com/rhpds/my-lab-showroom.git
 showroom_git_ref: main
 showroom_ansible_runner_api: true
 showroom_ansible_runner_image: quay.io/rhpds/zt-runner
-showroom_ansible_runner_image_tag: v2.3.0
+showroom_ansible_runner_image_tag: v2.4.2
+
+# Sandbox
+purpose: prod
 ```
 
 ## What Each Role Does

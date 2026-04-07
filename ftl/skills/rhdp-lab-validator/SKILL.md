@@ -1,6 +1,6 @@
 ---
 name: ftl:rhdp-lab-validator
-description: This skill should be used when the user asks to "add ZT grading to my existing RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create ZT graders for RHDP", "wrap my bash scripts into ZT validation", "add Solve and Validate buttons to my showroom lab", "write zero-touch validation playbooks", "create grading for my RHEL lab", "generate nookbag module graders", or "add ZT grading to my AAP lab".
+description: This skill should be used when the user asks to "add E2E test grading to my existing RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create automated solve/validate graders for RHDP", "wrap my bash scripts into validation", "add Solve and Validate buttons to my showroom lab", "write validation playbooks", "create grading for my RHEL lab", "generate module graders", or "add E2E test grading to my AAP lab".
 version: 1.0.0
 ---
 
@@ -9,13 +9,13 @@ context: main
 model: claude-sonnet-4-6
 ---
 
-# RHDP Lab Validator — Zero Touch Grading
+# RHDP Lab Validator — E2E Test Grading
 
-Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks for labs that already have their infrastructure and showroom content in place. Adds Zero Touch (nookbag) Solve/Validate buttons without touching the existing lab setup. Works for OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, and AAP labs.
+Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks for labs that already have their infrastructure and showroom content in place. Adds Solve/Validate buttons using SSE streaming without touching the existing lab setup. Works for OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, and AAP labs.
 
 ## ⚠️ Prerequisites — AgV Must Be Set Up First
 
-**Before this skill can work, the lab's AgV catalog must already have the correct ZT workload roles.** Warn the developer if these are missing:
+**Before this skill can work, the lab's AgV catalog must already have the correct workload roles.** Warn the developer if these are missing:
 
 **For OCP tenant labs:**
 ```yaml
@@ -31,10 +31,10 @@ workloads:
   version: v1.6.4
 
 # Required showroom vars:
-ocp4_workload_showroom_deployer_chart_name: zerotouch
-ocp4_workload_showroom_deployer_chart_version: "1.9.18"
-ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.3.0"
-ocp4_workload_showroom_zero_touch_ui_enabled: true
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: "2.1.4"
+ocp4_workload_showroom_deployer_chart_package_url: https://prakhar1985.github.io/showroom-deployer
+ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
 ```
 
 **For OCP dedicated labs:** Same as tenant PLUS `ocp4_workload_runtime_automation_k8s_cluster_admin: true`
@@ -48,7 +48,7 @@ post_software_final_workloads:
 
 showroom_ansible_runner_api: true
 showroom_ansible_runner_image: quay.io/rhpds/zt-runner
-showroom_ansible_runner_image_tag: v2.3.0
+showroom_ansible_runner_image_tag: v2.4.2
 ```
 
 See `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` for complete AgV snippets per lab type.
@@ -72,7 +72,7 @@ Use these as templates when generating — all patterns are verified from real l
 This skill may take multiple sessions (waiting for env provisioning, testing modules, iterating). Rename the session so you can find and resume it:
 
 ```
-/rename ZT grading — my-lab-name
+/rename E2E grading — my-lab-name
 ```
 
 When you come back, just open the renamed session — full context is preserved. You can say "resume where we left off" and continue from the last module.
@@ -110,14 +110,14 @@ Claude can SSH to the bastion, check runner logs, inspect the SSH config, and de
 
 ### 4. Paste Failing Job Output
 
-When a module fails, paste the raw job output:
+When a module fails, paste the raw streaming output:
 
 ```bash
 # OCP: from laptop
-curl -sk "https://<showroom-url>/runner/api/job/<job-id>" | python3 -m json.tool
+curl -sk -N "https://<showroom-url>/stream/solve/module-01"
 
 # RHEL: from bastion
-curl -s http://localhost:8501/api/job/<job-id>
+curl -s -N "http://localhost:8501/stream/solve/module-01"
 ```
 
 Claude will diagnose the failure and fix the playbook on the spot.
@@ -133,32 +133,31 @@ Use these curl commands to test solve/validate without clicking the UI buttons:
 SHOWROOM=https://<showroom-url>
 
 # Check detected modules
-curl -sk $SHOWROOM/runner/api/config | python3 -m json.tool
+curl -sk "$SHOWROOM/stream/config" | python3 -m json.tool
 
-# Trigger solve / validation (returns Job_id)
-curl -sk -X POST $SHOWROOM/runner/api/module-01/solve
-curl -sk -X POST $SHOWROOM/runner/api/module-01/validation
-
-# Poll job result (replace {Job_id} from POST response)
-curl -sk $SHOWROOM/runner/api/job/{Job_id} | python3 -m json.tool
+# Trigger solve / validate (SSE streaming — use -N to disable buffering)
+curl -sk -N "$SHOWROOM/stream/solve/module-01"
+curl -sk -N "$SHOWROOM/stream/validate/module-01"
 ```
 
 ```bash
 # RHEL VM labs — from bastion (SSH in first)
 SHOWROOM=http://localhost:8501
 
-curl -s $SHOWROOM/api/config | python3 -m json.tool
-curl -s -X POST $SHOWROOM/api/module-01/solve
-curl -s -X POST $SHOWROOM/api/module-01/validation
-curl -s $SHOWROOM/api/job/{Job_id}
+curl -s "$SHOWROOM/stream/config" | python3 -m json.tool
+curl -s -N "$SHOWROOM/stream/solve/module-01"
+curl -s -N "$SHOWROOM/stream/validate/module-01"
 ```
 
 Run all modules at once (for quick testing after solve-all):
 ```bash
 for module in module-01 module-02 module-03; do
-  JOB=$(curl -sk -X POST $SHOWROOM/runner/api/${module}/validation     | python3 -c "import json,sys; print(json.load(sys.stdin)['Job_id'])")
-  sleep 30
-  echo "$module: $(curl -sk $SHOWROOM/runner/api/job/$JOB     | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['Status'])")"
+  echo "=== $module solve ==="
+  curl -sk -N "$SHOWROOM/stream/solve/${module}"
+  echo ""
+  echo "=== $module validate ==="
+  curl -sk -N "$SHOWROOM/stream/validate/${module}"
+  echo ""
 done
 ```
 
@@ -171,7 +170,7 @@ done
 The runner is NOT always on the bastion. Check the AgV `config:` field:
 
 - `config: cloud-vms-base` → runner is a **Podman container running ON the bastion**. The bastion IS the runner host. SSH there to check runner logs, invoke API, deploy playbooks.
-- Any other config (`namespace`, `openshift-workloads`, etc.) → runner is an **OCP pod** (zerotouch Helm chart). This applies even if the lab has a bastion VM. The runner SSHes TO the bastion as a target; the bastion is not where the runner lives.
+- Any other config (`namespace`, `openshift-workloads`, etc.) → runner is an **OCP pod** (showroom-single-pod Helm chart). This applies even if the lab has a bastion VM. The runner SSHes TO the bastion as a target; the bastion is not where the runner lives.
 
 Never assume a bastion means the runner is on the bastion. Confirm `config:` first.
 
@@ -214,7 +213,7 @@ Never assume a bastion means the runner is on the bastion. Confirm `config:` fir
 **Ask ONE question first:**
 
 ```
-What type of lab are you adding ZT grading to?
+What type of lab are you adding E2E test grading to?
 
 1. OCP multi-user  — shared cluster, students get scoped namespaces
 2. OCP dedicated   — student has cluster-admin, lab has a bastion VM
@@ -236,15 +235,15 @@ Read ONLY the `= Title` heading from each `.adoc` to get module count and labels
 Generate immediately:
 - `ui-config.yml`:
   - **If existing `ui-config.yml` uses old `page:` format** → convert to `antora:` format
-  - **Generate/overwrite** with correct type: zero-touch, `antora:` module list, correct tabs
+  - **Generate/overwrite** with correct type: `showroom`, `antora:` module list, correct tabs
   - The `name:` in modules MUST match `.adoc` filenames (without extension) in `content/modules/ROOT/pages/`
 - `site.yml`:
-  - **If `default-site.yml` exists but `site.yml` does not** → rename to `site.yml` and set `nookbag-bundle` URL
-  - **If `site.yml` exists** → enforce bundle URL uses `nookbag-bundle` (not `nookbag`):
+  - **If `default-site.yml` exists but `site.yml` does not** → rename to `site.yml` and set bundle URL
+  - **If `site.yml` exists** → enforce bundle URL:
   ```yaml
   ui:
     bundle:
-      url: https://github.com/rhpds/nookbag-bundle/releases/download/v0.0.3/ui-bundle.zip
+      url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
   ```
   **Both mistakes cause antora-builder to crash:** missing `site.yml` → "playbook not found", wrong URL → 404 downloading bundle.
 - `runtime-automation/module-N/` stub files
@@ -253,7 +252,7 @@ Commit + push. Do NOT order yet.
 
 When scaffolding, check for these old patterns and fix them:
 
-**1. Old `ui-config.yml` format** — `page:` format doesn't work with nookbag v0.0.3.
+**1. Old `ui-config.yml` format** — `page:` format doesn't work with the current showroom chart.
 If the existing `ui-config.yml` uses `page:` (old format), convert to `antora:`:
 ```yaml
 # OLD — causes 404 on content
@@ -261,7 +260,7 @@ modules:
   - name: Module 1
     page: module-01.html
 
-# CORRECT for nookbag v0.0.3
+# CORRECT
 antora:
   name: modules
   dir: www
@@ -273,11 +272,18 @@ antora:
 ```
 The `name:` must match the `.adoc` filename (without extension) in `content/modules/ROOT/pages/`.
 
+**Note:** Solve/Validate buttons are now injected via AsciiDoc includes in the lab content itself:
+```asciidoc
+include::common/solve-button.adoc[]
+include::common/validate-button.adoc[]
+```
+These are provided by the showroom theme — do NOT add them manually.
+
 **2. `setup-automation/` directory** — **DELETE IT ENTIRELY if it exists. NEVER CREATE IT.**
-The zerotouch chart does not need setup-automation. If a showroom repo has it, delete:
+The showroom-single-pod chart does not need setup-automation. If a showroom repo has it, delete:
 ```bash
 git rm -r setup-automation/
-git commit -m "Remove setup-automation — not needed with zerotouch chart"
+git commit -m "Remove setup-automation — not needed with showroom-single-pod chart"
 git push
 ```
 Do NOT replace with a no-op. Do NOT scaffold it. If it doesn't exist, do not create it.
@@ -290,7 +296,7 @@ Do NOT replace with a no-op. Do NOT scaffold it. If it doesn't exist, do not cre
 AgV catalog path? (e.g. summit-2026/lb1390-my-lab-cnv  or 'skip')
 ```
 
-Read ONLY to check if the ZT workload role is in `workloads:`.
+Read ONLY to check if the workload role is in `workloads:`.
 - Present → proceed
 - Missing → offer to create branch and add it
 
@@ -320,7 +326,7 @@ Now order the lab:
   Share your GUID when it's up (provisioning takes 15-60 min).
 
 💡 Tip: Rename this session so you can come back and resume:
-  /rename ZT grading — <your-lab-name>
+  /rename E2E grading — <your-lab-name>
 ```
 
 ---
@@ -333,7 +339,7 @@ Now order the lab:
 
 ```
 Do you already have bash scripts or Ansible playbooks for any modules?
-Share them (GitHub URL or paste) — I'll wrap them into the ZT pattern.
+Share them (GitHub URL or paste) — I'll wrap them into the E2E test pattern.
 For modules with nothing I'll generate from scratch.
 ```
 
@@ -348,7 +354,7 @@ If scripts are NOT in the showroom repo (already on target from provisioning) �
 **OCP multi-user (type 1) — two CIs involved:**
 
 The shared cluster (Cluster CI) is already running — you do NOT order a cluster.
-What you order is the **Tenant CI** which provisions: namespaces, Keycloak user, showroom, ZT runner.
+What you order is the **Tenant CI** which provisions: namespaces, Keycloak user, showroom, runner.
 
 ```
 1. Order the TENANT CI from integration.demo.redhat.com
@@ -358,7 +364,7 @@ What you order is the **Tenant CI** which provisions: namespaces, Keycloak user,
    oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
 ```
 Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
-Confirm `curl https://<showroom-url>/runner/api/config` returns module list.
+Confirm `curl -sk https://<showroom-url>/stream/config` returns module list.
 
 **OCP dedicated (type 2) — wait for provisioning first:**
 Provisioning takes 15-60 min. Share GUID when the cluster is up, then:
@@ -366,12 +372,12 @@ Provisioning takes 15-60 min. Share GUID when the cluster is up, then:
   oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
 ```
 Claude verifies: zt-runner SA · ClusterRoleBinding · kubeconfig Secret · showroom-userdata CM
-Confirm `curl https://<showroom-url>/runner/api/config` returns module list.
+Confirm `curl -sk https://<showroom-url>/stream/config` returns module list.
 
 **RHEL VM (type 3) — wait for provisioning, then connect to bastion:**
 Share bastion host / port / password when lab is up.
 Claude SSHes to bastion, checks SSH config + node hosts.
-Confirm `curl http://localhost:8501/api/config` returns module list.
+Confirm `curl http://localhost:8501/stream/config` returns module list.
 
 ---
 
@@ -387,8 +393,8 @@ Multi-task ✅/❌ mandatory. Manual steps get ⚠️ warning pattern.
 
 **STOP. Give curl test commands immediately.**
 
-**OCP (laptop):** `curl -sk https://<showroom>/runner/api/module-N/solve`
-**RHEL (bastion):** `curl -s http://localhost:8501/api/module-N/solve`
+**OCP (laptop):** `curl -sk -N https://<showroom>/stream/solve/module-N`
+**RHEL (bastion):** `curl -s -N http://localhost:8501/stream/solve/module-N`
 
 Wait for results. Debug inline if needed. Only proceed to Module N+1 after this passes.
 
@@ -397,4 +403,3 @@ Wait for results. Debug inline if needed. Only proceed to Module N+1 after this 
 
 - `/showroom:create-lab` -- Create showroom content (run before this skill)
 - `/agnosticv:catalog-builder` -- Set up the AgV catalog (run before this skill)
-
