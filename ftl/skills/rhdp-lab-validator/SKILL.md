@@ -243,7 +243,7 @@ Generate immediately:
   ```yaml
   ui:
     bundle:
-      url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
+      url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
   ```
   **Both mistakes cause antora-builder to crash:** missing `site.yml` → "playbook not found", wrong URL → 404 downloading bundle.
 - `runtime-automation/module-N/` stub files
