@@ -361,14 +361,18 @@ git pull origin main</code></pre>
 </details>
 
 <details>
-<summary><strong>Check 19: Password Pattern</strong></summary>
+<summary><strong>Check 19: Credential Pattern (UPDATED v2.10.8)</strong></summary>
+
+  <p>Applies to <strong>all credential-like variables</strong> — any key containing <code>password</code>, <code>passwd</code>, <code>secret</code>, <code>token</code>, <code>access_key</code>, <code>api_key</code>, or <code>credential</code> (excluding benign suffixes like <code>_length</code>, <code>_policy</code>, <code>_type</code>, <code>_format</code>, <code>_expires</code>).</p>
 
   <ul>
-    <li><strong>Rule 1 — No hash/GUID generation:</strong> ERROR if any password variable uses <code>hash()</code>, <code>sha</code>, <code>md5</code>, or GUID-derived values</li>
-    <li><strong>Rule 2 — No plain static strings:</strong> ERROR if a password variable is a hardcoded string (e.g. <code>password: "redhat"</code>)</li>
-    <li><strong>Rule 3 — Unique lookup paths:</strong> ERROR if two password variables use the same <code>output_dir ~</code> path (generates identical passwords)</li>
-    <li>Correct pattern: <code>lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits'])</code></li>
+    <li><strong>Rule 1 — No hash/GUID generation:</strong> ERROR if any credential variable uses <code>hash()</code>, <code>sha</code>, <code>md5</code>, or GUID-derived values</li>
+    <li><strong>Rule 2 — No plain static strings:</strong> ERROR if a credential is a hardcoded string — must use <code>lookup('password')</code>, reference <code>{{ common_password }}</code>, or be empty (<code>""</code> for workload auto-generation)</li>
+    <li><strong>Rule 3 — Unique lookup paths:</strong> ERROR if two credential variables use the same <code>output_dir ~</code> path (generates identical values)</li>
+    <li><strong>Rule 4 — No clear text in dev.yaml / test.yaml:</strong> ERROR if plain-text credentials appear in <code>dev.yaml</code> or <code>test.yaml</code> — these files are committed to git</li>
   </ul>
+
+  <p>Correct pattern: <code>lookup('password', output_dir ~ '/common_password', length=12, chars=['ascii_letters', 'digits'])</code></p>
 
 </details>
 
