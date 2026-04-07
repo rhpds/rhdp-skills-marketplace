@@ -234,9 +234,9 @@ Read ONLY the `= Title` heading from each `.adoc` to get module count and labels
 
 Generate immediately:
 - `ui-config.yml`:
-  - **If existing `ui-config.yml` uses old `page:` format** → convert to `antora:` format
-  - **Generate/overwrite** with correct type: `showroom`, `antora:` module list, correct tabs
-  - The `name:` in modules MUST match `.adoc` filenames (without extension) in `content/modules/ROOT/pages/`
+  - **Only change `type:`** — set to `showroom` if not already. Do NOT regenerate the module list (nav.adoc handles navigation).
+  - Remove any nookbag-specific fields: `scripts:`, `solveButton:`, `view_switcher:`, `zero-touch` type
+  - Keep existing tabs or add an OCP Console tab if none exist
 - `site.yml`:
   - **If `default-site.yml` exists but `site.yml` does not** → rename to `site.yml` and set bundle URL
   - **If `site.yml` exists** → enforce bundle URL:
@@ -252,23 +252,21 @@ Commit + push. Do NOT order yet.
 
 When scaffolding, check for these old patterns and fix them:
 
-**1. Old `ui-config.yml` format** — `page:` format doesn't work with the current showroom chart.
-If the existing `ui-config.yml` uses `page:` (old format), convert to `antora:`:
+**1. Old `ui-config.yml` fields** — remove nookbag-specific fields, set `type: showroom`:
 ```yaml
-# OLD — causes 404 on content
-modules:
-  - name: Module 1
-    page: module-01.html
+# REMOVE these nookbag-specific fields:
+#   type: zero-touch
+#   scripts: [solve, validation]
+#   solveButton: true
+#   view_switcher:
 
-# CORRECT
-antora:
-  name: modules
-  dir: www
-  modules:
-    - name: module-01      # matches the .adoc filename without extension
-      label: "Module 1"
+# CORRECT minimal ui-config.yml:
+type: showroom
+persist_url_state: true
+# tabs: (optional — add OCP Console or Terminal if needed)
+# skipModuleEnabled: true (optional)
 ```
-The `name:` must match the `.adoc` filename (without extension) in `content/modules/ROOT/pages/`.
+Do NOT add an `antora.modules` list — nav.adoc handles module navigation.
 
 **Note:** Solve/Validate buttons use reusable AsciiDoc includes. Create these two files in the content repo:
 
