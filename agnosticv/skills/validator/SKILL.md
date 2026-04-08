@@ -711,23 +711,8 @@ def check_stage_files(catalog_path):
         with open(filepath) as f:
           stage_config = yaml.safe_load(f)
 
-        # Check purpose field
-        if 'purpose' in stage_config:
-          purpose = stage_config['purpose']
-          expected = requirements['expected_purpose']
-
-          if purpose != expected:
-            warnings.append({
-              'check': 'stage_files',
-              'severity': 'WARNING',
-              'message': f'{filename} has unexpected purpose value',
-              'location': f'{filename}:purpose',
-              'current': purpose,
-              'expected': expected,
-              'recommendation': f'Set purpose: {expected}'
-            })
-          else:
-            passed_checks.append(f"✓ {filename} purpose correct: {purpose}")
+        # purpose: field is no longer required in stage files — do not check or warn.
+        # Per Nate Stencell (issue #11): this field has not been required for some time.
 
         # Check scm_ref differentiation for event/prod
         if filename in ['event.yaml', 'prod.yaml']:
@@ -750,7 +735,7 @@ def check_stage_files(catalog_path):
         'severity': 'WARNING',
         'message': f'Missing {filename}',
         'location': catalog_path,
-        'fix': f'Create {filename} with purpose: {requirements["expected_purpose"]}'
+        'fix': f'Create {filename} for development overrides'
       })
 ```
 

@@ -72,6 +72,7 @@ Native Agent Skills support with plugin marketplace - automatic updates and the 
 # For deployment health checks (RHDP internal)
 /plugin install health@rhdp-marketplace
 /plugin install ftl@rhdp-marketplace</code></pre>
+    <p>When prompted for scope, select <strong>"Install for you (user scope)"</strong> — this installs the plugin for your user account across all projects. That's the right choice for personal use. "Project scope" installs it for all collaborators in the current repo (useful if your whole team uses Claude Code), and "local scope" is for a single session only.</p>
   </div></li>
 </ol>
 

@@ -45,18 +45,11 @@ def check_ocp_infrastructure(config):
   cluster_size = cluster_component.get('parameter_values', {}).get('cluster_size', '')
   ocp_version = str(cluster_component.get('parameter_values', {}).get('host_ocp4_installer_version', ''))
 
-  # Component item must end with /prod in common.yaml
-  if cluster_item and not cluster_item.endswith('/prod'):
-    errors.append({
-      'check': 'infrastructure',
-      'severity': 'ERROR',
-      'message': 'Component item must point to /prod pool in common.yaml',
-      'location': 'common.yaml:__meta__.components',
-      'current': cluster_item,
-      'fix': f'Change to: {cluster_item.rstrip("/").rsplit("/", 1)[0]}/prod'
-    })
-  else:
-    passed_checks.append(f"✓ Component item points to /prod pool: {cluster_item}")
+  # Do NOT check for /prod suffix — leave the component item as-is.
+  # The ordering system determines which pool (/dev, /prod) based on what is ordered.
+  # Hardcoding /prod in common.yaml is WRONG — it bypasses dev ordering.
+  if cluster_item:
+    passed_checks.append(f"✓ Component item present: {cluster_item}")
 
   # OCP version must be a known available pool version
   known_ocp_versions = ['4.18', '4.20', '4.21']
