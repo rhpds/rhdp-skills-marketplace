@@ -6,6 +6,34 @@ This document provides shared AgnosticV configuration patterns, rules, and techn
 
 ---
 
+### Public Repository -- No Sensitive Data (MANDATORY)
+
+**This skills marketplace is a public, world-readable repository.** All files -- skills, examples, templates, and documentation -- are visible to anyone on the internet.
+
+**NEVER include in any file committed to this repo:**
+- Real passwords, API keys, tokens, secrets, or credentials
+- Internal hostnames, VPN endpoints, bastion IPs, or non-public URLs
+- Customer names, email addresses, account IDs, or PII
+- SSH keys, certificates, kubeconfig contents, or private key material
+- Real cloud account IDs, subscription IDs, or project identifiers
+
+**Required patterns for AgnosticV skills:**
+- Use `lookup('password', '/tmp/...', length=12, chars=['ascii_letters','digits'])` patterns -- never real passwords
+- Use `{attribute}` placeholders for environment-specific values
+- Use `example.com`, `192.0.2.x` (RFC 5737), and dummy UUIDs in example files
+- Example YAML (in `examples/` directories) must contain only synthetic, non-sensitive values
+- When showing AgV config patterns (common.yaml, dev.yaml), use placeholder variable references, not real values
+
+**Skill behavior:**
+- Skills MUST NOT ask users to paste credentials or secrets into the conversation
+- Skills MUST NOT write real credentials into generated catalog files or examples
+- If a user provides real credentials, the skill MUST NOT echo them back or write them to files
+- Generated `dev.yaml` and `test.yaml` files must never contain clear-text passwords (enforced by validator Check 19)
+
+**Why**: Any committed secret is immediately exposed, indexed by search engines, and archived by third-party scrapers. This applies to the marketplace repo itself -- the AgnosticV target repo where catalogs are deployed has its own security posture.
+
+---
+
 ### Access Check Protocol
 
 **CRITICAL: This MUST be asked IMMEDIATELY when user selects option 3**

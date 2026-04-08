@@ -11,6 +11,20 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
+> **PUBLIC REPOSITORY -- DO NOT COMMIT SENSITIVE DATA**
+>
+> This is a **public, world-readable** repository. Everything committed here -- skills, examples, templates, documentation -- is visible to anyone on the internet.
+>
+> **NEVER include** in any file (SKILL.md, examples, templates, docs, or code):
+> - Passwords, API keys, tokens, or secrets (real or internal)
+> - Internal hostnames, IP addresses, or non-public URLs
+> - Customer names, account IDs, or PII
+> - VPN endpoints, bastion addresses, or infrastructure details
+> - Service account credentials or kubeconfig data
+> - SSH keys, certificates, or private key material
+>
+> Use **placeholders** (e.g., `{password}`, `<your-api-key>`, `example.com`) instead. See the [Security Guidelines](#security-guidelines) section below.
+
 ---
 
 ## 🎯 I Want To...
@@ -421,6 +435,38 @@ bash /tmp/rhdp-install.sh --platform claude --namespace showroom
 # or for Cursor
 bash /tmp/rhdp-install.sh --platform cursor --namespace all
 ```
+
+---
+
+## Security Guidelines
+
+This is a **public repository**. All content is world-readable and indexed by search engines. Every contributor must follow these rules.
+
+### What MUST NOT appear anywhere in this repo
+
+| Category | Examples | Use Instead |
+|----------|----------|-------------|
+| Credentials | Passwords, API keys, tokens, secrets | `{password}`, `<your-api-key>`, `lookup('password', ...)` |
+| Internal infrastructure | VPN endpoints, bastion IPs, internal hostnames | `{bastion_public_hostname}`, `example.internal` |
+| Customer/user data | Real names, email addresses, account IDs | `user1@example.com`, `{user_name}` |
+| Non-public URLs | Internal dashboards, staging environments, private repos | `https://example.com/dashboard` |
+| Certificates & keys | SSH private keys, TLS certs, kubeconfig contents | Reference the file path, never the content |
+| Cloud account details | AWS account IDs, subscription IDs, project IDs | `<your-account-id>`, `{cloud_account}` |
+
+### Rules for skill authors
+
+1. **Use attribute placeholders** -- all environment-specific values must use `{attribute}` or `<placeholder>` syntax, never real values.
+2. **Examples must be synthetic** -- example YAML/config files must use `example.com`, `192.0.2.x` (RFC 5737), and dummy UUIDs.
+3. **Credential patterns only** -- show the `lookup('password', ...)` pattern or `{password}` placeholder, never an actual credential.
+4. **No internal URLs** -- references to `*.redhat.com` internal systems (not public-facing) must be removed or replaced with generic descriptions.
+5. **Review before committing** -- scan your changes for anything that looks like a real credential, IP, hostname, or account identifier.
+
+### If you find sensitive data
+
+If you discover committed secrets or sensitive data, **do not just delete it in a new commit** (it remains in git history). Instead:
+1. Contact the repository maintainers immediately.
+2. Rotate any exposed credentials.
+3. The maintainers will rewrite history if necessary.
 
 ---
 

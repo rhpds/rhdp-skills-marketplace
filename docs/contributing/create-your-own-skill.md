@@ -9,6 +9,8 @@ title: Create Your Own Skills
 
 <div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><strong>Who this is for:</strong> RHDP team members who want to automate a workflow as a reusable Claude Code skill. You don't write skills by hand -- you use Claude to help you build them step by step.</div></div>
 
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>PUBLIC REPOSITORY -- NO SENSITIVE DATA</strong><br><br>This marketplace is <strong>public and world-readable</strong>. Everything you commit -- SKILL.md files, examples, templates, reference docs -- is visible to anyone on the internet and indexed by search engines.<br><br><strong>NEVER include:</strong> real passwords, API keys, tokens, internal hostnames, VPN endpoints, bastion IPs, customer names, email addresses, SSH keys, certificates, kubeconfig data, or cloud account IDs.<br><br><strong>Always use:</strong> <code>{attribute}</code> placeholders, <code>&lt;placeholder&gt;</code> syntax, <code>example.com</code> domains, <code>192.0.2.x</code> (RFC 5737) IPs, and dummy UUIDs.<br><br>Skills must not ask users to paste credentials into conversations, and must never write real credentials to generated files. If you find committed secrets, contact the maintainers immediately and rotate the exposed credentials.</div></div>
+
 ---
 
 ## The Real Workflow {#overview}
@@ -172,6 +174,8 @@ Every SKILL.md has two YAML blocks separated by `---`:
 | `model` | Which Claude model to use | `claude-opus-4-6`, `sonnet`, `haiku` |
 
 <div class="callout callout-tip"><span class="callout-icon">✅</span><div class="callout-body"><strong>When to use <code>context: fork</code>:</strong> Use it for validation or analysis tasks that should not pollute the main conversation. The <code>verify-content</code> skill uses this. For skills that create files or need ongoing conversation context, use <code>context: main</code>.</div></div>
+
+<div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Security check before committing:</strong> Review your generated SKILL.md and all reference files for real credentials, internal URLs, or other sensitive data. Use <code>{placeholder}</code> syntax for any environment-specific values. This is a public repo -- anything you commit is visible to the world.</div></div>
 
 ### Iterate with Claude
 
