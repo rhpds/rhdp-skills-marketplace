@@ -9,6 +9,35 @@ This document defines shared contracts and rules used by all Showroom authoring 
 
 ## Shared Contracts
 
+### 0. Public Repository -- No Sensitive Data (MANDATORY)
+
+**Rule**: This marketplace is a **public, world-readable** repository. Every file -- skills, examples, templates, references, and generated output -- is visible to anyone on the internet. Skills MUST NOT produce, accept, or store sensitive information.
+
+**Prohibited content** (in SKILL.md files, templates, examples, and generated output):
+- Real passwords, API keys, tokens, secrets, or credentials of any kind
+- Internal hostnames, VPN endpoints, bastion IPs, or non-public URLs
+- Customer names, email addresses, account IDs, or PII
+- SSH keys, certificates, kubeconfig contents, or private key material
+- Cloud account IDs, subscription IDs, or project identifiers
+- Any value that could be used by an attacker to access systems or identify individuals
+
+**Required patterns:**
+- Use `{attribute}` placeholders for all environment-specific values (e.g., `{password}`, `{openshift_console_url}`, `{user_name}`)
+- Use `<placeholder>` syntax in documentation (e.g., `<your-api-key>`, `<cluster-url>`)
+- Use `example.com`, `192.0.2.x` (RFC 5737), and dummy UUIDs in examples
+- Use `lookup('password', ...)` patterns for credential generation references, never real credentials
+- Internal Red Hat URLs (non-public `*.redhat.com` systems) must be replaced with generic descriptions or omitted
+
+**Skill behavior rules:**
+- Skills MUST NOT ask users to paste credentials, tokens, or secrets into the conversation
+- Skills MUST NOT write credentials to generated files -- use attribute placeholders instead
+- If a skill needs to reference an authenticated service, describe the access pattern without embedding the credential
+- If a user provides a real credential in conversation, the skill MUST NOT echo it back or write it to any file
+
+**Why**: This is a public repo. Any committed secret is immediately exposed to the internet, indexed by search engines, and archived by third-party scrapers. Leaked credentials lead to unauthorized access, data breaches, and costly incident response.
+
+---
+
 ### 1. Version Pinning or Attribute Placeholders (REQUIRED)
 
 **Rule**: Every module must handle versions explicitly.
