@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.9] - 2026-04-08
+
+### AgnosticV Skills
+
+#### validator — 2 false-positive fixes (Nate Stencell, issue #11)
+- **Check 10:** removed `purpose:` field check — no longer required in any stage file (`dev.yaml`, `prod.yaml`, `event.yaml`)
+- **Check 6B:** removed `/prod` pool suffix check — the ordering system determines the pool environment; hardcoding `/prod` in `common.yaml` bypasses dev ordering
+
+### Docs
+- `docs/setup/claude-code.md`: clarified `/plugin install` scope selection — user scope is the right choice for personal use (issue #5, Perry Rivera)
+- Security guidelines merged from Guillaume Coré (PR #13): README, AGV-COMMON-RULES, SKILL-COMMON-RULES, create-your-own-skill docs
+
 ## [v2.11.3] - 2026-04-01
 
 ### Added
