@@ -80,6 +80,9 @@ claude
 
 # For deployment health checks (RHDP internal)
 /plugin install health@rhdp-marketplace
+
+# For shared cluster management (RHDP internal)
+/plugin install sandbox-cli@rhdp-marketplace
 ```
 
 **Benefits:**
@@ -107,6 +110,12 @@ See [MARKETPLACE.md](MARKETPLACE.md) for complete plugin list and usage.
 
 **FTL Plugin** (`ftl@rhdp-marketplace`) - Full Test Lifecycle:
 - `/ftl:rhdp-lab-validator` - Generate ZT runtime-automation playbooks for RHDP showroom labs (OCP/RHEL/AAP)
+
+**Sandbox CLI Plugin** (`sandbox-cli@rhdp-marketplace`) - Shared cluster lifecycle management:
+- `/sandbox-cli:sandbox-setup` - Install and configure sandbox-cli tool
+- `/sandbox-cli:cluster-onboard` - Onboard a new OCP shared cluster
+- `/sandbox-cli:cluster-offboard` - Safely offboard an existing cluster
+- `/sandbox-cli:cluster-rotate` - Full cluster rotation (offboard old + onboard new)
 
 ---
 
@@ -191,6 +200,34 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 ```
 
 **Documentation:** [ftl/README.md](ftl/README.md)
+
+---
+
+### 🔧 sandbox-cli (RHDP Internal - Shared Cluster Management)
+
+**Purpose:** Manage OCP shared cluster lifecycle via the RHDP Sandbox API
+
+**Prerequisites:**
+- Red Hat VPN connection (verified by each skill)
+- `oc` CLI installed
+- Admin access to target OCP cluster(s)
+- Sandbox API login token (JWT) with `shared-cluster-manager` or `admin` role
+
+**Skills:**
+
+| Skill | Description | Use Case |
+|-------|-------------|----------|
+| `sandbox-setup` | Install and configure sandbox-cli | Initial setup, new users |
+| `cluster-onboard` | Register a new cluster with Sandbox API | Expand shared cluster capacity |
+| `cluster-offboard` | Safely remove a cluster from Sandbox API | Decommission clusters |
+| `cluster-rotate` | Offboard old + onboard new cluster | Replace old cluster with new one |
+
+**Workflow:**
+```
+/sandbox-cli:sandbox-setup → /sandbox-cli:cluster-rotate (or onboard/offboard individually)
+```
+
+**Documentation:** [sandbox-cli/README.md](sandbox-cli/README.md)
 
 ---
 
@@ -380,6 +417,16 @@ rhdp-skills-marketplace/
 │   ├── README.md
 │   ├── skills/
 │   │   └── deployment-validator/SKILL.md
+│   └── docs/
+│
+├── sandbox-cli/            # Plugin structure (Claude Code)
+│   ├── .claude-plugin/plugin.json
+│   ├── README.md
+│   ├── skills/
+│   │   ├── sandbox-setup/SKILL.md
+│   │   ├── cluster-onboard/SKILL.md
+│   │   ├── cluster-offboard/SKILL.md
+│   │   └── cluster-rotate/SKILL.md
 │   └── docs/
 │
 ├── VERSION                 # Current version
