@@ -9,489 +9,327 @@ context: main
 model: claude-sonnet-4-6
 ---
 
-# RHDP Lab Validator — E2E Test Grading
+# RHDP Lab Validator — E2E Grading Skill
 
-Generate `runtime-automation/module-N/{solve,validation}.yml` Ansible playbooks for labs that already have their infrastructure and showroom content in place. Adds Solve/Validate buttons using SSE streaming.
+Generates `runtime-automation/module-N/{solve,validate}.yml` Ansible playbooks for any RHDP showroom lab. Works for OCP tenant, OCP dedicated, RHEL VM, AAP, and any other lab type.
 
-## How This Skill Generates Automation
+## Core Principle
 
-For each module, classify every student task into one of two categories:
+**solve.yml and validate.yml are always Ansible playbooks** — no exceptions.
 
-### ✅ Ansible-automatable
-Use **kubernetes.core**, **ansible.builtin.shell/script**, or **ansible.builtin.uri** (API call).
-Generate pure Ansible — solve does it via API/k8s/SSH, validate checks state.
-- OCP: `kubectl create configmap`, RBAC, deployments → `kubernetes.core.k8s`
-- Bastion: shell commands, scripts → `ansible.builtin.script` or `ansible.builtin.shell`
-- Any REST API → `ansible.builtin.uri`
+- **API/CLI steps** → pure Ansible tasks (`kubernetes.core`, `ansible.builtin.shell`, `ansible.builtin.uri`, etc.)
+- **UI steps** (browser, OCP Console, web wizards) → Claude generates a Playwright `.js` script, and solve.yml calls it via `ansible.builtin.script`
+- **validate.yml** → ALWAYS pure Ansible (checking state via API/SSH, never needs a browser)
 
-### ⚠️ UI-only (cannot be automated via Ansible)
-Browser interactions that have no API equivalent: OCP web console drag-drop, OAuth browser flows, GUI-only wizards.
-Mark these with a `⚠️ NON-AUTOMATABLE` comment and a `debug` task explaining why.
-**Do NOT try to call Demolition from inside solve.yml/validate.yml** — Demolition runs separately as an E2E test tool. Solve/Validate are Ansible-only buttons in the showroom UI.
+---
 
-### How to use Demolition scout to understand the module
-Before generating, if a module is complex or has many `send-to-*` blocks, use Demolition scout to understand what the student does:
+## Three-Phase Workflow
 
-```bash
-# If Demolition is deployed (https://demolition-dev.apps.cnv-us-east-ocp-3.rhdp.net)
-# Run scout-plan against the showroom to understand what each module does:
-curl -sk -X POST https://demolition-dev.apps.cnv-us-east-ocp-3.rhdp.net/api/v1/quick-run \
-  -H "Content-Type: application/json" \
-  -d '{"url": "<showroom-url>", "mode": "scout-plan", "worker_count": 1}'
-```
+### Phase 1 — Survey (all modules, fast)
 
-Scout reads the adoc, plans every step, and returns a structured breakdown of what the student does per module. Use this output to:
-1. Understand the exact commands/resources the student creates
-2. Map each step to the right Ansible module (kubernetes.core, shell, uri)
-3. Identify which steps genuinely have no API equivalent → mark ⚠️ non-automatable
+Read ALL module `.adoc` files in one pass. For each step in each module, classify:
 
-**Key insight:** `send-to-wetty`/`send-to-terminal` code blocks show exactly what commands the student runs. These map directly to `ansible.builtin.shell` on bastion or `kubernetes.core` for OCP resources.
+| Classification | Description | Ansible approach |
+|---|---|---|
+| `k8s` | OCP resource create/update/delete | `kubernetes.core.k8s` |
+| `k8s-check` | OCP resource read/verify | `kubernetes.core.k8s_info` |
+| `shell-bastion` | Command run on bastion VM | `ansible.builtin.shell` via SSH inventory |
+| `shell-node` | Command run on node VM | `ansible.builtin.shell` via SSH to node |
+| `api` | REST API call (AAP, any HTTP) | `ansible.builtin.uri` |
+| `ui` | Browser interaction (OCP console, web app, wizard) | Playwright `.js` script |
+| `skip` | Informational only — nothing to automate | no task |
 
-### Demolition is for separate E2E testing — not called from solve/validate
-```
-Solve/Validate buttons (showroom UI)     Demolition (separate E2E tool)
-        │                                         │
-        └── Runs Ansible playbooks               └── Runs Playwright simulate
-            via SSE (/stream/solve)                  Calls /stream/validate
-            Pure Ansible only                        Tests the full lab flow
-```
+Output: a step-by-step blueprint per module showing what each step maps to.
 
-## ⚠️ Prerequisites — AgV Must Be Set Up First
+---
 
-**Before this skill can work, the lab's AgV catalog must already have the correct workload roles.** Warn the developer if these are missing:
+### Phase 2 — Generate (module by module)
 
-**For OCP tenant labs:**
+For each module using the Phase 1 blueprint:
+
+**For `api`, `k8s`, `shell-*` steps → generate Ansible tasks directly.**
+
+Use the appropriate module per lab type:
+
 ```yaml
-workloads:
-  - rhpds.ftl.ocp4_workload_runtime_automation_k8s   # ← REQUIRED
+# OCP labs — kubernetes.core
+- kubernetes.core.k8s:
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    validate_certs: false
+    state: present
+    definition: ...
 
-# Required collections:
-- name: https://github.com/rhpds/rhpds-ftl.git
-  type: git
-  version: "{{ tag }}"
-- name: https://github.com/agnosticd/showroom.git
-  type: git
-  version: v1.6.4
+# RHEL VM / bastion labs — SSH
+- ansible.builtin.add_host:
+    name: bastion
+    ansible_user: "{{ bastion_user | default('lab-user') }}"
+    ansible_ssh_private_key_file: /app/.ssh/id_rsa
+    ansible_ssh_common_args: "-F /app/.ssh/config"
 
-# Required showroom vars:
-ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
-ocp4_workload_showroom_deployer_chart_version: "2.1.4"
-ocp4_workload_showroom_deployer_chart_package_url: https://prakhar1985.github.io/showroom-deployer
-ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
+- name: Run command on bastion
+  hosts: bastion
+  tasks:
+    - ansible.builtin.shell: |
+        oc create configmap lab-config --from-literal=env=dev -n demo-project
+
+# AAP labs — REST API
+- ansible.builtin.uri:
+    url: "{{ aap_url }}/api/v2/job_templates/{{ template_id }}/launch/"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ aap_token }}"
 ```
 
-**For OCP dedicated labs:** Same as tenant PLUS `ocp4_workload_runtime_automation_k8s_cluster_admin: true`
+**For `ui` steps → Claude generates a Playwright script:**
 
-**For RHEL VM labs:**
+Store in `runtime-automation/module-N/playwright/step-N-<description>.js`
+
+Call from solve.yml:
 ```yaml
-post_software_final_workloads:
-  bastions:
-    - agnosticd.showroom.vm_workload_showroom
-    - rhpds.ftl.vm_workload_runtime_automation   # ← REQUIRED
+- name: "{{ step_description }} (via Playwright)"
+  ansible.builtin.script:
+    executable: node
+    cmd: "{{ playbook_dir }}/playwright/step-03-label-configmap.js"
+  environment:
+    CONSOLE_URL: "{{ openshift_console_url | default('') }}"
+    NAMESPACE: "{{ student_ns | default(namespace | default('demo-project')) }}"
+    OCP_TOKEN: "{{ k8s_token | default('') }}"
+    USERNAME: "{{ student_user | default('') }}"
+    PASSWORD: "{{ student_password | default('') }}"
+  register: r_playwright
 
-showroom_ansible_runner_api: true
-showroom_ansible_runner_image: quay.io/rhpds/zt-runner
-showroom_ansible_runner_image_tag: v2.4.2
+- name: Assert Playwright step succeeded
+  ansible.builtin.assert:
+    that: r_playwright.rc == 0
+    fail_msg: "UI step failed: {{ r_playwright.stdout | default('') }}"
 ```
 
-See `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md` for complete AgV snippets per lab type.
-## Working Examples
+**NOTE:** `ansible.builtin.script` requires `node` in the runner's PATH. Add this note in a comment when Playwright scripts are generated.
 
-Use these as templates when generating — all patterns are verified from real labs:
+**validate.yml — always pure Ansible, never Playwright:**
+```yaml
+# Even if solve used a Playwright script to label a ConfigMap,
+# validate just checks the label exists via API:
+- kubernetes.core.k8s_info:
+    kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+    validate_certs: false
+    kind: ConfigMap
+    name: lab-config
+    namespace: "{{ student_ns }}"
+  register: r_cm
 
-- `@ftl/skills/rhdp-lab-validator/examples/ocp-tenant/module-01/` — ConfigMap + data key check (2 tasks)
-- `@ftl/skills/rhdp-lab-validator/examples/ocp-dedicated/module-01/` — Namespace + RoleBinding check
-- `@ftl/skills/rhdp-lab-validator/examples/ocp-dedicated/module-02/` — Bash script via ansible.builtin.script
-- `@ftl/skills/rhdp-lab-validator/examples/rhel-vm/module-01/` — Bastion + node multi-host, hostvars aggregation
+- validation_check:
+    check: "{{ r_cm.resources | length > 0 and 'app' in (r_cm.resources[0].metadata.labels | default({})) }}"
+    pass_msg: "✅ ConfigMap lab-config has app label"
+    error_msg: "❌ ConfigMap lab-config missing app label\nFix: oc label configmap lab-config app=lab -n {{ student_ns }}"
+```
 
 ---
 
----
+### Phase 3 — Verify (per module)
 
-## Tips: Getting the Most from This Skill
+After generating solve.yml + validate.yml for a module:
 
-### 1. Rename Your Session — Resume Any Time
-
-This skill may take multiple sessions (waiting for env provisioning, testing modules, iterating). Rename the session so you can find and resume it:
-
+1. Show the user a clear breakdown:
 ```
-/rename E2E grading — my-lab-name
+Module 1 — CLI + Console:
+  Step 1: Create ConfigMap      → kubernetes.core.k8s        ✅ Ansible
+  Step 2: Create Secret         → kubernetes.core.k8s        ✅ Ansible
+  Step 3: Label ConfigMap       → Playwright script          🎭 UI
+  validate: ConfigMap + label   → kubernetes.core.k8s_info  ✅ Ansible
 ```
 
-When you come back, just open the renamed session — full context is preserved. You can say "resume where we left off" and continue from the last module.
-
-### 2. Log In to Your Cluster — Let Claude Help Troubleshoot
-
-If you run `oc login` in your terminal before using this skill, Claude can:
-- Inspect what's actually deployed in your namespaces
-- Check if the zt-runner SA and kubeconfig Secret were created correctly
-- Verify RoleBindings and permissions
-- Read pod logs when a module fails
-- Check the showroom-userdata ConfigMap contents
-
+2. Give curl test commands:
 ```bash
-# OCP tenant/dedicated — log in as admin
-oc login https://api.cluster-{guid}.dynamic.redhatworkshops.io:6443 \
-  --username admin --password <password> --insecure-skip-tls-verify
-
-# Then tell Claude: "I'm logged in, can you check the showroom namespace?"
-```
-
-Claude will run `oc` commands on your behalf and explain what it finds.
-
-### 3. Share Bastion Access for RHEL Labs
-
-For RHEL VM labs, share your SSH credentials at the start:
-
-```
-bastion: ssh.ocpvXX.rhdp.net port 31XXX
-user: lab-user
-password: <password>
-```
-
-Claude can SSH to the bastion, check runner logs, inspect the SSH config, and debug failed validation/solve jobs directly — no copy-paste needed.
-
-### 4. Paste Failing Job Output
-
-When a module fails, paste the raw streaming output:
-
-```bash
-# OCP: from laptop
-curl -sk -N "https://<showroom-url>/stream/solve/module-01"
-
-# RHEL: from bastion
-curl -s -N "http://localhost:8501/stream/solve/module-01"
-```
-
-Claude will diagnose the failure and fix the playbook on the spot.
-
----
-
-## Quick Reference: Testing the Runner API
-
-Use these curl commands to test solve/validate without clicking the UI buttons:
-
-```bash
-# OCP labs — from laptop
 SHOWROOM=https://<showroom-url>
-
-# Check detected modules
-curl -sk "$SHOWROOM/stream/config" | python3 -m json.tool
-
-# Trigger solve / validate (SSE streaming — use -N to disable buffering)
 curl -sk -N "$SHOWROOM/stream/solve/module-01"
 curl -sk -N "$SHOWROOM/stream/validate/module-01"
 ```
 
-```bash
-# RHEL VM labs — from bastion (SSH in first)
-SHOWROOM=http://localhost:8501
+3. Wait for user to confirm → move to next module.
 
-curl -s "$SHOWROOM/stream/config" | python3 -m json.tool
-curl -s -N "$SHOWROOM/stream/solve/module-01"
-curl -s -N "$SHOWROOM/stream/validate/module-01"
+---
+
+## Playwright Script Pattern
+
+When Claude generates a Playwright script for a UI step, follow this pattern:
+
+```javascript
+// runtime-automation/module-01/playwright/step-03-label-configmap.js
+// Generated by ftl:rhdp-lab-validator
+// UI step: Label ConfigMap lab-config with app=lab in OCP Console
+//
+// Environment variables:
+//   CONSOLE_URL  — OCP console URL
+//   NAMESPACE    — student namespace
+//   OCP_TOKEN    — bearer token for OCP login (optional, may use USERNAME/PASSWORD)
+//   USERNAME     — OCP username (if token not provided)
+//   PASSWORD     — OCP password (if token not provided)
+
+const { chromium } = require('playwright');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true });
+  const page = await context.newPage();
+
+  const consoleUrl = process.env.CONSOLE_URL;
+  const namespace = process.env.NAMESPACE || 'default';
+
+  try {
+    // Navigate and authenticate
+    await page.goto(consoleUrl);
+    // ... auth steps based on what's available (token or username/password)
+
+    // Perform the UI action
+    await page.goto(`${consoleUrl}/k8s/ns/${namespace}/configmaps/lab-config`);
+    await page.click('[data-test-id="actions-menu-button"]');
+    await page.click('text=Edit labels');
+    await page.fill('[data-test="labels-input"]', 'app=lab');
+    await page.click('[data-test="confirm-action"]');
+
+    console.log('SUCCESS: ConfigMap labeled app=lab');
+    process.exit(0);
+  } catch (err) {
+    console.error('FAILED:', err.message);
+    process.exit(1);
+  } finally {
+    await browser.close();
+  }
+})();
 ```
 
-Run all modules at once (for quick testing after solve-all):
-```bash
-for module in module-01 module-02 module-03; do
-  echo "=== $module solve ==="
-  curl -sk -N "$SHOWROOM/stream/solve/${module}"
-  echo ""
-  echo "=== $module validate ==="
-  curl -sk -N "$SHOWROOM/stream/validate/${module}"
-  echo ""
-done
+**Key rules for Playwright scripts:**
+- Always `process.exit(0)` on success, `process.exit(1)` on failure
+- Use `console.log('SUCCESS: ...')` / `console.error('FAILED: ...')` so Ansible can surface the result
+- Accept all dynamic values via environment variables — never hardcode
+- Use `ignoreHTTPSErrors: true` — OCP clusters use self-signed certs
+- Keep scripts focused: one UI action per script file
+
+---
+
+## Lab Type Reference
+
+### OCP Tenant (shared cluster, per-student namespace)
+
+**Available extravars:** `k8s_kubeconfig`, `student_ns`, `student_user`, `guid`
+
+```yaml
+# solve.yml header
+- name: Module solve
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - kubernetes.core.k8s:
+        kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+        validate_certs: false
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: lab-config
+            namespace: "{{ student_ns }}"
+```
+
+### OCP Dedicated (cluster-admin, may have bastion)
+
+**Available extravars:** `k8s_kubeconfig`, `bastion_host`, `bastion_port`, `bastion_user`, `bastion_password`, `guid`
+`student_ns` is empty — use a fixed namespace with `| default('demo-project', true) | trim`
+
+### RHEL VM + Bastion
+
+**Available extravars:** `bastion_user`, `bastion_host`, `bastion_port`, `bastion_password`
+Uses `/app/.ssh/id_rsa` and `/app/.ssh/config` for SSH. No `k8s_kubeconfig`.
+
+```yaml
+- name: Build SSH inventory
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - ansible.builtin.add_host:
+        name: node
+        ansible_user: "{{ bastion_user | default('lab-user') }}"
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+- name: Run tasks on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - ansible.builtin.shell: <command>
+```
+
+### AAP Labs
+
+**Available extravars:** `aap_url`, `aap_token` (or `aap_username`/`aap_password`), `guid`
+
+```yaml
+- ansible.builtin.uri:
+    url: "{{ aap_url }}/api/v2/job_templates/{{ jt_id }}/launch/"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ aap_token }}"
+    status_code: [201, 202]
 ```
 
 ---
 
-## Workflow
+## Critical Rules
 
-**NOTE: RUNNER LOCATION — GET THIS WRONG AND EVERY STEP FAILS.**
-
-The runner is NOT always on the bastion. Check the AgV `config:` field:
-
-- `config: cloud-vms-base` → runner is a **Podman container running ON the bastion**. The bastion IS the runner host. SSH there to check runner logs, invoke API, deploy playbooks.
-- Any other config (`namespace`, `openshift-workloads`, etc.) → runner is an **OCP pod** (showroom-single-pod Helm chart). This applies even if the lab has a bastion VM. The runner SSHes TO the bastion as a target; the bastion is not where the runner lives.
-
-Never assume a bastion means the runner is on the bastion. Confirm `config:` first.
-
----
-
-**CRITICAL RULES — ALL MANDATORY, NO EXCEPTIONS.**
-
-1. Ask ONE question at a time — wait for answer before next
-2. **Scaffold IMMEDIATELY when showroom repo is provided — before reading any .adoc files**
-3. **ONE MODULE AT A TIME — ABSOLUTE RULE.** Generate Module N, test it, confirm it passes. Only then Module N+1.
-4. **Read .adoc files per module when generating — not upfront.** Focus gives quality.
-5. **Detect non-automatable steps automatically** from content and scripts. Use ⚠️ warnings.
-6. **ALWAYS multi-task ✅/❌ pattern** — every validation.yml shows per-task status. Never single pass/fail.
-
-7. **validation.yml: never use `ansible.builtin.fail`** — Output is empty when fail is used. Always use `validation_check`:
-   ```yaml
-   # WRONG — Output will be empty, developer sees nothing
-   - ansible.builtin.fail:
-       msg: "validation failed"
-
-   # CORRECT — Output shows in the runner API response
-   - validation_check:
-       check: "{{ r_validate.rc == 0 }}"
-       pass_msg: "{{ r_validate.stdout | trim }}"
-       error_msg: "{{ r_validate.stdout | trim }}"
-   ```
-   When wrapping existing scripts, **always check** if the provided playbook uses `ansible.builtin.fail` and replace it with `validation_check`.
-
-8. **Bastion SSH: use `bastion_user` not `student_user`** — `student_user` is the OCP username (e.g. `user1`).
-   Bastion SSH always needs the Linux user on the bastion VM (`lab-user`).
-   ```yaml
-   ansible_user: "{{ bastion_user | default('lab-user') }}"   # NOT student_user
-   ```
-7. **After each module — give curl commands and STOP. Wait for results.**
+1. **Ask ONE question at a time** — lab type first, then showroom repo, then live URL
+2. **Phase 1 first, always** — read ALL modules before generating anything
+3. **ONE MODULE AT A TIME** — generate, test, confirm before moving to next
+4. **validate.yml never uses Playwright** — always pure Ansible state checks
+5. **validation_check plugin is mandatory** — never use `ansible.builtin.fail`
+6. **Multi-task ✅/❌ pattern** — every validate.yml shows per-task status
+7. **Playwright scripts are helpers** — not required if the UI step has a direct API equivalent; always prefer the API approach when possible
+8. **After each module — give curl test commands and STOP**
 
 ---
 
-### Step 0: What type of lab?
+## Step 0: What type of lab?
 
 **Ask ONE question first:**
 
 ```
-What type of lab are you adding E2E test grading to?
-
-1. OCP multi-user  — shared cluster, students get scoped namespaces
-2. OCP dedicated   — student has cluster-admin, lab has a bastion VM
-3. RHEL VM         — bastion + node VMs (showroom runs on bastion)
+What type of lab are you adding E2E grading to?
+1. OCP tenant    — shared cluster, students get namespaces
+2. OCP dedicated — student has cluster-admin, may have bastion
+3. RHEL VM       — bastion + node VMs, no OCP cluster
+4. AAP           — Ansible Automation Platform lab
+5. Other         — describe it
 ```
 
-This determines everything: runner location, SSH patterns, kubernetes.core vs shell.
+This determines extravars, Ansible modules, and SSH vs k8s patterns.
 
 ---
 
-### Step 1: Showroom Repo → Scaffold
+## Step 1: Read the showroom repo
 
 ```
 Showroom repo? (GitHub URL or local path)
 ```
 
-Read ONLY the `= Title` heading from each `.adoc` to get module count and labels.
-
-Generate immediately:
-- `ui-config.yml`:
-  - **Only change `type:`** — set to `showroom` if not already. Do NOT regenerate the module list (nav.adoc handles navigation).
-  - Remove any nookbag-specific fields: `scripts:`, `solveButton:`, `view_switcher:`, `zero-touch` type
-  - Keep existing tabs or add an OCP Console tab if none exist
-- `site.yml`:
-  - **If `default-site.yml` exists but `site.yml` does not** → rename to `site.yml` and set bundle URL
-  - **If `site.yml` exists** → enforce bundle URL:
-  ```yaml
-  ui:
-    bundle:
-      url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-2025/ui-bundle.zip
-  ```
-  **Both mistakes cause antora-builder to crash:** missing `site.yml` → "playbook not found", wrong URL → 404 downloading bundle.
-- `runtime-automation/module-N/` stub files
-
-Commit + push. Do NOT order yet.
-
-When scaffolding, check for these old patterns and fix them:
-
-**1. Old `ui-config.yml` fields** — remove nookbag-specific fields, set `type: showroom`:
-```yaml
-# REMOVE these nookbag-specific fields:
-#   type: zero-touch
-#   scripts: [solve, validation]
-#   solveButton: true
-#   view_switcher:
-
-# CORRECT — based on ~/work/showroom-content/showroom_template_nookbag/ui-config.yml:
-type: showroom
-
-default_width: 30
-persist_url_state: true
-
-# Add tabs only if the lab needs split view (terminal, OCP console, etc.)
-# tabs:
-#   - name: OCP Console
-#     url: 'https://console-openshift-console.${DOMAIN}'
-#   - name: Terminal
-#     path: /wetty
-#     port: 443
-#   - name: Terminal (Bastion)
-#     path: /wetty
-#     port: 443
-#     secondary_name: Terminal (Node)
-#     secondary_path: /wetty_node
-#     secondary_port: 443
-```
-Do NOT add an `antora.modules` list — nav.adoc handles module navigation.
-Reference template: `~/work/showroom-content/showroom_template_nookbag/ui-config.yml`
-
-**Note:** Solve/Validate buttons use reusable AsciiDoc includes. Create these two files in the content repo:
-
-```
-content/modules/ROOT/pages/common/solve-button.adoc    ← CSS + JS for 🚀 Solve button
-content/modules/ROOT/pages/common/validate-button.adoc ← CSS + JS for ✓ Validate button
-```
-
-Then add to each module page that has a `solve.yml` / `validation.yml`:
-
-```asciidoc
-include::common/solve-button.adoc[]
-
-++++
-<div class="solve-button-placeholder" data-module="module-01"></div>
-++++
-
-include::common/validate-button.adoc[]
-
-++++
-<div class="validate-button-placeholder" data-module="module-01"></div>
-++++
-```
-
-The `data-module` value must match the directory name under `runtime-automation/` (e.g. `module-01`, `module-02-model`).
-Copy the button files from `rhpds/ocp-zt-tenant-showroom/content/modules/ROOT/pages/common/` as the reference implementation.
-
-**2. `setup-automation/` directory** — **DELETE IT ENTIRELY if it exists. NEVER CREATE IT.**
-The showroom-single-pod chart does not need setup-automation. If a showroom repo has it, delete:
-```bash
-git rm -r setup-automation/
-git commit -m "Remove setup-automation — not needed with showroom-single-pod chart"
-git push
-```
-Do NOT replace with a no-op. Do NOT scaffold it. If it doesn't exist, do not create it.
+Read ONLY `= Title` headings from each `.adoc` to get module count.
+Then do Phase 1 survey — classify all steps.
+Show the user the full classification before generating anything.
 
 ---
 
-### Step 2: AgV Catalog (Optional)
+## Step 2: Generate module by module
 
-```
-AgV catalog path? (e.g. summit-2026/lb1390-my-lab-cnv  or 'skip')
-```
-
-Read ONLY to check if the workload role is in `workloads:`.
-- Present → proceed
-- Missing → offer to create branch and add it
-
-Once AgV confirmed: *"Now order the lab from integration.demo.redhat.com"*
-
-
-### Step 2: AgV Catalog — Check and Update
-
-```
-AgV catalog path? (e.g. summit-2026/lb1390-my-lab-cnv  or 'skip')
-```
-
-If provided — read `common.yaml`, detect lab type, then:
-
-**Check** if the following are present in `workloads:` and `common.yaml`:
-- `rhpds.ftl.ocp4_workload_runtime_automation_k8s` in workloads (OCP labs)
-- `rhpds.ftl.vm_workload_runtime_automation` in post_software_final_workloads (RHEL labs)
-- Correct chart, image, and sandbox settings (see `@ftl/skills/rhdp-lab-validator/references/agv-prereqs.md`)
-
-**If anything is missing or outdated — create a branch and update it:**
-
-```bash
-# Create branch from main
-git checkout main && git pull
-git checkout -b add-e2e-grading-<lab-name>
-
-# Update common.yaml with required settings (see agv-prereqs.md for full snippets)
-# Then commit and push
-git add <catalog-path>/common.yaml
-git commit -m "Add E2E grading: runtime_automation_k8s role + showroom-single-pod chart"
-git push origin add-e2e-grading-<lab-name>
-```
-
-Tell the developer exactly what was added/changed and show the diff.
-
-If not provided — ask: *"Is `rhpds.ftl.ocp4_workload_runtime_automation_k8s` (OCP) or `rhpds.ftl.vm_workload_runtime_automation` (RHEL) already in your workloads?"*
-
-**Once both showroom AND AgV are confirmed committed/ready — tell the developer to order:**
-
-```
-✅ Showroom scaffold pushed.
-✅ AgV catalog updated on branch add-e2e-grading-<lab-name> (or already correct).
-
-Now order the lab:
-  go to integration.demo.redhat.com → order your catalog item
-  Share your GUID when it's up (provisioning takes 15-60 min).
-
-💡 Tip: Rename this session so you can come back and resume:
-  /rename E2E grading — <your-lab-name>
-```
+For each module:
+1. Show classification: `Step N: <description> → <type>`
+2. Generate solve.yml (Ansible + Playwright scripts as needed)
+3. Generate validate.yml (pure Ansible)
+4. Give curl test commands
+5. **STOP — wait for user confirmation before next module**
 
 ---
-
-### Step 3: Ask About Existing Scripts
-
-**Default assumption: all automation lives in the showroom repo.** Only ask if they mention they have something.
-
-**While the lab provisions, ask:**
-
-```
-Do you already have bash scripts or Ansible playbooks for any modules?
-Share them (GitHub URL or paste) — I'll wrap them into the E2E test pattern.
-For modules with nothing I'll generate from scratch.
-```
-
-If `.sh.j2` provided → ask to strip Jinja2 to plain `.sh` first.
-If `.sh` provided → read it, infer what it creates/changes, auto-generate matching validation.
-If scripts are NOT in the showroom repo (already on target from provisioning) → use `ansible.builtin.shell` instead of `ansible.builtin.script`.
-
----
-
-### Step 4: Connect to Environment
-
-**OCP multi-user (type 1) — two CIs involved:**
-
-The shared cluster (Cluster CI) is already running — you do NOT order a cluster.
-What you order is the **Tenant CI** which provisions: namespaces, Keycloak user, showroom, runner.
-
-```
-1. Order the TENANT CI from integration.demo.redhat.com
-   (catalog item like "lb1390-hashi-aap-tenant" or your lab's tenant item)
-2. Share the GUID when tenant provisioning is complete (5-15 min)
-3. Log in to the SHARED cluster using the admin token from the tenant's lab info:
-   oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
-```
-Claude verifies: zt-runner SA · kubeconfig Secret · RoleBindings · showroom-userdata CM
-Confirm `curl -sk https://<showroom-url>/stream/config` returns module list.
-
-**OCP dedicated (type 2) — wait for provisioning first:**
-Provisioning takes 15-60 min. Share GUID when the cluster is up, then:
-```
-  oc login <api-url> --token <admin-token> --insecure-skip-tls-verify
-```
-Claude verifies: zt-runner SA · ClusterRoleBinding · kubeconfig Secret · showroom-userdata CM
-Confirm `curl -sk https://<showroom-url>/stream/config` returns module list.
-
-**RHEL VM (type 3) — wait for provisioning, then connect to bastion:**
-Share bastion host / port / password when lab is up.
-Claude SSHes to bastion, checks SSH config + node hosts.
-Confirm `curl http://localhost:8501/stream/config` returns module list.
-
----
-
-### Step 5: Generate Module N (One at a Time)
-
-**NOW read the module .adoc file** for Module N only. From it:
-- Extract every student task (commands, resources, actions)
-- Detect automatable vs manual (browser/GitHub/OAuth) — no asking
-- Identify exact resource names, namespaces, file paths
-
-Generate `solve.yml` + `validation.yml` replacing the stubs.
-Multi-task ✅/❌ mandatory. Manual steps get ⚠️ warning pattern.
-
-**STOP. Give curl test commands immediately.**
-
-**OCP (laptop):** `curl -sk -N https://<showroom>/stream/solve/module-N`
-**RHEL (bastion):** `curl -s -N http://localhost:8501/stream/solve/module-N`
-
-Wait for results. Debug inline if needed. Only proceed to Module N+1 after this passes.
-
 
 ## Related Skills
 
-- `/showroom:create-lab` -- Create showroom content (run before this skill)
-- `/agnosticv:catalog-builder` -- Set up the AgV catalog (run before this skill)
+- `/showroom:create-lab` — Create showroom content (run before this skill)
+- `/agnosticv:catalog-builder` — Set up the AgV catalog
