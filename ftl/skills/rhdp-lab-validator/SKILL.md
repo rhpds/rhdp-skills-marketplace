@@ -17,9 +17,32 @@ Generates `runtime-automation/module-N/{solve,validate}.yml` Ansible playbooks f
 
 **solve.yml and validate.yml are always Ansible playbooks** — no exceptions.
 
-- **API/CLI steps** → pure Ansible tasks (`kubernetes.core`, `ansible.builtin.shell`, `ansible.builtin.uri`, etc.)
-- **UI steps** (browser, OCP Console, web wizards) → Claude generates a Playwright `.js` script, and solve.yml calls it via `ansible.builtin.script`
-- **validate.yml** → ALWAYS pure Ansible (checking state via API/SSH, never needs a browser)
+**validate.yml** → ALWAYS pure Ansible (checking state via API/SSH — never needs a browser).
+
+**solve.yml** → follow this priority ladder strictly:
+
+### Automation Priority Ladder
+
+```
+1. kubernetes.core.k8s / k8s_info   ← OCP resources (PREFERRED for anything k8s-backed)
+2. ansible.builtin.shell (oc CLI)   ← oc label, oc patch, oc scale, oc create
+3. ansible.builtin.uri              ← REST API calls (AAP, Gitea, any HTTP endpoint)
+4. ansible.builtin.shell (SSH)      ← Commands on bastion/node (RHEL labs)
+5. Playwright .js script            ← LAST RESORT ONLY — genuinely no API equivalent
+```
+
+**Before reaching for Playwright, always ask:**
+- Does this OCP Console action have an `oc` equivalent? (`oc label`, `oc patch`, `oc scale`, `oc create`) → use `oc` CLI
+- Does this resource exist in the k8s API? → use `kubernetes.core.k8s`
+- Is there a REST API endpoint? → use `ansible.builtin.uri`
+
+**Playwright is ONLY for steps where the UI interaction itself is the verification:**
+- Visual pipeline editors (drag-and-drop flow builders)
+- Canvas/diagram-based UIs with no API backing
+- Custom web apps with no REST API
+- Multi-step wizards where client-side JS state cannot be replicated via API
+
+**OCP Console steps almost always have `oc` or `kubernetes.core` equivalents — use those.**
 
 ---
 
@@ -29,15 +52,19 @@ Generates `runtime-automation/module-N/{solve,validate}.yml` Ansible playbooks f
 
 Read ALL module `.adoc` files in one pass. For each step in each module, classify:
 
-| Classification | Description | Ansible approach |
-|---|---|---|
-| `k8s` | OCP resource create/update/delete | `kubernetes.core.k8s` |
-| `k8s-check` | OCP resource read/verify | `kubernetes.core.k8s_info` |
-| `shell-bastion` | Command run on bastion VM | `ansible.builtin.shell` via SSH inventory |
-| `shell-node` | Command run on node VM | `ansible.builtin.shell` via SSH to node |
-| `api` | REST API call (AAP, any HTTP) | `ansible.builtin.uri` |
-| `ui` | Browser interaction (OCP console, web app, wizard) | Playwright `.js` script |
-| `skip` | Informational only — nothing to automate | no task |
+| Classification | Description | Ansible approach | Priority |
+|---|---|---|---|
+| `k8s` | OCP resource create/update/delete | `kubernetes.core.k8s` | 1 — always first |
+| `k8s-check` | OCP resource read/verify | `kubernetes.core.k8s_info` | 1 |
+| `oc-cli` | OCP Console action with `oc` equivalent (label, patch, scale) | `ansible.builtin.shell` with `oc` | 2 |
+| `shell-bastion` | Command on bastion VM | `ansible.builtin.shell` via SSH | 3 |
+| `shell-node` | Command on node VM | `ansible.builtin.shell` via SSH | 3 |
+| `api` | REST API call (AAP, Gitea, any HTTP) | `ansible.builtin.uri` | 3 |
+| `ui-playwright` | **No API/CLI equivalent exists** (visual editor, canvas, custom JS) | Playwright `.js` script | **LAST RESORT** |
+| `skip` | Informational only | no task | — |
+
+**Key rule:** If the step is done in OCP Console but has an `oc` command equivalent → classify as `oc-cli`, NOT `ui-playwright`.
+Examples: "label a ConfigMap in Console" → `oc label`, "scale deployment" → `oc scale`, "create route" → `oc expose`.
 
 Output: a step-by-step blueprint per module showing what each step maps to.
 
