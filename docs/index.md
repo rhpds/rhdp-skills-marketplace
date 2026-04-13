@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.10.0 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.10.10 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">
@@ -99,6 +99,28 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
     </div>
   </div>
   <p class="platform-note">Also works with VS Code using the Claude extension — same setup as Claude Code.</p>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2>What's New — v2.10.10</h2>
+    <p>Latest updates to the RHDP Skills Marketplace · <a href="{{ '/reference/changelog.html' | relative_url }}">Full changelog →</a></p>
+  </div>
+
+  <div class="category-grid">
+    <div class="category-card">
+      <span class="category-icon">🔒</span>
+      <h3>AgnosticV Validator — Password Security</h3>
+      <p>Validator now deep-scans the full YAML tree — catches hardcoded passwords nested inside AAP credentials, workload configs, and list items. Added <code>b64encode</code>, <code>sha256</code>, <code>sha1</code> to bad patterns, blocking the <code>guid|md5|b64encode</code> chain.</p>
+      <p style="font-size:0.8125rem; color: var(--color-text-3);">Applies to all agnosticv dirs — catalog/, summit-2026/, agd_v2/, tests/</p>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">🧪</span>
+      <h3>FTL — Zero Touch Lab Validator</h3>
+      <p>New <code>/ftl:rhdp-lab-validator</code> skill for generating grader and solver playbooks for Showroom labs across 4 lab types: OCP tenant, OCP dedicated, RHEL VM, and AAP.</p>
+    </div>
+  </div>
 </div>
 
 <div class="section">

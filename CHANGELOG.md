@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.10.10] - 2026-04-13
+
+### AgnosticV Skills
+
+#### validator — password check improvements (Nate Stencell review)
+- **Deep YAML scan**: validator now walks the full YAML tree (dicts + lists at any depth) to catch passwords nested inside workload configs, AAP credential inputs, and list items — previously only top-level keys were checked
+- **New bad patterns**: added `b64encode`, `sha256`, `sha1` — catches the `guid|md5|int(base=16)|b64encode` pattern commonly seen in summit-2026 labs
+- Applies to ALL agnosticv directories (catalog/, summit-2026/, agd_v2/, tests/) — not summit-2026 only
+- **Now caught**: `vault_password: MzIzNTE0OTEw` (AAP nested), `guid|hash('sha256')`, `guid|md5|b64encode` chains, `"band-on-the-run"`, `"redhat"` cosign password, `"aiops"` literal
+
 ## [v2.10.9] - 2026-04-08
 
 ### AgnosticV Skills
