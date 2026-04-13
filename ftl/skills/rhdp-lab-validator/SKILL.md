@@ -140,17 +140,55 @@ ocp4_workload_runtime_automation_k8s_openshift_api_url: "{{ sandbox_openshift_ap
 ocp4_workload_runtime_automation_k8s_openshift_api_token: "{{ cluster_admin_agnosticd_sa_token }}"
 ```
 
-**Add if missing — FTL collection in requirements_content:**
+**Add if missing — required collections in requirements_content:**
 ```yaml
 requirements_content:
   collections:
+    # Showroom collection — v1.6.6 adds runtime_automation_enable/image support (critical)
+    - name: https://github.com/agnosticd/showroom.git
+      type: git
+      version: v1.6.6
+    # FTL collection — ZT runner SA + E2E grading
     - name: https://github.com/rhpds/rhpds-ftl.git
       type: git
       version: main
 ```
 
-**Update showroom content ref (for testing this branch):**
+**Update showroom workload to use showroom collection (not core_workloads):**
 ```yaml
+# Change:  agnosticd.core_workloads.ocp4_workload_showroom
+# To:      agnosticd.showroom.ocp4_workload_showroom
+```
+
+**Ask: does this lab need a terminal tab?**
+```
+Does this showroom have an interactive terminal for students?
+  Y — add wetty (SSH to bastion / cluster terminal)
+  N — content-only (students use DevSpaces, their own IDE, or no terminal needed)
+```
+
+**Add showroom chart and runtime automation vars:**
+
+If **content-only** (no terminal):
+```yaml
+ocp4_workload_showroom_content_only: true
+ocp4_workload_showroom_chart_package_url: https://rhpds.github.io/showroom-deployer
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: "2.1.4"
+ocp4_workload_showroom_runtime_automation_enable: true
+ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
+ocp4_workload_showroom_content_git_repo_ref: zt-runtime-automation
+```
+
+If **with terminal** (wetty):
+```yaml
+ocp4_workload_showroom_chart_package_url: https://rhpds.github.io/showroom-deployer
+ocp4_workload_showroom_deployer_chart_name: showroom-single-pod
+ocp4_workload_showroom_deployer_chart_version: "2.1.4"
+ocp4_workload_showroom_terminal_type: wetty
+ocp4_workload_showroom_wetty_ssh_bastion_login: false
+ocp4_workload_showroom_runtime_automation_enable: true
+ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
 ocp4_workload_showroom_content_git_repo_ref: zt-runtime-automation
 ```
 
