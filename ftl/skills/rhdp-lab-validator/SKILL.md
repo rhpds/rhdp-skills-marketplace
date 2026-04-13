@@ -1,7 +1,7 @@
 ---
 name: ftl:rhdp-lab-validator
 description: This skill should be used when the user asks to "add E2E test grading to my existing RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create automated solve/validate graders for RHDP", "write validation playbooks", "add Solve and Validate buttons to my showroom lab", or "generate module graders".
-version: 3.0.0
+version: 4.0.0
 ---
 
 ---
@@ -11,143 +11,256 @@ model: claude-sonnet-4-6
 
 # RHDP Lab Validator — E2E Grading Skill
 
-Generates `runtime-automation/module-N/{solve,validate}.yml` Ansible playbooks for any RHDP Showroom lab. Uses the **ZT runner** execution model exclusively — Ansible runs as a Kubernetes ServiceAccount inside the OCP cluster, triggered via SSE from the Showroom pod.
+Generates `runtime-automation/module-N/{solve,validate}.yml` Ansible playbooks for any RHDP Showroom lab. Uses the **ZT runner** execution model — Ansible runs as a Kubernetes ServiceAccount inside the OCP cluster, triggered via SSE from the Showroom pod.
 
-This skill is fully self-contained. No ECC, no Demolition, no external tools required.
+**Fully self-contained.** No ECC, no Demolition, no external tools required.
 
 ---
 
 ## How the ZT Runner Works
 
 ```
-Showroom pod  →  SSE endpoint  →  ZT runner SA  →  runs Ansible playbook
-                /stream/solve/module-01            solve.yml
-                /stream/validate/module-01          validate.yml
+Showroom pod  →  SSE  →  ZT runner SA  →  runs Ansible playbook
+                /stream/solve/module-01    solve.yml
+                /stream/validate/module-01 validate.yml
 ```
 
-The ZT runner SA has **cluster-admin** on the OCP cluster. Playbooks run on `localhost` (inside the cluster pod) with full access to `.svc.cluster.local` service URLs and the Kubernetes API.
+The runner SA has **cluster-admin**. Playbooks run on `localhost` inside the cluster with full access to `.svc.cluster.local` service URLs and the Kubernetes API.
 
-**What the runner passes as extravars:**
-- `user` — student's Keycloak username (e.g., `llmuser-abc123`)
-- `guid` — lab GUID
-- Any additional vars configured in `ocp4_workload_runtime_automation_k8s_extra_vars`
+**Runner extravars:** `user` (student Keycloak username), `guid`, any extras configured in `ocp4_workload_runtime_automation_k8s_extra_vars`
 
-**What's available inside the runner container:**
-- Python + Ansible
-- `kubernetes.core` collection
-- `validation_check` custom plugin (outputs ✅/❌ per task via SSE)
-- Node.js + Playwright (chromium) — for UI-only solve steps
+**Runner container includes:** Python + Ansible, `kubernetes.core` collection, `validation_check` plugin, Node.js + Playwright (chromium)
 
 ---
 
-## Core Principle
+## Core Rules
 
-**solve.yml and validate.yml are always Ansible playbooks.**
-
-**validate.yml** → pure Ansible state checks only. No browser interaction, no manual steps, no navigation instructions. Only report what was verified.
-
-**solve.yml** → follow this priority ladder:
-
+**solve.yml** → Automation priority ladder (strictly in order):
 ```
-1. kubernetes.core.k8s / k8s_info   ← OCP resources (preferred for anything k8s-backed)
-2. ansible.builtin.shell (oc CLI)   ← oc label, oc patch, oc scale, oc create
-3. ansible.builtin.uri              ← REST API calls (MaaS API, Gitea, AAP, any HTTP)
-4. ansible.builtin.wait_for         ← TCP port checks (MCP servers, SSE streams)
-5. Playwright .js script            ← LAST RESORT — only when no API/CLI equivalent exists
+1. kubernetes.core.k8s / k8s_info   ← OCP resources (always first)
+2. ansible.builtin.shell + oc CLI   ← oc label, oc patch, oc scale
+3. ansible.builtin.uri              ← REST API (MaaS, Gitea, AAP)
+4. ansible.builtin.wait_for         ← TCP checks (MCP servers, streams)
+5. Playwright .js script            ← LAST RESORT — no API/CLI equivalent
 ```
 
-Before reaching for Playwright, always check:
-- Does this OCP Console action have an `oc` equivalent? → use `oc` CLI
-- Is the resource in the k8s API? → use `kubernetes.core.k8s`
-- Is there a REST endpoint? → use `ansible.builtin.uri`
-- Is it just a TCP service? → use `ansible.builtin.wait_for`
+**validate.yml** → Pure Ansible only. Never Playwright, never manual step guidance. Report only what was verified.
 
-Playwright is only for steps where **the browser interaction itself is the exercise** — visual editors, drag-and-drop UIs, chat playgrounds, multi-step wizards with no backing API.
+**Always:**
+- `student_user: "{{ user | default('') }}"` in every playbook
+- `validate_certs: false` on all HTTPS calls to internal services
+- `ignore_errors: true` on all service checks
+- `validation_check` plugin (never `ansible.builtin.fail`)
+- `check:` reflects real results (never `check: "true"`)
 
 ---
 
-## Workflow
+## Step 0 — Present the Plan
+
+**Before doing anything, show the user the full plan and ask for confirmation.**
 
 ```
-Step 0 → Read AgV catalog → understand namespace patterns and extravars
-Step 1 → Read showroom .adoc files → classify every student step
-Step 2 → Generate solve.yml + validate.yml per module
-Step 3 → Give curl test commands → wait for confirmation → next module
+Here's what I'll do to add E2E runtime automation to your lab:
+
+Phase 1 — AgnosticV setup
+  • Read your AgV catalog to understand namespace patterns, workloads, extravars
+  • Create branch: <lab-short-name>-zt-runtime-automation in agnosticv
+  • Add ZT runner workload (rhpds.ftl.ocp4_workload_runtime_automation_k8s)
+    and FTL collection to requirements_content (if not already present)
+  • Ask permission → push branch and create AgV PR
+
+Phase 2 — Showroom scaffolding
+  • Create branch: zt-runtime-automation in the showroom repo
+  • Copy content/lib/ and content/supplemental-ui/ from reference showroom
+  • Update site.yml to enable inject-buttons.js Antora extension
+  • Create runtime-automation/module-N/ directories with empty solve.yml
+    and validation.yml stubs for each module
+  • Ask permission → push branch and create showroom PR (draft)
+
+Phase 3 — Read lab content
+  • Read all .adoc module files and classify each student step
+
+Phase 4 — Live cluster discovery
+  • Connect to a running lab environment to discover real service URLs,
+    namespace patterns, and verify what's actually deployed
+  • [For dedicated lab] I'll ask for your API server URL and a login token
+  • [For tenant lab]  Order from integration.demo.redhat.com, then either
+    log in via 'oc login' and tell me, or share admin credentials (token only)
+  • I'll read namespaces and services — no passwords will be stored or echoed
+
+Phase 5 — Generate solve.yml + validate.yml
+  • One module at a time, with curl test commands after each
+  • Generate Playwright scripts for any genuinely browser-only steps
+
+Phase 6 — Test
+  • Run curl tests against the live showroom SSE endpoints
+  • Verify solve → validate → pass flow
+
+Ready to start? I'll need:
+  1. Your AgnosticV catalog path  (e.g. summit-2026/lb2860-private-maas-tenant)
+  2. Showroom repo URL             (e.g. https://github.com/rhpds/private-maas-showroom)
+  3. Lab type: dedicated or tenant?
+
+[Y to proceed / N to adjust the plan]
 ```
 
-**Ask ONE question at a time.**
+WAIT for the user to say yes before doing anything.
 
 ---
 
-## Step 0: Read the AgnosticV Catalog
+## Phase 1 — AgnosticV Setup
 
-**Mandatory before anything else.** Namespace patterns cannot be guessed — they must be read from the catalog. Getting this wrong means service URLs that point at namespaces that don't exist.
+### 1.1 Read the catalog
 
-**Ask:**
-```
-AgnosticV catalog path for this lab?
-Example: summit-2026/lb2860-private-maas-tenant
-
-Path (or 'n' to skip):
+```bash
+cat <agv-repo>/<catalog-path>/common.yaml
 ```
 
-**If provided — read `common.yaml` and extract:**
+Extract:
+- `config:` → lab type (`namespace` = tenant, `openshift-workloads` = dedicated)
+- `ocp4_workload_tenant_namespace_namespaces:` → per-student namespace patterns
+- `ocp4_workload_tenant_keycloak_username:` → maps to `user` extravar
+- `workloads:` → already has `rhpds.ftl.ocp4_workload_runtime_automation_k8s`?
+- `requirements_content.collections:` → already has `rhpds-ftl`?
 
-### Per-student namespaces
+### 1.2 Create AgV branch and update
 
-Look for `ocp4_workload_tenant_namespace_namespaces:`:
+```bash
+git -C <agv-repo> checkout -b <lab-short-name>-zt-runtime-automation
+```
 
+**Add if missing — ZT runner workload:**
 ```yaml
-ocp4_workload_tenant_namespace_namespaces:
-  - "wksp-{{ ocp4_workload_tenant_keycloak_username }}"
-  - "llamastack-{{ ocp4_workload_tenant_keycloak_username }}"
-  - "showroom-{{ ocp4_workload_tenant_keycloak_username }}"
+workloads:
+  - ...existing workloads...
+  - rhpds.ftl.ocp4_workload_runtime_automation_k8s
+
+ocp4_workload_runtime_automation_k8s_cluster_admin: true
+ocp4_workload_runtime_automation_k8s_openshift_api_url: "{{ sandbox_openshift_api_url }}"
+ocp4_workload_runtime_automation_k8s_openshift_api_token: "{{ cluster_admin_agnosticd_sa_token }}"
 ```
 
-The ZT runner extravar `user` = `ocp4_workload_tenant_keycloak_username`.
-So in playbooks: `llamastack-{{ user }}`, `wksp-{{ user }}`, `showroom-{{ user }}`.
+**Add if missing — FTL collection in requirements_content:**
+```yaml
+requirements_content:
+  collections:
+    - name: https://github.com/rhpds/rhpds-ftl.git
+      type: git
+      version: main
+```
 
-### Shared (cluster-wide) namespaces
+**Update showroom content ref (for testing this branch):**
+```yaml
+ocp4_workload_showroom_content_git_repo_ref: zt-runtime-automation
+```
 
-Workloads that deploy to a single shared namespace — same URL for all students:
-- Model serving: `*.llm.svc.cluster.local`
-- MaaS API: `maas-api.maas-api.svc.cluster.local`
-- Grafana: `grafana-service.grafana.svc.cluster.local`
-
-These do NOT get `{{ user }}` in their hostnames.
-
-### Confirm before proceeding
+### 1.3 Ask permission to push and create PR
 
 ```
-📋 AgV: summit-2026/lb2860-private-maas-tenant
+I've updated the AgV catalog. Ready to:
+  git push origin <lab-short-name>-zt-runtime-automation
+  gh pr create --draft --title "feat(<lab>): add ZT runner + FTL for E2E grading"
 
-Runner extravar: user = "llmuser-{{ guid }}"
-
-Per-student namespaces:
-  wksp-{{ user }}         ← DevSpaces, app workloads
-  llamastack-{{ user }}   ← Llama Stack, MCP servers
-  showroom-{{ user }}     ← Showroom pod
-
-Shared services:
-  llm                     ← Model serving
-  maas-api                ← MaaS API
-  grafana                 ← Grafana
-
-Correct? [Y/n]
+Shall I push and create the AgV PR? [Y/n]
 ```
 
 ---
 
-## Step 1: Read the Showroom Repo
+## Phase 2 — Showroom Scaffolding
 
-**Ask:**
+### 2.1 Clone or use local showroom
+
+If local path provided — use it.
+If GitHub URL provided — clone to `/tmp/ftl-<lab-short-name>-showroom/`.
+
+### 2.2 Create branch
+
+```bash
+git -C <showroom-repo> checkout -b zt-runtime-automation
 ```
-Showroom repo path or GitHub URL?
+
+### 2.3 Copy reference supplemental files
+
+Copy from the reference showroom (if accessible locally) OR generate from templates:
+
+**`content/lib/inject-buttons.js`** — Antora extension that injects Solve/Validate buttons into each module page. Copy from `ocp-zt-tenant-showroom` or the canonical source.
+
+**`content/supplemental-ui/js/buttons.js`** — SSE client that connects to `/stream/solve/{module}` and `/stream/validate/{module}`. Copy from reference.
+
+**`content/supplemental-ui/css/site-extra.css`** — Button and terminal output styling.
+
+### 2.4 Update site.yml
+
+Ensure these are present in `site.yml`:
+```yaml
+ui:
+  supplemental_files:
+    - path: ./content/supplemental-ui
+    - path: ./content/lib
+    - path: .nojekyll
+    - path: ui.yml
+      contents: "static_files: [ .nojekyll, css/site-extra.css, js/buttons.js ]"
+
+antora:
+  extensions:
+    - require: ./content/lib/dev-mode.js
+      enabled: false
+    - require: ./content/lib/inject-buttons.js
 ```
 
-Read every `.adoc` file under `content/modules/ROOT/pages/`. Read each module fully — do not skim.
+### 2.5 Create runtime-automation scaffolding
 
-For each student step, classify it:
+Read all module `.adoc` files to get module names. For each module that has student exercises:
+
+```bash
+mkdir -p runtime-automation/<module-dir>
+```
+
+Create stub `solve.yml`:
+```yaml
+---
+- name: <Module Title> Solve
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    student_user: "{{ user | default('') }}"
+  tasks: []
+```
+
+Create stub `validation.yml`:
+```yaml
+---
+- name: <Module Title> Validation
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    student_user: "{{ user | default('') }}"
+  tasks: []
+```
+
+### 2.6 Show scaffolding summary and ask permission
+
+```
+Showroom branch ready:
+  Branch: zt-runtime-automation
+  Supplemental files: ✅ content/lib/, content/supplemental-ui/
+  site.yml: ✅ inject-buttons.js enabled
+  Scaffolding created:
+    runtime-automation/module-02-model/solve.yml  (stub)
+    runtime-automation/module-02-model/validation.yml  (stub)
+    runtime-automation/module-03-code/solve.yml  (stub)
+    ... (N modules)
+
+Shall I push and create the showroom PR (draft)? [Y/n]
+```
+
+---
+
+## Phase 3 — Read Lab Content
+
+Read every `.adoc` file in `content/modules/ROOT/pages/`. For each student step, classify:
 
 | Type | What it is | How to automate |
 |---|---|---|
@@ -155,25 +268,108 @@ For each student step, classify it:
 | `k8s-check` | Read/verify OCP resource | `kubernetes.core.k8s_info` |
 | `oc-cli` | OCP Console action with `oc` equivalent | `ansible.builtin.shell` + `oc` |
 | `api` | REST API call (MaaS, Gitea, AAP) | `ansible.builtin.uri` |
-| `tcp-check` | Service reachability (MCP, SSE stream) | `ansible.builtin.wait_for` |
+| `tcp-check` | Service reachability | `ansible.builtin.wait_for` |
 | `ui-playwright` | No API/CLI equivalent — UI is the exercise | Playwright script |
-| `skip` | Informational only, no student action | no task |
+| `skip` | Informational, no student action | no task |
 
-**Key classification rules:**
-- "Label something in OCP Console" → `oc-cli` (`oc label`), NOT `ui-playwright`
-- "Check a service is reachable" → `tcp-check` if SSE/streaming; `api` if HTTP REST
-- "Chat in a browser playground" → `skip` for validate (can't verify chat happened); `skip` for solve (browser-only)
-- "Generate an API token in a UI" → `api` (call the backend API directly)
-
-**Show the full classification per module and confirm before generating.**
+Show the full classification per module. Confirm before generating.
 
 ---
 
-## Step 2: Generate solve.yml + validate.yml
+## Phase 4 — Live Cluster Discovery
 
-One module at a time. Generate both files together.
+**This phase reads the real cluster to get correct service URLs and namespace patterns.**
+Without real cluster data, service hostnames and namespace names will be wrong.
 
-### solve.yml template
+### For a dedicated lab
+
+```
+I need to connect to the lab cluster.
+
+Please run:
+  oc login --token=<your-token> --server=<api-url>
+
+Then tell me: "I've logged in" — I'll take it from there.
+
+(Alternative: share just the API URL and a read-only token.
+ Never share passwords directly.)
+```
+
+### For a tenant lab
+
+```
+I need a running tenant lab environment.
+
+Option A — Order and connect:
+  1. Go to integration.demo.redhat.com
+  2. Order <lab-name>
+  3. Once provisioned, log in: oc login --token=<token> --server=<api-url>
+  4. Tell me: "I've logged in as admin on the cluster"
+
+Option B — Share a read-only token:
+  oc create token <service-account> -n default
+  Share the token + API server URL.
+  I'll log in and read what I need.
+
+(Never share your personal password. Tokens only.)
+```
+
+WAIT for user to confirm they've logged in. Do NOT proceed to discovery until confirmed.
+
+### What Claude reads from the cluster
+
+Once logged in, Claude runs these discovery commands automatically:
+
+```bash
+# All student-related namespaces
+oc get namespaces --no-headers | awk '{print $1}' | grep -E "<pattern from agv>"
+
+# What services exist in each namespace
+oc get services -n <student-namespace> --no-headers
+oc get services -n <shared-namespace> --no-headers
+
+# Showroom userdata for real extravars
+oc get configmap showroom-userdata -n showroom-<user> \
+  -o jsonpath='{.data.user_data\.yml}'
+
+# What pods are running
+oc get pods -A --no-headers | grep -E "<lab-pattern>"
+```
+
+**Record from discovery:**
+- Exact namespace names per student (e.g., `llamastack-llmuser-GUID` vs `lls-demo`)
+- Whether MCP servers / services are shared or per-student
+- Internal `.svc.cluster.local` hostnames for each service
+- Ports (critical — `8080` vs `8443` vs `3000` matters)
+- `user` extravar value from ConfigMap
+
+**Present findings:**
+```
+📋 Live cluster discovery (GUID: pp6md, user: llmuser-pp6md)
+
+Shared namespaces (same URL for all students):
+  lls-demo       → ocp-mcp-server:8080, slack-mcp-server:80
+  llm            → qwen3-4b-instruct-kserve-workload-svc:8000
+  redhat-ods-applications → maas-api:8443 (HTTPS, validate_certs: false)
+  grafana        → grafana-service:3000
+
+Per-student namespaces (use {{ user }} in URLs):
+  llmuser-{{ user }}   → lsd-genai-playground-service:8321
+  wksp-{{ user }}      → DevSpaces workspace
+  showroom-{{ user }}  → Showroom pod
+
+Confirmed? [Y/n]
+```
+
+---
+
+## Phase 5 — Generate solve.yml + validate.yml
+
+Using the Phase 3 classification + Phase 4 discovery, generate the actual playbooks.
+
+One module at a time — fill in the stubs created in Phase 2.
+
+### solve.yml pattern
 
 ```yaml
 ---
@@ -183,34 +379,20 @@ One module at a time. Generate both files together.
   gather_facts: false
   vars:
     student_user: "{{ user | default('') }}"
-    # Per-student namespaces (from AgV catalog):
+    # Per-student (use {{ student_user }}):
     wksp_namespace: "wksp-{{ student_user }}"
-    llamastack_namespace: "llamastack-{{ student_user }}"
-    # Shared service URLs:
-    model_internal_url: "https://qwen3-4b-instruct-kserve-workload-svc.llm.svc.cluster.local:8000"
-    maas_api_url: "http://maas-api.maas-api.svc.cluster.local:8080"
-    maas_groups:
-      - "tier-enterprise-users"
+    # Shared (no {{ student_user }}):
+    model_url: "https://<service>.<namespace>.svc.cluster.local:<port>"
+    maas_api_url: "https://maas-api.redhat-ods-applications.svc.cluster.local:8443"
   tasks:
-    # Each k8s / api / tcp-check / oc-cli step becomes a task
-    # Steps classified as 'skip' → not included
-    # Steps classified as 'ui-playwright' → call Playwright script
-
+    # ... generated tasks based on Phase 3 classification
     - name: Report solve status
       ansible.builtin.debug:
         msg: |
-          <service 1>: {{ 'ok' if <condition> else 'NOT ok' }}
-          <service 2>: {{ 'ok' if <condition> else 'NOT ok' }}
+          <service>: {{ 'ok' if <condition> else 'NOT ok' }}
 ```
 
-**solve.yml rules:**
-- `ignore_errors: true` on all service checks
-- No manual step guidance in debug output — only report results
-- No `ansible.builtin.pause`
-- MaaS API token: check if exists first, only POST if none found
-- Internal `.svc.cluster.local` URLs only — never external routes
-
-### validate.yml template
+### validate.yml pattern
 
 ```yaml
 ---
@@ -220,54 +402,40 @@ One module at a time. Generate both files together.
   gather_facts: false
   vars:
     student_user: "{{ user | default('') }}"
-    wksp_namespace: "wksp-{{ student_user }}"
-    llamastack_namespace: "llamastack-{{ student_user }}"
-    model_internal_url: "https://qwen3-4b-instruct-kserve-workload-svc.llm.svc.cluster.local:8000"
-    maas_api_url: "http://maas-api.maas-api.svc.cluster.local:8080"
-    maas_groups:
-      - "tier-enterprise-users"
+    # same namespace vars as solve.yml
   tasks:
-    - name: Check Task 1 — <description>
-      ansible.builtin.uri:          # or k8s_info / wait_for
+    - name: Check <thing>
+      ansible.builtin.uri:  # or k8s_info / wait_for
+        validate_certs: false  # required for internal HTTPS
         ...
-      register: r_task1
+      register: r_<name>
       ignore_errors: true
 
     - name: Build task results
       ansible.builtin.set_fact:
-        _task1_ok: "{{ r_task1.status | default(0) == 200 }}"
-        _task2_ok: "{{ ... }}"
+        _task1_ok: "{{ <condition> }}"
+        _task2_ok: "{{ <condition> }}"
 
     - name: Validate all tasks
       validation_check:
         check: "{{ _task1_ok and _task2_ok }}"
         pass_msg: |
-          ✅ Task 1: <what passed>
-          ✅ Task 2: <what passed>
+          ✅ Task 1: <description>
+          ✅ Task 2: <description>
         error_msg: |
-          {{ '✅' if _task1_ok else '❌' }} Task 1: <what passed or failed — and fix hint>
-          {{ '✅' if _task2_ok else '❌' }} Task 2: <what passed or failed — and fix hint>
+          {{ '✅' if _task1_ok else '❌' }} Task 1: {{ 'ok' if _task1_ok else 'FAILED — <fix hint>' }}
+          {{ '✅' if _task2_ok else '❌' }} Task 2: {{ 'ok' if _task2_ok else 'FAILED — <fix hint>' }}
 ```
 
-**validate.yml rules:**
-- `validation_check` plugin is mandatory — never use `ansible.builtin.fail`
-- `check:` must reflect actual results — never `check: "true"`
-- `student_user: "{{ user | default('') }}"` must be in every playbook
-- No manual steps, no navigation instructions — only report what was checked
-- `pass_msg` / `error_msg` use `✅` / `❌` per task so students can see exactly what passed
+### Playwright scripts (solve.yml only)
 
----
+When a step is `ui-playwright` — no API/CLI equivalent exists and the UI interaction IS the exercise — generate a Playwright script:
 
-## Playwright Scripts (solve.yml only)
+**File:** `runtime-automation/module-N/playwright/step-N-<description>.js`
 
-When a step is classified `ui-playwright`, Claude generates a Playwright `.js` script and calls it from solve.yml.
-
-**Where to store:** `runtime-automation/module-N/playwright/step-N-<description>.js`
-
-**How to call from solve.yml:**
-
+**Called from solve.yml:**
 ```yaml
-- name: "<description> (Playwright — no API equivalent)"
+- name: "<description> (Playwright)"
   ansible.builtin.script:
     executable: node
     cmd: "{{ playbook_dir }}/playwright/step-01-<description>.js"
@@ -278,29 +446,12 @@ When a step is classified `ui-playwright`, Claude generates a Playwright `.js` s
     PASSWORD: "{{ student_password | default('') }}"
   register: r_playwright
   ignore_errors: true
-
-- name: Report Playwright step
-  ansible.builtin.debug:
-    msg: "{{ r_playwright.stdout | default('no output') }}"
 ```
 
-**validate.yml never uses Playwright.** If solve used a Playwright script to label a ConfigMap, validate uses `kubernetes.core.k8s_info` to verify the label exists.
-
-### Playwright script template
-
-Claude generates scripts following this pattern:
-
+**Script pattern:**
 ```javascript
-// runtime-automation/module-01/playwright/step-01-<description>.js
-// UI step: <what this does>
-// No API/CLI equivalent because: <reason>
-//
-// Environment variables:
-//   CONSOLE_URL  — OCP console URL
-//   NAMESPACE    — student namespace
-//   USERNAME     — OCP/Keycloak username
-//   PASSWORD     — OCP/Keycloak password
-
+// runtime-automation/module-N/playwright/step-N-<description>.js
+// UI step: <what this does and why no API equivalent>
 const { chromium } = require('playwright');
 
 (async () => {
@@ -310,46 +461,34 @@ const { chromium } = require('playwright');
   });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
 
-  // Hide webdriver flag — Keycloak SSO detects headless browsers
+  // Hide webdriver — Keycloak SSO detects headless browsers
   await context.addInitScript(() => {
     Object.defineProperty(navigator, 'webdriver', { get: () => false });
   });
 
   const page = await context.newPage();
-
   const consoleUrl = process.env.CONSOLE_URL;
   const namespace  = process.env.NAMESPACE;
   const username   = process.env.USERNAME;
   const password   = process.env.PASSWORD;
 
   try {
-    // 1. Navigate to console
     await page.goto(consoleUrl, { waitUntil: 'domcontentloaded' });
 
-    // 2. Login — detect Keycloak SSO vs htpasswd
-    const loginLinks = await page.getByRole('link').all();
-    const rhbkLink = loginLinks.find(async l =>
-      (await l.textContent()).match(/RHBK|SSO|Sandbox user/i)
-    );
-    if (rhbkLink) {
-      // Keycloak SSO path
-      await page.getByRole('link', { name: /Sandbox user.*RHBK/i }).click();
-      await page.getByLabel('Username').fill(username);
-      await page.getByLabel('Password').fill(password);
-      await page.getByRole('button', { name: /log in/i }).click();
-    } else {
-      // htpasswd path
-      await page.getByLabel('Username').fill(username);
-      await page.getByLabel('Password').fill(password);
-      await page.getByRole('button', { name: /log in/i }).click();
+    // Detect Keycloak SSO vs htpasswd
+    const rhbkLink = page.getByRole('link', { name: /Sandbox user.*RHBK/i });
+    if (await rhbkLink.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await rhbkLink.click();
     }
+    await page.getByLabel('Username').fill(username);
+    await page.getByLabel('Password').fill(password);
+    await page.getByRole('button', { name: /log in/i }).click();
     await page.waitForURL('**/console/**', { timeout: 30000 });
 
-    // 3. Perform the UI action
-    // ... generated based on the specific step from the .adoc content
-    // Example: navigate to a resource, click Actions, fill a form, save
+    // ---- UI action generated from .adoc steps ----
+    // (Claude fills this in based on the specific module content)
 
-    console.log('SUCCESS: <what was completed>');
+    console.log('SUCCESS: <what was done>');
     process.exit(0);
   } catch (err) {
     console.error('FAILED:', err.message);
@@ -360,52 +499,70 @@ const { chromium } = require('playwright');
 })();
 ```
 
-**Script rules:**
-- `process.exit(0)` on success, `process.exit(1)` on failure
-- `console.log('SUCCESS: ...')` / `console.error('FAILED: ...')` — Ansible surfaces these via SSE
-- All dynamic values via environment variables — never hardcoded
-- `ignoreHTTPSErrors: true` — self-signed certs in OCP
-- Hide webdriver flag — Keycloak detects headless mode
-- One UI action per script file — keep them focused
-
-**Claude generates each script by reading the exact UI steps from the `.adoc` file and translating them into Playwright actions.** The `.adoc` describes what the student clicks, fills, and submits — Claude maps each action to the corresponding Playwright selector and method.
-
 ---
 
-## Step 3: Test Each Module
+## Phase 6 — Test on Live Cluster
 
-After generating, give these test commands:
+After generating each module, push and test immediately.
+
+### 6.1 Push the generated files
 
 ```bash
-SHOWROOM=https://<showroom-route-from-lab>
-
-# Test validate (should show ❌ on fresh environment)
-curl -sk -N "$SHOWROOM/stream/validate/module-01"
-
-# Run solve
-curl -sk -N "$SHOWROOM/stream/solve/module-01"
-
-# Test validate again (should show ✅ after solve)
-curl -sk -N "$SHOWROOM/stream/validate/module-01"
+git -C <showroom-repo> add runtime-automation/module-N/
+git -C <showroom-repo> commit -m "Add solve/validate for module-N"
+git -C <showroom-repo> push
 ```
 
-No Demolition required. The SSE endpoints are on the Showroom pod directly — `curl -N` streams the output.
+### 6.2 Get the showroom URL
 
-**STOP after each module.** Wait for the user to confirm pass/fail before generating the next one.
+```bash
+oc get route -n showroom-<user> --no-headers | awk '{print $2}'
+# e.g. showroom-showroom-llmuser-pp6md.apps.ocp.75d7w.sandbox114.opentlc.com
+```
+
+### 6.3 Run the tests
+
+```bash
+SHOWROOM="https://$(oc get route showroom -n showroom-<user> \
+  -o jsonpath='{.spec.host}')"
+
+# Test validate on fresh environment (should show ❌)
+curl -sk -N "$SHOWROOM/stream/validate/module-N"
+
+# Run solve
+curl -sk -N "$SHOWROOM/stream/solve/module-N"
+
+# Test validate again (should show ✅)
+curl -sk -N "$SHOWROOM/stream/validate/module-N"
+```
+
+**No Demolition required.** The SSE endpoints are served directly by the Showroom pod's ZT runner container.
+
+### 6.4 Report and confirm
+
+```
+Module N test results:
+  validate (fresh):  ❌ Task 1 failed — <reason>
+  solve:             ✅ ran successfully
+  validate (after):  ✅ all tasks passed
+
+Proceed to module N+1? [Y/n]
+```
 
 ---
 
 ## Critical Rules
 
-1. **Read AgV catalog first** — namespace patterns come from `common.yaml`, never guessed
-2. **`student_user: "{{ user | default('') }}"` in every playbook** — always map from runner extravar
-3. **`check:` reflects real results** — never `check: "true"`
-4. **No manual steps in output** — solve/validate only report what they checked
-5. **`ignore_errors: true` on all service checks** — runner must not abort
-6. **validate.yml never uses Playwright** — always pure Ansible
-7. **`validation_check` is mandatory** — never `ansible.builtin.fail`
-8. **Internal `.svc.cluster.local` only** — never external routes in playbooks
-9. **ONE MODULE AT A TIME** — generate, test, confirm before next
+1. **Plan first** — always show the full plan and get Y before doing anything
+2. **Read AgV catalog first** — namespace patterns come from `common.yaml`, never guessed
+3. **Live cluster before generating** — real service URLs only, no invented hostnames
+4. **Never ask for passwords** — ask user to `oc login` and confirm; tokens only if sharing
+5. **`student_user: "{{ user | default('') }}"` in every playbook**
+6. **`validate_certs: false` on all internal HTTPS calls**
+7. **`ignore_errors: true` on all service checks**
+8. **validate.yml: pure Ansible, no Playwright, no manual step guidance**
+9. **`validation_check` is mandatory, never `ansible.builtin.fail`**
+10. **ONE MODULE AT A TIME** — push, test, confirm before next module
 
 ---
 
