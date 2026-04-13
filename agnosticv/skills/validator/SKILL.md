@@ -1871,13 +1871,16 @@ def check_password_pattern(config):
 
   import re
 
-  # Bad patterns: hash filter, guid-derived passwords
+  # Bad patterns: hash filter, guid-derived passwords, base64 encoding of weak input
   bad_patterns = [
     r'hash\(',
     r'\bsha\b',
     r'\bmd5\b',
     r'\bguid\b.*hash',
     r'\bpassword_hash\b',
+    r'\bb64encode\b',       # e.g. guid|md5|int|b64encode pattern
+    r'sha256',
+    r'sha1\b',
   ]
 
   # Collect all credential-like variables by key name
@@ -1886,13 +1889,23 @@ def check_password_pattern(config):
   credential_words = ['password', 'passwd', 'secret', 'token', 'access_key', 'api_key', 'credential']
   skip_suffixes = ['_length', '_policy', '_type', '_format', '_expires', '_name', '_url', '_path', '_label']
 
-  password_vars = {
-    k: str(v) for k, v in config.items()
-    if any(word in k.lower() for word in credential_words)
-    and not any(k.lower().endswith(s) for s in skip_suffixes)
-    and isinstance(v, str)
-    and v.strip()
-  }
+  def collect_credential_vars(obj, prefix=''):
+    """Walk the full YAML tree — catches nested passwords in lists and dicts."""
+    found = {}
+    if isinstance(obj, dict):
+      for k, v in obj.items():
+        full_key = f'{prefix}.{k}' if prefix else k
+        if any(word in k.lower() for word in credential_words) \
+            and not any(k.lower().endswith(s) for s in skip_suffixes) \
+            and isinstance(v, str) and v.strip():
+          found[full_key] = v
+        found.update(collect_credential_vars(v, full_key))
+    elif isinstance(obj, list):
+      for i, item in enumerate(obj):
+        found.update(collect_credential_vars(item, f'{prefix}[{i}]'))
+    return found
+
+  password_vars = collect_credential_vars(config)
 
   jinja2_pattern = re.compile(r'\{\{.*?\}\}')
 
