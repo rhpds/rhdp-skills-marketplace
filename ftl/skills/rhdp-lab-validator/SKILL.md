@@ -1,7 +1,7 @@
 ---
 name: ftl:rhdp-lab-validator
 description: This skill should be used when the user asks to "add E2E test grading to my existing RHDP lab", "create runtime-automation playbooks", "generate solve.yml and validation.yml for my showroom", "add validation to my summit lab", "create automated solve/validate graders for RHDP", "wrap my bash scripts into validation", "add Solve and Validate buttons to my showroom lab", "write validation playbooks", "create grading for my RHEL lab", "generate module graders", or "add E2E test grading to my AAP lab".
-version: 1.0.0
+version: 2.0.0
 ---
 
 ---
@@ -11,7 +11,50 @@ model: claude-sonnet-4-6
 
 # RHDP Lab Validator — E2E Test Grading
 
-Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks for labs that already have their infrastructure and showroom content in place. Adds Solve/Validate buttons using SSE streaming without touching the existing lab setup. Works for OCP tenant, OCP dedicated+bastion, RHEL VM+bastion, and AAP labs.
+Generate `runtime-automation/module-N/{solve,validation}.yml` Ansible playbooks for labs that already have their infrastructure and showroom content in place. Adds Solve/Validate buttons using SSE streaming.
+
+## How This Skill Generates Automation
+
+For each module, classify every student task into one of two categories:
+
+### ✅ Ansible-automatable
+Use **kubernetes.core**, **ansible.builtin.shell/script**, or **ansible.builtin.uri** (API call).
+Generate pure Ansible — solve does it via API/k8s/SSH, validate checks state.
+- OCP: `kubectl create configmap`, RBAC, deployments → `kubernetes.core.k8s`
+- Bastion: shell commands, scripts → `ansible.builtin.script` or `ansible.builtin.shell`
+- Any REST API → `ansible.builtin.uri`
+
+### ⚠️ UI-only (cannot be automated via Ansible)
+Browser interactions that have no API equivalent: OCP web console drag-drop, OAuth browser flows, GUI-only wizards.
+Mark these with a `⚠️ NON-AUTOMATABLE` comment and a `debug` task explaining why.
+**Do NOT try to call Demolition from inside solve.yml/validate.yml** — Demolition runs separately as an E2E test tool. Solve/Validate are Ansible-only buttons in the showroom UI.
+
+### How to use Demolition scout to understand the module
+Before generating, if a module is complex or has many `send-to-*` blocks, use Demolition scout to understand what the student does:
+
+```bash
+# If Demolition is deployed (https://demolition-dev.apps.cnv-us-east-ocp-3.rhdp.net)
+# Run scout-plan against the showroom to understand what each module does:
+curl -sk -X POST https://demolition-dev.apps.cnv-us-east-ocp-3.rhdp.net/api/v1/quick-run \
+  -H "Content-Type: application/json" \
+  -d '{"url": "<showroom-url>", "mode": "scout-plan", "worker_count": 1}'
+```
+
+Scout reads the adoc, plans every step, and returns a structured breakdown of what the student does per module. Use this output to:
+1. Understand the exact commands/resources the student creates
+2. Map each step to the right Ansible module (kubernetes.core, shell, uri)
+3. Identify which steps genuinely have no API equivalent → mark ⚠️ non-automatable
+
+**Key insight:** `send-to-wetty`/`send-to-terminal` code blocks show exactly what commands the student runs. These map directly to `ansible.builtin.shell` on bastion or `kubernetes.core` for OCP resources.
+
+### Demolition is for separate E2E testing — not called from solve/validate
+```
+Solve/Validate buttons (showroom UI)     Demolition (separate E2E tool)
+        │                                         │
+        └── Runs Ansible playbooks               └── Runs Playwright simulate
+            via SSE (/stream/solve)                  Calls /stream/validate
+            Pure Ansible only                        Tests the full lab flow
+```
 
 ## ⚠️ Prerequisites — AgV Must Be Set Up First
 
