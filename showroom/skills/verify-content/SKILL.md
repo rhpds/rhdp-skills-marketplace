@@ -143,7 +143,8 @@ Missing `css/site-extra.css` or `partials/head-meta.hbs` → High.
 | Condition | Severity |
 |---|---|
 | File missing AND adoc files contain `role="send-to-wetty"`, `role="send-to-terminal"`, `solve-button-placeholder`, or `validate-button-placeholder` | Critical — buttons will not work at runtime |
-| File missing but no button roles used | Info — copy from reference repo if E2E testing is planned |
+| File missing, no button roles used, and this is NOT a cluster provisioner showroom | **Warning** — E2E testing not set up yet; copy from reference repo when ready |
+| File missing for a cluster provisioner showroom (display name contains "cluster") | Info only — cluster showrooms don't use E2E buttons |
 | File present | ✓ |
 
 If missing and needed, copy from: `https://github.com/rhpds/ocp-zt-dedicated-showroom/blob/main/content/supplemental-ui/js/buttons.js`
@@ -156,8 +157,9 @@ Required when solve/validate button placeholders exist in adoc files.
 |---|---|
 | `solve-button-placeholder` or `validate-button-placeholder` in adoc but no `runtime-automation/` dir | Critical |
 | `runtime-automation/` present but missing `validate.yml` or `solve.yml` for a module | High |
+| Neither buttons nor `runtime-automation/` dir present, NOT a cluster showroom | **Warning** — E2E testing not configured; see reference: `https://github.com/rhpds/ocp-zt-dedicated-showroom` |
 | Both present and consistent | ✓ |
-| Summit/event lab (lab ID prefix `lb` + summit keyword in title) has solve/validate button placeholders in adoc files | **WARNING** — buttons work in dev but should be removed from adoc files before tagging for summit/prod |
+| Summit/event lab has solve/validate button placeholders | **Warning** — remove from adoc files before tagging for summit/prod |
 
 Reference structure:
 ```

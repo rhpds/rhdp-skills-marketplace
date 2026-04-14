@@ -2264,11 +2264,24 @@ def check_runtime_automation(config):
   config_type = config.get('config', '')
   cloud_provider = config.get('cloud_provider', '')
 
-  # Check 25a — OCP and namespace catalogs
+  # Cluster provisioner CIs — skip entirely, E2E lives on tenant/standalone
+  # Detected by: __meta__.components list OR display_name containing "cluster"
+  has_components = bool(config.get('__meta__', {}).get('components', []))
+  display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '').lower()
+  is_cluster_provisioner = has_components or 'cluster' in display_name
+  if is_cluster_provisioner:
+    return  # cluster provisioner — no E2E check here
+
+  # Check 25a — tenant (namespace) and standalone OCP catalogs only
   if config_type in ('openshift-workloads', 'namespace'):
     enabled = config.get('ocp4_workload_showroom_runtime_automation_enable', False)
     if not enabled:
-      return  # not using runtime automation
+      suggestions.append({
+        'check': 'runtime_automation',
+        'message': 'E2E testing (solve/validate buttons) not configured',
+        'recommendation': f'Add ocp4_workload_showroom_runtime_automation_enable: true and ocp4_workload_showroom_runtime_automation_image: "{EXPECTED_ZT_RUNNER}:{EXPECTED_ZT_RUNNER_TAG}" to enable solve/validate buttons in Showroom',
+      })
+      return
 
     image = config.get('ocp4_workload_showroom_runtime_automation_image', '')
     if not image:
@@ -2311,7 +2324,12 @@ def check_runtime_automation(config):
     runner_image = config.get('showroom_ansible_runner_image', '')
     runner_tag = config.get('showroom_ansible_runner_image_tag', '')
     if not runner_image and not runner_tag:
-      return  # not using runtime automation on VM
+      suggestions.append({
+        'check': 'runtime_automation',
+        'message': 'E2E testing (solve/validate buttons) not configured for VM lab',
+        'recommendation': f'Add showroom_ansible_runner_image: {EXPECTED_ZT_RUNNER} and showroom_ansible_runner_image_tag: {EXPECTED_ZT_RUNNER_TAG} to enable solve/validate buttons in Showroom',
+      })
+      return
     if runner_tag and runner_tag != EXPECTED_ZT_RUNNER_TAG:
       warnings.append({
         'check': 'runtime_automation',
