@@ -211,6 +211,8 @@ Proceeding to: Step 1 (Determine Context)
 
 **Argument Validation**:
 - If directory doesn't exist, ask user: "Directory not found. Create it? [Yes/No]"
+- If directory exists but is empty, tell the user: "Directory is empty. Clone the nookbag template first: `git clone https://github.com/rhpds/showroom_template_nookbag <repo-name>` — then re-run this skill pointing at the cloned directory."
+  - **Never** suggest `showroom-nookbag` (hyphen) — the correct repo is `showroom_template_nookbag` (underscores)
 - If `--continue` but module path invalid, fall back to asking for story recap
 - All arguments are optional - skill always works in interactive mode
 

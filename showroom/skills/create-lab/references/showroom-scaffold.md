@@ -4,7 +4,13 @@
 
 **Skip entirely if adding a module to an existing lab.**
 
-Most developers start from the nookbag template repo (`showroom_template_nookbag`) which already has the correct directory structure. This step only configures two files.
+Most developers start from the nookbag template repo — clone it first if the directory is empty:
+
+```bash
+git clone https://github.com/rhpds/showroom_template_nookbag <your-repo-name>
+```
+
+**Important:** The repo is `showroom_template_nookbag` (underscores, not hyphens). This already has the correct directory structure. This step only configures two files.
 
 ---
 
