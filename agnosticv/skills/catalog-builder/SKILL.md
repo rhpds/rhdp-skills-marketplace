@@ -509,6 +509,51 @@ Tell the developer how many characters the proposed name uses: `"Directory name:
 
 **If Showroom repo URL was already provided in Step 6**, skip this step.
 
+**Ask about terminal type:**
+```
+Q: Which terminal type does this lab use?
+
+1. wetty   — OCP tenant (namespace) or multi-user labs. Student connects via browser WeTTY.
+             Sets: ocp4_workload_showroom_terminal_type: wetty
+2. showroom — Dedicated OCP + bastion. Student SSH tunnels through bastion.
+             Sets: ocp4_workload_showroom_terminal_type: showroom
+             Also sets: ocp4_workload_showroom_wetty_ssh_bastion_login: true
+3. none    — UI-only lab. No terminal tab needed.
+
+Choice [1/2/3]:
+```
+
+Use the answer to set `ocp4_workload_showroom_terminal_type` and the bastion login flag in the generated common.yaml.
+
+**Ask about E2E testing (solve/validate buttons):**
+```
+Q: Does this lab use E2E testing (solve + validate buttons in Showroom)? [Y/n]
+
+E2E testing means learners can click a Solve or Validate button in the lab guide
+and see Ansible run live against their environment. It requires:
+
+AgV catalog:
+  ✓ ocp4_workload_showroom_runtime_automation_enable: true
+  ✓ ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
+  ✓ rhpds.ftl.ocp4_workload_runtime_automation_k8s in workloads
+  ✓ rhpds-ftl collection in requirements_content
+
+Showroom repo:
+  ✓ content/supplemental-ui/js/buttons.js present
+  ✓ runtime-automation/ directory with validate.yml and solve.yml per module
+  ✓ solve/validate button placeholders in adoc files
+```
+
+**If YES** — enable the full ZT block in common.yaml (uncomment the runtime_automation vars)
+and add `rhpds.ftl.ocp4_workload_runtime_automation_k8s` to workloads.
+Remind the user that `runtime-automation/` and `buttons.js` must also be in the showroom repo
+(reference: https://github.com/rhpds/ocp-zt-dedicated-showroom).
+
+**ERROR — block generation if any of these partial states are detected:**
+- `runtime_automation_enable: true` set but `runtime_automation_image` missing → ERROR
+- `rhpds.ftl.ocp4_workload_runtime_automation_k8s` in workloads but `runtime_automation_enable` not set → ERROR
+- Showroom repo has `buttons.js` but AgV has no runtime_automation block → WARNING (may be intentional for send-to only)
+
 **Ask about custom Ansible collection:**
 ```
 Q: Will this catalog use a custom Ansible collection? [Y/n]

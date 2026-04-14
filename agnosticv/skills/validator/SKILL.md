@@ -2244,6 +2244,113 @@ def check_catalog_name_length(catalog_path):
 
 ---
 
+### Check 25: Runtime Automation Consistency
+
+When `ocp4_workload_showroom_runtime_automation_enable: true` is set, the catalog must also provide the runner image and include the FTL runtime automation workload. Missing either produces a broken solve/validate experience at runtime.
+
+**Applies to:** OCP catalogs (`config: openshift-workloads`) and tenant catalogs (`config: namespace`) — not cloud-vms-base (uses `showroom_ansible_runner_image` / `showroom_ansible_runner_image_tag` instead — Check 25b).
+
+```python
+EXPECTED_ZT_RUNNER = "quay.io/rhpds/zt-runner"
+EXPECTED_ZT_RUNNER_TAG = "v2.4.2"     # bump this when a new tag ships
+RUNTIME_AUTOMATION_WORKLOAD = "rhpds.ftl.ocp4_workload_runtime_automation_k8s"
+
+def check_runtime_automation(config):
+  """runtime_automation_enable: true requires image var and FTL workload."""
+  config_type = config.get('config', '')
+  cloud_provider = config.get('cloud_provider', '')
+
+  # Check 25a — OCP and namespace catalogs
+  if config_type in ('openshift-workloads', 'namespace'):
+    enabled = config.get('ocp4_workload_showroom_runtime_automation_enable', False)
+    if not enabled:
+      return  # not using runtime automation
+
+    image = config.get('ocp4_workload_showroom_runtime_automation_image', '')
+    if not image:
+      errors.append({
+        'check': 'runtime_automation',
+        'severity': 'ERROR',
+        'message': 'ocp4_workload_showroom_runtime_automation_enable: true but ocp4_workload_showroom_runtime_automation_image is not set',
+        'location': 'common.yaml',
+        'fix': f'Add: ocp4_workload_showroom_runtime_automation_image: "{EXPECTED_ZT_RUNNER}:{EXPECTED_ZT_RUNNER_TAG}"',
+      })
+    else:
+      tag = image.split(':')[-1] if ':' in image else ''
+      if tag != EXPECTED_ZT_RUNNER_TAG:
+        warnings.append({
+          'check': 'runtime_automation',
+          'severity': 'WARNING',
+          'message': f'ocp4_workload_showroom_runtime_automation_image tag is {tag!r}, expected {EXPECTED_ZT_RUNNER_TAG!r}',
+          'location': 'common.yaml:ocp4_workload_showroom_runtime_automation_image',
+          'fix': f'Update to: "{EXPECTED_ZT_RUNNER}:{EXPECTED_ZT_RUNNER_TAG}"',
+        })
+      else:
+        passed_checks.append(f"✓ runtime_automation_image: {image}")
+
+    workloads = config.get('workloads', [])
+    has_ra_workload = any(RUNTIME_AUTOMATION_WORKLOAD in str(w) for w in workloads)
+    if not has_ra_workload:
+      errors.append({
+        'check': 'runtime_automation',
+        'severity': 'ERROR',
+        'message': f'runtime_automation enabled but {RUNTIME_AUTOMATION_WORKLOAD} missing from workloads',
+        'location': 'common.yaml:workloads',
+        'fix': f'Add: {RUNTIME_AUTOMATION_WORKLOAD}',
+        'reason': 'This workload provisions the runtime automation SA and RBAC required for solve/validate.',
+      })
+    else:
+      passed_checks.append(f"✓ {RUNTIME_AUTOMATION_WORKLOAD} present in workloads")
+
+  # Check 25b — cloud-vms-base uses different var names (vm_workload_showroom)
+  elif config_type == 'cloud-vms-base':
+    runner_image = config.get('showroom_ansible_runner_image', '')
+    runner_tag = config.get('showroom_ansible_runner_image_tag', '')
+    if not runner_image and not runner_tag:
+      return  # not using runtime automation on VM
+    if runner_tag and runner_tag != EXPECTED_ZT_RUNNER_TAG:
+      warnings.append({
+        'check': 'runtime_automation',
+        'severity': 'WARNING',
+        'message': f'showroom_ansible_runner_image_tag is {runner_tag!r}, expected {EXPECTED_ZT_RUNNER_TAG!r}',
+        'location': 'common.yaml:showroom_ansible_runner_image_tag',
+        'fix': f'Update to: {EXPECTED_ZT_RUNNER_TAG}',
+      })
+    else:
+      passed_checks.append(f"✓ showroom_ansible_runner_image_tag: {runner_tag}")
+```
+
+### Check 26: LiteLLM Virtual Keys in Wrong CI Type
+
+`ocp4_workload_litellm_virtual_keys` provisions per-user API keys — it is a **tenant-level** workload. Adding it to a cluster provisioner CI (`config: openshift-workloads` with `num_users > 0` or as a standalone) is incorrect because cluster CIs run once for the whole cluster, not per-student.
+
+**Rule:** Flag `ocp4_workload_litellm_virtual_keys` as an error when found in a **cluster provisioner CI** (identified by having components: list — the two-item pattern). Tenant CIs (`config: namespace`) and standalone CIs are fine.
+
+```python
+def check_litellm_placement(config):
+  """litellm_virtual_keys belongs in tenant/standalone CIs, not cluster provisioners."""
+  workloads = config.get('workloads', [])
+  has_litellm = any('litellm_virtual_keys' in str(w) for w in workloads)
+  if not has_litellm:
+    return
+
+  # A cluster provisioner has a components: list (it provisions infra and references tenant)
+  has_components = bool(config.get('__meta__', {}).get('components', []))
+  if has_components:
+    errors.append({
+      'check': 'litellm_placement',
+      'severity': 'ERROR',
+      'message': 'ocp4_workload_litellm_virtual_keys found in a cluster provisioner CI',
+      'location': 'common.yaml:workloads',
+      'fix': 'Move ocp4_workload_litellm_virtual_keys to the tenant CI (config: namespace)',
+      'reason': 'This workload provisions per-student API keys — it must run in the tenant deployer, not the shared cluster provisioner.',
+    })
+  else:
+    passed_checks.append("✓ ocp4_workload_litellm_virtual_keys in correct CI type (tenant/standalone)")
+```
+
+---
+
 ## Related Skills
 
 - `/agnosticv:catalog-builder` -- Create or update catalog files if validation fails

@@ -138,6 +138,37 @@ Also note: GitHub Pages must be enabled in repo Settings → Pages → Source: G
 
 Missing `css/site-extra.css` or `partials/head-meta.hbs` → High.
 
+**S.5a — `content/supplemental-ui/js/buttons.js`**:
+
+| Condition | Severity |
+|---|---|
+| File missing AND adoc files contain `role="send-to-wetty"`, `role="send-to-terminal"`, `solve-button-placeholder`, or `validate-button-placeholder` | Critical — buttons will not work at runtime |
+| File missing but no button roles used | Info — copy from reference repo if ZT grading is planned |
+| File present | ✓ |
+
+If missing and needed, copy from: `https://github.com/rhpds/ocp-zt-dedicated-showroom/blob/main/content/supplemental-ui/js/buttons.js`
+
+**S.5b — `runtime-automation/` directory (E2E testing)**:
+
+Required when solve/validate button placeholders exist in adoc files.
+
+| Condition | Severity |
+|---|---|
+| `solve-button-placeholder` or `validate-button-placeholder` in adoc but no `runtime-automation/` dir | Critical |
+| `runtime-automation/` present but missing `validate.yml` or `solve.yml` for a module | High |
+| Both present and consistent | ✓ |
+
+Reference structure:
+```
+runtime-automation/
+  module-01/validate.yml
+  module-01/solve.yml
+  module-02/validate.yml
+  module-02/solve.yml
+  requirements.txt
+  packages.txt
+```
+
 ---
 
 #### Pass B — Structure and Learning Design
