@@ -159,9 +159,12 @@ ocp4_workload_showroom_terminal_type: wetty                   # wetty | showroom
 
 # -------------------------------------------------------------------
 # E2E testing (solve + validate) — omit entire block if not using runtime automation
-# Requires: rhpds.ftl.ocp4_workload_runtime_automation_k8s in workloads
-#           rhpds-ftl collection in requirements_content
-#           content/supplemental-ui/js/buttons.js in showroom repo
+# Requires ALL of the following:
+#   1. rhpds.ftl.ocp4_workload_runtime_automation_k8s in workloads
+#   2. rhpds-ftl collection in requirements_content
+#   3. content/supplemental-ui/js/buttons.js in showroom repo
+#   4. runtime-automation/<module>/validate.yml + solve.yml in showroom repo
+# Summit/event labs: remove solve/validate button placeholders from adoc files before tagging for prod
 # -------------------------------------------------------------------
 # ocp4_workload_showroom_runtime_automation_enable: true
 # ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"
