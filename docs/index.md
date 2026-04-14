@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.11.1 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.11.2 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">
@@ -103,7 +103,7 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 <div class="section">
   <div class="section-header">
-    <h2>What's New — v2.11.1</h2>
+    <h2>What's New — v2.11.2</h2>
     <p>Latest updates to the RHDP Skills Marketplace · <a href="{{ '/reference/changelog.html' | relative_url }}">Full changelog →</a></p>
   </div>
 

@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.11.2] - 2026-04-14
+
+### Showroom Skills
+
+#### verify-content — severity recalibration (Nate Stencell feedback)
+
+**Severity definitions added:**
+- **Critical**: lab is broken — learner cannot proceed or content does not render
+- **High**: lab loads but key functionality broken (copy button, wrong data shown)
+- **Warning**: standards violation — lab works, doesn't meet quality bar
+- **Info**: optional quality improvement
+
+**Demoted from Critical → High:**
+- E.3a missing `role="execute"` (copy/execute button missing, lab still usable)
+- E.4 hardcoded cluster URLs/passwords (wrong values, but lab renders)
+- E.9 invalid code syntax (confusing but lab renders)
+- F.1 missing Know/Show demo structure
+
+**Demoted from High → Warning:**
+- C.1 / E.3-img images missing `link=self,window=blank` (non-clickable, lab works)
+- C.2 missing alt text
+- C.9 Title Case headings
+- D.1 "the Red Hat OpenShift Platform" phrasing
+- D.2 acronyms not expanded on first use
+- D.5 non-inclusive terms (policy, not breaking)
+- D.9 gendered pronouns
+- D.10 hardcoded version numbers
+- B.8 learning objectives count
+- B.9 exercise count
+
+**New checks:**
+- E.3-img: explicit check ID for images missing `link=self,window=blank` — Warning
+- E.3b: `role="send-to-wetty"` or `role="send-to-terminal"` without `role="execute"` — Warning
+
+**Status impact:** Only Critical and High block a lab from "ready" status. Warnings are flagged but do not prevent the lab from being shown as ready.
+
 ## [v2.11.1] - 2026-04-14
 
 ### AgnosticV Skills
