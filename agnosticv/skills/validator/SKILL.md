@@ -235,7 +235,8 @@ elif choice == 2:
                    "event_catalog",   # event_catalog only runs if event_context != none
                    "password_pattern", "showroom_namespace", "ee_image_date",
                    "requirements_content_position", "untagged_images",
-                   "catalog_name_length"]
+                   "catalog_name_length",
+                   "runtime_automation", "litellm_placement"]
 
 elif choice == 3:
   validation_scope = "full"
@@ -246,7 +247,8 @@ elif choice == 3:
                    "anarchy_namespace", "best_practices",
                    "litemaas", "event_restriction", "duplicate_includes",
                    "event_catalog",   # event_catalog only runs if event_context != none
-                   "github_api", "collection_urls", "scm_refs"]
+                   "github_api", "collection_urls", "scm_refs",
+                   "runtime_automation", "litellm_placement"]
 ```
 
 ---
@@ -2248,26 +2250,9 @@ def check_catalog_name_length(catalog_path):
 
 When `ocp4_workload_showroom_runtime_automation_enable: true` is set, the catalog must also provide the runner image and include the FTL runtime automation workload. Missing either produces a broken solve/validate experience at runtime.
 
-**Event catalogs (summit-2026, rh1-2026) must NOT have runtime automation enabled.** Summit and event labs are presenter-led or UI-only — solve/validate buttons are not appropriate. If `runtime_automation_enable: true` is detected in an event catalog, flag it as an ERROR and remind the developer to remove the runtime_automation block and buttons.js before tagging for prod/summit.
-
-```python
-# Summit/event guard — runs before the image/workload checks
-if event_context in ('summit-2026', 'rh1-2026'):
-  enabled = config.get('ocp4_workload_showroom_runtime_automation_enable', False)
-  vm_runner = config.get('showroom_ansible_runner_image', '')
-  if enabled or vm_runner:
-    errors.append({
-      'check': 'runtime_automation',
-      'severity': 'ERROR',
-      'message': 'E2E testing (runtime_automation) must NOT be enabled in event/summit catalogs',
-      'location': 'common.yaml',
-      'fix': 'Remove ocp4_workload_showroom_runtime_automation_enable and runtime_automation_image before tagging for summit/prod',
-      'reason': 'Summit labs are presenter-led. Solve/validate buttons are for self-paced labs only.',
-    })
-  return  # Skip remaining runtime automation checks for event catalogs
-```
-
 **Applies to:** OCP catalogs (`config: openshift-workloads`) and tenant catalogs (`config: namespace`) — not cloud-vms-base (uses `showroom_ansible_runner_image` / `showroom_ansible_runner_image_tag` instead — Check 25b).
+
+Note: summit/event catalogs may have `runtime_automation_enable: true` in AgV — this is fine. The solve/validate **buttons in the showroom adoc files** are what must be removed before summit tagging — that is checked by `showroom:verify-content`, not here.
 
 ```python
 EXPECTED_ZT_RUNNER = "quay.io/rhpds/zt-runner"

@@ -549,6 +549,13 @@ and add `rhpds.ftl.ocp4_workload_runtime_automation_k8s` to workloads.
 Remind the user that `runtime-automation/` and `buttons.js` must also be in the showroom repo
 (reference: https://github.com/rhpds/ocp-zt-dedicated-showroom).
 
+⚠️ **If this is a summit/event catalog:** still generate the runtime automation block and buttons — developers use them during development and testing. Add this reminder comment in the generated common.yaml:
+```yaml
+# E2E testing — runtime_automation_enable and buttons in showroom adoc files
+# must be removed/disabled before tagging for summit/prod
+```
+The solve/validate button placeholders in the showroom adoc files should be removed before the summit prod tag is cut. The AgV vars can stay.
+
 **ERROR — block generation if any of these partial states are detected:**
 - `runtime_automation_enable: true` set but `runtime_automation_image` missing → ERROR
 - `rhpds.ftl.ocp4_workload_runtime_automation_k8s` in workloads but `runtime_automation_enable` not set → ERROR

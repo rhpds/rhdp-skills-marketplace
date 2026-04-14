@@ -148,9 +148,7 @@ Missing `css/site-extra.css` or `partials/head-meta.hbs` → High.
 
 If missing and needed, copy from: `https://github.com/rhpds/ocp-zt-dedicated-showroom/blob/main/content/supplemental-ui/js/buttons.js`
 
-**S.5b — `runtime-automation/` directory (E2E testing — self-paced labs only)**:
-
-⚠️ **Summit/event labs must NOT have solve/validate button placeholders or a `runtime-automation/` directory.** These are for self-paced labs only. If detected in a summit or event lab (identified by summit/event keywords in `site.yml` title or lab ID prefix), flag as ERROR and advise removal before tagging for prod.
+**S.5b — `runtime-automation/` directory (E2E testing)**:
 
 Required when solve/validate button placeholders exist in adoc files.
 
@@ -159,6 +157,7 @@ Required when solve/validate button placeholders exist in adoc files.
 | `solve-button-placeholder` or `validate-button-placeholder` in adoc but no `runtime-automation/` dir | Critical |
 | `runtime-automation/` present but missing `validate.yml` or `solve.yml` for a module | High |
 | Both present and consistent | ✓ |
+| Summit/event lab (lab ID prefix `lb` + summit keyword in title) has solve/validate button placeholders in adoc files | **WARNING** — buttons work in dev but should be removed from adoc files before tagging for summit/prod |
 
 Reference structure:
 ```
