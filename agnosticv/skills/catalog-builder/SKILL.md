@@ -544,7 +544,7 @@ Showroom repo:
   ✓ solve/validate button placeholders in adoc files
 ```
 
-**If YES** — enable the full ZT block in common.yaml (uncomment the runtime_automation vars)
+**If YES** — enable the full runtime automation block in common.yaml (uncomment the runtime_automation vars)
 and add `rhpds.ftl.ocp4_workload_runtime_automation_k8s` to workloads.
 Remind the user that `runtime-automation/` and `buttons.js` must also be in the showroom repo
 (reference: https://github.com/rhpds/ocp-zt-dedicated-showroom).

@@ -83,7 +83,7 @@ For creating Red Hat Showroom workshops and demos.
     <p>Generate ZT runtime-automation playbooks for RHDP showroom labs — Solve/Validate buttons for OCP, RHEL VM, and AAP labs.</p>
     <div class="skill-meta">
       <div class="meta-item"><strong>Before:</strong> AgV catalog + showroom repo</div>
-      <div class="meta-item"><strong>Use when:</strong> Adding nookbag ZT grading to summit/RHDP labs</div>
+      <div class="meta-item"><strong>Use when:</strong> Adding E2E testing to summit/RHDP labs</div>
     </div>
     <div class="skill-status available">✅ Available</div>
   </a>

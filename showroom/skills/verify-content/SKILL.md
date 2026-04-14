@@ -143,12 +143,14 @@ Missing `css/site-extra.css` or `partials/head-meta.hbs` → High.
 | Condition | Severity |
 |---|---|
 | File missing AND adoc files contain `role="send-to-wetty"`, `role="send-to-terminal"`, `solve-button-placeholder`, or `validate-button-placeholder` | Critical — buttons will not work at runtime |
-| File missing but no button roles used | Info — copy from reference repo if ZT grading is planned |
+| File missing but no button roles used | Info — copy from reference repo if E2E testing is planned |
 | File present | ✓ |
 
 If missing and needed, copy from: `https://github.com/rhpds/ocp-zt-dedicated-showroom/blob/main/content/supplemental-ui/js/buttons.js`
 
-**S.5b — `runtime-automation/` directory (E2E testing)**:
+**S.5b — `runtime-automation/` directory (E2E testing — self-paced labs only)**:
+
+⚠️ **Summit/event labs must NOT have solve/validate button placeholders or a `runtime-automation/` directory.** These are for self-paced labs only. If detected in a summit or event lab (identified by summit/event keywords in `site.yml` title or lab ID prefix), flag as ERROR and advise removal before tagging for prod.
 
 Required when solve/validate button placeholders exist in adoc files.
 

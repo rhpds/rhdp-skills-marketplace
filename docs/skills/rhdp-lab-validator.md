@@ -61,7 +61,7 @@ Generate `runtime-automation/module-N/{solve,validation,setup}.yml` playbooks fo
         Missing → offer to create branch and add it<br><br>
         <strong>Once both scaffold + AgV ready:</strong><br>
         <em>"Order the lab from integration.demo.redhat.com"</em><br>
-        <code>💡 /rename ZT grading — &lt;lab-name&gt;</code> to resume after wait
+        <code>💡 /rename E2E testing — &lt;lab-name&gt;</code> to resume after wait
       </div>
     </div>
   </div>
@@ -229,7 +229,7 @@ The skill reads the solve script content to generate a matching `validation.yml`
 
 ## Tips: Getting the Most from This Skill
 
-- **`/rename` your session** — provisioning takes 15-60 min. Rename with `/rename ZT grading — my-lab` and resume anytime.
+- **`/rename` your session** — provisioning takes 15-60 min. Rename with `/rename E2E testing — my-lab` and resume anytime.
 - **`oc login` as admin** — Claude can then inspect namespaces, check zt-runner SA, read pod logs directly.
 - **Share bastion SSH** upfront (RHEL labs) — Claude SSHes to check runner logs and curl jobs without copy-paste.
 - **Paste failing job output** — Claude diagnoses and fixes inline.
