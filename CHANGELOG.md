@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.11.1] - 2026-04-14
+
+### AgnosticV Skills
+
+#### validator — Check 25 cluster CI guard
+- E2E testing suggestion now correctly skipped for cluster provisioner CIs — detected by `__meta__.components` present OR display name containing "cluster"
+- Tenant, dedicated OCP, and VM/RHEL CIs get a SUGGESTION when E2E testing is not yet configured
+- Cluster provisioner CIs get no E2E check at all — E2E belongs on the tenant/standalone CI
+
+### Showroom Skills
+
+#### verify-content — S.5a/S.5b severity alignment
+- Cluster showrooms (display name contains "cluster") now get Info-only for missing `buttons.js`
+- Non-cluster labs without E2E set up get a Warning (not silent pass) for missing `buttons.js` and `runtime-automation/`
+
 ## [v2.11.0] - 2026-04-14
 
 ### AgnosticV Skills
