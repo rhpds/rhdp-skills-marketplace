@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.10.10 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.11.0 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">
@@ -103,22 +103,33 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 <div class="section">
   <div class="section-header">
-    <h2>What's New — v2.10.10</h2>
+    <h2>What's New — v2.11.0</h2>
     <p>Latest updates to the RHDP Skills Marketplace · <a href="{{ '/reference/changelog.html' | relative_url }}">Full changelog →</a></p>
   </div>
 
   <div class="category-grid">
     <div class="category-card">
-      <span class="category-icon">🔒</span>
-      <h3>AgnosticV Validator — Password Security</h3>
-      <p>Validator now deep-scans the full YAML tree — catches hardcoded passwords nested inside AAP credentials, workload configs, and list items. Added <code>b64encode</code>, <code>sha256</code>, <code>sha1</code> to bad patterns, blocking the <code>guid|md5|b64encode</code> chain.</p>
-      <p style="font-size:0.8125rem; color: var(--color-text-3);">Applies to all agnosticv dirs — catalog/, summit-2026/, agd_v2/, tests/</p>
+      <span class="category-icon">✅</span>
+      <h3>AgnosticV Validator — 2 New Checks</h3>
+      <p><strong>Check 25:</strong> Runtime automation consistency — flags missing image or FTL workload when <code>runtime_automation_enable: true</code>. <strong>Check 26:</strong> LiteLLM virtual keys placement — errors if found in a cluster provisioner CI instead of the tenant CI.</p>
     </div>
 
     <div class="category-card">
-      <span class="category-icon">🧪</span>
-      <h3>FTL — Zero Touch Lab Validator</h3>
-      <p>New <code>/ftl:rhdp-lab-validator</code> skill for generating grader and solver playbooks for Showroom labs across 4 lab types: OCP tenant, OCP dedicated, RHEL VM, and AAP.</p>
+      <span class="category-icon">🏗️</span>
+      <h3>AgnosticV Catalog Builder — E2E Testing + Terminal Type</h3>
+      <p>New questions for terminal type (wetty / showroom / none) and E2E testing (solve + validate buttons). Full dependency checklist — errors on partial config. Deployer chart vars now in the generated <code>common.yaml</code> template.</p>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">🔍</span>
+      <h3>Showroom Verify-Content — E.3a Fix + E2E Checks</h3>
+      <p>E.3a false positives fixed — <code>[source,text]</code>, <code>[source,yaml]</code> and other non-shell blocks no longer trigger. Executable: <code>bash</code>, <code>sh</code>, <code>shell</code>, <code>console</code>, <code>terminal</code>, <code>tty</code>, <code>wetty</code>. New checks S.5a and S.5b for <code>buttons.js</code> and <code>runtime-automation/</code>.</p>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">📝</span>
+      <h3>Showroom Create-Lab — Send-to &amp; E2E Docs</h3>
+      <p>Documented <code>role="send-to-wetty"</code> and <code>role="send-to-terminal"</code> combined roles, solve/validate button placeholder syntax, and fixed wrong nookbag template URL (<code>showroom_template_nookbag</code>).</p>
     </div>
   </div>
 </div>

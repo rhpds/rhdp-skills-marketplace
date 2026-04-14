@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.11.0] - 2026-04-14
+
+### AgnosticV Skills
+
+#### validator — 2 new checks + check registration fix
+- **Check 25: Runtime automation consistency** — when `ocp4_workload_showroom_runtime_automation_enable: true`, validator now requires `ocp4_workload_showroom_runtime_automation_image` AND `rhpds.ftl.ocp4_workload_runtime_automation_k8s` in workloads — partial config is an ERROR. Supports OCP, namespace, and cloud-vms-base catalog types
+- **Check 26: LiteLLM virtual keys placement** — `ocp4_workload_litellm_virtual_keys` is now flagged as an ERROR when found in a cluster provisioner CI (identified by `__meta__.components` list); must live in tenant CI (`config: namespace`)
+- Both checks registered in `checks_to_run` for standard and full validation scopes
+
+#### catalog-builder — E2E testing and terminal type questions
+- **New question: terminal type** — asks wetty / showroom (dedicated+bastion) / none and sets `ocp4_workload_showroom_terminal_type` + bastion login flag correctly
+- **New question: E2E testing** — asks if lab uses solve/validate buttons; presents full dependency checklist (runtime_automation vars, FTL workload, `buttons.js`, `runtime-automation/` dir); errors on partial states
+- **common.yaml template** — now includes deployer chart vars (`chart_package_url`, `wetty_image`, `deployer_chart_name`, `deployer_chart_version`, `terminal_type`) and commented E2E testing block with all 4 required dependencies listed
+- Summit/event labs: E2E block is generated for dev use, with comment to remove adoc button placeholders before prod tag
+
+### Showroom Skills
+
+#### verify-content — E.3a false positive fix + E2E testing checks
+- **E.3a scoped to executable languages only** — `[source,text]`, `[source,yaml]`, `[source,json]`, `[source,python]`, etc. no longer trigger E.3a. Only shell-executable identifiers flag: `bash`, `sh`, `shell`, `console`, `terminal`, `tty`, `wetty`
+- **Bulk fix updated** — E.3a bulk replace now targets all 7 executable identifiers including `tty` and `wetty`
+- **S.5a (new)** — checks for `content/supplemental-ui/js/buttons.js`; Critical if missing when send-to/solve/validate roles are used in adoc files
+- **S.5b (new)** — checks for `runtime-automation/` directory; Critical if solve/validate button placeholders exist but directory is missing; WARNING for summit labs (buttons work in dev, remove before prod tag)
+
+#### create-lab — send-to and E2E testing documentation
+- Added `role="send-to-wetty"` and `role="send-to-terminal"` combined role docs
+- Added solve/validate button placeholder docs (`solve-button-placeholder`, `validate-button-placeholder`)
+- Fixed: empty directory now correctly tells user to clone `https://github.com/rhpds/showroom_template_nookbag` (underscores, not hyphens) — previously Claude hallucinated `showroom-nookbag`
+
 ## [v2.10.10] - 2026-04-13
 
 ### AgnosticV Skills
