@@ -207,7 +207,7 @@ Using criteria from `redhat_style_guide_validation.txt` already read.
 | E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
 | E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
 | E.3 | Expected output after every command | `[source,role="execute"]` block with no following plain `----` output block | High |
-| E.3a | All executable command blocks (student or presenter) have `role="execute"` | `[source,...]` block missing `role="execute"` — Showroom will not render the copy/execute button. Common in repos cloned from nookbag before the standard was introduced — use bulk fix. | Critical |
+| E.3a | All executable command blocks (student or presenter) have `role="execute"` | `[source,<lang>]` block with an executable language identifier missing `role="execute"` — Showroom will not render the copy/execute button. **Only flag blocks with executable languages: `bash`, `sh`, `shell`, `console`, `terminal`.** Do NOT flag `[source,text]`, `[source,yaml]`, `[source,json]`, `[source,asciidoc]`, `[source,python]`, or other non-shell languages — these are prose, config, or reference examples that learners are not expected to run. Common in repos cloned from nookbag before the standard was introduced — use bulk fix. | Critical |
 | E.4 | No hardcoded cluster URLs, usernames, passwords | Literal values instead of `{user}`, `{password}` | Critical |
 | E.5 | All `{attribute}` placeholders defined in `antora.yml` or `_attributes.adoc` | Undefined attribute | High |
 | E.6 | All images have alt text | Empty first bracket in `image::` | High |
@@ -291,20 +291,22 @@ This issue is common in repos originally cloned from `showroom_template_nookbag`
 
 When E.3a is selected:
 
+**Only flag and fix blocks with executable shell languages: `bash`, `sh`, `shell`, `console`, `terminal`.**
+Do NOT flag or touch `[source,text]`, `[source,yaml]`, `[source,json]`, `[source,asciidoc]`, `[source,python]`, or any non-shell language — these are prose examples or config snippets, not student commands.
+
 1. Inform the user:
    ```
-   This fix will replace [source,bash] → [source,role="execute"] across all
-   .adoc files in content/modules/ROOT/pages/.
+   This fix will replace [source,bash] / [source,sh] / [source,shell] / [source,console] / [source,terminal]
+   → [source,role="execute"] across all .adoc files in content/modules/ROOT/pages/.
 
-   It will NOT touch [source,bash] lines that appear inside [source,asciidoc]
-   or [source,text] documentation blocks (those are showing syntax examples,
-   not student commands).
+   It will NOT touch [source,text], [source,yaml], [source,json], [source,asciidoc],
+   or any other non-shell language blocks.
 
    Apply bulk fix to all module files? [Y/n]
    ```
 
 2. If YES — use the Edit tool to replace in each module file:
-   - Target: `[source,bash]` on its own line (not inside another source block)
+   - Target: `[source,bash]`, `[source,sh]`, `[source,shell]`, `[source,console]`, `[source,terminal]` on their own line
    - Replacement: `[source,role="execute"]`
    - Skip any `.adoc` files where the line appears inside a `[source,asciidoc]----...----` fence
 
