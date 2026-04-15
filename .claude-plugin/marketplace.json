@@ -125,8 +125,8 @@
         "name": "ACE",
         "email": "ace-octo-dist@redhat.com"
       },
-      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
-      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "homepage": "https://redhat-et.github.io/rhdp-rca-plugin",
+      "repository": "https://github.com/redhat-et/rhdp-rca-plugin",
       "license": "Apache-2.0",
       "tags": [
         "aiops",
