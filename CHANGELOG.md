@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.12.1] - 2026-04-15
+
+### AgnosticV Skills
+
+#### validator — new Check 27: showroom workload in cluster CI
+- `ocp4_workload_showroom` and `vm_workload_showroom` must not appear in any CI with "cluster" in display name or with `__meta__.components` present → ERROR
+- Showroom is a per-user workload — belongs on tenant, dedicated OCP, or cloud-vms-base CIs only
+
+#### validator — Check 26: litellm cluster CI guard extended
+- Now also detects cluster CIs via display name containing "cluster" (in addition to `__meta__.components`)
+
+#### validator — Check 25: E2E severity demoted to WARNING
+- "E2E not configured" → WARNING (was SUGGESTION)
+- Partial E2E config (image or FTL workload missing when enabled) → WARNING (was ERROR)
+- Cluster CIs: no E2E check fires (unchanged)
+
+#### catalog-builder — remove /prod from pool references
+- Generated configs no longer include `/prod` suffix on pool item paths
+- The ordering system determines dev vs prod pool — hardcoding `/prod` bypasses dev ordering
+
 ## [v2.12.0] - 2026-04-15
 
 ### AgnosticV Skills

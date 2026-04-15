@@ -266,7 +266,7 @@ elif choice == 2:
                    "password_pattern", "showroom_namespace", "ee_image_date",
                    "requirements_content_position", "untagged_images",
                    "catalog_name_length",
-                   "runtime_automation", "litellm_placement"]
+                   "runtime_automation", "litellm_placement", "showroom_placement"]
 
 elif choice == 3:
   validation_scope = "full"
@@ -278,7 +278,7 @@ elif choice == 3:
                    "litemaas", "event_restriction", "duplicate_includes",
                    "event_catalog",   # event_catalog only runs if event_context != none
                    "github_api", "collection_urls", "scm_refs",
-                   "runtime_automation", "litellm_placement"]
+                   "runtime_automation", "litellm_placement", "showroom_placement"]
 ```
 
 ---
@@ -641,7 +641,7 @@ elif config_type == 'openshift-cluster' and cloud_provider == 'openshift_cnv':
 else:
     # config: openshift-workloads — standard OCP lab with cloud_provider: cnv or aws
     # → Run checks from @agnosticv/docs/ocp-validator-checks.md
-    #   Covers: Check 6B (pool /prod suffix, OCP version, GPU, SNO limits)
+    #   Covers: Check 6B (OCP version, GPU, SNO limits)
     #           Check 7  (unified auth role, deprecated roles, RHSSO block)
     #           Check 8  (both OCP showroom workloads together, dev_mode)
     #           Check 11 (num_users param, worker scaling, workshopLabUiRedirect)
@@ -2306,7 +2306,8 @@ def check_runtime_automation(config):
   if config_type in ('openshift-workloads', 'namespace'):
     enabled = config.get('ocp4_workload_showroom_runtime_automation_enable', False)
     if not enabled:
-      suggestions.append({
+      warnings.append({
+        'severity': 'WARNING',
         'check': 'runtime_automation',
         'message': 'E2E testing (solve/validate buttons) not configured',
         'recommendation': f'Add ocp4_workload_showroom_runtime_automation_enable: true and ocp4_workload_showroom_runtime_automation_image: "{EXPECTED_ZT_RUNNER}:{EXPECTED_ZT_RUNNER_TAG}" to enable solve/validate buttons in Showroom',
@@ -2315,9 +2316,9 @@ def check_runtime_automation(config):
 
     image = config.get('ocp4_workload_showroom_runtime_automation_image', '')
     if not image:
-      errors.append({
+      warnings.append({
         'check': 'runtime_automation',
-        'severity': 'ERROR',
+        'severity': 'WARNING',
         'message': 'ocp4_workload_showroom_runtime_automation_enable: true but ocp4_workload_showroom_runtime_automation_image is not set',
         'location': 'common.yaml',
         'fix': f'Add: ocp4_workload_showroom_runtime_automation_image: "{EXPECTED_ZT_RUNNER}:{EXPECTED_ZT_RUNNER_TAG}"',
@@ -2338,9 +2339,9 @@ def check_runtime_automation(config):
     workloads = config.get('workloads', [])
     has_ra_workload = any(RUNTIME_AUTOMATION_WORKLOAD in str(w) for w in workloads)
     if not has_ra_workload:
-      errors.append({
+      warnings.append({
         'check': 'runtime_automation',
-        'severity': 'ERROR',
+        'severity': 'WARNING',
         'message': f'runtime_automation enabled but {RUNTIME_AUTOMATION_WORKLOAD} missing from workloads',
         'location': 'common.yaml:workloads',
         'fix': f'Add: {RUNTIME_AUTOMATION_WORKLOAD}',
@@ -2374,31 +2375,74 @@ def check_runtime_automation(config):
 
 ### Check 26: LiteLLM Virtual Keys in Wrong CI Type
 
-`ocp4_workload_litellm_virtual_keys` provisions per-user API keys — it is a **tenant-level** workload. Adding it to a cluster provisioner CI (`config: openshift-workloads` with `num_users > 0` or as a standalone) is incorrect because cluster CIs run once for the whole cluster, not per-student.
+`ocp4_workload_litellm_virtual_keys` provisions per-user API keys — it is a **tenant-level** workload. It must not appear in any cluster CI — detected by `__meta__.components` list (two-item pattern) OR display name containing "cluster".
 
-**Rule:** Flag `ocp4_workload_litellm_virtual_keys` as an error when found in a **cluster provisioner CI** (identified by having components: list — the two-item pattern). Tenant CIs (`config: namespace`) and standalone CIs are fine.
+**Rule:** Flag as ERROR when found in a cluster CI. Tenant CIs (`config: namespace`), dedicated OCP, and cloud-vms-base CIs are fine.
 
 ```python
 def check_litellm_placement(config):
-  """litellm_virtual_keys belongs in tenant/standalone CIs, not cluster provisioners."""
+  """litellm_virtual_keys belongs in tenant/dedicated/VM CIs, not cluster CIs."""
   workloads = config.get('workloads', [])
   has_litellm = any('litellm_virtual_keys' in str(w) for w in workloads)
   if not has_litellm:
     return
 
-  # A cluster provisioner has a components: list (it provisions infra and references tenant)
+  # Cluster CI detection: __meta__.components list OR display_name contains "cluster"
   has_components = bool(config.get('__meta__', {}).get('components', []))
-  if has_components:
+  display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '').lower()
+  is_cluster_ci = has_components or 'cluster' in display_name
+
+  if is_cluster_ci:
     errors.append({
       'check': 'litellm_placement',
       'severity': 'ERROR',
-      'message': 'ocp4_workload_litellm_virtual_keys found in a cluster provisioner CI',
+      'message': 'ocp4_workload_litellm_virtual_keys found in a cluster CI',
       'location': 'common.yaml:workloads',
       'fix': 'Move ocp4_workload_litellm_virtual_keys to the tenant CI (config: namespace)',
       'reason': 'This workload provisions per-student API keys — it must run in the tenant deployer, not the shared cluster provisioner.',
     })
   else:
-    passed_checks.append("✓ ocp4_workload_litellm_virtual_keys in correct CI type (tenant/standalone)")
+    passed_checks.append("✓ ocp4_workload_litellm_virtual_keys in correct CI type (tenant/dedicated/VM)")
+```
+
+---
+
+### Check 27: Showroom Workload in Cluster CI
+
+`ocp4_workload_showroom` (and `vm_workload_showroom`) are per-user workloads. They must not appear in any cluster CI. Cluster CIs provision shared infrastructure — Showroom belongs on tenant, dedicated OCP, or cloud-vms-base CIs only.
+
+**Cluster CI detection:** `__meta__.components` list present OR display name contains "cluster".
+
+```python
+def check_showroom_placement(config):
+  """Showroom workloads must not be in cluster CIs."""
+  workloads = config.get('workloads', [])
+  remove_workloads = config.get('remove_workloads', [])
+  all_workloads = workloads + remove_workloads
+
+  has_showroom = any(
+    'ocp4_workload_showroom' in str(w) or 'vm_workload_showroom' in str(w)
+    for w in all_workloads
+  )
+  if not has_showroom:
+    return
+
+  # Cluster CI detection: __meta__.components OR display_name contains "cluster"
+  has_components = bool(config.get('__meta__', {}).get('components', []))
+  display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '').lower()
+  is_cluster_ci = has_components or 'cluster' in display_name
+
+  if is_cluster_ci:
+    errors.append({
+      'check': 'showroom_placement',
+      'severity': 'ERROR',
+      'message': 'ocp4_workload_showroom found in a cluster CI — Showroom is a per-user workload',
+      'location': 'common.yaml:workloads',
+      'fix': 'Remove ocp4_workload_showroom from the cluster CI. Showroom belongs in the tenant CI (config: namespace) or a dedicated/standalone OCP CI.',
+      'reason': 'Cluster CIs provision shared infrastructure. Showroom must run per-user in the tenant deployer.',
+    })
+  else:
+    passed_checks.append("✓ Showroom workload in correct CI type (tenant/dedicated/VM)")
 ```
 
 ---
