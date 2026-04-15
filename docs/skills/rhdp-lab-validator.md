@@ -5,10 +5,10 @@ title: /ftl:lab-validator
 
 # /ftl:lab-validator
 
-<div class="reference-badge">🚀 RHDP ZT Lab Validator</div>
+<div class="reference-badge">🚀 RHDP E2E Lab Validator</div>
 
 Write `solve.yml` and `validate.yml` Ansible playbooks for RHDP Showroom labs.
-Reads your existing module exercises and generates working playbooks for the zt-runner sidecar
+Reads your existing module exercises and generates working playbooks for E2E testing
 (Solve/Validate buttons and Demolition load testing at Summit).
 
 ---
@@ -95,7 +95,7 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
       <div class="ftl-step-title">Discover Modules</div>
       <div class="ftl-step-body">
         Reads all <code>.adoc</code> files and identifies modules with exercises.<br>
-        Checks AgV namespaces and zt-runner version.<br>
+        Checks AgV namespaces and runner image version.<br>
         Shows a summary — you choose which modules to generate playbooks for.
       </div>
     </div>
