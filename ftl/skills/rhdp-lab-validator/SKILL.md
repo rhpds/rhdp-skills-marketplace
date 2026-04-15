@@ -81,7 +81,7 @@ Wait for the user to reply with all three before proceeding.
 
 ---
 
-## Step 1: Collect Inputs
+## Step 1: Collect Inputs and Guide Environment Setup
 
 From the user's reply, extract:
 
@@ -93,13 +93,17 @@ From the user's reply, extract:
 
 **If a GitHub URL:** clone to `/tmp/<repo-name>` and use that path.
 
-**Access validation:**
+### Validate access
 
 For OCP labs:
 ```bash
-oc whoami 2>/dev/null || echo "not logged in"
-# Or if user provided a token:
-oc login --token=<token> --server=<api-url> --insecure-skip-tls-verify && oc whoami
+oc whoami 2>/dev/null && oc whoami --show-server 2>/dev/null
+```
+
+If not logged in and no token provided, tell the user:
+```
+Run:  oc login --token=<your-token> --server=<api-url> --insecure-skip-tls-verify
+Then: restart Claude so it picks up your kubeconfig
 ```
 
 For VM labs:
@@ -107,17 +111,56 @@ For VM labs:
 ssh -i <key> <user>@<host> "hostname && id"
 ```
 
-Confirm access before continuing. If access fails, stop and tell the user what's needed.
+Confirm access before continuing. If access fails, stop and tell the user exactly what to do.
 
-**⚠️ dev.yaml silent override — always check:**
+### Guide the user to order the lab (OCP tenant — if no live env yet)
+
+**For `ocp-tenant` labs:** After confirming the user is logged in, run:
+
+```bash
+# Get the logged-in username (this is what to use when ordering)
+oc whoami
+
+# Get the GUID from an existing showroom namespace (if already provisioned)
+oc get namespaces | grep showroom | head -5
+```
+
+If no showroom namespace exists yet, the user needs to provision a lab. Tell them:
+
+```
+**Order the lab now on integration.demo.redhat.com:**
+
+  1. Go to https://demo.redhat.com
+  2. Find your catalog item
+  3. Order it — use your Red Hat SSO user (the same user you are logged in as)
+  4. Note the GUID from the order confirmation
+
+Once provisioned, your showroom namespace will be:
+  showroom-<guid>     (OCP tenant)
+  showroom-<user>     (varies by lab)
+
+Come back with the GUID and I'll pick up from here.
+```
+
+If already provisioned, extract the GUID:
+```bash
+GUID=$(oc get namespaces -o name | grep showroom | head -1 | sed 's|namespace/showroom-||')
+echo "GUID: $GUID"
+```
+
+Store `GUID` and `SHOWROOM_NS` for use in all subsequent steps.
+
+### Check dev.yaml silent override
 
 ```bash
 grep "content_git_repo_ref" <showroom_path>/dev.yaml 2>/dev/null
 ```
 
-If `dev.yaml` has `ocp4_workload_showroom_content_git_repo_ref` set, it overrides
-`common.yaml`. The showroom pod will clone from that ref — not your working branch.
-Warn the user and ask if they want to remove it.
+If `ocp4_workload_showroom_content_git_repo_ref` is set in `dev.yaml`, warn:
+```
+⚠️  dev.yaml overrides content_git_repo_ref — the showroom pod will clone
+    from that ref instead of your working branch. Remove or update it.
+```
 
 ---
 
@@ -136,11 +179,11 @@ Read each file and collect:
 - Commands students run (look for `role="execute"`, `role="send-to-wetty"`, etc.)
 - Any existing `solve-button-placeholder` or `validate-button-placeholder` divs
 
-Also check the AgV common.yaml if available to understand:
-- `ocp4_workload_tenant_namespace_namespaces` — what namespaces exist and their quotas
-- Shared namespaces (from showroom userdata ConfigMap if cluster is live)
+Also check the AgV common.yaml if available:
+- `ocp4_workload_tenant_namespace_namespaces` — what namespaces exist
+- `ocp4_workload_showroom_runtime_automation_image` — confirm zt-runner version
 
-Present a summary:
+Present a summary and ask which modules to generate:
 
 ```
 Found N modules with exercises:
@@ -176,23 +219,20 @@ The solve playbook completes the exercise on behalf of the student.
 
 **Critical rules for solve.yml:**
 - Every operation must be **idempotent** — solve runs multiple times when students retry
-- Guard every create: check if it already exists before creating
+- Guard every create: check existence before creating
 - Use `--dry-run=client -o yaml | oc apply -f -` for `oc create` idempotency
 - Use `state: present` with `kubernetes.core.k8s` (naturally idempotent)
-- For async operations (builds, analysis): trigger and exit immediately —
-  students click Validate later when it completes
+- For async operations: trigger and exit — student clicks Validate later
 
 ### validate.yml
 
 Checks that the exercise outcome exists and is correct.
 
-**Critical rules for validate.yml:**
+**Critical rules:**
 - One `validation_check` task at the end — never multiple
-- Check **durable outcomes**, not transient state (a file that persists, not a branch
-  that may switch; a resource that stays, not a pod that restarts)
-- For async operations: check `any()` completed, not `max()` — new queued tasks
-  must not block completed ones
-- Be specific in error messages — tell students exactly which step failed and how to fix it
+- Check **durable outcomes** not transient state
+- For async: use `any()` completed, not `max()`
+- Be specific — tell students exactly which step failed and the fix command
 
 **validation_check structure:**
 ```yaml
@@ -203,14 +243,8 @@ Checks that the exercise outcome exists and is correct.
       ✅ Task 1: <what was checked>
       ✅ Task 2: <what was checked>
     error_msg: |
-      {{ '✅ Task 1: ok' if _task1_ok else '❌ Step incomplete: <what failed — fix: <command>' }}
-      {{ '✅ Task 2: ok' if _task2_ok else '❌ Step incomplete: <what failed — fix: <command>' }}
-```
-
-**For async operations (e.g. analysis still running):**
-```yaml
-error_msg: |
-  {{ '✅' if _done_ok else '❌ Still running — come back in a few minutes and click Validate again' }}
+      {{ '✅ Task 1: ok' if _task1_ok else '❌ Step incomplete: <what failed> — fix: <command>' }}
+      {{ '✅ Task 2: ok' if _task2_ok else '❌ Step incomplete: <what failed> — fix: <command>' }}
 ```
 
 ### Write the files
@@ -226,68 +260,159 @@ mkdir -p <showroom_path>/runtime-automation/<module-name>
 
 ## Step 4: Test Against Live Environment
 
-Push and restart Showroom to pick up the new playbooks.
+This step is a guided walkthrough. Follow each part in order.
 
-**OCP labs:**
+### 4a — Push and restart Showroom
+
+**OCP labs — run these commands and show the user the output at each step:**
+
 ```bash
+# Push the new playbooks
 cd <showroom_path>
-git add runtime-automation/ && git commit -m "Add solve/validate for <module>" && git push
-
-SHOWROOM_NS=$(oc get pods -A | grep showroom | awk '{print $1}' | head -1)
-oc rollout restart deployment/showroom -n $SHOWROOM_NS
-oc rollout status deployment/showroom -n $SHOWROOM_NS
-SHOWROOM=https://$(oc get route showroom -n $SHOWROOM_NS -o jsonpath='{.spec.host}')
+git add runtime-automation/
+git commit -m "Add solve/validate for <module-name>"
+git push
 ```
+
+```bash
+# Find the showroom namespace (use the GUID from Step 1)
+SHOWROOM_NS=showroom-$GUID
+echo "Showroom namespace: $SHOWROOM_NS"
+```
+
+```bash
+# Restart the pod to pick up the new playbooks from git
+oc rollout restart deployment/showroom -n $SHOWROOM_NS
+oc rollout status deployment/showroom -n $SHOWROOM_NS --timeout=120s
+```
+
+```bash
+# Get the Showroom URL
+SHOWROOM=https://$(oc get route showroom -n $SHOWROOM_NS -o jsonpath='{.spec.host}')
+echo "Showroom URL: $SHOWROOM"
+```
+
+Tell the user: **Save this URL — you will use it for all curl tests below.**
 
 **VM labs:**
 ```bash
+# Push
 cd <showroom_path>
-git add runtime-automation/ && git commit -m "Add solve/validate for <module>" && git push
-ssh -i <key> <user>@<host> "podman restart showroom"
+git add runtime-automation/ && git commit -m "Add solve/validate for <module-name>" && git push
+
+# Restart showroom container on bastion
+ssh -i <key> <user>@<host> "podman restart showroom && echo restarted"
+
+# Set the URL
 SHOWROOM=https://<showroom-fqdn>
+echo "Showroom URL: $SHOWROOM"
 ```
 
-**Test cycle — always run fresh validate first, then solve, then validate again:**
+### 4b — Run the full test cycle
+
+**Run each curl command and show the streaming output to the user.**
+The `/stream/` endpoint streams Ansible task output live — it closes when the playbook finishes.
+
+**Step 1 — Fresh validate (should FAIL — student hasn't done the exercise yet):**
+
 ```bash
-# 1. Fresh validate — exercise tasks should fail (student hasn't done them)
-echo "=== Fresh validate ===" && curl -sk -N $SHOWROOM/stream/validate/<module>
-
-# 2. Solve
-echo "=== Solve ===" && curl -sk -N $SHOWROOM/stream/solve/<module>
-
-# 3. Validate again — should pass
-echo "=== Validate after solve ===" && curl -sk -N $SHOWROOM/stream/validate/<module>
+echo "━━━ FRESH VALIDATE: <module-name> ━━━"
+curl -sk -N $SHOWROOM/stream/validate/<module-name>
 ```
 
-Expected: infra checks (service reachable, pod running) pass fresh.
-Student-state checks (resource created, config applied) fail fresh → pass after solve.
+Tell the user what to look for:
+```
+Expected: ❌ tasks fail — this confirms the validate checks real student state.
+If everything passes here without solving, the checks are too loose — revisit validate.yml.
+```
+
+**Step 2 — Solve (completes the exercise):**
+
+```bash
+echo "━━━ SOLVE: <module-name> ━━━"
+curl -sk -N $SHOWROOM/stream/solve/<module-name>
+```
+
+Tell the user what to look for:
+```
+Expected: Ansible tasks run and complete without errors.
+Watch for: "fatal" lines or Python tracebacks — these need fixing.
+```
+
+**Step 3 — Validate after solve (should PASS):**
+
+```bash
+echo "━━━ VALIDATE AFTER SOLVE: <module-name> ━━━"
+curl -sk -N $SHOWROOM/stream/validate/<module-name>
+```
+
+Tell the user what to look for:
+```
+Expected: ✅ all tasks pass.
+If any ❌ remains — paste the output and I will fix the playbook.
+```
+
+**Run validate a second time without solving to confirm idempotency:**
+
+```bash
+echo "━━━ VALIDATE AGAIN (idempotency check) ━━━"
+curl -sk -N $SHOWROOM/stream/validate/<module-name>
+```
+
+```
+Expected: ✅ still passes — solve left the environment in a clean, checkable state.
+```
 
 ---
 
 ## Step 5: Fix Loop
 
-If validation fails:
-1. Show the exact error from the SSE stream
-2. Propose a targeted fix to the playbook
-3. Ask: `Apply fix? [Y/n]`
-4. After fix → push → restart → re-run test cycle
-5. Repeat until all selected modules pass clean validate after solve
+If any curl output shows a failure:
+
+1. Show the exact failing lines from the stream output
+2. Identify which task in the playbook caused it
+3. Propose a targeted fix
+4. Ask: `Apply fix? [Y/n]`
+5. After fix:
+
+```bash
+# Push fix
+cd <showroom_path>
+git add runtime-automation/ && git commit -m "Fix <module-name> solve/validate" && git push
+
+# Restart pod
+oc rollout restart deployment/showroom -n $SHOWROOM_NS
+oc rollout status deployment/showroom -n $SHOWROOM_NS --timeout=120s
+
+# Re-run full test cycle
+curl -sk -N $SHOWROOM/stream/validate/<module-name>
+curl -sk -N $SHOWROOM/stream/solve/<module-name>
+curl -sk -N $SHOWROOM/stream/validate/<module-name>
+```
+
+Repeat until all three steps pass clean.
 
 ---
 
 ## Step 6: Summary
 
-When all modules pass the full test cycle:
+When all modules pass the full test cycle, show:
 
 ```
 ✅ All modules pass solve + validate
+
+  module-01: fresh validate ❌ → solve ✅ → validate ✅
+  module-02: fresh validate ❌ → solve ✅ → validate ✅
+  ...
 
 Files written:
   runtime-automation/module-01/solve.yml
   runtime-automation/module-01/validate.yml
   ...
 
-Next steps:
-  1. Provision a full lab and order with run_e2e_load_test: true
-     to confirm Demolition-style automated testing works end to end
+━━━ Next step ━━━
+
+Order the lab with run_e2e_load_test: true to confirm Demolition-style
+automated testing works end to end. The load test role calls /stream/solve
+then /stream/validate for every module and fails the provision on any ❌.
 ```

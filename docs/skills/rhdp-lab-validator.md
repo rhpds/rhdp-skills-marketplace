@@ -29,7 +29,7 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
       <code>content/lib/dev-mode.js</code><br>
       <code>runtime-automation/module-XX/solve.yml</code><br>
       <code>runtime-automation/module-XX/validate.yml</code><br><br>
-      <code>site.yml</code> must have the extensions and supplemental_files block configured.<br><br>
+      <code>site.yml</code> must have the Antora extensions and supplemental_files block configured (copy from e2e-template).<br><br>
       Add <strong>solve/validate button placeholders</strong> to each .adoc module.
     </div>
   </div>
@@ -75,12 +75,14 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 1</div>
-      <div class="ftl-step-title">Collect Inputs</div>
+      <div class="ftl-step-title">Collect Inputs + Environment Setup</div>
       <div class="ftl-step-body">
         <strong>Lab type:</strong> ocp-tenant · ocp-dedicated · vm-rhel<br>
         <strong>Showroom path:</strong> local path or GitHub URL<br>
         <strong>Access — OCP:</strong> admin token or <code>oc login</code> + restart Claude<br>
         <strong>Access — VM:</strong> SSH host, user, key path<br><br>
+        <strong>OCP tenant — order guidance:</strong> If no live lab yet, skill tells you to order on
+        <code>demo.redhat.com</code> using your logged-in SSO user and note the GUID.<br><br>
         ⚠️ Skill checks <code>dev.yaml</code> for a silent <code>content_git_repo_ref</code> override that kills branch changes.
       </div>
     </div>
@@ -93,6 +95,7 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
       <div class="ftl-step-title">Discover Modules</div>
       <div class="ftl-step-body">
         Reads all <code>.adoc</code> files and identifies modules with exercises.<br>
+        Checks AgV namespaces and zt-runner version.<br>
         Shows a summary — you choose which modules to generate playbooks for.
       </div>
     </div>
@@ -106,7 +109,7 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
       <div class="ftl-step-body">
         Reads exercise content and generates both playbooks.<br>
         Previews files before writing. Uses the correct pattern for your lab type.<br><br>
-        <strong>solve.yml</strong> — completes exercises on behalf of the student (must be idempotent)<br>
+        <strong>solve.yml</strong> — completes exercises on behalf of the student (idempotent — students retry)<br>
         <strong>validate.yml</strong> — checks outcomes with ✅/❌ per task using <code>validation_check</code>
       </div>
     </div>
@@ -114,26 +117,33 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
   <div class="ftl-row">
-    <div class="ftl-node ftl-step">
-      <div class="ftl-step-label">Step 4</div>
-      <div class="ftl-step-title">Push + Restart + Test</div>
+    <div class="ftl-node ftl-step ftl-generate">
+      <div class="ftl-step-label">Step 4 — Guided</div>
+      <div class="ftl-step-title">Push → Restart → Full Test Cycle</div>
       <div class="ftl-step-body">
-        Commits and pushes playbooks, restarts the Showroom pod, then runs the full test cycle:<br><br>
-        <code>1. Fresh validate</code> — should fail (student hasn't done the exercise)<br>
-        <code>2. Solve</code><br>
-        <code>3. Validate again</code> — should pass<br><br>
-        Uses SSE stream endpoints: <code>/stream/solve/module-XX</code> · <code>/stream/validate/module-XX</code>
+        Skill runs the commands for you and shows output at each step:<br><br>
+        <code>git push</code> → <code>oc rollout restart</code> → extract Showroom URL<br><br>
+        Then the <strong>full test cycle</strong> using SSE streams:<br>
+        <div class="test-cycle">
+          <div class="test-step test-fail">1. Fresh validate → <strong>should ❌ fail</strong><br><span>confirms checks test real student state</span></div>
+          <div class="test-arrow">↓</div>
+          <div class="test-step test-neutral">2. Solve → <strong>runs playbook</strong><br><span>watch for fatal errors or tracebacks</span></div>
+          <div class="test-arrow">↓</div>
+          <div class="test-step test-pass">3. Validate again → <strong>should ✅ pass</strong><br><span>confirms solve completed the exercise</span></div>
+          <div class="test-arrow">↓</div>
+          <div class="test-step test-pass">4. Validate once more → <strong>idempotency check</strong><br><span>confirms solve left clean state</span></div>
+        </div>
       </div>
     </div>
   </div>
   <div class="ftl-row"><div class="ftl-arrow">↓</div></div>
 
   <div class="ftl-row">
-    <div class="ftl-node ftl-step ftl-generate">
+    <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 5 — If needed</div>
       <div class="ftl-step-title">Fix Loop</div>
       <div class="ftl-step-body">
-        Stream error shown → targeted fix proposed → push → restart → re-test.<br>
+        Stream error shown → fix proposed → push → restart → full test cycle re-run.<br>
         Repeats until all modules pass clean.
       </div>
     </div>
@@ -145,6 +155,52 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
   </div>
 
 </div>
+
+---
+
+## Ordering Your Lab (OCP Tenant)
+
+The skill guides you through this when no live environment exists yet.
+
+<div class="order-box">
+  <div class="order-title">▶ Order on demo.redhat.com</div>
+  <ol>
+    <li>Go to <strong>demo.redhat.com</strong> and find your catalog item</li>
+    <li>Order using your <strong>Red Hat SSO user</strong> — same user you are logged in as with <code>oc login</code></li>
+    <li>Note the <strong>GUID</strong> from the order confirmation</li>
+    <li>Your showroom namespace will be <code>showroom-&lt;guid&gt;</code></li>
+  </ol>
+  Once provisioned, return to the skill with the GUID and it will pick up from there.
+</div>
+
+---
+
+## Testing with curl (SSE Streams)
+
+The skill generates and runs these for you. Each stream closes when the playbook finishes.
+
+```bash
+# Set your URL once (skill does this automatically)
+SHOWROOM=https://showroom-<guid>.apps.<cluster>.<domain>
+
+# 1. Fresh validate — expect ❌
+curl -sk -N $SHOWROOM/stream/validate/module-01
+
+# 2. Solve
+curl -sk -N $SHOWROOM/stream/solve/module-01
+
+# 3. Validate after solve — expect ✅
+curl -sk -N $SHOWROOM/stream/validate/module-01
+
+# 4. Validate again (idempotency) — still ✅
+curl -sk -N $SHOWROOM/stream/validate/module-01
+```
+
+**How to read the output:**
+- Lines starting with `TASK` — Ansible task names running live
+- `ok:` / `changed:` — task completed
+- `fatal:` — task failed — paste to the skill for diagnosis
+- Last line contains the `validation_check` result with ✅/❌ per exercise task
 
 ---
 
@@ -166,15 +222,15 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
 <table>
 <thead><tr><th>Pattern</th><th>Rule</th></tr></thead>
 <tbody>
-<tr><td><strong>Always pass kubeconfig</strong></td><td>Plain <code>oc</code> uses showroom SA (no access). Always use <code>oc --kubeconfig={{ k8s_kubeconfig }}</code> or <code>kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"</code></td></tr>
-<tr><td><strong>k8s_exec command</strong></td><td>Must be a string, not a list. Kubernetes treats a list as the executable name and fails silently.</td></tr>
-<tr><td><strong>NetworkPolicy bypass</strong></td><td>Use <code>k8s_exec</code> into the target pod and call <code>localhost</code> — avoids cross-namespace blocks.</td></tr>
+<tr><td><strong>Always pass kubeconfig</strong></td><td>Plain <code>oc</code> uses showroom SA (no access). Use <code>oc --kubeconfig={{ k8s_kubeconfig }}</code> in shell tasks or <code>kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"</code> in kubernetes.core modules.</td></tr>
+<tr><td><strong>k8s_exec command</strong></td><td>Must be a string, not a list. A list makes Kubernetes treat the first item as the executable name.</td></tr>
+<tr><td><strong>NetworkPolicy bypass</strong></td><td>Use <code>k8s_exec</code> into the target pod and call <code>localhost</code> — avoids cross-namespace HTTP blocks.</td></tr>
 <tr><td><strong>Idempotency</strong></td><td>Solve runs every time a student retries. Guard every create operation.</td></tr>
-<tr><td><strong>Async operations</strong></td><td>Trigger and exit. Validate uses <code>any()</code> not <code>max()</code> to detect completion.</td></tr>
-<tr><td><strong>Check durable outcomes</strong></td><td>Validate persistent state (file exists, resource created) — not transient state (branch name, pod restarts).</td></tr>
-<tr><td><strong>JSON in k8s_exec</strong></td><td>Parse via <code>python3 -c "import json,sys..."</code> — Ansible's <code>from_json</code> fails if stdout has deprecation warnings.</td></tr>
-<tr><td><strong>regex_search | first</strong></td><td>Returns <code>None</code> on no match. <code>None | first</code> crashes. Use separate tasks instead.</td></tr>
-<tr><td><strong>dev.yaml override</strong></td><td>Check for <code>content_git_repo_ref</code> in dev.yaml — it silently overrides common.yaml and clones the wrong branch.</td></tr>
+<tr><td><strong>Async operations</strong></td><td>Trigger and exit. Validate uses <code>any()</code> not <code>max()</code> to detect completion without new queued tasks blocking results.</td></tr>
+<tr><td><strong>Durable outcomes</strong></td><td>Validate persistent state (file exists, resource created) — not transient state (branch name, pod restarts).</td></tr>
+<tr><td><strong>JSON in k8s_exec</strong></td><td>Parse via <code>python3 -c "import json,sys..."</code> — Ansible's <code>from_json</code> fails when stdout has deprecation warnings alongside JSON.</td></tr>
+<tr><td><strong>regex_search | first</strong></td><td>Returns <code>None</code> on no match. <code>None | first</code> crashes. Use separate shell tasks instead.</td></tr>
+<tr><td><strong>dev.yaml override</strong></td><td>Check for <code>content_git_repo_ref</code> in dev.yaml — it silently overrides common.yaml and clones the wrong branch into the showroom pod.</td></tr>
 </tbody>
 </table>
 
@@ -221,4 +277,18 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
 .ftl-step-body { font-size:.8125rem; color:var(--color-text-3,#6a6e73); line-height:1.5; }
 .ftl-step-body code { background:rgba(0,0,0,.06); padding:.1em .4em; border-radius:3px; font-size:.75rem; }
 .ftl-arrow { font-size:1.5rem; color:var(--color-text-3,#6a6e73); line-height:1.8; text-align:center; }
+
+.test-cycle { margin-top:.75rem; display:flex; flex-direction:column; gap:.25rem; }
+.test-step { padding:.375rem .625rem; border-radius:6px; font-size:.75rem; line-height:1.4; }
+.test-step span { opacity:.7; font-size:.7rem; }
+.test-step strong { display:block; }
+.test-fail { background:#fff1f1; border-left:3px solid #c9190b; }
+.test-neutral { background:#f0f0f0; border-left:3px solid #6a6e73; }
+.test-pass { background:#f3faf2; border-left:3px solid #3E8635; }
+.test-arrow { text-align:center; font-size:.75rem; color:#6a6e73; line-height:1; }
+
+.order-box { border:1.5px solid #EE0000; border-radius:8px; padding:1.25rem 1.5rem; margin:1rem 0 2rem; background:#fff8f8; }
+.order-title { font-weight:700; font-size:.9375rem; color:#EE0000; margin-bottom:.75rem; }
+.order-box ol { margin:0; padding-left:1.25rem; font-size:.875rem; line-height:1.8; }
+.order-box code { background:rgba(0,0,0,.06); padding:.1em .4em; border-radius:3px; font-size:.8rem; }
 </style>
