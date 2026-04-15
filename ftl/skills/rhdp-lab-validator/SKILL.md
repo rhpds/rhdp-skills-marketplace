@@ -1,18 +1,22 @@
 ---
 name: ftl:lab-validator
-description: This skill should be used when the user asks to "write solve and validate playbooks", "add E2E testing to my lab", "generate solve.yml", "generate validate.yml", "add solve and validate buttons", "set up runtime automation", or "add ZT grading to my lab".
----
-
----
+description: This skill should be used when the user asks to "write solve and validate playbooks", "add E2E testing to my lab", "generate solve.yml", "generate validate.yml", "add solve and validate buttons", "set up runtime automation", "add ZT grading to my lab", "set up load testing for my lab", "add Demolition grading", or "configure run_e2e_load_test".
 context: main
 model: claude-opus-4-6
 ---
 
-# Skill: FTL Lab Validator
+# Skill: FTL Lab Validator — Orchestrator
 
-Write `solve.yml` and `validate.yml` Ansible playbooks for RHDP Showroom labs.
-Reads your existing module exercises and generates working playbooks for the
-zt-runner sidecar (solve/validate buttons and Demolition load testing).
+Orchestrates 4 agents to write and test `solve.yml` and `validate.yml` playbooks for RHDP Showroom labs:
+
+| Agent | Job |
+|---|---|
+| `ftl:content-reader` | Reads .adoc module, extracts tasks and expected outcomes |
+| `ftl:solve-writer` | Writes solve.yml from content-reader output |
+| `ftl:validate-writer` | Writes validate.yml from content-reader + solve-writer output |
+| `ftl:env-connector` | Pushes, restarts, runs full test cycle, reports pass/fail |
+
+Agents talk through this orchestrator — each agent's output is passed as input to the next.
 
 ---
 
@@ -77,342 +81,225 @@ Ready? Tell me:
                   (or paste your SSH config block)
 ```
 
-Wait for the user to reply with all three before proceeding.
+Wait for the user to reply before proceeding.
 
 ---
 
-## Step 1: Collect Inputs and Guide Environment Setup
+## Step 1: Setup
 
-From the user's reply, extract:
+Collect from user reply:
+- `lab_type` — `ocp-tenant` | `ocp-dedicated` | `vm-rhel`
+- `showroom_path` — local path or GitHub URL (clone to `/tmp/<repo>` if URL)
+- Access details
 
-- `lab_type` — one of: `ocp-tenant`, `ocp-dedicated`, `vm-rhel`
-- `showroom_path` — local path or GitHub URL to the showroom repo
-- Access details — token string, kubeconfig path, or SSH details
-
-**If a local path:** confirm it exists and contains `content/modules/ROOT/pages/`.
-
-**If a GitHub URL:** clone to `/tmp/<repo-name>` and use that path.
-
-### Validate access
-
-For OCP labs:
+**Verify the showroom repo has the required E2E files:**
 ```bash
-oc whoami 2>/dev/null && oc whoami --show-server 2>/dev/null
+ls <showroom_path>/content/lib/inject-buttons.js \
+   <showroom_path>/content/lib/dev-mode.js \
+   <showroom_path>/content/supplemental-ui/js/buttons.js 2>/dev/null
 ```
 
-If not logged in and no token provided, tell the user:
-```
-Run:  oc login --token=<your-token> --server=<api-url> --insecure-skip-tls-verify
-Then: restart Claude so it picks up your kubeconfig
-```
+If any are missing, tell the user which files to copy from the e2e-template branch before continuing.
 
-For VM labs:
+**Check dev.yaml silent override:**
 ```bash
-ssh -i <key> <user>@<host> "hostname && id"
+grep "ocp4_workload_showroom_content_git_repo_ref" <showroom_path>/dev.yaml 2>/dev/null
+```
+If found → warn the user. This overrides common.yaml and the showroom pod clones the wrong branch.
+
+**OCP tenant — guide environment ordering:**
+
+Run `oc whoami` to confirm login. If no live lab exists:
+```
+**Order the lab now on demo.redhat.com:**
+
+  1. Go to https://demo.redhat.com and find your catalog item
+  2. Order using your Red Hat SSO user (same user as oc login)
+  3. Note the GUID from the order confirmation
+
+Come back with the GUID once provisioned.
 ```
 
-Confirm access before continuing. If access fails, stop and tell the user exactly what to do.
-
-### Guide the user to order the lab (OCP tenant — if no live env yet)
-
-**For `ocp-tenant` labs:** After confirming the user is logged in, run:
-
-```bash
-# Get the logged-in username (this is what to use when ordering)
-oc whoami
-
-# Get the GUID from an existing showroom namespace (if already provisioned)
-oc get namespaces | grep showroom | head -5
-```
-
-If no showroom namespace exists yet, the user needs to provision a lab. Tell them:
-
-```
-**Order the lab now on integration.demo.redhat.com:**
-
-  1. Go to https://demo.redhat.com
-  2. Find your catalog item
-  3. Order it — use your Red Hat SSO user (the same user you are logged in as)
-  4. Note the GUID from the order confirmation
-
-Once provisioned, your showroom namespace will be:
-  showroom-<guid>     (OCP tenant)
-  showroom-<user>     (varies by lab)
-
-Come back with the GUID and I'll pick up from here.
-```
-
-If already provisioned, extract the GUID:
+If already provisioned, detect GUID:
 ```bash
 GUID=$(oc get namespaces -o name | grep showroom | head -1 | sed 's|namespace/showroom-||')
 echo "GUID: $GUID"
-```
-
-Store `GUID` and `SHOWROOM_NS` for use in all subsequent steps.
-
-### Check dev.yaml silent override
-
-```bash
-grep "content_git_repo_ref" <showroom_path>/dev.yaml 2>/dev/null
-```
-
-If `ocp4_workload_showroom_content_git_repo_ref` is set in `dev.yaml`, warn:
-```
-⚠️  dev.yaml overrides content_git_repo_ref — the showroom pod will clone
-    from that ref instead of your working branch. Remove or update it.
 ```
 
 ---
 
 ## Step 2: Discover Modules
 
-Read all `.adoc` files in `content/modules/ROOT/pages/` and identify which modules
-contain exercises (numbered steps under `==` headings).
+List all `.adoc` files and identify those with exercises:
 
 ```bash
 ls <showroom_path>/content/modules/ROOT/pages/*.adoc | sort
 ```
 
-Read each file and collect:
-- Module name (from filename, e.g. `module-01`)
-- Exercise tasks (numbered list items under exercise headings)
-- Commands students run (look for `role="execute"`, `role="send-to-wetty"`, etc.)
-- Any existing `solve-button-placeholder` or `validate-button-placeholder` divs
+For each file, do a quick check for numbered exercise steps and button placeholders.
 
-Also check the AgV common.yaml if available:
-- `ocp4_workload_tenant_namespace_namespaces` — what namespaces exist
-- `ocp4_workload_showroom_runtime_automation_image` — confirm zt-runner version
-
-Present a summary and ask which modules to generate:
+Present summary and ask which modules to process:
 
 ```
 Found N modules with exercises:
+  module-01 — <title> (has solve/validate buttons: yes/no)
+  module-02 — <title> (has solve/validate buttons: yes/no)
 
-  module-01 — <title> (X tasks)
-  module-02 — <title> (Y tasks)
-  ...
+Which modules? [all / numbers]
+```
 
-Which modules do you want solve/validate playbooks for? [all / enter numbers]
+**If a module has exercises but no button placeholders**, tell the user:
+```
+⚠️  module-XX has exercises but no solve/validate button placeholders.
+    Add these to the module .adoc before or after generating playbooks:
+
+      ++++
+      <div class="solve-button-placeholder" data-module="module-XX"></div>
+      ++++
+      ++++
+      <div class="validate-button-placeholder" data-module="module-XX"></div>
+      ++++
+```
+Still proceed with playbook generation — buttons can be added separately.
+
+---
+
+## Step 3: Run Agents — One Module at a Time
+
+For each selected module, run all 4 agents in sequence. Pass each agent's output to the next.
+
+---
+
+### 3a — content-reader
+
+```
+Invoke: ftl:content-reader
+Pass:
+  MODULE_FILE: <showroom_path>/content/modules/ROOT/pages/<module>.adoc
+  AGV_COMMON:  <path to common.yaml if available, else "none">
+  LAB_TYPE:    <lab_type>
+```
+
+Wait for the structured task report. Store as `CONTENT_REPORT`.
+
+Show the user a one-line summary:
+```
+📖 content-reader: found X tasks in <module>
 ```
 
 ---
 
-## Step 3: Generate Playbooks
+### 3b — solve-writer
 
-For each selected module, read the exercise content carefully and generate:
-
-### solve.yml
-
-The solve playbook completes the exercise on behalf of the student.
-
-**Load the appropriate pattern reference before writing:**
-- OCP tenant → `@ftl/skills/rhdp-lab-validator/references/ocp-tenant.md`
-- OCP dedicated → `@ftl/skills/rhdp-lab-validator/references/ocp-dedicated.md`
-- RHEL VM → `@ftl/skills/rhdp-lab-validator/references/vm-rhel.md`
-
-**Solver priority ladder — always try in this order:**
-1. `kubernetes.core.k8s_exec` into the target pod (bypasses NetworkPolicy)
-2. `kubernetes.core.k8s` / `k8s_info` via k8s API
-3. `ansible.builtin.uri` for REST APIs
-4. `ansible.builtin.wait_for` for TCP checks
-5. Playwright script — last resort for browser-only UI
-
-**Critical rules for solve.yml:**
-- Every operation must be **idempotent** — solve runs multiple times when students retry
-- Guard every create: check existence before creating
-- Use `--dry-run=client -o yaml | oc apply -f -` for `oc create` idempotency
-- Use `state: present` with `kubernetes.core.k8s` (naturally idempotent)
-- For async operations: trigger and exit — student clicks Validate later
-
-### validate.yml
-
-Checks that the exercise outcome exists and is correct.
-
-**Critical rules:**
-- One `validation_check` task at the end — never multiple
-- Check **durable outcomes** not transient state
-- For async: use `any()` completed, not `max()`
-- Be specific — tell students exactly which step failed and the fix command
-
-**validation_check structure:**
-```yaml
-- name: Validate all tasks
-  validation_check:
-    check: "{{ _task1_ok and _task2_ok }}"
-    pass_msg: |
-      ✅ Task 1: <what was checked>
-      ✅ Task 2: <what was checked>
-    error_msg: |
-      {{ '✅ Task 1: ok' if _task1_ok else '❌ Step incomplete: <what failed> — fix: <command>' }}
-      {{ '✅ Task 2: ok' if _task2_ok else '❌ Step incomplete: <what failed> — fix: <command>' }}
+```
+Invoke: ftl:solve-writer
+Pass:
+  CONTENT_READER_REPORT: <CONTENT_REPORT>
+  LAB_TYPE:              <lab_type>
+  REFERENCE_FILE:        <absolute path to references/<lab_type>.md>
 ```
 
-### Write the files
+Wait for solve.yml + SOLVE_ACTIONS summary. Store both.
 
-Show a preview of both files. Ask: `Write these files? [Y/n]`
+Show the user a preview of solve.yml and ask: `Write solve.yml? [Y/n]`
 
+Write if confirmed:
 ```bash
-mkdir -p <showroom_path>/runtime-automation/<module-name>
-# Write solve.yml and validate.yml
+mkdir -p <showroom_path>/runtime-automation/<module>
+# write solve.yml
 ```
 
 ---
 
-## Step 4: Test Against Live Environment
+### 3c — validate-writer
 
-This step is a guided walkthrough. Follow each part in order.
+```
+Invoke: ftl:validate-writer
+Pass:
+  CONTENT_READER_REPORT: <CONTENT_REPORT>
+  SOLVE_ACTIONS:         <SOLVE_ACTIONS from solve-writer>
+  LAB_TYPE:              <lab_type>
+```
 
-### 4a — Push and restart Showroom
+Wait for validate.yml + VALIDATION_SUMMARY. Store both.
 
-**OCP labs — run these commands and show the user the output at each step:**
+Show the user a preview of validate.yml and ask: `Write validate.yml? [Y/n]`
 
+Write if confirmed:
 ```bash
-# Push the new playbooks
-cd <showroom_path>
-git add runtime-automation/
-git commit -m "Add solve/validate for <module-name>"
-git push
-```
-
-```bash
-# Find the showroom namespace (use the GUID from Step 1)
-SHOWROOM_NS=showroom-$GUID
-echo "Showroom namespace: $SHOWROOM_NS"
-```
-
-```bash
-# Restart the pod to pick up the new playbooks from git
-oc rollout restart deployment/showroom -n $SHOWROOM_NS
-oc rollout status deployment/showroom -n $SHOWROOM_NS --timeout=120s
-```
-
-```bash
-# Get the Showroom URL
-SHOWROOM=https://$(oc get route showroom -n $SHOWROOM_NS -o jsonpath='{.spec.host}')
-echo "Showroom URL: $SHOWROOM"
-```
-
-Tell the user: **Save this URL — you will use it for all curl tests below.**
-
-**VM labs:**
-```bash
-# Push
-cd <showroom_path>
-git add runtime-automation/ && git commit -m "Add solve/validate for <module-name>" && git push
-
-# Restart showroom container on bastion
-ssh -i <key> <user>@<host> "podman restart showroom && echo restarted"
-
-# Set the URL
-SHOWROOM=https://<showroom-fqdn>
-echo "Showroom URL: $SHOWROOM"
-```
-
-### 4b — Run the full test cycle
-
-**Run each curl command and show the streaming output to the user.**
-The `/stream/` endpoint streams Ansible task output live — it closes when the playbook finishes.
-
-**Step 1 — Fresh validate (should FAIL — student hasn't done the exercise yet):**
-
-```bash
-echo "━━━ FRESH VALIDATE: <module-name> ━━━"
-curl -sk -N $SHOWROOM/stream/validate/<module-name>
-```
-
-Tell the user what to look for:
-```
-Expected: ❌ tasks fail — this confirms the validate checks real student state.
-If everything passes here without solving, the checks are too loose — revisit validate.yml.
-```
-
-**Step 2 — Solve (completes the exercise):**
-
-```bash
-echo "━━━ SOLVE: <module-name> ━━━"
-curl -sk -N $SHOWROOM/stream/solve/<module-name>
-```
-
-Tell the user what to look for:
-```
-Expected: Ansible tasks run and complete without errors.
-Watch for: "fatal" lines or Python tracebacks — these need fixing.
-```
-
-**Step 3 — Validate after solve (should PASS):**
-
-```bash
-echo "━━━ VALIDATE AFTER SOLVE: <module-name> ━━━"
-curl -sk -N $SHOWROOM/stream/validate/<module-name>
-```
-
-Tell the user what to look for:
-```
-Expected: ✅ all tasks pass.
-If any ❌ remains — paste the output and I will fix the playbook.
-```
-
-**Run validate a second time without solving to confirm idempotency:**
-
-```bash
-echo "━━━ VALIDATE AGAIN (idempotency check) ━━━"
-curl -sk -N $SHOWROOM/stream/validate/<module-name>
-```
-
-```
-Expected: ✅ still passes — solve left the environment in a clean, checkable state.
+# write validate.yml
 ```
 
 ---
 
-## Step 5: Fix Loop
+### 3d — env-connector
 
-If any curl output shows a failure:
-
-1. Show the exact failing lines from the stream output
-2. Identify which task in the playbook caused it
-3. Propose a targeted fix
-4. Ask: `Apply fix? [Y/n]`
-5. After fix:
-
-```bash
-# Push fix
-cd <showroom_path>
-git add runtime-automation/ && git commit -m "Fix <module-name> solve/validate" && git push
-
-# Restart pod
-oc rollout restart deployment/showroom -n $SHOWROOM_NS
-oc rollout status deployment/showroom -n $SHOWROOM_NS --timeout=120s
-
-# Re-run full test cycle
-curl -sk -N $SHOWROOM/stream/validate/<module-name>
-curl -sk -N $SHOWROOM/stream/solve/<module-name>
-curl -sk -N $SHOWROOM/stream/validate/<module-name>
+```
+Invoke: ftl:env-connector
+Pass:
+  LAB_TYPE:           <lab_type>
+  SHOWROOM_PATH:      <showroom_path>
+  MODULE_NAME:        <module>
+  GUID:               <guid if known>
+  ACCESS:             <token / kubeconfig / ssh details>
+  VALIDATION_SUMMARY: <VALIDATION_SUMMARY from validate-writer>
 ```
 
-Repeat until all three steps pass clean.
+env-connector pushes, restarts, and runs the full test cycle:
+1. Fresh validate → expect ❌
+2. Solve → expect clean
+3. Validate after solve → expect ✅
+4. Validate again → idempotency check
+
+Wait for TEST_RESULT.
+
+---
+
+## Step 4: Fix Loop
+
+If TEST_RESULT is FAIL:
+
+1. Show the user the exact failing lines from env-connector
+2. Determine which agent needs to fix it:
+   - solve.yml has a `fatal:` error → re-invoke **solve-writer** with the error context
+   - validate.yml fails after solve → re-invoke **validate-writer** with the error context
+3. Re-invoke the appropriate agent:
+
+```
+Re-invoke: ftl:solve-writer | ftl:validate-writer
+Pass:
+  (original inputs)
+  ERROR_CONTEXT: <raw output from env-connector showing the failure>
+  INSTRUCTION: Fix the failing task: <task name>
+```
+
+4. Preview the fix. Ask: `Apply fix? [Y/n]`
+5. Re-invoke **env-connector** for the full test cycle again
+6. Repeat until TEST_RESULT is PASS
+
+---
+
+## Step 5: Next Module
+
+When a module passes, move to the next selected module and repeat Step 3.
 
 ---
 
 ## Step 6: Summary
 
-When all modules pass the full test cycle, show:
+When all modules pass:
 
 ```
 ✅ All modules pass solve + validate
 
-  module-01: fresh validate ❌ → solve ✅ → validate ✅
-  module-02: fresh validate ❌ → solve ✅ → validate ✅
+  module-01: fresh ❌ → solve ✅ → validate ✅ → idempotency ✅
+  module-02: fresh ❌ → solve ✅ → validate ✅ → idempotency ✅
   ...
 
-Files written:
-  runtime-automation/module-01/solve.yml
-  runtime-automation/module-01/validate.yml
-  ...
+Showroom URL: <url>
 
 ━━━ Next step ━━━
-
-Order the lab with run_e2e_load_test: true to confirm Demolition-style
-automated testing works end to end. The load test role calls /stream/solve
-then /stream/validate for every module and fails the provision on any ❌.
+Order with run_e2e_load_test: true to confirm Demolition-style
+automated testing. The load test role calls /stream/solve then
+/stream/validate for every module and fails the provision on any ❌.
 ```
