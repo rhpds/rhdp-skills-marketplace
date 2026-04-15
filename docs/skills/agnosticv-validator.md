@@ -250,7 +250,7 @@ git pull origin main</code></pre>
   <ul>
     <li><strong>tag: defined:</strong> ERROR if <code>tag:</code> variable is not set in <code>common.yaml</code></li>
     <li><strong>Standard collections:</strong> Should use <code>{{ tag }}</code> — WARNING if hardcoded version found on standard collections</li>
-    <li><strong>Showroom collection:</strong> Must use a fixed version (not <code>{{ tag }}</code>) pinned to <code>≥ v1.5.3</code> — ERROR if version is older or missing</li>
+    <li><strong>Showroom collection:</strong> Must use a fixed version (not <code>{{ tag }}</code>) pinned to <code>≥ v1.6.6</code> — ERROR if version is older or missing</li>
     <li><strong>Galaxy collections:</strong> Version validation</li>
     <li><strong>Format:</strong> Proper requirements_content structure</li>
   </ul>
@@ -428,6 +428,46 @@ git pull origin main</code></pre>
     <li>Platform limit is 52 chars (<code>babylon_checks.py</code>); skill enforces 50 to catch violations before CI</li>
     <li>Per JK's request</li>
   </ul>
+
+</details>
+
+<details>
+<summary><strong>Check 25: E2E Runtime Automation</strong></summary>
+
+  <p>All checks in this group are <strong>WARNING</strong> severity — E2E failures are student-retryable and do not block provisioning.</p>
+
+  <ul>
+    <li><strong>Missing runtime automation workload:</strong> WARNING if <code>ocp4_workload_runtime_automation_k8s</code> is absent from an OCP tenant or dedicated catalog item that is expected to run E2E tests</li>
+    <li><strong>Missing zt-runner image:</strong> WARNING if the zt-runner container image reference is not present in the catalog when runtime automation is otherwise configured</li>
+  </ul>
+
+  <div class="callout callout-info"><span class="callout-icon">ℹ️</span><div class="callout-body"><p>E2E checks are all WARNING (not ERROR) because failures affect individual student sessions and can be retried — they are not provisioning blockers.</p></div></div>
+
+</details>
+
+<details>
+<summary><strong>Check 26: LiteLLM Virtual Keys Placement</strong></summary>
+
+  <ul>
+    <li><strong>Rule:</strong> <code>ocp4_workload_litellm_k8s</code> must NOT appear in a cluster CI catalog item</li>
+    <li><strong>Cluster CI detection:</strong> <code>__meta__.components</code> includes <code>sandbox_api</code>, OR the catalog display name contains <code>cluster</code></li>
+    <li><strong>ERROR</strong> if <code>ocp4_workload_litellm_k8s</code> is found in a cluster CI — same placement rule as Showroom (per-student workloads belong on the tenant/user deployer, not the shared cluster provisioner)</li>
+  </ul>
+
+  <div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><p>LiteLLM virtual-key provisioning is per-student. It must live on the tenant/user deployer catalog item, not on the shared cluster CI. Placing it on the cluster CI results in a single shared key for all students.</p></div></div>
+
+</details>
+
+<details>
+<summary><strong>Check 27: Showroom in Cluster CI</strong></summary>
+
+  <ul>
+    <li><strong>Rule:</strong> <code>ocp4_workload_showroom</code> must NOT appear in a cluster CI catalog item</li>
+    <li><strong>Cluster CI detection:</strong> <code>__meta__.components</code> includes <code>sandbox_api</code>, OR the catalog display name contains <code>cluster</code></li>
+    <li><strong>ERROR</strong> if <code>ocp4_workload_showroom</code> is found in a cluster CI</li>
+  </ul>
+
+  <div class="callout callout-warning"><span class="callout-icon">⚠️</span><div class="callout-body"><p>Showroom is per-student. It must only appear on the tenant/user deployer catalog item. Adding it to a cluster CI causes a single shared Showroom instance for all students instead of individual per-user lab UIs.</p></div></div>
 
 </details>
 
