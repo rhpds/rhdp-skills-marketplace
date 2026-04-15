@@ -94,31 +94,31 @@ Step 5: Offer Follow-up Actions
 
 ---
 
-## Step 0: Private Validator Detection
+## Step 0: Private Validator Detection (commitv)
 
-**Before running any checks**, detect the AgnosticV repo path and check for a private validator skill stored in the repo itself.
+**Before running any checks**, detect the AgnosticV repo path and check for the `commitv` skill stored in the private AgV repo.
 
 ```bash
 # Detect AgV path (from CLAUDE.md or ask user)
 agv_path=$(grep -r "AgnosticV:" ~/CLAUDE.md 2>/dev/null | head -1 | grep -oE '[~\/][^ ]+')
 
-# Check for private validator
-private_validator="$agv_path/.claude/skills/validator/SKILL.md"
+# Check for commitv — the private AgV validation skill
+commitv_skill="$agv_path/.claude/skills/commitv/SKILL.md"
 
-if [ -f "$private_validator" ]; then
-  echo "🔐 Private AgV validator found at: $private_validator"
+if [ -f "$commitv_skill" ]; then
+  echo "🔐 AgV commitv skill found at: $commitv_skill"
   echo "Using detailed internal validation..."
 fi
 ```
 
-**If the private validator exists:**
-- Load it with `@{private_validator}` and follow its instructions instead of the checks below.
-- The private validator contains internal RHDP-specific checks that are not appropriate to expose in a public skill.
-- This public skill's built-in checks still provide a useful baseline, but the private validator is authoritative.
+**If commitv exists:**
+- Load it with `@{commitv_skill}` and follow its instructions alongside (or instead of) the checks below.
+- The commitv skill lives in the private AgV repo and may contain internal RHDP-specific checks and conventions not appropriate to expose publicly.
+- This public skill's built-in checks still run as a baseline, but commitv is authoritative where it overlaps.
 
-**If no private validator exists:**
-- Continue with this skill's built-in checks.
-- Tell the user: "Running public baseline checks. For full internal validation, ensure the AgV repo's `.claude/skills/validator/SKILL.md` is present."
+**If commitv is not found:**
+- Continue with this skill's built-in checks only.
+- Tell the user: "Running public baseline checks. For full internal validation, ensure the AgV repo's `.claude/skills/commitv/SKILL.md` is present."
 
 ---
 
