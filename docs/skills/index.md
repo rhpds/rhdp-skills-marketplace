@@ -167,6 +167,76 @@ For generating automated grader and solver playbooks for Showroom workshop labs.
 
 ---
 
+## AIOps Skills (Incident Investigation)
+
+<div class="category-intro">
+For investigating failed Ansible/AAP jobs by correlating logs, Splunk data, and GitHub configuration.
+</div>
+
+<div class="category-grid">
+  <a href="root-cause-analysis.html" class="category-card aiops">
+    <div class="category-icon">🔎</div>
+    <h3>/aiops-skill:root-cause-analysis</h3>
+    <p>Investigate failed jobs by correlating Ansible/AAP logs with Splunk OCP pod logs and GitHub configuration.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> SSH access + Splunk credentials
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Diagnosing infrastructure failures
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+
+  <a href="logs-fetcher.html" class="category-card aiops">
+    <div class="category-icon">📋</div>
+    <h3>/aiops-skill:logs-fetcher</h3>
+    <p>Fetch Ansible/AAP logs from remote servers via SSH with time-based or job-number filtering.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> SSH access to log server
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Retrieving logs for investigation
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+
+  <a href="context-fetcher.html" class="category-card aiops">
+    <div class="category-icon">🗂️</div>
+    <h3>/aiops-skill:context-fetcher</h3>
+    <p>Retrieve job configurations and runbooks via GitHub and Confluence MCP servers during investigations.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> GitHub + Confluence MCP configured
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Fetching config context
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+
+  <a href="feedback-capture.html" class="category-card aiops">
+    <div class="category-icon">💬</div>
+    <h3>/aiops-skill:feedback-capture</h3>
+    <p>Capture and store structured user feedback at the end of skill invocations with categorization and session tracking.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> None
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> End of RCA session
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+</div>
+
+---
+
 ## Quick Reference Table
 
 <div class="table-container">
@@ -223,6 +293,29 @@ For generating automated grader and solver playbooks for Showroom workshop labs.
         <td><span class="status-badge available">✅ Available</span></td>
       </tr>
       <tr>
+        <td><code>/aiops-skill:root-cause-analysis</code></td>
+        <td>AIOps</td>
+        <td>SSH, Splunk credentials</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/aiops-skill:logs-fetcher</code></td>
+        <td>AIOps</td>
+        <td>SSH access to log server</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/aiops-skill:context-fetcher</code></td>
+        <td>AIOps</td>
+        <td>GitHub + Confluence MCP</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/aiops-skill:feedback-capture</code></td>
+        <td>AIOps</td>
+        <td>None</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
     </tbody>
   </table>
 </div>

@@ -66,6 +66,19 @@ title: Home
       </ul>
       <a href="{{ '/skills/rhdp-lab-validator.html' | relative_url }}">Learn more →</a>
     </div>
+
+    <div class="category-card">
+      <span class="category-icon">🔎</span>
+      <h3>AIOps — Incident Investigation</h3>
+      <p>AI-assisted root-cause analysis of infrastructure failures. Correlate Ansible/AAP logs with Splunk OCP pod logs and GitHub configuration to diagnose failed jobs.</p>
+      <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
+        <li><code>/aiops-skill:root-cause-analysis</code> — Investigate job failures</li>
+        <li><code>/aiops-skill:logs-fetcher</code> — Fetch logs via SSH</li>
+        <li><code>/aiops-skill:context-fetcher</code> — Fetch config and docs</li>
+        <li><code>/aiops-skill:feedback-capture</code> — Capture session feedback</li>
+      </ul>
+      <a href="{{ '/skills/root-cause-analysis.html' | relative_url }}">Learn more →</a>
+    </div>
   </div>
 </div>
 
