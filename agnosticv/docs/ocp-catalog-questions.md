@@ -360,7 +360,6 @@ workloads:
 
 ocp4_workload_showroom_content_git_repo: https://github.com/rhpds/<short-name>-showroom
 ocp4_workload_showroom_content_git_repo_ref: main
-ocp4_workload_showroom_antora_enable_dev_mode: "false"
 
 # User data seed — define exactly what content.user_data exposes to learners:
 # ocp4_workload_showroom_user_data_seed:
