@@ -11,6 +11,16 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.12.4 — 2026-04-15
+
+### FTL Skills
+
+#### `ftl:lab-validator` — full rewrite
+
+Rewritten from scratch. No longer scaffolds AgV or Showroom — focuses on writing and testing `solve.yml` / `validate.yml` playbooks. Pre-flight message updated with all required files and AgV config. Key field learnings from LB2860/LB2010/LB2865 incorporated: k8s_exec string rule, kubeconfig requirement, namespace probing, idempotency, async patterns, dev.yaml warning, specific error messages.
+
+---
+
 ## v2.12.3 — 2026-04-15
 
 ### AgnosticV Skills
