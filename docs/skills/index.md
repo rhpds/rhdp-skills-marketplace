@@ -80,7 +80,7 @@ For creating Red Hat Showroom workshops and demos.
   <a href="rhdp-lab-validator.html" class="category-card health">
     <div class="category-icon">🚀</div>
     <h3>/ftl:rhdp-lab-validator</h3>
-    <p>Generate ZT runtime-automation playbooks for RHDP showroom labs — Solve/Validate buttons for OCP, RHEL VM, and AAP labs.</p>
+    <p>Generate E2E runtime-automation playbooks for RHDP showroom labs — Solve/Validate buttons for OCP, RHEL VM, and AAP labs.</p>
     <div class="skill-meta">
       <div class="meta-item"><strong>Before:</strong> AgV catalog + showroom repo</div>
       <div class="meta-item"><strong>Use when:</strong> Adding E2E testing to summit/RHDP labs</div>
