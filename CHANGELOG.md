@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.12.2] - 2026-04-15
+
+### AgnosticV Skills
+
+#### validator — Check 25b: VM E2E not configured demoted to WARNING
+- `showroom_ansible_runner_image` and `showroom_ansible_runner_image_tag` both missing on cloud-vms-base CIs was a SUGGESTION — now WARNING, consistent with Check 25a
+
 ## [v2.12.1] - 2026-04-15
 
 ### AgnosticV Skills
