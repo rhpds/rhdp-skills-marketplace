@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.12.4] - 2026-04-15
+
+### FTL Skills
+
+#### ftl:lab-validator — full rewrite
+
+Rewritten from scratch based on field learnings from LB2860, LB2010, and LB2865 (Summit 2026).
+
+**Pre-flight message** now covers all required files including `dev-mode.js`,
+`site-extra.css`, and the full `site.yml` extensions block. Also shows exact AgV
+config needed per lab type (ocp-tenant / ocp-dedicated / vm-rhel).
+
+**No longer scaffolds AgV or Showroom** — focuses entirely on writing and testing
+solve.yml and validate.yml playbooks.
+
+**Key learnings incorporated:**
+- Solver priority ladder: k8s_exec → k8s API → URI → wait_for → Playwright
+- k8s_exec command must be a string, not a list
+- Plain `oc` uses showroom SA (no access) — always pass `--kubeconfig`
+- Namespace probe instead of list (SA can't list cluster namespaces)
+- Idempotency required on all solve playbooks (students retry)
+- dev.yaml silently overrides content_git_repo_ref — warn and check
+- Async operations: trigger and exit; use any() not max() in validate
+- Check durable outcomes not transient state
+- regex_search | first crashes on no match — use separate tasks
+- JSON parsing via python3 in k8s_exec (not from_json filter)
+- Test cycle: fresh validate → solve → validate again
+
+**Reference files** reduced from 5 to 3 (ocp-tenant, ocp-dedicated, vm-rhel)
+with all critical field patterns documented.
+
 ## [v2.12.3] - 2026-04-15
 
 ### AgnosticV Skills
