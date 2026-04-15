@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.12.0] - 2026-04-15
+
+### AgnosticV Skills
+
+#### validator — private validator delegation (issue #12)
+- Added Step 0 to detect `$agv_path/.claude/skills/validator/SKILL.md` in the AgV private repo
+- If found, loads and uses the private validator instead of the built-in checks
+- Enables keeping internal RHDP-specific checks private while maintaining a public baseline
+- Public skill now tells users when it's falling back to built-in checks
+
+#### catalog-builder — expanded discovery search (issue #14)
+- Discovery in Step 2 now searches beyond `agd_v2/` and `openshift_cnv/`
+- Added: `ai-quickstarts/`, `enterprise/`, `summit-2026/`, `sandboxes-gpte/`, `zt_rhel/`, `rhdp/`
+- AgDv2 filter: only shows results where `common.yaml` has a `config:` field, preventing agDv1 false matches
+
+#### catalog-builder — console_embed placement fix (issue #15)
+- Removed `ocp4_workload_ocp_console_embed` from auto-set comment in Tenant CI template
+- The existing "Do NOT add" note at Q-T4 was correct but contradicted by the auto-set block comment
+- Now unambiguous: console_embed belongs in the Cluster CI only
+
+### Documentation
+
+#### best-practices.md — remove AI attribution suppression (issue #17)
+- Removed "No AI attribution" rule from git rules table and CLAUDE.md examples
+- When writing with Claude as a co-author, attribution should be included, not suppressed
+
 ## [v2.11.2] - 2026-04-14
 
 ### Showroom Skills
