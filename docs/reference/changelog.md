@@ -11,6 +11,16 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.12.3 — 2026-04-15
+
+### AgnosticV Skills
+
+#### `agnosticv:catalog-builder` + `agnosticv:validator` — dev_mode common.yaml check removed
+
+`ocp4_workload_showroom_antora_enable_dev_mode: "false"` is no longer generated in `common.yaml` and no longer checked by the validator. The only enforcement is that dev.yaml has it set to `"true"`. cloud-vms-base is unaffected — `vm_workload_showroom` has no dev_mode toggle.
+
+---
+
 ## v2.12.2 — 2026-04-15
 
 ### AgnosticV Skills

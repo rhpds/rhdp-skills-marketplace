@@ -1676,7 +1676,6 @@ Save this checklist for comprehensive review:
 - [ ] Showroom repo in github.com/rhpds organization
 - [ ] showroom collection version: v1.6.0
 - [ ] Both workloads present: ocp4_workload_ocp_console_embed + ocp4_workload_showroom
-- [ ] ocp4_workload_showroom_antora_enable_dev_mode: "false" in common.yaml
 - [ ] ocp4_workload_showroom_antora_enable_dev_mode: "true" in dev.yaml
 ```
 

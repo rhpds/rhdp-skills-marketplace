@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.12.3] - 2026-04-15
+
+### AgnosticV Skills
+
+#### catalog-builder — remove antora_enable_dev_mode: false from common.yaml
+- Generated common.yaml no longer includes `ocp4_workload_showroom_antora_enable_dev_mode: "false"`
+- dev.yaml override (`"true"`) is still generated — only place this var needs to be set
+
+#### validator — Check 8: stop checking dev_mode false in common.yaml
+- Removed checklist item for `antora_enable_dev_mode: "false"` in common.yaml
+- Only check that remains: `"true"` must be present in dev.yaml
+- cloud-vms-base: no change — vm_workload_showroom has no dev_mode variable (OCP-specific only)
+
 ## [v2.12.2] - 2026-04-15
 
 ### AgnosticV Skills
