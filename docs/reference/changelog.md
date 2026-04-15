@@ -11,6 +11,16 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.12.2 — 2026-04-15
+
+### AgnosticV Skills
+
+#### `agnosticv:validator` — Check 25b VM E2E severity to WARNING
+
+`showroom_ansible_runner_image` / `_tag` both missing on cloud-vms-base CIs was a SUGGESTION. Now WARNING, consistent with the OCP/tenant Check 25a change in v2.12.1.
+
+---
+
 ## v2.12.1 — 2026-04-15
 
 ### AgnosticV Skills

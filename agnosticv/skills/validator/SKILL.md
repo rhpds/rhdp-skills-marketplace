@@ -2355,7 +2355,8 @@ def check_runtime_automation(config):
     runner_image = config.get('showroom_ansible_runner_image', '')
     runner_tag = config.get('showroom_ansible_runner_image_tag', '')
     if not runner_image and not runner_tag:
-      suggestions.append({
+      warnings.append({
+        'severity': 'WARNING',
         'check': 'runtime_automation',
         'message': 'E2E testing (solve/validate buttons) not configured for VM lab',
         'recommendation': f'Add showroom_ansible_runner_image: {EXPECTED_ZT_RUNNER} and showroom_ansible_runner_image_tag: {EXPECTED_ZT_RUNNER_TAG} to enable solve/validate buttons in Showroom',
