@@ -311,8 +311,18 @@ All GitHub repositories must be in `github.com/rhpds`.
 Silently search `agd_v2/` and `openshift_cnv/` using technologies from Step 1. Read each result's `config:` field to show infra type.
 
 ```bash
-grep -rl "$technologies" "$AGV_PATH/agd_v2/" "$AGV_PATH/openshift_cnv/" \
-  --include="common.yaml" -l 2>/dev/null \
+# Search all agDv2 directories — filter by config: field to exclude agDv1 catalogs
+grep -rl "$technologies" \
+  "$AGV_PATH/agd_v2/" \
+  "$AGV_PATH/openshift_cnv/" \
+  "$AGV_PATH/ai-quickstarts/" \
+  "$AGV_PATH/enterprise/" \
+  "$AGV_PATH/summit-2026/" \
+  "$AGV_PATH/sandboxes-gpte/" \
+  "$AGV_PATH/zt_rhel/" \
+  "$AGV_PATH/rhdp/" \
+  --include="common.yaml" 2>/dev/null \
+  | xargs grep -l "^config:" 2>/dev/null \
   | xargs -I{} dirname {} | head -5
 ```
 

@@ -79,6 +79,8 @@ Use `/agnosticv-validator` when you need to:
 ## Skill Workflow Overview
 
 ```
+Step 0: Detect private AgV validator (if present, use it instead)
+  ↓
 Step 1: Path Detection (Auto-detect or ask)
   ↓
 Step 2: Validation Scope Selection
@@ -89,6 +91,34 @@ Step 4: Generate Report (Errors/Warnings/Suggestions)
   ↓
 Step 5: Offer Follow-up Actions
 ```
+
+---
+
+## Step 0: Private Validator Detection
+
+**Before running any checks**, detect the AgnosticV repo path and check for a private validator skill stored in the repo itself.
+
+```bash
+# Detect AgV path (from CLAUDE.md or ask user)
+agv_path=$(grep -r "AgnosticV:" ~/CLAUDE.md 2>/dev/null | head -1 | grep -oE '[~\/][^ ]+')
+
+# Check for private validator
+private_validator="$agv_path/.claude/skills/validator/SKILL.md"
+
+if [ -f "$private_validator" ]; then
+  echo "🔐 Private AgV validator found at: $private_validator"
+  echo "Using detailed internal validation..."
+fi
+```
+
+**If the private validator exists:**
+- Load it with `@{private_validator}` and follow its instructions instead of the checks below.
+- The private validator contains internal RHDP-specific checks that are not appropriate to expose in a public skill.
+- This public skill's built-in checks still provide a useful baseline, but the private validator is authoritative.
+
+**If no private validator exists:**
+- Continue with this skill's built-in checks.
+- Tell the user: "Running public baseline checks. For full internal validation, ensure the AgV repo's `.claude/skills/validator/SKILL.md` is present."
 
 ---
 

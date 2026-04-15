@@ -26,7 +26,7 @@ Three layers load on every session, additively:
 ```
 
 **Global `~/CLAUDE.md`** — rules that never change regardless of repo:
-- Git commit style (no AI attribution, no feature/ prefix)
+- Git commit style (no feature/ prefix)
 - Personal writing tone and style preferences
 - Persistent workflows with trigger phrases (see Work Log example below)
 
@@ -84,7 +84,6 @@ Rules files let you split concerns without one giant CLAUDE.md. Each file loads 
 - Asset UUIDs must be unique (generate with uuidgen)
 - Branch from main, PR to main
 - No feature/ prefix on branches
-- No AI attribution in commits
 
 ### Naming
 - Catalog names: lowercase with hyphens
@@ -690,7 +689,7 @@ Always use %user% for variable substitution, never {user}
 > Create a branch called aap-catalog-update from main.
 > Update the common.yaml to add the new collection entry.
 > Run yamllint to validate.
-> Commit with a clean message, NO AI attribution footer.
+> Commit with a clean message.
 > Push and create a PR to main.
 ```
 
@@ -812,7 +811,6 @@ These apply across all RHDP repos:
 <tr><td>Branch from <code>main</code></td><td><code>git checkout -b aap-catalog-fix main</code></td><td><code>git checkout -b aap-catalog-fix dev</code></td></tr>
 <tr><td>Short descriptive names</td><td><code>aap-catalog-fix</code></td><td><code>feature/aap-update</code></td></tr>
 <tr><td>No prefix</td><td><code>showroom-module3</code></td><td><code>feature/showroom-module3</code></td></tr>
-<tr><td>No AI attribution</td><td>Clean commit message</td><td><code>Co-Authored-By: Claude</code> footer</td></tr>
 <tr><td>PR to <code>main</code></td><td><code>gh pr create --base main</code></td><td><code>gh pr create --base dev</code></td></tr>
 <tr><td>Lint first</td><td><code>yamllint common.yaml</code></td><td>Commit without linting</td></tr>
 </tbody>

@@ -63,7 +63,8 @@ workloads:
   - agnosticd.namespaced_workloads.ocp4_workload_tenant_keycloak_user
   - agnosticd.namespaced_workloads.ocp4_workload_tenant_namespace
   # gitops_bootstrap added here if Q-T3 = yes
-  # ocp4_workload_ocp_console_embed + ocp4_workload_showroom added if Q-T4 = yes
+  # ocp4_workload_showroom added if Q-T4 = yes
+  # ⚠️ Do NOT add ocp4_workload_ocp_console_embed here — it belongs in the Cluster CI
 ```
 
 `remove_workloads` — reverse order, always:
