@@ -42,7 +42,7 @@ Choice [1/2/3]:
 ```
 Q: Do you have a custom CNV pool allocated? [Y/n]
 
-Default: agd-v2/ocp-cluster-cnv-pools/prod
+Default: agd-v2/ocp-cluster-cnv-pools
 ```
 
 **Question E — Auto-scale:** *(multi-node only)*
@@ -74,7 +74,7 @@ __meta__:
   components:
   - name: openshift
     display_name: OpenShift Cluster
-    item: agd-v2/ocp-cluster-cnv-pools/prod   # or custom pool
+    item: agd-v2/ocp-cluster-cnv-pools   # or custom pool
     parameter_values:
       cluster_size: multinode                  # or sno
       host_ocp4_installer_version: "4.21"      # from Question C
@@ -100,7 +100,7 @@ __meta__:
   components:
   - name: openshift
     display_name: OpenShift Cluster (AWS)
-    item: agd-v2/ocp-cluster-aws-pools/prod
+    item: agd-v2/ocp-cluster-aws-pools
     parameter_values:
       cluster_size: default
       host_ocp4_installer_version: "4.21"

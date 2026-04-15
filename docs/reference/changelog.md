@@ -11,6 +11,28 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.12.1 — 2026-04-15
+
+### AgnosticV Skills
+
+#### `agnosticv:validator` — Check 27: showroom in cluster CI (new)
+
+`ocp4_workload_showroom` and `vm_workload_showroom` must not appear in any CI with "cluster" in the display name, or that has `__meta__.components`. These are per-user workloads — cluster CIs provision shared infrastructure only. → ERROR
+
+#### `agnosticv:validator` — Check 26: litellm placement extended
+
+Previously only detected cluster CIs via `__meta__.components`. Now also checks display name for "cluster" — consistent with the pattern used in Check 25 and Check 27.
+
+#### `agnosticv:validator` — Check 25: E2E severity to WARNING
+
+"E2E not configured" demoted from SUGGESTION → WARNING. Partial E2E config (enabled but image or FTL workload missing) demoted from ERROR → WARNING. Cluster CIs are excluded entirely (no change).
+
+#### `agnosticv:catalog-builder` — pool references without /prod
+
+Generated `item:` values in `__meta__.components` no longer include the `/prod` suffix (`agd-v2/ocp-cluster-cnv-pools` not `agd-v2/ocp-cluster-cnv-pools/prod`). The ordering system selects the appropriate pool — hardcoding `/prod` bypasses dev-mode ordering.
+
+---
+
 ## v2.12.0 — 2026-04-15
 
 ### AgnosticV Skills
