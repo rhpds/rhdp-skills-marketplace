@@ -11,6 +11,30 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.12.0 — 2026-04-15
+
+### AgnosticV Skills
+
+#### `agnosticv:validator` — Private validator delegation (issue #12)
+
+The public validator now has a **Step 0** that detects the `commitv` skill in the private AgV repo before running any checks. If found, it loads and uses it for internal RHDP-specific validation. If not found, it falls back to built-in checks and tells the user. Keeps sensitive internal check logic private without losing the public entry point.
+
+#### `agnosticv:catalog-builder` — Expanded reference catalog discovery (issue #14)
+
+Step 2 discovery now searches beyond `agd_v2/` and `openshift_cnv/`. Added: `ai-quickstarts/`, `enterprise/`, `summit-2026/`, `sandboxes-gpte/`, `zt_rhel/`, `rhdp/`. Results filtered by `config:` field to exclude agDv1 catalogs automatically.
+
+#### `agnosticv:catalog-builder` — Tenant CI console_embed fix (issue #15)
+
+The auto-set block in `sandbox-tenant-ci-questions.md` listed `ocp4_workload_ocp_console_embed` alongside Showroom as things that get added for Q-T4. This contradicted the correct "Do NOT add" note and caused the builder to put console_embed in tenant CIs. Removed from the auto-set comment — console_embed belongs in the Cluster CI only.
+
+### Documentation
+
+#### `best-practices.md` — Remove AI attribution suppression (issue #17)
+
+Removed "No AI attribution" from 4 locations: the global CLAUDE.md example, the AgnosticV CLAUDE.md example, a prompt workflow example, and the git rules table. When writing with Claude as a co-author, attribution should be included.
+
+---
+
 ## v2.10.10 — 2026-04-13
 
 ### AgnosticV Skills
