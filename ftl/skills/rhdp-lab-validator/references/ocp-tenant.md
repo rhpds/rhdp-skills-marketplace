@@ -110,13 +110,18 @@ Exec into the target pod and call localhost instead:
 
 The zt-runner SA cannot list all namespaces (cluster-scoped). Probe candidates directly:
 
-```bash
-for ns in stackrox rhacs rhacs-operator; do
-  if {{ oc }} get namespace ${ns} 2>/dev/null | grep -q Active; then
-    echo ${ns}
-    break
-  fi
-done
+```yaml
+# Must be inside an ansible.builtin.shell task — {{ oc }} is Ansible templating
+- name: Find shared namespace
+  ansible.builtin.shell: |
+    for ns in stackrox rhacs rhacs-operator; do
+      if {{ oc }} get namespace ${ns} 2>/dev/null | grep -q Active; then
+        echo ${ns}; break
+      fi
+    done
+  vars:
+    oc: "oc --kubeconfig={{ k8s_kubeconfig }}"
+  register: r_ns
 ```
 
 ---
@@ -210,7 +215,7 @@ Inspect this before writing playbooks to know what variables are available.
 
 ## Working examples
 
-- `examples/e2e-ocp-tenant/` in `showroom_template_nookbag` e2e-template branch
-- `tests/zt-ocp-pipelines-tenant` in agnosticv repo
-- `rhpds/private-maas-showroom` main branch (LB2860)
-- `rhpds/rhads-ols-modernize-showroom` main branch (LB2010)
+- https://github.com/rhpds/showroom_template_nookbag/tree/e2e-template/examples/e2e-ocp-tenant
+- https://github.com/rhpds/agnosticv/tree/master/tests/zt-ocp-pipelines-tenant
+- https://github.com/rhpds/private-maas-showroom (LB2860)
+- https://github.com/rhpds/rhads-ols-modernize-showroom (LB2010)

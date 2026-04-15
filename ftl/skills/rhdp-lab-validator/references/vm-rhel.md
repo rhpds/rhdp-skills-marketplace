@@ -138,7 +138,24 @@ error_msg: |
 
 ---
 
+## Restarting Showroom during fix loop
+
+After pushing a playbook fix:
+
+```bash
+ssh -i <key> <user>@<host> "podman restart showroom && echo restarted"
+```
+
+Then re-run the full test cycle:
+```bash
+curl -sk -N $SHOWROOM/stream/validate/<module>
+curl -sk -N $SHOWROOM/stream/solve/<module>
+curl -sk -N $SHOWROOM/stream/validate/<module>
+```
+
+---
+
 ## Working examples
 
-- `examples/e2e-vm-rhel/` in `showroom_template_nookbag` e2e-template branch
-- `tests/zt-rhel-grading` in agnosticv repo
+- https://github.com/rhpds/showroom_template_nookbag/tree/e2e-template/examples/e2e-vm-rhel
+- https://github.com/rhpds/agnosticv/tree/master/tests/zt-rhel-grading

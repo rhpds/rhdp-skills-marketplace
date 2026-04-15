@@ -93,7 +93,8 @@ Same as OCP tenant — prefer k8s_exec to bypass NetworkPolicy.
 Use `state: present` with kubernetes.core.k8s. Guard shell operations:
 
 ```yaml
-ansible.builtin.shell: "{{ oc }} create ns my-ns 2>/dev/null || true"
+# oc create is NOT idempotent — use apply pattern
+ansible.builtin.shell: "{{ oc }} create ns my-ns --dry-run=client -o yaml | {{ oc }} apply -f -"
 ```
 
 ---
@@ -102,23 +103,29 @@ ansible.builtin.shell: "{{ oc }} create ns my-ns 2>/dev/null || true"
 
 The zt-runner SA cannot list cluster namespaces. Probe known candidates:
 
-```bash
-for ns in stackrox rhacs my-app; do
-  if {{ oc }} get namespace ${ns} 2>/dev/null | grep -q Active; then
-    echo ${ns}; break
-  fi
-done
+```yaml
+# Must be inside an ansible.builtin.shell task — {{ oc }} is Ansible templating
+- name: Find shared namespace
+  ansible.builtin.shell: |
+    for ns in stackrox rhacs my-app; do
+      if {{ oc }} get namespace ${ns} 2>/dev/null | grep -q Active; then
+        echo ${ns}; break
+      fi
+    done
+  vars:
+    oc: "oc --kubeconfig={{ k8s_kubeconfig }}"
+  register: r_ns
 ```
 
 ---
 
-## Regex in Ansible — avoid regex_search | first
+## Common pitfalls
 
-Use separate tasks instead of `regex_search('...') | first` — returns `None` on no match and crashes.
+See `references/common-pitfalls.md` for regex_search, JSON parsing, and other cross-cutting issues.
 
 ---
 
 ## Working examples
 
-- `examples/e2e-ocp-dedicated/` in `showroom_template_nookbag` e2e-template branch
-- `tests/zt-ocp-dedicated-grading` in agnosticv repo
+- https://github.com/rhpds/showroom_template_nookbag/tree/e2e-template/examples/e2e-ocp-dedicated
+- https://github.com/rhpds/agnosticv/tree/master/tests/zt-ocp-dedicated-grading
