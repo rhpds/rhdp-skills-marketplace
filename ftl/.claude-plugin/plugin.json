@@ -1,6 +1,6 @@
 {
   "name": "ftl",
-  "version": "2.13.2",
+  "version": "2.13.3",
   "description": "E2E Lab Testing \u2014 writes and tests solve.yml + validate.yml Ansible playbooks for RHDP Showroom student exercises. Orchestrates 4 agents: content-reader, solve-writer, validate-writer, env-connector.",
   "author": {
     "name": "RHDP Team",

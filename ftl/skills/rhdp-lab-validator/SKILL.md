@@ -182,12 +182,15 @@ For each selected module, run all 4 agents in sequence. Pass each agent's output
 
 ### 3a — content-reader
 
+Use the **Task tool** with `subagent_type: "ftl:content-reader"`:
+
 ```
-Invoke: ftl:content-reader
-Pass:
-  MODULE_FILE: <showroom_path>/content/modules/ROOT/pages/<module>.adoc
-  AGV_COMMON:  <path to common.yaml if available, else "none">
-  LAB_TYPE:    <lab_type>
+Task tool:
+  subagent_type: ftl:content-reader
+  prompt: |
+    MODULE_FILE: <showroom_path>/content/modules/ROOT/pages/<module>.adoc
+    AGV_COMMON:  <path to common.yaml if available, else "none">
+    LAB_TYPE:    <lab_type>
 ```
 
 Wait for the structured task report. Store as `CONTENT_REPORT`.
@@ -201,12 +204,15 @@ Show the user a one-line summary:
 
 ### 3b — solve-writer
 
+Use the **Task tool** with `subagent_type: "ftl:solve-writer"`:
+
 ```
-Invoke: ftl:solve-writer
-Pass:
-  CONTENT_READER_REPORT: <CONTENT_REPORT>
-  LAB_TYPE:              <lab_type>
-  REFERENCE_FILE:        <absolute path to references/<lab_type>.md>
+Task tool:
+  subagent_type: ftl:solve-writer
+  prompt: |
+    CONTENT_READER_REPORT: <CONTENT_REPORT>
+    LAB_TYPE:              <lab_type>
+    REFERENCE_FILE:        <absolute path to references/<lab_type>.md>
 ```
 
 Wait for solve.yml + SOLVE_ACTIONS summary. Store both.
@@ -223,12 +229,15 @@ mkdir -p <showroom_path>/runtime-automation/<module>
 
 ### 3c — validate-writer
 
+Use the **Task tool** with `subagent_type: "ftl:validate-writer"`:
+
 ```
-Invoke: ftl:validate-writer
-Pass:
-  CONTENT_READER_REPORT: <CONTENT_REPORT>
-  SOLVE_ACTIONS:         <SOLVE_ACTIONS from solve-writer>
-  LAB_TYPE:              <lab_type>
+Task tool:
+  subagent_type: ftl:validate-writer
+  prompt: |
+    CONTENT_READER_REPORT: <CONTENT_REPORT>
+    SOLVE_ACTIONS:         <SOLVE_ACTIONS from solve-writer>
+    LAB_TYPE:              <lab_type>
 ```
 
 Wait for validate.yml + VALIDATION_SUMMARY. Store both.
@@ -244,15 +253,18 @@ Write if confirmed:
 
 ### 3d — env-connector
 
+Use the **Task tool** with `subagent_type: "ftl:env-connector"`:
+
 ```
-Invoke: ftl:env-connector
-Pass:
-  LAB_TYPE:           <lab_type>
-  SHOWROOM_PATH:      <showroom_path>
-  MODULE_NAME:        <module>
-  GUID:               <guid if known>
-  ACCESS:             <token / kubeconfig / ssh details>
-  VALIDATION_SUMMARY: <VALIDATION_SUMMARY from validate-writer>
+Task tool:
+  subagent_type: ftl:env-connector
+  prompt: |
+    LAB_TYPE:           <lab_type>
+    SHOWROOM_PATH:      <showroom_path>
+    MODULE_NAME:        <module>
+    GUID:               <guid if known>
+    ACCESS:             <token / kubeconfig / ssh details>
+    VALIDATION_SUMMARY: <VALIDATION_SUMMARY from validate-writer>
 ```
 
 env-connector pushes, restarts, and runs the full test cycle:
