@@ -79,9 +79,19 @@ Ready? Tell me:
                   your kubeconfig
        VM labs  — provide SSH host, user, and key path
                   (or paste your SSH config block)
+  4. Existing files: Do you already have solve.yml or validate.yml
+     for any modules? If yes, paste them or share the paths now.
+     I'll use them as the baseline and only fill in what's missing
+     instead of generating from scratch.
 ```
 
 Wait for the user to reply before proceeding.
+
+**If user provides existing files (Step 4 above):**
+- Read the existing solve.yml and validate.yml
+- Skip `ftl:content-reader` and `ftl:solve-writer`/`ftl:validate-writer` for those modules
+- Go directly to `ftl:env-connector` to test the existing files
+- Only re-invoke the writer agents if env-connector reports failures
 
 ---
 
@@ -263,6 +273,14 @@ If TEST_RESULT is FAIL:
 2. Determine which agent needs to fix it:
    - solve.yml has a `fatal:` error → re-invoke **solve-writer** with the error context
    - validate.yml fails after solve → re-invoke **validate-writer** with the error context
+   - Playwright step failed (output contains `FAILED:` and `INTENT:`) →
+     **do NOT re-invoke writers yet** — trigger **env-connector self-healing** first:
+       a. Pull `/tmp/playwright-debug.png` from runner pod
+       b. Read screenshot + INTENT description with vision
+       c. Vision generates updated selector for current UI
+       d. Patch the `.js` file in showroom repo
+       e. Push and re-run full test cycle
+     Only re-invoke solve-writer if self-healing fails after 2 attempts
 3. Re-invoke the appropriate agent:
 
 ```

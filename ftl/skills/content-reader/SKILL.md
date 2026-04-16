@@ -2,9 +2,6 @@
 name: ftl:content-reader
 description: AsciiDoc reader agent for the FTL lab validator. Reads a showroom .adoc module file, extracts executable code blocks (role="execute"), classifies each step by automation type, and outputs a structured task report for the solve-writer and validate-writer agents.
 version: 1.0.0
----
-
----
 context: main
 model: claude-sonnet-4-6
 ---
@@ -84,7 +81,7 @@ For each block, capture:
 - **surrounding section** — the nearest `==` or `===` heading above it
 - **surrounding prose** — 2-3 sentences before/after for context
 
-### B. Non-executable prose sections
+### C. Non-executable prose sections
 
 Every section heading (`==`, `===`) + its prose content that does NOT have `role="execute"` blocks — these may contain UI steps.
 

@@ -2,9 +2,6 @@
 name: ftl:validate-writer
 description: Writes validate.yml playbooks using the validation_check Ansible plugin. Takes the content-reader task report and solve-writer actions as input, producing checks that verify student progress without manual steps or navigation instructions.
 version: 1.0.0
----
-
----
 context: main
 model: claude-sonnet-4-6
 ---
@@ -82,7 +79,7 @@ For each step from CONTENT_REPORT, determine the **durable outcome** — somethi
         _task2_ok: "{{ <condition> }}"
 
     - name: Validate all tasks
-      validation_check:
+      rhpds.ftl.validation_check:
         check: "{{ _task1_ok and _task2_ok }}"
         pass_msg: |
           ✅ Task 1: <what passed>

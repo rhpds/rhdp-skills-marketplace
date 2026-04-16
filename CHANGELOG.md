@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.13.2] - 2026-04-16
+
+### FTL Skills — Orchestrator Quality Fixes (skill-reviewer audit)
+
+8 issues found and fixed by automated skill review:
+
+1. **Archived shadow `agents/` directory** — vestigial older versions of all 4 sub-agents that contradicted the canonical skills. Now in `agents-ARCHIVED/`.
+2. **Added "existing files?" gate** to orchestrator Step 0 — asks if user already has solve.yml/validate.yml before generating from scratch. Uses existing files as baseline, only invokes writers if testing fails.
+3. **Fixed `validation_check` FQCN** — `validate-writer` now generates `rhpds.ftl.validation_check` (bare name fails without collection routing).
+4. **Wired self-healing into orchestrator fix loop** — Playwright failures now trigger env-connector's vision recovery loop instead of incorrectly routing to solve-writer.
+5. **Aligned SOLVE_ACTIONS format** — solve-writer now outputs structured `task-N: {action, check, async}` format that validate-writer can consume directly.
+6. **Fixed duplicate Step 6 in env-connector** — final output section is now correctly numbered Step 8.
+7. **Fixed duplicate `### B.` in content-reader** — second B section relabeled C.
+8. **Merged split frontmatter** in all 4 sub-agent SKILL.md files — single YAML block instead of two `---` blocks.
+
+
 ## [v2.13.1] - 2026-04-16
 
 ### FTL Skills — Self-Healing Vision Pattern

@@ -2,9 +2,6 @@
 name: ftl:env-connector
 description: Pushes solve.yml and validate.yml to a live RHDP showroom, restarts the pod, and runs the full test cycle (fresh validate → solve → validate again → idempotency check). Reports pass/fail per task with full output for debugging.
 version: 1.0.0
----
-
----
 context: main
 model: claude-sonnet-4-6
 ---
@@ -270,7 +267,7 @@ oc rollout status deployment/showroom -n $SHOWROOM_NS --timeout=60s
 
 ---
 
-## Step 6 — Output TEST_RESULT
+## Step 8 — Output TEST_RESULT
 
 Return structured result for the orchestrator fix loop:
 

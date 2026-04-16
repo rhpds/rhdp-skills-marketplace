@@ -2,9 +2,6 @@
 name: ftl:solve-writer
 description: Writes solve.yml playbooks from the structured task report produced by ftl:content-reader. Uses the automation priority ladder (k8s_exec → k8s → uri → wait_for → Playwright) to generate Ansible tasks that replicate what the student does in the lab.
 version: 1.0.0
----
-
----
 context: main
 model: claude-sonnet-4-6
 ---
@@ -321,11 +318,25 @@ const INTENT = {
 
 Return:
 1. Full `solve.yml` content
-2. `SOLVE_ACTIONS` — brief summary list of what the solver does (passed to validate-writer):
+2. `SOLVE_ACTIONS` — structured summary of what the solver does (passed to validate-writer).
+   Use structured format so validate-writer can derive checks directly:
 ```
 SOLVE_ACTIONS:
-  - Generates MaaS API token for {{ student_user }}
-  - Writes ~/.continue/config.yaml to DevSpaces workspace
-  - Installs Continue extension via Open VSX VSIX
-  - Triggers MTA analysis (async — student validates after a few minutes)
+  task-1:
+    action: "Generated MaaS API token for {{ student_user }}"
+    check: "API returns token list for {{ student_user }}"
+    async: false
+  task-2:
+    action: "Wrote config.yaml to DevSpaces workspace"
+    check: "File exists at expected path in workspace pod"
+    async: false
+  task-3:
+    action: "Installed Continue extension via Open VSX VSIX"
+    check: "Extension directory exists in /checode/.../extensions/"
+    async: false
+  task-4:
+    action: "Triggered MTA analysis"
+    check: "Any analyzer task with addon=analyzer in Succeeded state"
+    async: true
+    async_msg: "Analysis still running — come back in a few minutes and click Validate again"
 ```
