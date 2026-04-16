@@ -30,7 +30,38 @@ Reads a Showroom `.adoc` module file and produces a structured task report class
 
 Read the full `.adoc` file. Extract:
 
-### A. Executable code blocks (primary signal)
+### A. Vision analysis of reference screenshots (do this FIRST)
+
+Before classifying steps, read ALL `image::` references in the .adoc file. These screenshots show what the student sees at each step — critical for UI-step classification and for generating resilient intent descriptions.
+
+```adoc
+image::genaistudio-mcpservers.png[MCP servers page]
+image::authorize-mcp.png[Authorize MCP servers]
+```
+
+For each image referenced:
+1. Find the file in `content/modules/ROOT/assets/images/<name>.png`
+2. Read it (Claude has multimodal capability)
+3. Extract:
+   - What page/UI is shown
+   - What button/element the student should interact with (EXACT text visible on screen)
+   - What the expected outcome looks like
+   - Any text labels, dropdown options, tab names visible
+
+Store as vision context per step:
+```
+IMAGE: genaistudio-mcpservers.png
+Vision analysis:
+  - Page: RHOAI Gen AI Studio → AI asset endpoints → MCP servers tab
+  - Table shows: "Kubernetes-MCP-Server" and "Slack-MCP-Server", both Active
+  - Both rows have checkboxes, both checked
+  - Toolbar button reads EXACTLY: "▶ Try in Playground (2)"
+  - Button is in the top toolbar row between filter controls and column selector
+```
+
+This vision analysis drives intent descriptions (not selector guesses) and helps the self-healing loop when UI changes.
+
+### B. Executable code blocks (primary signal)
 
 AsciiDoc executable blocks have `role="execute"` — these are commands the student runs in the terminal:
 
@@ -139,6 +170,7 @@ EXECUTABLE_BLOCKS:
     classification: oc-cli
     ansible_module: ansible.builtin.shell (oc)
     notes: "Login must happen inside workspace pod — exec into devworkspace pod"
+    reference_images: []
 
   - id: block-02
     section: "Exercise 2: Configure LiteLLM"
@@ -164,6 +196,8 @@ PROSE_STEPS:
     description: "Student reviews AI-generated code fixes and clicks Accept or Reject for each"
     classification: skip
     reason: "AI code review acceptance is a visual/interactive step with no deterministic API equivalent"
+    reference_images: []
+    intent: null  # skip — no automation possible
 
   - id: prose-02
     section: "Exercise 3: Open MTA Analysis Results"
@@ -187,6 +221,38 @@ STATS:
   skip: 3
   coverage: 62%
 ```
+
+---
+
+## Step 3b — Intent Descriptions for UI Steps
+
+For every `ui-playwright` classified step, generate an **intent description** — not a CSS selector, but a semantic description of what the student needs to do. This drives the self-healing loop when UI changes.
+
+```
+ui-playwright step intent format:
+  action: "Click | Fill | Select | Navigate"
+  target: "<what to interact with — human-readable>"
+  context: "<which page/section this happens on>"
+  visual_confirmation: "<what the UI looks like after success — from screenshot>"
+  exact_labels_visible: ["▶ Try in Playground (2)", "MCP servers", ...]
+```
+
+Example (from `genaistudio-mcpservers.png` vision analysis):
+```
+intent:
+  action: Click
+  target: "The button that opens the playground for the selected MCP servers"
+  context: "RHOAI Gen AI Studio → AI asset endpoints → MCP servers tab"
+  visual_confirmation: "Page navigates to playground with chat interface visible"
+  exact_labels_visible:
+    - "▶ Try in Playground (2)"    ← exact text from screenshot
+    - "MCP servers"                ← tab label
+```
+
+When UI version changes:
+- The intent stays valid ("click the button that opens playground for selected servers")
+- Vision reads the NEW screenshot + intent → finds the button in its new location
+- Selector updates automatically without human intervention
 
 ---
 

@@ -134,7 +134,126 @@ RECOMMENDATION:
 
 ---
 
-## Step 5 — Runner Zombie Check
+## Step 5 — Screenshot Evidence Collection
+
+After each Playwright step in the solve, capture screenshots as evidence. Store in a structured test-run directory.
+
+### Screenshot naming convention
+All Playwright scripts must save screenshots to `/tmp/evidence/step-N-<description>.png`:
+```javascript
+await page.screenshot({ path: '/tmp/evidence/step-01-login.png' });
+await page.screenshot({ path: '/tmp/evidence/step-02-mta-questionnaire.png' });
+```
+
+### Pull screenshots from runner pod
+```bash
+EVIDENCE_DIR="test-runs/${GUID}-$(date +%Y%m%d)/${MODULE}/evidence"
+mkdir -p "$EVIDENCE_DIR"
+POD=$(oc get pod -n $SHOWROOM_NS -o name 2>/dev/null | head -1)
+oc exec -n $SHOWROOM_NS $POD -c runner -- ls /tmp/evidence/ 2>/dev/null && \
+  oc cp $SHOWROOM_NS/${POD#pod/}:/tmp/evidence/ "$EVIDENCE_DIR/" -c runner 2>/dev/null
+```
+
+### Generate report.md with embedded screenshots
+```markdown
+# Test Run: <module> (GUID: <guid>)
+Date: <date>
+
+## Results
+✅ Task 1: ...
+❌ Task 4: Analysis still running
+
+## Evidence
+### Step 2 — MTA questionnaire toggled
+![questionnaire](evidence/step-02-mta-questionnaire.png)
+```
+
+### Version tracking
+Capture UI versions during the run for drift detection:
+```bash
+# Store UI version context
+cat > "test-runs/${GUID}-$(date +%Y%m%d)/ui-versions.json" << EOF
+{
+  "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "guid": "$GUID",
+  "module": "$MODULE"
+}
+EOF
+```
+
+---
+
+## Step 6 — Self-Healing: Playwright Failure Recovery
+
+When a Playwright step fails, do NOT immediately return FAIL. Run the self-healing loop:
+
+### 1. Capture current state screenshot
+```bash
+# Get the failure screenshot (scripts save to /tmp/playwright-debug.png on failure)
+oc cp $SHOWROOM_NS/${POD#pod/}:/tmp/playwright-debug.png \
+  "test-runs/${GUID}-$(date +%Y%m%d)/${MODULE}/evidence/failure-screenshot.png" -c runner
+```
+
+### 2. Compare against reference (previous passing run)
+If a reference screenshot exists from a previous passing run:
+- Compare visually — does the page look different?
+- If significant difference → UI likely changed, not a code bug
+
+### 3. Pass BOTH screenshots to vision for selector recovery
+Read the failure screenshot and (if available) the reference screenshot. Ask:
+```
+Vision prompt:
+  Reference screenshot: [previous passing run screenshot]
+  Current screenshot: [current failure state]
+  Failed step: "<description of what Playwright was trying to do>"
+
+  Questions:
+  1. Has the UI layout changed between screenshots?
+  2. Where is the element "<intent>" in the current screenshot?
+  3. What CSS selector or accessible name would reliably target it?
+  4. What changed in the UI that caused the failure?
+```
+
+### 4. Generate updated selector from vision output
+Vision returns:
+```
+UI changed: YES — button moved from toolbar to dropdown menu
+New location: Under "Actions" dropdown, second item
+Suggested selector: page.getByRole('menuitem', { name: /Try in Playground/ })
+Updated step: await page.getByRole('button', { name: 'Actions' }).click();
+              await page.getByRole('menuitem', { name: /Try in Playground/ }).click();
+```
+
+### 5. Patch the Playwright script and retry
+Update the `.js` file in the showroom repo with the new selector, push, and re-run the step.
+If the retry passes → commit the updated script.
+If it fails again → escalate to TEST_RESULT: FAIL with full context.
+
+### Self-healing decision tree
+```
+Playwright step fails
+  │
+  ├── Take current screenshot
+  ├── Is this the same error as last run?
+  │     YES → not a UI change, genuine bug → FAIL
+  │     NO  → possible UI change
+  │
+  ├── Compare with reference screenshot
+  │     Visual diff significant → UI changed
+  │     Pass both to vision
+  │
+  ├── Vision returns new selector
+  │     Update .js file → retry
+  │     Retry passes → commit fix → continue
+  │     Retry fails  → FAIL with full context
+  │
+  └── No reference screenshot → first run baseline
+        Store screenshot as reference for next run
+```
+
+---
+
+## Step 7 — Runner Zombie Check
 
 If a previous solve left a stuck process, the runner won't accept new requests. Check and fix:
 

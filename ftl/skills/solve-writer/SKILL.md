@@ -203,6 +203,88 @@ Read `references/<lab_type>.md` for:
   ignore_errors: true
 ```
 
+### Playwright script pattern — intent-based, self-healing
+
+**Do NOT hardcode selectors.** Use intent descriptions so vision can recover when UI changes.
+
+```javascript
+// runtime-automation/module-XX/playwright/step-N-<description>.js
+//
+// INTENT: <what the student does — semantic description not a selector>
+// Example: "Click the button that opens the playground for the selected MCP servers"
+//
+// EVIDENCE: saves screenshot to /tmp/evidence/step-N-<description>.png
+// FAILURE:  saves debug screenshot to /tmp/playwright-debug.png
+
+const { chromium } = require('playwright');
+
+const TARGET_URL = process.env.TARGET_URL;
+const USERNAME   = process.env.USERNAME;
+const PASSWORD   = process.env.PASSWORD;
+
+// INTENT constants — describe WHAT not HOW
+// These are used for self-healing: if a selector breaks, vision reads the
+// intent + current screenshot to find the element in the new UI.
+const INTENT = {
+  step: "Click the button that opens the playground for the selected MCP servers",
+  context: "RHOAI Gen AI Studio — AI asset endpoints — MCP servers tab"
+};
+
+(async () => {
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--disable-blink-features=AutomationControlled', '--no-sandbox'],
+  });
+  const context = await browser.newContext({ ignoreHTTPSErrors: true });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => false });
+  });
+  const page = await context.newPage();
+
+  // Create evidence directory
+  const fs = require('fs');
+  fs.mkdirSync('/tmp/evidence', { recursive: true });
+
+  try {
+    // Login
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // ... login steps ...
+
+    // Screenshot before action (for drift detection baseline)
+    await page.screenshot({ path: '/tmp/evidence/step-N-before.png' });
+
+    // Action — use flexible selectors, not exact text
+    // Primary selector (current UI):
+    const btn = page.getByRole('button', { name: /Try in Playground/i });
+    await btn.waitFor({ state: 'visible', timeout: 10000 });
+    await btn.click();
+
+    // Screenshot after action (evidence)
+    await page.screenshot({ path: '/tmp/evidence/step-N-<description>.png' });
+
+    console.log('SUCCESS: <what was completed>');
+    process.exit(0);
+  } catch (err) {
+    // Save debug screenshot for self-healing / vision analysis
+    await page.screenshot({ path: '/tmp/playwright-debug.png' }).catch(() => {});
+    console.error('FAILED:', err.message);
+    console.error('INTENT:', INTENT.step);
+    console.error('CONTEXT:', INTENT.context);
+    process.exit(1);
+  } finally {
+    await browser.close();
+  }
+})();
+```
+
+**Key rules for self-healing Playwright scripts:**
+- Always save `/tmp/evidence/step-N-before.png` before the action (drift baseline)
+- Always save `/tmp/evidence/step-N-<desc>.png` after success (evidence)
+- Always save `/tmp/playwright-debug.png` on failure (for vision analysis)
+- Log `INTENT:` and `CONTEXT:` on failure (helps vision find element in new UI)
+- Use `getByRole` with regex over exact text matches — more resilient to minor wording changes
+- OCP/Keycloak login: detect RHBK vs htpasswd — don't assume one provider
+
 **skip** — document why not automated:
 ```yaml
 # SKIP: <reason>
