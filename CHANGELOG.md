@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.13.0] - 2026-04-16
+
+### FTL Skills — 4 Agent SKILL.md Files
+
+Added separate SKILL.md files for each of the 4 agents that `ftl:lab-validator` orchestrates:
+
+- **`ftl:content-reader`** — AsciiDoc reader agent. Parses `.adoc` module files, extracts `role="execute"` code blocks, classifies each step using the automation priority ladder (k8s_exec → k8s → api → tcp → Playwright → skip), handles GUI step decision tree, and outputs a structured task report.
+- **`ftl:solve-writer`** — Writes `solve.yml` from the content-reader report. Includes patterns for all task types: k8s, exec-into-pod, shell-workspace, file writes via base64, oc-cli, api, tcp-check, ui-playwright. Enforces all critical rules (string commands, kubeconfig param, idempotency, async trigger-and-exit).
+- **`ftl:validate-writer`** — Writes `validate.yml` using `validation_check` plugin. Covers all check patterns: API key, file exists in workspace, pod running, service via exec, async ops with `any()`, route reachability. Enforces durable outcome checks not transient state.
+- **`ftl:env-connector`** — Pushes playbooks to live Showroom, runs full test cycle (fresh validate → solve → validate → idempotency), detects zombie runner processes, outputs structured TEST_RESULT for the fix loop.
+
+All agents are self-contained (no ECC dependency).
+
+
 ## [v2.12.4] - 2026-04-15
 
 ### FTL Skills
