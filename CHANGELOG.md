@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.13.3] - 2026-04-16
+
+### FTL Skills — Sub-agents now callable via Task tool
+
+Added `ftl/agents/` directory with 4 proper agent definitions. Previously the 4 sub-skills were only registered as skills, causing the orchestrator to fail when spawning them via the Task tool (`subagent_type` not found).
+
+- Added `ftl/agents/content-reader.md`, `solve-writer.md`, `validate-writer.md`, `env-connector.md`
+- Updated orchestrator SKILL.md to use Task tool with `subagent_type: "ftl:<agent>"` for each step
+- Agents run in isolated contexts, pass output back to orchestrator, which feeds it to the next agent
+
 ## [v2.13.2] - 2026-04-16
 
 ### FTL Skills — Orchestrator Quality Fixes (skill-reviewer audit)

@@ -11,6 +11,20 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.13.3 — 2026-04-16
+
+### FTL Skills — Sub-agents now callable via Task tool
+
+Added `ftl/agents/` directory with 4 proper agent definitions. Previously the 4 sub-skills (content-reader, solve-writer, validate-writer, env-connector) were only registered as skills, causing the orchestrator to fail when spawning them via the Task tool.
+
+- **`ftl/agents/content-reader.md`** — AsciiDoc parser agent, `subagent_type: ftl:content-reader`
+- **`ftl/agents/solve-writer.md`** — solve.yml generator agent, `subagent_type: ftl:solve-writer`
+- **`ftl/agents/validate-writer.md`** — validate.yml generator agent, `subagent_type: ftl:validate-writer`
+- **`ftl/agents/env-connector.md`** — live test runner agent, `subagent_type: ftl:env-connector`
+- **Orchestrator updated** — `rhdp-lab-validator/SKILL.md` now explicitly uses Task tool with correct `subagent_type` for each step
+
+---
+
 ## v2.13.2 — 2026-04-16
 
 ### FTL Skills — Orchestrator Quality Fixes (8 issues)
