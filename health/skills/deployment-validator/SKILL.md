@@ -1,6 +1,6 @@
 ---
 name: health:deployment-validator
-description: This skill should be used when the user asks to "create a validation role", "build health checks", "add deployment validation", "create post-deployment checks", "validate my deployment", "check if my lab deployed correctly", or "write an Ansible role to verify my RHDP deployment".
+description: "Infrastructure Health Checker — use this when you need to validate that a workload or service DEPLOYED SUCCESSFULLY (pods running, routes accessible, dependencies ready). This is NOT for student E2E lab testing. For student exercise validation (solve/validate buttons), use /ftl:rhdp-lab-validator instead. Triggers on: 'create a validation role', 'build health checks', 'add deployment validation', 'create post-deployment checks', 'validate my deployment', 'check if my workload is healthy'."
 ---
 
 ---

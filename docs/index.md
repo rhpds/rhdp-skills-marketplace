@@ -46,18 +46,18 @@ title: Home
 
     <div class="category-card">
       <span class="category-icon">🏥</span>
-      <h3>Health — Deployment Validation</h3>
-      <p>Generate Ansible validation roles that verify a deployed lab environment is healthy before students start.</p>
+      <h3>Health — Infrastructure Validation</h3>
+      <p><strong>Did my workload deploy correctly?</strong> Generates Ansible roles that check pods, routes, and services are healthy — run at provisioning time, not during student exercises.</p>
       <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
-        <li><code>/health:deployment-validator</code> — Create Ansible health check roles</li>
+        <li><code>/health:deployment-validator</code> — Create Ansible health check roles for deployed workloads</li>
       </ul>
       <a href="{{ '/skills/deployment-health-checker.html' | relative_url }}">Learn more →</a>
     </div>
 
     <div class="category-card">
       <span class="category-icon">🧪</span>
-      <h3>FTL — Full Test Lifecycle</h3>
-      <p>Reads your .adoc lab modules and writes production-quality solve.yml + validate.yml playbooks. 4-agent pipeline with self-healing Playwright automation and screenshot evidence collection.</p>
+      <h3>FTL — E2E Lab Testing</h3>
+      <p><strong>Can a student complete the lab?</strong> Reads your .adoc modules and writes solve.yml + validate.yml playbooks for student exercise validation. 4-agent pipeline with self-healing Playwright and screenshot evidence.</p>
       <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
         <li><code>/ftl:rhdp-lab-validator</code> — Orchestrate 4 agents: read → solve → validate → test</li>
         <li><code>/ftl:content-reader</code> — AsciiDoc reader with vision analysis</li>

@@ -1,7 +1,7 @@
 {
   "name": "health",
-  "version": "2.12.4",
-  "description": "RHDP deployment health checks and post-deployment validation",
+  "version": "2.13.2",
+  "description": "Infrastructure health checks \u2014 post-deployment validation that workloads and services started correctly (NOT for student E2E lab testing)",
   "author": {
     "name": "RHDP Team",
     "email": "prakhar@redhat.com"
