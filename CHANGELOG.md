@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.13.1] - 2026-04-16
+
+### FTL Skills — Self-Healing Vision Pattern
+
+Added self-healing UI automation via vision to all 4 FTL agent SKILL.md files.
+
+**Problem:** Playwright selectors generated from static screenshots break when UI versions change.
+
+**Solution — Intent-based selectors + live vision recovery:**
+
+- **`ftl:content-reader`** — Reads `image::` reference screenshots from `.adoc` assets using vision BEFORE classifying steps. Extracts exact button labels and UI context. Stores **intent descriptions** not CSS selectors — survive UI version changes.
+- **`ftl:solve-writer`** — Playwright scripts now use `INTENT` constants (semantic description of what to click, not where). Always saves `before.png`, `after.png`, `debug.png` per step.
+- **`ftl:env-connector`** — Screenshot evidence collection: pulls from runner pod to `test-runs/<guid>/evidence/`. Self-healing loop on failure: screenshot → vision → new selector → patch → retry. `ui-versions.json` per test run for drift tracking.
+
+## [v2.13.0] - 2026-04-16
+
 ## [v2.13.0] - 2026-04-16
 
 ### FTL Skills — 4 Agent SKILL.md Files

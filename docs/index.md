@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.11.2 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.13.1 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">
@@ -57,9 +57,12 @@ title: Home
     <div class="category-card">
       <span class="category-icon">🧪</span>
       <h3>FTL — Full Test Lifecycle</h3>
-      <p>Generate grader and solver playbooks for Showroom workshop labs. Reads your .adoc modules and produces production-quality Ansible automation.</p>
+      <p>Reads your .adoc lab modules and writes production-quality solve.yml + validate.yml playbooks. 4-agent pipeline with self-healing Playwright automation and screenshot evidence collection.</p>
       <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
-        <li><code>/ftl:lab-validator</code> — Generate grade/solve playbooks</li>
+        <li><code>/ftl:rhdp-lab-validator</code> — Orchestrate 4 agents: read → solve → validate → test</li>
+        <li><code>/ftl:content-reader</code> — AsciiDoc reader with vision analysis</li>
+        <li><code>/ftl:solve-writer</code> — Intent-based Playwright, self-healing on UI changes</li>
+        <li><code>/ftl:env-connector</code> — Live test + screenshot evidence + UI drift recovery</li>
       </ul>
       <a href="{{ '/skills/rhdp-lab-validator.html' | relative_url }}">Learn more →</a>
     </div>

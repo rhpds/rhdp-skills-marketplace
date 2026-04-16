@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.12.4-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.13.1-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -182,13 +182,22 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 | Skill | Description | Use Case |
 |-------|-------------|----------|
 | `lab-validator` | Generate FTL grade/solve playbooks | External container graders (grade_lab/solve_lab) |
-| `rhdp-lab-validator` | Generate ZT runtime-automation | Inline Solve/Validate buttons in showroom nookbag UI — OCP, RHEL VM, AAP |
+| `rhdp-lab-validator` | Orchestrate 4 agents to write + test solve/validate | Inline Solve/Validate buttons — OCP tenant/dedicated, RHEL VM, AAP |
+| `content-reader` | AsciiDoc reader agent — extracts `role="execute"` blocks, classifies steps | Feeds solve-writer + validate-writer |
+| `solve-writer` | Generates solve.yml with intent-based Playwright scripts | Self-healing on UI version changes |
+| `validate-writer` | Generates validate.yml using validation_check plugin | Durable outcome checks, async-safe |
+| `env-connector` | Pushes to live Showroom, runs test cycle, collects screenshot evidence | Full test evidence with UI drift detection |
 
 **Workflow:**
 ```
-/create-lab → /ftl:rhdp-lab-validator → Generate runtime-automation → Test with curl
-/create-lab → /ftl:lab-validator → Generate FTL graders/solvers → Test with grade_lab
+/ftl:rhdp-lab-validator
+  → ftl:content-reader  (reads .adoc + vision analysis of screenshots)
+  → ftl:solve-writer    (writes solve.yml with intent-based Playwright)
+  → ftl:validate-writer (writes validate.yml with validation_check)
+  → ftl:env-connector   (push → test → screenshot evidence → self-heal)
 ```
+
+**Self-healing:** When UI changes break Playwright steps, env-connector takes a live screenshot, passes it to vision, and recovers the selector automatically.
 
 **Documentation:** [ftl/README.md](ftl/README.md)
 
