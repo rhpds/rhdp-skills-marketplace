@@ -8,8 +8,10 @@ title: /ftl:lab-validator
 <div class="reference-badge">🚀 RHDP E2E Lab Validator</div>
 
 Write `solve.yml` and `validate.yml` Ansible playbooks for RHDP Showroom labs.
-Reads your existing module exercises and generates working playbooks for E2E testing
-(Solve/Validate buttons and Demolition load testing at Summit).
+Reads your `.adoc` modules — including screenshots — and generates working playbooks for E2E testing.
+Orchestrates 4 agents: **content-reader** → **solve-writer** → **validate-writer** → **env-connector**.
+
+> **Self-healing:** When UI versions change, Playwright selectors are automatically recovered via vision — no manual selector updates required.
 
 ---
 
@@ -66,7 +68,8 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
       <div class="ftl-step-title">Checklist Shown</div>
       <div class="ftl-step-body">
         Skill displays required showroom files, site.yml config, and AgV vars per lab type.<br>
-        <strong>Sync your repo and AgV before continuing.</strong>
+        <strong>Sync your repo and AgV before continuing.</strong><br><br>
+        <strong>New:</strong> Asks if you already have solve.yml or validate.yml. If yes, uses them as baseline — only generates what's missing.
       </div>
     </div>
   </div>
@@ -105,12 +108,13 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
   <div class="ftl-row">
     <div class="ftl-node ftl-step ftl-generate">
       <div class="ftl-step-label">Step 3 — Per module</div>
-      <div class="ftl-step-title">Generate solve.yml + validate.yml</div>
+      <div class="ftl-step-title">4-Agent Pipeline: Read → Solve → Validate → Test</div>
       <div class="ftl-step-body">
-        Reads exercise content and generates both playbooks.<br>
-        Previews files before writing. Uses the correct pattern for your lab type.<br><br>
-        <strong>solve.yml</strong> — completes exercises on behalf of the student (idempotent — students retry)<br>
-        <strong>validate.yml</strong> — checks outcomes with ✅/❌ per task using <code>validation_check</code>
+        <strong>content-reader</strong> — reads .adoc, vision-analyzes screenshots, classifies each step (k8s_exec → api → Playwright → skip)<br>
+        <strong>solve-writer</strong> — generates solve.yml with intent-based Playwright scripts (self-healing on UI changes)<br>
+        <strong>validate-writer</strong> — generates validate.yml with <code>rhpds.ftl.validation_check</code>, durable outcome checks<br>
+        <strong>env-connector</strong> — pushes, tests, collects screenshot evidence, runs self-healing if Playwright fails<br><br>
+        Previews files before writing.
       </div>
     </div>
   </div>
@@ -141,10 +145,11 @@ The skill opens with a pre-flight checklist. Make sure both are ready before run
   <div class="ftl-row">
     <div class="ftl-node ftl-step">
       <div class="ftl-step-label">Step 5 — If needed</div>
-      <div class="ftl-step-title">Fix Loop</div>
+      <div class="ftl-step-title">Fix Loop (with Self-Healing)</div>
       <div class="ftl-step-body">
-        Stream error shown → fix proposed → push → restart → full test cycle re-run.<br>
-        Repeats until all modules pass clean.
+        <strong>Ansible failure</strong> → solve-writer or validate-writer re-invoked with error context<br>
+        <strong>Playwright failure</strong> → env-connector self-healing: screenshot → vision → new selector → retry<br>
+        Repeats until all modules pass clean. Screenshots stored as evidence.
       </div>
     </div>
   </div>

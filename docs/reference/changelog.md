@@ -11,6 +11,47 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.13.2 — 2026-04-16
+
+### FTL Skills — Orchestrator Quality Fixes (8 issues)
+
+Automated skill-reviewer audit found and fixed 8 issues in the FTL orchestrator and sub-agent skills:
+
+- **Archived shadow `agents/` directory** — old contradictory versions of all 4 sub-agents
+- **"Existing files?" gate** added to orchestrator Step 0 — uses existing solve/validate as baseline
+- **`rhpds.ftl.validation_check` FQCN** enforced — bare `validation_check` fails without collection routing
+- **Self-healing wired into orchestrator** — Playwright failures route to vision recovery, not solve-writer
+- **SOLVE_ACTIONS structured format** — `task-N: {action, check, async}` for direct validate-writer use
+- **Numbering and labeling fixes** in env-connector (Step 8) and content-reader (Section C)
+- **Merged split frontmatter** in all 4 sub-agent SKILL.md files
+
+---
+
+## v2.13.1 — 2026-04-16
+
+### FTL Skills — Self-Healing Vision Pattern
+
+When UI versions change, Playwright selectors break. Solution: intent-based automation + live vision recovery.
+
+- **`ftl:content-reader`** — Vision analysis of `image::` screenshots from `.adoc` assets. Stores intent descriptions, not CSS selectors.
+- **`ftl:solve-writer`** — Playwright scripts use `INTENT` constants. Saves before/after/debug screenshots.
+- **`ftl:env-connector`** — Screenshot evidence collection. Self-healing: failure → vision → new selector → retry. `ui-versions.json` per test run.
+
+---
+
+## v2.13.0 — 2026-04-16
+
+### FTL Skills — 4 Agent SKILL.md Files
+
+Added separate, standalone SKILL.md files for each of the 4 agents orchestrated by `ftl:rhdp-lab-validator`:
+
+- **`ftl:content-reader`** — AsciiDoc reader. Extracts `role="execute"` blocks, vision analysis, GUI step decision tree.
+- **`ftl:solve-writer`** — Writes solve.yml with all automation patterns.
+- **`ftl:validate-writer`** — Writes validate.yml using `rhpds.ftl.validation_check`.
+- **`ftl:env-connector`** — Live test runner: push → restart → test cycle → report.
+
+---
+
 ## v2.12.4 — 2026-04-15
 
 ### FTL Skills
