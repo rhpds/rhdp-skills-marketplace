@@ -1,0 +1,3 @@
+[submodule "rhdp-rca-plugin"]
+	path = rhdp-rca-plugin
+	url = https://github.com/redhat-et/rhdp-rca-plugin.git

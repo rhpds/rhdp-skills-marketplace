@@ -115,6 +115,31 @@
         "rhdp",
         "shared-cluster",
         "sandbox-cli"
+    },
+    {
+      "name": "aiops-skill",
+      "source": "./rhdp-rca-plugin",
+      "description": "RHDP Root Cause Analysis plugin for AIOps with Ansible Controller and Splunk",
+      "version": "1.0.0",
+      "author": {
+        "name": "ACE",
+        "email": "ace-octo-dist@redhat.com"
+      },
+      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "aiops",
+        "splunk",
+        "ansible",
+        "controller",
+        "logs"
+      ],
+      "skills": [
+        "./skills/root-cause-analysis",
+        "./skills/context-fetcher",
+        "./skills/logs-fetcher",
+        "./skills/feedback-capture"
       ]
     }
   ]
