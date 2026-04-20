@@ -114,6 +114,10 @@ def check_ocp_authentication(config):
     passed_checks.append("✓ Pool CI — authentication workload not required (handled at sandbox level)")
     return
 
+  # Per-user dedicated clusters (config: openshift-cluster with aws/azure/gcp, no -tenant pair)
+  # SHOULD have authentication — each user gets their own cluster and needs auth configured.
+  # Do NOT flag authentication as misplaced in per-user dedicated clusters.
+
   workloads = config.get('workloads', [])
   auth_workloads = [w for w in workloads if 'authentication' in w]
 
@@ -302,6 +306,12 @@ def check_ocp_multiuser(config):
     return
 
   multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
+
+  # NOTE: workshopLabUiRedirect: true is valid for BOTH multi-user catalogs AND
+  # per-user dedicated clusters (config: openshift-cluster with aws/azure/gcp).
+  # For per-user dedicated clusters, it routes the single user to their Showroom UI.
+  # Do NOT flag workshopLabUiRedirect: true with multiuser: false as an error
+  # when the catalog provisions a per-user dedicated cluster.
 
   if not multiuser:
     passed_checks.append("✓ Single-user catalog (multiuser: false)")

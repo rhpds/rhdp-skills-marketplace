@@ -648,6 +648,27 @@ else:
     #           Check 15 (component propagation for OCP cluster component)
     #           Check 17 (LiteMaaS — OCP-only workload)
     pass
+
+# --- CI Type Classification ---
+# IMPORTANT: Distinguish between shared pool clusters and per-user dedicated clusters.
+# This distinction affects Checks 7, 26, and 27 — workload placement rules differ.
+#
+# Shared pool cluster (cluster CI in a tenant/cluster pair):
+#   - Has a corresponding -tenant CI (the CI name ends in "-cluster")
+#   - OR config_type == 'openshift-cluster' and cloud_provider == 'openshift_cnv'
+#   - OR has __meta__.components with a two-item tenant/cluster pattern
+#   - Per-user workloads (showroom, auth, litellm) do NOT belong here
+#
+# Per-user dedicated cluster:
+#   - config: openshift-cluster with a real cloud_provider (aws, azure, gcp)
+#   - Each user gets their own cluster — NOT shared
+#   - NO corresponding -tenant CI
+#   - Per-user workloads (showroom, auth, workshopLabUiRedirect) BELONG here
+#   - Treat like a standalone lab for workload placement checks
+#
+# When evaluating Checks 26, 27, and authentication placement, only flag workloads
+# as misplaced in SHARED POOL cluster CIs. Per-user dedicated clusters are standalone
+# — all workloads belong in the CI.
 ```
 
 After infra-specific checks complete, continue with shared checks below.
@@ -2375,28 +2396,37 @@ def check_runtime_automation(config):
 
 ### Check 26: LiteLLM Virtual Keys in Wrong CI Type
 
-`ocp4_workload_litellm_virtual_keys` provisions per-user API keys — it is a **tenant-level** workload. It must not appear in any cluster CI — detected by `__meta__.components` list (two-item pattern) OR display name containing "cluster".
+`ocp4_workload_litellm_virtual_keys` provisions per-user API keys — it is a **tenant-level** workload. It must not appear in **shared pool** cluster CIs. Per-user dedicated clusters are fine — each user gets their own cluster, so per-user workloads belong there.
 
-**Rule:** Flag as ERROR when found in a cluster CI. Tenant CIs (`config: namespace`), dedicated OCP, and cloud-vms-base CIs are fine.
+**Rule:** Flag as ERROR only in **shared pool cluster CIs** (those with a corresponding `-tenant` CI). Tenant CIs (`config: namespace`), per-user dedicated OCP clusters, and cloud-vms-base CIs are fine.
+
+**Shared pool cluster detection:** The CI name ends in `-cluster` (indicating a tenant/cluster pair), OR `config: openshift-cluster` with `cloud_provider: openshift_cnv` (CNV pool). A `config: openshift-cluster` with a real cloud provider (aws, azure, gcp) and no corresponding `-tenant` CI is a **per-user dedicated cluster** — do NOT flag it.
 
 ```python
 def check_litellm_placement(config):
-  """litellm_virtual_keys belongs in tenant/dedicated/VM CIs, not cluster CIs."""
+  """litellm_virtual_keys belongs in tenant/dedicated/VM CIs, not shared pool cluster CIs."""
   workloads = config.get('workloads', [])
   has_litellm = any('litellm_virtual_keys' in str(w) for w in workloads)
   if not has_litellm:
     return
 
-  # Cluster CI detection: __meta__.components list OR display_name contains "cluster"
-  has_components = bool(config.get('__meta__', {}).get('components', []))
-  display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '').lower()
-  is_cluster_ci = has_components or 'cluster' in display_name
+  # Shared pool cluster detection:
+  # - CI name ends in "-cluster" (tenant/cluster pair)
+  # - OR openshift-cluster with openshift_cnv (CNV pool)
+  # Per-user dedicated clusters (openshift-cluster with aws/azure/gcp, no -tenant pair) are NOT shared pool.
+  config_type = config.get('config', '')
+  cloud_provider = config.get('cloud_provider', '')
+  ci_name = config.get('__meta__', {}).get('deployer', {}).get('entry_point', '')
+  is_shared_pool = (
+    ci_name.endswith('-cluster')
+    or (config_type == 'openshift-cluster' and cloud_provider == 'openshift_cnv')
+  )
 
-  if is_cluster_ci:
+  if is_shared_pool:
     errors.append({
       'check': 'litellm_placement',
       'severity': 'ERROR',
-      'message': 'ocp4_workload_litellm_virtual_keys found in a cluster CI',
+      'message': 'ocp4_workload_litellm_virtual_keys found in a shared pool cluster CI',
       'location': 'common.yaml:workloads',
       'fix': 'Move ocp4_workload_litellm_virtual_keys to the tenant CI (config: namespace)',
       'reason': 'This workload provisions per-student API keys — it must run in the tenant deployer, not the shared cluster provisioner.',
@@ -2407,15 +2437,17 @@ def check_litellm_placement(config):
 
 ---
 
-### Check 27: Showroom Workload in Cluster CI
+### Check 27: Showroom Workload in Shared Pool Cluster CI
 
-`ocp4_workload_showroom` (and `vm_workload_showroom`) are per-user workloads. They must not appear in any cluster CI. Cluster CIs provision shared infrastructure — Showroom belongs on tenant, dedicated OCP, or cloud-vms-base CIs only.
+`ocp4_workload_showroom` (and `vm_workload_showroom`) are per-user workloads. They must not appear in **shared pool** cluster CIs. Shared pool cluster CIs provision shared infrastructure — Showroom belongs on tenant, per-user dedicated OCP, or cloud-vms-base CIs.
 
-**Cluster CI detection:** `__meta__.components` list present OR display name contains "cluster".
+**IMPORTANT:** Per-user dedicated clusters (e.g., `config: openshift-cluster` with `cloud_provider: aws` and no corresponding `-tenant` CI) are NOT shared pool clusters. Each user gets their own cluster, so Showroom belongs there. Do NOT flag these.
+
+**Shared pool cluster detection:** The CI name ends in `-cluster` (tenant/cluster pair), OR `config: openshift-cluster` with `cloud_provider: openshift_cnv` (CNV pool).
 
 ```python
 def check_showroom_placement(config):
-  """Showroom workloads must not be in cluster CIs."""
+  """Showroom workloads must not be in shared pool cluster CIs."""
   workloads = config.get('workloads', [])
   remove_workloads = config.get('remove_workloads', [])
   all_workloads = workloads + remove_workloads
@@ -2427,19 +2459,26 @@ def check_showroom_placement(config):
   if not has_showroom:
     return
 
-  # Cluster CI detection: __meta__.components OR display_name contains "cluster"
-  has_components = bool(config.get('__meta__', {}).get('components', []))
-  display_name = config.get('__meta__', {}).get('catalog', {}).get('display_name', '').lower()
-  is_cluster_ci = has_components or 'cluster' in display_name
+  # Shared pool cluster detection:
+  # - CI name ends in "-cluster" (tenant/cluster pair)
+  # - OR openshift-cluster with openshift_cnv (CNV pool)
+  # Per-user dedicated clusters (openshift-cluster with aws/azure/gcp, no -tenant pair) are NOT flagged.
+  config_type = config.get('config', '')
+  cloud_provider = config.get('cloud_provider', '')
+  ci_name = config.get('__meta__', {}).get('deployer', {}).get('entry_point', '')
+  is_shared_pool = (
+    ci_name.endswith('-cluster')
+    or (config_type == 'openshift-cluster' and cloud_provider == 'openshift_cnv')
+  )
 
-  if is_cluster_ci:
+  if is_shared_pool:
     errors.append({
       'check': 'showroom_placement',
       'severity': 'ERROR',
-      'message': 'ocp4_workload_showroom found in a cluster CI — Showroom is a per-user workload',
+      'message': 'ocp4_workload_showroom found in a shared pool cluster CI — Showroom is a per-user workload',
       'location': 'common.yaml:workloads',
-      'fix': 'Remove ocp4_workload_showroom from the cluster CI. Showroom belongs in the tenant CI (config: namespace) or a dedicated/standalone OCP CI.',
-      'reason': 'Cluster CIs provision shared infrastructure. Showroom must run per-user in the tenant deployer.',
+      'fix': 'Remove ocp4_workload_showroom from the cluster CI. Showroom belongs in the tenant CI (config: namespace).',
+      'reason': 'Shared pool cluster CIs provision shared infrastructure. Showroom must run per-user in the tenant deployer.',
     })
   else:
     passed_checks.append("✓ Showroom workload in correct CI type (tenant/dedicated/VM)")
