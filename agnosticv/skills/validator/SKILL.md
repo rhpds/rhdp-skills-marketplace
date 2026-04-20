@@ -650,25 +650,56 @@ else:
     pass
 
 # --- CI Type Classification ---
-# IMPORTANT: Distinguish between shared pool clusters and per-user dedicated clusters.
-# This distinction affects Checks 7, 26, and 27 — workload placement rules differ.
+# IMPORTANT: Correctly classify the CI type before applying workload placement,
+# category, and structural checks. Misclassification causes false positives.
 #
-# Shared pool cluster (cluster CI in a tenant/cluster pair):
-#   - Has a corresponding -tenant CI (the CI name ends in "-cluster")
+# 1. Shared pool cluster (cluster CI in a tenant/cluster pair):
+#   - CI name ends in "-cluster" (has a corresponding -tenant CI)
 #   - OR config_type == 'openshift-cluster' and cloud_provider == 'openshift_cnv'
-#   - OR has __meta__.components with a two-item tenant/cluster pattern
 #   - Per-user workloads (showroom, auth, litellm) do NOT belong here
 #
-# Per-user dedicated cluster:
+# 2. Per-user dedicated cluster:
 #   - config: openshift-cluster with a real cloud_provider (aws, azure, gcp)
 #   - Each user gets their own cluster — NOT shared
 #   - NO corresponding -tenant CI
 #   - Per-user workloads (showroom, auth, workshopLabUiRedirect) BELONG here
 #   - Treat like a standalone lab for workload placement checks
 #
+# 3. Binder CI (user-facing entry point that uses a pool cluster):
+#   - config: openshift-workloads with __meta__.components referencing a pool item
+#   - cloud_provider: none (no own infra — gets a cluster from the pool)
+#   - This IS user-facing — category 'Workshops' or 'Brand_Events' is CORRECT
+#   - Showroom, auth, litellm, workshopLabUiRedirect all BELONG here
+#   - Do NOT flag as "cluster provisioner CI" — it is NOT a cluster provisioner
+#   - sandbox_api.actions.destroy.catch_all: false is correct for binders
+#
+# 4. Zero-touch CI (zero-touch-base-rhel / zt-* repos):
+#   - config: zero-touch-base-rhel, or catalog lives in a zt-* agnosticv repo
+#   - Fundamentally different structure from standard AgnosticV catalogs:
+#     * deployer.type may be null — this is CORRECT, not an error
+#     * No top-level workloads list — workloads are in component parameter_values
+#     * No top-level requirements_content or tag: variable
+#     * common_password using hash/GUID generation is the standard pattern
+#   - SKIP: deployer completeness, workloads presence, collections, tag variable,
+#     password_pattern for common_password, anarchy_namespace confirmation
+#   - APPLY: uuid format, category, event_catalog keywords/labels, reporting_labels,
+#     display_name length (these metadata checks apply to all CIs)
+#
+# 5. Tenant namespace (config: namespace):
+#   - Per-user workloads belong here
+#   - workshopLabUiRedirect: true with multiuser: false IS valid — routes user
+#     to their Showroom UI. Do NOT flag this combination as an error.
+#
 # When evaluating Checks 26, 27, and authentication placement, only flag workloads
-# as misplaced in SHARED POOL cluster CIs. Per-user dedicated clusters are standalone
-# — all workloads belong in the CI.
+# as misplaced in SHARED POOL cluster CIs. All other CI types either own their
+# workloads or are not cluster provisioners.
+#
+# CORRECTION — asset_uuid: The correct path is __meta__.asset_uuid (direct child
+# of __meta__). Do NOT flag it as wrong. __meta__.__meta__.asset_uuid and
+# __meta__.catalog.asset_uuid are INCORRECT paths — never suggest them.
+#
+# CORRECTION — anarchy.namespace: Only flag as ERROR if it IS DEFINED in the config.
+# If the key is absent, that is CORRECT — mark as PASSED.
 ```
 
 After infra-specific checks complete, continue with shared checks below.
