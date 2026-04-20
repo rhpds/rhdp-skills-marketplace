@@ -45,7 +45,7 @@ This updates all installed plugins to their latest versions.
 
 ## Available Plugins
 
-### AgnosticV Plugin (v2.8.4)
+### AgnosticV Plugin (v2.13.4)
 
 **Plugin:** `agnosticv@rhdp-marketplace`
 
@@ -64,7 +64,7 @@ This updates all installed plugins to their latest versions.
 
 ---
 
-### Showroom Plugin (v1.0.0)
+### Showroom Plugin (v2.13.4)
 
 **Plugin:** `showroom@rhdp-marketplace`
 
@@ -90,7 +90,7 @@ This updates all installed plugins to their latest versions.
 
 ---
 
-### Health Plugin (v2.8.4)
+### Health Plugin (v2.13.4)
 
 **Plugin:** `health@rhdp-marketplace`
 
@@ -104,7 +104,7 @@ This updates all installed plugins to their latest versions.
 
 ---
 
-### FTL Plugin (v2.8.4)
+### FTL Plugin (v2.13.4)
 
 **Plugin:** `ftl@rhdp-marketplace`
 

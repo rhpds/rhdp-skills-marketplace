@@ -1,6 +1,6 @@
 {
   "name": "health",
-  "version": "2.13.3",
+  "version": "2.13.4",
   "description": "Infrastructure health checks \u2014 post-deployment validation that workloads and services started correctly (NOT for student E2E lab testing)",
   "author": {
     "name": "RHDP Team",
