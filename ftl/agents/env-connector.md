@@ -57,10 +57,10 @@ oc cp -n $NS \
   "$NS/$POD:/showroom/repo/runtime-automation/$MODULE/solve.yml" -c runner
 
 oc cp -n $NS \
-  $SHOWROOM_PATH/runtime-automation/$MODULE/validation.yml \
-  "$NS/$POD:/showroom/repo/runtime-automation/$MODULE/validation.yml" -c runner
+  $SHOWROOM_PATH/runtime-automation/$MODULE/validate.yml \
+  "$NS/$POD:/showroom/repo/runtime-automation/$MODULE/validate.yml" -c runner
 
-echo "Pushed solve.yml and validation.yml to runner"
+echo "Pushed solve.yml and validate.yml to runner"
 ```
 
 Verify:

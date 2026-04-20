@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.13.3 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.13.4 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">

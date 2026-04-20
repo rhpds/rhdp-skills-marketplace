@@ -1,5 +1,5 @@
 ---
-name: ftl:lab-validator
+name: ftl:rhdp-lab-validator
 description: This skill should be used when the user asks to "write solve and validate playbooks", "add E2E testing to my lab", "generate solve.yml", "generate validate.yml", "add solve and validate buttons", "set up runtime automation", "add ZT grading to my lab", "set up load testing for my lab", "add Demolition grading", or "configure run_e2e_load_test".
 context: main
 model: claude-opus-4-6

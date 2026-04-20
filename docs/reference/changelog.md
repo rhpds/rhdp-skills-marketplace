@@ -11,6 +11,17 @@ All notable changes to the RHDP Skills Marketplace.
 
 ---
 
+## v2.13.4 — 2026-04-20
+
+### Fixed
+
+- **agnosticv + showroom plugins**: versions were stuck at 2.12.4 while health and ftl had moved to 2.13.3 — all four plugins now consistently report v2.13.4
+- **FTL sub-tool skills removed**: content-reader, solve-writer, validate-writer, env-connector were exposed as both slash commands and agents — they are now agents only. Only `/ftl:rhdp-lab-validator` is the user entry point
+- **env-connector**: `oc cp` was pushing `validation.yml` but validate-writer produces `validate.yml` — would have caused runner pod to never receive the validate playbook
+- **rhdp-lab-validator**: `name: ftl:lab-validator` corrected to `name: ftl:rhdp-lab-validator` to match directory and invocation path
+
+---
+
 ## v2.13.3 — 2026-04-16
 
 ### FTL Skills — Sub-agents now callable via Task tool

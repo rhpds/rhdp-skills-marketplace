@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.13.4] - 2026-04-20
+
+### Fixed
+
+- **agnosticv + showroom**: plugin.json versions were stuck at 2.12.4 while health and ftl had moved to 2.13.3 — all four plugins now consistently report v2.13.4
+- **ftl agents**: removed 4 sub-tool skill dirs (content-reader, solve-writer, validate-writer, env-connector) — these are Task subagents only, not user-facing slash commands; only `/ftl:rhdp-lab-validator` remains as the entry point
+- **env-connector**: `oc cp` was pushing `validation.yml` but validate-writer produces `validate.yml` — filename now aligned across both agents
+- **rhdp-lab-validator SKILL.md**: `name: ftl:lab-validator` corrected to `name: ftl:rhdp-lab-validator` to match directory name and invocation path
+
 ## [v2.13.3] - 2026-04-16
 
 ### FTL Skills — Sub-agents now callable via Task tool
