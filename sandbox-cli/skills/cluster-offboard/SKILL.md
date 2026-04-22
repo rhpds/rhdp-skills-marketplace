@@ -139,6 +139,43 @@ sandbox-cli cluster list
 
 The offboarded cluster should no longer appear in the list.
 
+## Troubleshooting
+
+### HTTP 409: Cluster is locked
+
+If offboard returns:
+
+```
+Error: HTTP 409: {"http_code":409,"message":"cluster \"<CLUSTER_NAME>\" is locked. Unlock the cluster first."}
+```
+
+The cluster has been locked (disabled) by an admin. To unlock it:
+
+```bash
+sandbox-cli cluster enable <CLUSTER_NAME>
+```
+
+**NOTE:** The `enable` command requires the `admin` role. If your token has `shared-cluster-manager` role, you will need to ask an admin to unlock the cluster before you can offboard it.
+
+### Offboard taking too long
+
+If the offboard seems stuck, check status manually:
+
+```bash
+sandbox-cli cluster offboard-status <CLUSTER_NAME>
+```
+
+## Admin-Only Commands Reference
+
+These commands require the `admin` role and are useful for cluster management:
+
+| Command | Description |
+|---------|-------------|
+| `sandbox-cli cluster enable <NAME>` | Unlock/enable a cluster (required before offboarding a locked cluster) |
+| `sandbox-cli cluster disable <NAME>` | Lock/disable a cluster (prevents new placements and offboarding) |
+| `sandbox-cli cluster health <NAME>` | Check cluster connectivity and health status |
+| `sandbox-cli cluster delete <NAME>` | Delete a cluster configuration (use offboard instead when possible) |
+
 ## Important Notes
 
 - **Force offboard** (`--force`) should only be used when the target cluster is permanently unreachable or decommissioned. It leaves orphaned resources (namespaces, service accounts, Ceph resources, Keycloak users) on the cluster.
@@ -146,3 +183,4 @@ The offboarded cluster should no longer appear in the list.
 - Offboarding is asynchronous -- it may return HTTP 202 and poll for completion.
 - If offboard fails partway through, some placements may require manual cleanup. The output will list these.
 - Always verify with `sandbox-cli cluster list` after offboarding.
+- A locked cluster cannot be offboarded -- it must be unlocked first by an admin using `sandbox-cli cluster enable`.
