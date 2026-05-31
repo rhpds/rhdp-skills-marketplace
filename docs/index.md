@@ -93,12 +93,8 @@ title: Home
       <span class="category-icon">🚀</span>
       <h3>Claude Code <span class="badge badge-recommended" style="vertical-align:middle;">Recommended</span></h3>
       <p>Native plugin marketplace — automatic updates, version management.</p>
-
-```
-/plugin marketplace add rhpds/rhdp-skills-marketplace
-/plugin install showroom@rhdp-marketplace
-```
-
+      <pre><code>/plugin marketplace add rhpds/rhdp-skills-marketplace
+/plugin install showroom@rhdp-marketplace</code></pre>
       <a href="{{ '/setup/claude-code.html' | relative_url }}">Full setup guide →</a>
     </div>
 
@@ -106,11 +102,7 @@ title: Home
       <span class="category-icon">⚡</span>
       <h3>Cursor</h3>
       <p>One-command bash install. Works alongside your existing Cursor setup.</p>
-
-```
-curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash
-```
-
+      <pre><code>curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/install-cursor.sh | bash</code></pre>
       <a href="{{ '/setup/cursor.html' | relative_url }}">Full setup guide →</a>
     </div>
   </div>
