@@ -267,10 +267,18 @@ Solve/validate buttons are optional. They enable the FTL skill to generate autom
 
 **`content/supplemental-ui/js/buttons.js`**
 
-Copy from the reference repo:
+Copy from the canonical nookbag e2e-template branch:
 ```bash
-curl -o content/supplemental-ui/js/buttons.js \
-  https://raw.githubusercontent.com/rhpds/ocp-zt-dedicated-showroom/main/content/supplemental-ui/js/buttons.js
+# Copy from nookbag e2e-template branch (canonical RHDP source)
+# If showroom_template_nookbag is cloned locally:
+if [ -d "$HOME/work/code/showroom_template_nookbag" ]; then
+  cd "$HOME/work/code/showroom_template_nookbag" && git checkout e2e-template 2>/dev/null
+  cp "$HOME/work/code/showroom_template_nookbag/content/supplemental-ui/js/buttons.js" \
+     content/supplemental-ui/js/buttons.js
+else
+  curl -o content/supplemental-ui/js/buttons.js \
+    https://raw.githubusercontent.com/rhpds/showroom_template_nookbag/e2e-template/content/supplemental-ui/js/buttons.js
+fi
 ```
 
 **`runtime-automation/` directory skeleton**
@@ -288,8 +296,31 @@ runtime-automation/
 Create the skeleton:
 ```bash
 mkdir -p runtime-automation/module-01
-touch runtime-automation/module-01/solve.yml
-touch runtime-automation/module-01/validate.yml
+
+cat > runtime-automation/module-01/solve.yml << 'EOF'
+- name: Module 1 Solve
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Module 1 solve — replace with your automation tasks"
+EOF
+
+cat > runtime-automation/module-01/validate.yml << 'EOF'
+- name: Module 1 Validate
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Validate module completion
+      validation_check:
+        check: true
+        msg: "Module 1 validation — replace with your checks"
+EOF
+# NOTE: validation_check is an RHDP-specific Ansible module provided by the zt-runner container.
+# It requires the RHDP environment (zt-runner) to run — it will not work in a plain Ansible environment.
+
 touch runtime-automation/requirements.txt
 touch runtime-automation/packages.txt
 ```

@@ -85,22 +85,21 @@ Task tool:
 
 ---
 
-## Phase 3 — Quality Check
+## Phase 3 — Inline Quality Check
 
-```
-Task tool:
-  subagent_type: showroom:module-reviewer
-  prompt: |
-    MODULE_FILE: <generated blog file path>
-    CONTENT_TYPE: <workshop|demo>
-    LAB_TYPE: <ocp|rhel|vm|ai|unknown>
-    SHARED_CONTEXT: {"module_order": [], "defined_attributes": {}, "first_use_map": {}, "lab_type": "unknown", "content_type": "workshop"}
-    REPO_PATH: none
-    is_first_module: false
-    is_conclusion: false
-```
+The file-generator agent applies blog-specific quality checks internally. After it returns, verify:
 
-Fix any High issues before delivering. Warnings are flagged but do not block.
+- Tone is narrative and conversational — not a numbered step list
+- Word count matches requested target (±20%)
+- At least one code block is present for technical posts
+- CTA appears at the end (if showroom_link was provided)
+- All external links are valid references from source material
+- Source attribution present (one of):
+  - Red Hat Developer: "This post is based on the workshop [Lab Name](showroom_link)"
+  - Internal: "Source: [original module path]"
+  - Marketing: "Based on customer use cases from [reference]"
+
+Fix any issues inline before delivering.
 
 ---
 

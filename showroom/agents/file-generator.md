@@ -5,6 +5,7 @@ tools:
   - Read
   - Write
   - Glob
+  - WebFetch
 ---
 
 # showroom:file-generator
@@ -81,6 +82,21 @@ If `PREVIOUS_MODULE` is set (continue mode): read that file to understand tone, 
 
 ---
 
+## Step 1.5 — Fetch reference materials (if provided)
+
+If `FULL_SPEC.source_files` contains URLs (not local paths):
+- Use WebFetch to fetch each URL
+- Extract key concepts, code samples, commands
+
+If `FULL_SPEC.source_files` contains local file paths:
+- Use Read to read each file
+
+For E2E content (FILE_TYPE=module with solve/validate buttons):
+- Check if ~/work/code/showroom_template_nookbag exists and switch to e2e-template branch
+- Use examples/e2e-ocp-dedicated/ as canonical reference for button syntax and structure
+
+---
+
 ## Step 2 — Generate the file
 
 Follow the template structure exactly. Apply FULL_SPEC values.
@@ -112,7 +128,17 @@ Follow the template structure exactly. Apply FULL_SPEC values.
   - Numbered steps (`.`)
   - Code blocks with `role="execute"` for terminal commands
   - `=== Verify` section after each exercise
+- Learning Outcomes Checkpoint (REQUIRED — see @showroom/docs/SKILL-COMMON-RULES.md)
+- Troubleshooting section (OPTIONAL — include only if FULL_SPEC.include_troubleshooting == true):
+  - 3-5 scenarios specific to the module's technology
+  - Each scenario: Issue + Solution + real commands
+- Cleanup section (OPTIONAL — if module changes shared state):
+  oc delete project my-project style commands
 - Conclusion paragraph
+- Solve/validate button placeholders (when E2E automation planned):
+  [.solve-button-placeholder]#solve-button-placeholder#
+  [.validate-button-placeholder]#validate-button-placeholder#
+- Send-to-terminal combined role: [source,role="execute send-to-wetty"]
 
 **`blog`** — Markdown blog post from source Showroom content
 
@@ -123,6 +149,13 @@ Additional inputs for blog FILE_TYPE (passed via FULL_SPEC):
 - `technical_depth` — highly-technical | moderately-technical | marketing-focused
 - `word_count` — 500-800 | 1000-1500 | 2000+
 - `showroom_link` — URL for "Try it yourself" CTA (optional)
+
+**`conclusion`** — concluding module consolidating all references
+- Title: `= Conclusion and Next Steps`
+- Mandatory: `== What You've Learned` — extract from FULL_SPEC learning_objectives
+- Mandatory: `== References` — consolidate ALL references from source_files + module outlines
+- Optional: `== Next Steps` — related workshops, docs, practice projects
+- See @showroom/skills/create-lab/references/conclusion-template.md for structure
 
 **Blog output format:** Markdown (.md) for all platforms.
 
@@ -140,6 +173,10 @@ Structure: title, summary excerpt, introduction, body sections matching source m
 - All code blocks that should auto-execute: `[source,bash,role="execute"]`
 - All images: `image::name.png[descriptive alt text, link=self, window=blank]`
 - No heading level skips
+- Solve/validate button placeholders (when E2E automation planned):
+  [.solve-button-placeholder]#solve-button-placeholder#
+  [.validate-button-placeholder]#validate-button-placeholder#
+- Send-to-terminal combined role: [source,role="execute send-to-wetty"]
 
 ---
 

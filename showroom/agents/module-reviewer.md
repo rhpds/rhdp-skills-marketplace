@@ -74,7 +74,14 @@ Run ALL checks silently. Collect findings. Do NOT output anything until Step 3.
 |---|---|---|---|
 | C.1 | `image::` macros include `link=self,window=blank` | Any image without it | Warning |
 | C.2 | All images have descriptive alt text | Blank, "image", or filename | Warning |
+| C.3 | External links use `^` (new tab) | Missing caret | Medium |
+| C.4 | Internal `xref:` links do NOT use `^` | Caret on xref | Medium |
+| C.5 | Code blocks use `[source,<lang>]` — bare `----` block that isn't expected output | High | High |
+| C.6 | No em dashes (`—`) in content | Any em dash | Medium |
+| C.7 | Lists have blank line before and after | Lists adjacent to text | Medium |
+| C.8 | Document title uses `= ` (single equals) | Wrong heading level | High |
 | C.9 | Headings are sentence case | Title Case headings | Warning |
+| C.10 | No broken `include::` references | Any unresolved include | Critical |
 
 ### Pass D — Style and Terminology
 
@@ -82,7 +89,12 @@ Run ALL checks silently. Collect findings. Do NOT output anything until Step 3.
 |---|---|---|---|
 | D.1 | No "the Red Hat OpenShift Platform" | Present | Warning |
 | D.2 | Acronyms expanded on first use | Bare OCP/AAP/RHOAI without expansion | Warning |
+| D.3 | No vague terms: "robust", "powerful", "leverage", "synergy" | Present | Medium |
+| D.4 | No unsupported superlatives: "best", "leading", "most" without citation | Present | Medium |
 | D.5 | No non-inclusive terms (whitelist/blacklist, master/slave) | Present | Warning |
+| D.6 | Numbers 0–9 as numerals ("3 steps" not "three steps") | Word form used | Medium |
+| D.7 | Oxford comma in lists of 3+ | Missing | Low |
+| D.8 | No em dashes (style rule) | Present | Medium |
 | D.9 | Gender-neutral pronouns | he/she used | Warning |
 | D.10 | Version numbers match env or use `{ocp_version}` | Hardcoded mismatched version | Warning |
 
@@ -90,15 +102,34 @@ For D.2: cross-reference `SHARED_CONTEXT.first_use_map` — suppress warning if 
 
 For D.10: cross-reference `SHARED_CONTEXT.defined_attributes` — suppress if attribute is defined there.
 
+For E.3a: Only flag bash, sh, shell, console, terminal, tty, wetty code blocks missing `role="execute"`. Do NOT flag yaml, json, python, text, or asciidoc blocks.
+
 ### Pass E — Technical Correctness
 
 | ID | Check | Fail condition | Severity |
 |---|---|---|---|
+| E.1 | `oc` commands use lowercase subcommands | `oc Get Pods` style | High |
+| E.2 | YAML blocks have consistent 2-space indent | Mixed tabs/spaces | High |
 | E.3 | Code blocks with `role="execute"` have correct syntax | Invalid role combination | Medium |
+| E.3a | Shell command blocks have `role="execute"` — ONLY flag: bash, sh, shell, console, terminal, tty, wetty. Do NOT flag: yaml, json, python, text, asciidoc | High | High |
 | E.3-img | `image::` macros with `link=self,window=blank` | Any image without it | Warning |
 | E.3b | `role="send-to-wetty"` commands also have `role="execute"` | Missing execute | Warning |
+| E.4 | No hardcoded cluster URLs, usernames, passwords — use `{user}`, `{password}`, `{openshift_console_url}` | Literal values | High |
+| E.5 | All `{attribute}` placeholders defined in antora.yml or _attributes.adoc | Undefined attribute — cross-check SHARED_CONTEXT.defined_attributes | High |
+| E.6 | All images have alt text — empty first bracket in `image::` | Missing alt | High |
 | E.7 | No skipped heading levels (`=` then `===`) | Skipped levels | High |
 | E.8 | No deprecated UI paths for current OCP version | Outdated menu references | High |
+| E.9 | Code examples are syntactically valid | Invalid YAML/JSON/bash | High |
+
+### Pass F — Demo-specific (SKIP if CONTENT_TYPE == workshop)
+
+| ID | Check | Fail condition | Severity |
+|---|---|---|---|
+| F.1 | Know section before Show section | Missing Know/Show structure | High |
+| F.2 | Business value stated per section | No ROI/outcome framing | High |
+| F.3 | Presenter notes present (`[NOTE]` or aside blocks) | Missing | High |
+| F.4 | No hands-on exercises requiring participant input | Participant steps found | High |
+| F.5 | Key talking points highlighted (callout blocks) | No callouts | Medium |
 
 ---
 
@@ -112,11 +143,13 @@ Score each dimension 0.0–1.0 based on findings:
 - `0.3` = Critical
 
 **Dimension → check mapping:**
-- `structure`: B.8, B.9, B.10, B.11, B.12, B.13, B.14, B.15, E.7
+- `structure`: B.8, B.9, B.10, B.11, B.12, B.13, B.14, B.15, C.8, E.7
 - `pedagogy`: B.8, B.9, B.12 (weighted most heavily)
-- `style`: C.9, D.1, D.5, D.9
-- `technical_accuracy`: D.10, E.3, E.3b, E.8
+- `style`: C.3, C.4, C.6, C.7, C.9, D.1, D.3, D.4, D.5, D.6, D.7, D.8, D.9
+- `technical_accuracy`: D.10, E.1, E.2, E.3, E.3a, E.3b, E.4, E.5, E.6, E.8, E.9
+- `formatting`: C.1, C.2, C.5, C.10
 - `intro_quality`: (only meaningful if `is_first_module=true`) — B structure, D.1, D.2, C.1
+- `demo_structure`: F.1, F.2, F.3, F.4, F.5 (only when CONTENT_TYPE == demo)
 
 If multiple findings map to a dimension, take the minimum score.
 
@@ -138,7 +171,9 @@ If multiple findings map to a dimension, take the minimum score.
     "pedagogy":           {"score": 0.80, "findings_count": 1},
     "style":              {"score": 1.00, "findings_count": 0},
     "technical_accuracy": {"score": 0.90, "findings_count": 1},
-    "intro_quality":      {"score": 1.00, "findings_count": 0}
+    "formatting":         {"score": 1.00, "findings_count": 0},
+    "intro_quality":      {"score": 1.00, "findings_count": 0},
+    "demo_structure":     {"score": 1.00, "findings_count": 0}
   },
   "findings": [
     {

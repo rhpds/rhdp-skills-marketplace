@@ -104,9 +104,14 @@ First, grep all .adoc files for: `role="send-to-wetty"`, `role="send-to-terminal
 | File missing AND no button roles AND NOT cluster showroom | Recommendation | S.5d |
 | File missing AND cluster showroom (display name contains "cluster") | — skip | S.5e |
 
-For S.5d, use this message: "Solve/validate buttons are optional. If you plan to add E2E automation to this lab, add `content/supplemental-ui/js/buttons.js` and a `runtime-automation/` directory. See https://github.com/rhpds/ocp-zt-dedicated-showroom for reference setup."
+For S.5d, use this message: "Solve/validate buttons are optional. If you plan to add E2E automation to this lab, add `content/supplemental-ui/js/buttons.js` and a `runtime-automation/` directory. See https://github.com/rhpds/showroom_template_nookbag/tree/e2e-template for the canonical E2E setup (buttons.js, runtime-automation/ structure, and full examples)."
 
 ### S.5b — `runtime-automation/` directory
+
+**Canonical solve.yml/validate.yml structure** (from showroom_template_nookbag e2e-template branch):
+- Both must have: hosts: localhost, connection: local, gather_facts: false
+- validate.yml uses the `validation_check` RHDP module (zt-runner only)
+- Empty files (zero-byte) are not valid — flag as High if present
 
 First, check if `solve-button-placeholder` or `validate-button-placeholder` appears in any .adoc file.
 

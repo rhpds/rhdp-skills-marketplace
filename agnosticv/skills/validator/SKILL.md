@@ -94,14 +94,40 @@ Step 5: Offer Follow-up Actions
 
 ---
 
-## Step 0: Private Validator Detection (commitv)
+## Step 0: Schema and Private Validator Detection
 
-**Before running any checks**, detect the AgnosticV repo path and check for the `commitv` skill stored in the private AgV repo.
+### Step 0a — AgV Babylon Schema (AUTHORITATIVE — check FIRST)
+
+Detect AgV path from config files. Then:
 
 ```bash
-# Detect AgV path (from CLAUDE.md or ask user)
-agv_path=$(grep -r "AgnosticV:" ~/CLAUDE.md 2>/dev/null | head -1 | grep -oE '[~\/][^ ]+')
+schema_path="$agv_path/.schemas/babylon.yaml"
+if [ -f "$schema_path" ]; then
+  echo "📐 Babylon schema found: $schema_path — using as authoritative source"
+  # Load schema — this defines:
+  # - __meta__ additionalProperties: false (flag any unknown fields)
+  # - category enum: ["Demos", "Labs", "Open_Environments", "Workshops", "Brand_Events"]
+  #   NOTE: "Sandboxes" is NOT in the schema — flag it as ERROR
+  # - asset_uuid pattern: ^[0-9A-Fa-f]{8}-...-[0-9A-Fa-f]{12}$
+  # - All __meta__.catalog field types and enums
+  schema_loaded=true
+fi
+```
 
+When validating any catalog:
+- Use schema-defined category enum (NOT hardcoded list)
+- Enforce additionalProperties: false on __meta__ (flag any unknown __meta__ fields as ERROR)
+- Derive field-type constraints from schema, not memory
+
+**Known schema values (current as of babylon.yaml):**
+- Valid categories: Demos, Labs, Open_Environments, Workshops, Brand_Events
+- WARNING: Do NOT include "Sandboxes" — it is NOT in the schema
+
+### Step 0b — Private AgV Validator (if present)
+
+**After** checking for the babylon schema, check for the `commitv` skill stored in the private AgV repo.
+
+```bash
 # Check for commitv — the private AgV validation skill
 commitv_skill="$agv_path/.claude/skills/commitv/SKILL.md"
 
@@ -428,7 +454,7 @@ def search_uuid_in_repo(uuid, repo_path, current_catalog):
 def check_category(config):
   """Category correctness validation"""
 
-  valid_categories = ["Workshops", "Labs", "Demos", "Sandboxes", "Open_Environments", "Brand_Events"]
+  valid_categories = ["Workshops", "Labs", "Demos", "Open_Environments", "Brand_Events"]
 
   if '__meta__' not in config or 'catalog' not in config['__meta__']:
     errors.append({
