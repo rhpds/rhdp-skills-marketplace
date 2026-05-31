@@ -231,8 +231,9 @@ When E.3a is selected:
 | **High** | Key functionality broken or degraded |
 | **Warning** | Standards violation — lab works but doesn't meet quality bar |
 | **Info** | Optional improvement |
+| **Recommendation** | Feature is optional — shown only to inform, not to block or flag. No action required. |
 
-Only Critical and High mark a lab as "not ready".
+Only Critical and High mark a lab as "not ready". Recommendations are shown at the bottom of the table, separated from issues.
 
 ---
 

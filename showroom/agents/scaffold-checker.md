@@ -102,8 +102,10 @@ First, grep all .adoc files for: `role="send-to-wetty"`, `role="send-to-terminal
 | Condition | Severity | ID |
 |---|---|---|
 | File missing AND button roles present in adoc | Critical | S.5c |
-| File missing AND no button roles AND NOT cluster showroom | Warning | S.5d |
-| File missing AND cluster showroom (display name contains "cluster") | Info | S.5e |
+| File missing AND no button roles AND NOT cluster showroom | Recommendation | S.5d |
+| File missing AND cluster showroom (display name contains "cluster") | — skip | S.5e |
+
+For S.5d, use this message: "Solve/validate buttons are optional. If you plan to add E2E automation to this lab, add `content/supplemental-ui/js/buttons.js` and a `runtime-automation/` directory. See https://github.com/rhpds/ocp-zt-dedicated-showroom for reference setup."
 
 ### S.5b — `runtime-automation/` directory
 
