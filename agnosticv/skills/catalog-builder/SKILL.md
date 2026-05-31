@@ -1180,6 +1180,24 @@ cat > "$catalog_path/info-message-template.adoc" <<'EOF'
 EOF
 ```
 
+### Step 11.5: Workflow Review (agent)
+
+After writing all files, spawn the workflow-reviewer agent to check consistency between catalog-builder and validator skill paths before presenting to the user:
+
+```
+Task tool:
+  subagent_type: agnosticv:workflow-reviewer
+  prompt: |
+    CATALOG_PATH: <absolute path to catalog directory>
+    INFRA_TYPE: <ocp-cluster|ocp-tenant|cloud-vms-base|sandbox-cluster|sandbox-tenant>
+    FILES_WRITTEN: [common.yaml, dev.yaml, description.adoc, info-message-template.adoc]
+```
+
+The agent checks: builder/validator skill consistency, infra-type routing, include paths, known anti-patterns.
+
+If the reviewer returns issues → fix them before asking to commit.
+If the reviewer passes → proceed to Step 12.
+
 ### Step 12: Git Commit (Optional)
 
 ```

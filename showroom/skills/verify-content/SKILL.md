@@ -22,6 +22,33 @@ The orchestrator handles: repo detection, pre-flight extraction, cross-module lo
 
 ---
 
+## ph_payload — Headless Mode (Publishing House)
+
+If `ph_payload` is present, skip Phase 1 auto-detect and Phase 6 fix loop. Return structured JSON.
+
+```yaml
+ph_payload:
+  content_path: content/modules/ROOT/pages/
+  modules: []                    # empty = all modules
+  lab_type: workshop
+  shared_context:
+    defined_attributes: {ocp_version: "4.18", user: user1}
+    nav_order: [index, 01-overview, 02-details, 03-module-01]
+    first_use_map: {AAP: 01-overview.adoc}
+```
+
+Headless return (JSON only):
+```json
+{
+  "findings": [
+    {"id": "E.3a", "module": "03-module-01.adoc", "line": 47, "severity": "High", "message": "..."}
+  ],
+  "summary": {"critical": 0, "high": 1, "medium": 0, "warnings": 3}
+}
+```
+
+---
+
 ## Phase 1 — Auto-detect (silent, no questions)
 
 Check CWD for Showroom structure:
