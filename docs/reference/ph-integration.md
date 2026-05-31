@@ -42,6 +42,7 @@ sequenceDiagram
 ## verify-content — PH Headless
 
 **PH sends:**
+
 ```yaml
 ph_payload:
   content_path: content/modules/ROOT/pages/
@@ -79,6 +80,7 @@ sequenceDiagram
 ```
 
 **PH receives:**
+
 ```json
 {
   "findings": [
@@ -99,6 +101,7 @@ sequenceDiagram
 ## create-lab — PH Headless
 
 **PH sends:**
+
 ```yaml
 ph_payload:
   target_dir: content/modules/ROOT/pages/
@@ -155,6 +158,7 @@ sequenceDiagram
 ```
 
 **PH receives:**
+
 ```json
 {
   "files_created": [

@@ -26,24 +26,25 @@ Run from inside your Showroom repo. Auto-detects content type and lab type.
 This skill is an **orchestrator**. All checks are delegated to specialized agents running in parallel — one `scaffold-checker` for root config files and one `module-reviewer` per .adoc file simultaneously.
 
 ```mermaid
-graph TD
-    User([User / PH]) --> VC[verify-content\nOrchestrator]
-    VC -->|pre-flight inline| PF[Extract shared_context\nnav order, attributes,\nfirst-use map, lab_type]
-    PF -->|parallel| SC[scaffold-checker\nHaiku\nsite.yml, ui-config,\nantora, gh-pages]
-    PF -->|parallel| MR1[module-reviewer\nSonnet\n01-overview.adoc]
-    PF -->|parallel| MR2[module-reviewer\nSonnet\n03-module-01.adoc]
-    PF -->|parallel| MRN[module-reviewer × N\nSonnet\n...]
-    SC -->|findings JSON| Merge[Merge + cross-module\nlogic + deduplicate]
-    MR1 -->|scored JSON| Merge
-    MR2 -->|scored JSON| Merge
-    MRN -->|scored JSON| Merge
-    Merge --> Out([Findings table / JSON for PH])
+sequenceDiagram
+    participant U as User / PH
+    participant VC as verify-content (Sonnet)
+    participant SC as scaffold-checker (Haiku)
+    participant MR1 as module-reviewer (Sonnet)
+    participant MR2 as module-reviewer (Sonnet)
 
-    style VC fill:#cc0000,color:#fff
-    style SC fill:#f5a623,color:#000
-    style MR1 fill:#4a90d9,color:#fff
-    style MR2 fill:#4a90d9,color:#fff
-    style MRN fill:#4a90d9,color:#fff
+    U->>VC: /verify-content or ph_payload JSON
+    Note over VC: Pre-flight: reads nav.adoc,<br/>antora.yml, builds shared_context
+    par Parallel agents
+        VC->>SC: REPO_PATH + SHARED_CONTEXT
+        VC->>MR1: MODULE_FILE=01-overview.adoc<br/>+ SHARED_CONTEXT + LAB_TYPE
+        VC->>MR2: MODULE_FILE=03-module-01.adoc<br/>+ SHARED_CONTEXT + LAB_TYPE
+    end
+    SC-->>VC: {"findings": [...], "passed": [...]}
+    MR1-->>VC: {"dimensions": {"pedagogy": 0.8}, "findings": [...]}
+    MR2-->>VC: {"dimensions": {"technical_accuracy": 0.9}, "findings": [...]}
+    Note over VC: Merge + cross-module logic<br/>(D.2 suppression, E.5 attribute check)
+    VC-->>U: Findings table (interactive)<br/>OR {"findings": [...]} (PH headless)
 ```
 
 **Expected speedup:** ~6× faster than sequential checks (8 min → ~90 sec for a 6-module lab).
@@ -116,17 +117,12 @@ graph TD
 
 The following security issues were identified from real production labs and are now automatically detected:
 
-<div class="security-highlight">
+| Security Check | What it catches | Severity |
+|---|---|---|
+| **Multiuser htpasswd — shared passwords** | When `multiuser: true` and htpasswd auth is used, all users share the same password unless `ocp4_workload_authentication_htpasswd_user_password_randomized: true` is set | High |
+| **VS Code without authentication** | `ocp4_workload_vscode` with `auth-type: none` exposes an unauthenticated IDE to anyone with the Showroom URL | High |
 
-**Multiuser htpasswd — shared passwords**
-When `multiuser: true` and htpasswd authentication is used, all users share the same password by default. Flag: `ocp4_workload_authentication_htpasswd_user_password_randomized` not set.
-Detected in: `agnosticv:validator`
-
-**VS Code without authentication**
-Labs including VS Code (`ocp4_workload_vscode`) with `auth-type: none` expose an unauthenticated IDE. Any user with the Showroom URL can access it.
-Detected in: `agnosticv:validator`
-
-</div>
+Both detected in: `agnosticv:validator`
 
 ---
 
@@ -148,11 +144,10 @@ Each `module-reviewer` agent returns dimension scores (0.0–1.0) alongside find
 
 ## Publishing House Integration
 
-<div class="ph-integration">
-
 `verify-content` supports headless mode for Publishing House. PH passes `ph_payload` JSON — the skill skips all interactive prompts and returns structured findings JSON. No PH code changes needed.
 
 **PH sends:**
+
 ```yaml
 ph_payload:
   content_path: content/modules/ROOT/pages/
@@ -165,6 +160,7 @@ ph_payload:
 ```
 
 **PH receives:**
+
 ```json
 {
   "findings": [
@@ -174,9 +170,7 @@ ph_payload:
 }
 ```
 
-See [PH Integration Guide](../reference/ph-integration.md) for full details and sequence diagrams.
-
-</div>
+See [PH Integration Guide](../reference/ph-integration.html) for full details and sequence diagrams.
 
 ---
 
@@ -184,7 +178,7 @@ See [PH Integration Guide](../reference/ph-integration.md) for full details and 
 
 The skill checks the repo's own templates and prompt files before falling back to marketplace bundled versions:
 
-```
+```text
 1. {REPO_PATH}/showroom/prompts/*.txt  →  project-specific rules (partner content, custom terminology)
 2. @showroom/prompts/*.txt             →  marketplace defaults
 ```
@@ -193,8 +187,8 @@ The skill checks the repo's own templates and prompt files before falling back t
 
 ## Related Skills
 
-- [`/showroom:create-lab`](create-lab.md) — create workshop content
-- [`/showroom:create-demo`](create-demo.md) — create presenter demo content
-- [`/ftl:rhdp-lab-validator`](rhdp-lab-validator.md) — write E2E automation
-- [Agent Architecture](../reference/agent-architecture.md) — how orchestration works
-- [PH Integration](../reference/ph-integration.md) — headless mode details
+- [`/showroom:create-lab`](create-lab.html) — create workshop content
+- [`/showroom:create-demo`](create-demo.html) — create presenter demo content
+- [`/ftl:rhdp-lab-validator`](rhdp-lab-validator.html) — write E2E automation
+- [Agent Architecture](../reference/agent-architecture.html) — how orchestration works
+- [PH Integration](../reference/ph-integration.html) — headless mode details

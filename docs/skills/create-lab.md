@@ -7,314 +7,144 @@ title: /showroom:create-lab
 
 <div class="reference-badge">📝 Workshop Lab Creation</div>
 
-Create hands-on workshop content where customers follow along step-by-step.
-
----
-
-## Is This The Right Skill?
-
-<div class="vs-grid">
-<div class="vs-card vs-card-skill">
-<span class="vs-label">Use create-lab when</span>
-<h3>Customers DO things hands-on</h3>
-<ul>
-<li>Customers click buttons, run commands, follow steps</li>
-<li>You want <strong>Know → Do → Check</strong> structure</li>
-<li>Multiple participants learning together</li>
-</ul>
-</div>
-<div class="vs-card vs-card-agent">
-<span class="vs-label">Use create-demo instead when</span>
-<h3>YOU present, customers watch</h3>
-<ul>
-<li>One-directional presentation (like PowerPoint)</li>
-<li>Know → Show structure</li>
-<li>Single presenter showing features</li>
-</ul>
-</div>
-</div>
-
-<div class="callout callout-tip">
-<span class="callout-icon">💡</span>
-<div class="callout-body">
-<strong>Not sure?</strong> Labs are more interactive. Demos are more presentational.
-</div>
-</div>
-
----
-
-## What You'll Need Before Starting
-
-### Required Inputs
-
-<div class="category-grid">
-<div class="category-card">
-<span class="category-icon">📚</span>
-<h3>Workshop Topic</h3>
-<p>Example: "Getting started with OpenShift Pipelines"</p>
-</div>
-<div class="category-card">
-<span class="category-icon">🎯</span>
-<h3>Learning Goals</h3>
-<p>What should customers learn?</p>
-</div>
-<div class="category-card">
-<span class="category-icon">📊</span>
-<h3>Number of Sections</h3>
-<p>Typically 3–5 modules</p>
-</div>
-<div class="category-card">
-<span class="category-icon">📖</span>
-<h3>Reference Materials</h3>
-<p>Product docs, screenshots, etc.</p>
-</div>
-</div>
-
-### What The AI Will Create
-
-<div class="callout callout-tip">
-<span class="callout-icon">✅</span>
-<div class="callout-body">
-<strong>Generated Files:</strong>
-<ul>
-<li>Navigation page (index.adoc)</li>
-<li>Module files (one per section)</li>
-<li>Know/Do/Check structure for each module</li>
-<li>Placeholder images and examples</li>
-</ul>
-</div>
-</div>
-
-<div class="callout callout-info">
-<span class="callout-icon">ℹ️</span>
-<div class="callout-body">
-<strong>You DON'T need:</strong> Git knowledge, coding experience, or AsciiDoc expertise. The AI handles all technical aspects.
-</div>
-</div>
+Create hands-on Red Hat Showroom workshop content. Runs a grouped planning form then generates all files in parallel using specialized agents. Supports headless mode for Publishing House.
 
 ---
 
 ## Quick Start
 
-<ol class="steps">
-<li><div class="step-content"><h4>Open Your IDE</h4><p>Launch Claude Code (or VS Code with Claude extension)</p></div></li>
-<li><div class="step-content"><h4>Invoke Skill</h4><p>Type <code>/showroom:create-lab</code> in the chat</p></div></li>
-<li><div class="step-content"><h4>Answer Questions</h4><p>Provide workshop title, abstract, technologies, modules, and objectives</p></div></li>
-<li><div class="step-content"><h4>Review &amp; Customize</h4><p>Review generated content and edit as needed</p></div></li>
-</ol>
-
----
-
-## What It Creates
-
-```
-content/modules/ROOT/
-├── pages/
-│   ├── index.adoc              # Navigation home
-│   ├── module-01.adoc          # First module
-│   ├── module-02.adoc          # Second module
-│   └── module-03.adoc          # Third module
-└── partials/
-    └── _attributes.adoc        # Workshop metadata
-```
-
----
-
-## Common Workflow
-
-<ol class="steps">
-<li>
-<div class="step-content">
-<h4>Invoke Skill</h4>
-
-```
+```text
 /showroom:create-lab
-→ Skill loads prompts from showroom/prompts/
+/showroom:create-lab content/modules/ROOT/pages/ --new
+/showroom:create-lab content/modules/ROOT/pages/ --continue 03-module-01.adoc
 ```
 
+---
+
+## Architecture
+
+```mermaid
+sequenceDiagram
+    participant U as User / PH
+    participant CL as create-lab (Sonnet)
+    participant FG1 as file-generator (Sonnet)
+    participant FG2 as file-generator (Sonnet)
+    participant FG3 as file-generator (Sonnet)
+    participant FG4 as file-generator (Sonnet)
+    participant MR as module-reviewer (Sonnet)
+
+    U->>CL: Plan confirmed / ph_payload JSON
+    Note over CL: Builds FULL_SPEC JSON<br/>inc. writing_style, env, modules
+    par Phase B: Parallel generation
+        CL->>FG1: FILE_TYPE=index + FULL_SPEC
+        CL->>FG2: FILE_TYPE=overview + FULL_SPEC
+        CL->>FG3: FILE_TYPE=details + FULL_SPEC
+        CL->>FG4: FILE_TYPE=module + FULL_SPEC
+    end
+    Note over FG1,FG4: Each agent: reads templates,<br/>applies writing_style,<br/>runs humanizer pass,<br/>writes file to disk
+    FG1-->>CL: {"file_created": "index.adoc", "nav_entry": "...", "word_count": 247}
+    FG2-->>CL: {"file_created": "01-overview.adoc", "nav_entry": "...", "word_count": 312}
+    FG3-->>CL: {"file_created": "02-details.adoc", "nav_entry": "...", "word_count": 198}
+    FG4-->>CL: {"file_created": "03-module-01.adoc", "nav_entry": "...", "word_count": 1340}
+    Note over CL: Merges nav.adoc from nav_entry values
+    CL->>MR: MODULE_FILE=03-module-01.adoc + SHARED_CONTEXT
+    MR-->>CL: {"dimensions": {"pedagogy": 0.85}, "findings": []}
+    CL-->>U: Delivery summary (interactive)<br/>OR {"files_created": [...]} (PH headless)
+```
+
+**New lab:** 4 file-generator agents run simultaneously — index, overview, details, module-01 all generated in parallel.
+
+**Continue mode:** single file-generator seeded with previous module content (sequential by design for story continuity).
+
+---
+
+## How It Works
+
+<ol class="steps">
+<li>
+<div class="step-content">
+<h4>Parse arguments</h4>
+<p>Reads <code>--new</code> or <code>--continue</code> flags. If target directory is empty, prompts to clone the nookbag template first.</p>
 </div>
 </li>
 <li>
 <div class="step-content">
-<h4>Workshop Details</h4>
-<p>Answer prompts for workshop title, abstract, technologies, and number of modules.</p>
+<h4>Grouped planning form (Phase A)</h4>
+<p>Asks all questions at once — lab name, audience, business scenario, duration, module breakdown, environment details, reference materials, and optional writing style. No sequential blocking. User fills what they know and confirms the plan.</p>
 </div>
 </li>
 <li>
 <div class="step-content">
-<h4>Provide Showroom Repository Path</h4>
-<p>Skill asks for your Showroom repo. You can provide a local path or a GitHub URL — the skill auto-clones GitHub URLs to <code>/tmp/</code>:</p>
-
-```
-# Local path
-~/work/showroom-content/your-lab-showroom
-
-# GitHub URL (auto-cloned to /tmp/your-lab-showroom)
-https://github.com/rhpds/your-lab-showroom
-```
-
+<h4>Showroom setup (new labs)</h4>
+<p>Q0–Q3: catalog type, tabs/consoles, Red Hat theme, E2E automation. Creates <code>site.yml</code> and <code>ui-config.yml</code>. If E2E: copies <code>buttons.js</code> from the nookbag e2e-template branch and creates <code>runtime-automation/</code> skeleton with canonical Ansible stubs.</p>
 </div>
 </li>
 <li>
 <div class="step-content">
-<h4>Showroom Scaffold (site.yml + ui-config.yml)</h4>
-<p>Skill configures the two key infrastructure files in your Showroom repo (cloned from showroom_template_nookbag):</p>
-
-```
-site.yml              # Antora playbook — fix title, ui-bundle theme
-ui-config.yml          # Split view + tabs (view_switcher.enabled: true)
-```
-
-<p>Skill also asks: <em>"Will this lab embed an OCP console or terminal tab?"</em> — configures console embedding if yes.</p>
-
-<div class="callout callout-info">
-<span class="callout-icon">ℹ️</span>
-<div class="callout-body">
-<strong>Showroom 1.5.3+ required</strong> for split-view and OCP console embedding. Clone from <code>showroom_template_nookbag</code> as your starting template.
-<br><br>
-<strong>Existing nookbag repos:</strong> If your repo was cloned before March 2026, it may have <code>[source,bash]</code> blocks without <code>role="execute"</code>. The skill detects this and offers to bulk-fix all existing modules. New content is always generated with <code>[source,role="execute"]</code> regardless.
-</div>
-</div>
+<h4>Parallel file generation (Phase B)</h4>
+<p>Spawns 4 <code>showroom:file-generator</code> agents simultaneously. Each gets the full FULL_SPEC JSON including writing style profile. All apply the auto-humanizer pass before writing to disk.</p>
 </div>
 </li>
 <li>
 <div class="step-content">
-<h4>Generate Module Content</h4>
-<p>Skill generates <code>index.adoc</code> and one file per module using Know/Do/Check structure. UserInfo attributes are written once in <code>_attributes.adoc</code> (no duplicate entries).</p>
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Verify Content</h4>
-
-```
-/showroom:verify-content
-→ Check quality and standards
-→ Checks ui-config.yml for console and view_switcher
-```
-
-</div>
-</li>
-<li>
-<div class="step-content">
-<h4>Generate Blog Post (Optional)</h4>
-
-```
-/showroom:blog-generate
-→ Transform to blog format
-```
-
+<h4>Quality check and delivery</h4>
+<p>Spawns <code>showroom:module-reviewer</code> on generated files. Merges nav.adoc from agent nav_entry outputs. Presents delivery summary with file list, word counts, and any quality warnings.</p>
 </div>
 </li>
 </ol>
 
 ---
 
-## Module Structure Pattern
+## Personal Writing Style
 
-<div class="section-primary">
-<h3 class="text-center">Know → Do → Check</h3>
-<p class="text-center">Each module follows this proven learning pattern:</p>
+Provide your style in the planning form:
 
-<div class="category-grid">
-<div class="category-card">
-<span class="category-icon">📖</span>
-<h3>Know Section</h3>
-<ul>
-<li>Explains the concept</li>
-<li>Provides context and background</li>
-</ul>
-</div>
-<div class="category-card">
-<span class="category-icon">⚙️</span>
-<h3>Do Section</h3>
-<ul>
-<li>Hands-on exercise</li>
-<li>Step-by-step instructions</li>
-<li>Code examples with syntax highlighting</li>
-</ul>
-</div>
-<div class="category-card">
-<span class="category-icon">✓</span>
-<h3>Check Section</h3>
-<ul>
-<li>Verification steps</li>
-<li>Expected results</li>
-<li>Troubleshooting tips</li>
-</ul>
-</div>
-</div>
-</div>
+```text
+Writing style: "conversational, short sentences, active voice, no jargon"
+  OR paste 1-3 paragraphs of your writing as an example
+  OR path to a module you wrote: ~/my-showroom/content/modules/ROOT/pages/03-module-01.adoc
+  Saved profile: ~/.claude/context/my-writing-style.md
+```
+
+See [Writing Style Guide](../reference/writing-style.html) for how to create a persistent profile.
 
 ---
 
-## Tips &amp; Best Practices
+## Publishing House Integration
 
-<div class="category-grid">
-<div class="category-card">
-<span class="category-icon">📊</span>
-<h3>Module Count</h3>
-<p>Start with 3–4 modules for new workshops</p>
-</div>
-<div class="category-card">
-<span class="category-icon">⏱️</span>
-<h3>Timing</h3>
-<p>Each module should take 10–15 minutes</p>
-</div>
-<div class="category-card">
-<span class="category-icon">🎯</span>
-<h3>Focus</h3>
-<p>Keep Do sections focused on one main task</p>
-</div>
-<div class="category-card">
-<span class="category-icon">📸</span>
-<h3>Screenshots</h3>
-<p>Use screenshots sparingly (AsciiDoc format)</p>
-</div>
-</div>
+```yaml
+ph_payload:
+  target_dir: content/modules/ROOT/pages/
+  mode: new
+  spec:
+    lab_name: OpenShift Pipelines Workshop
+    audience: intermediate
+    learning_objectives: [Deploy a pipeline, Configure triggers, Monitor builds]
+    business_scenario: ACME Corp needs to modernize their CI/CD pipeline...
+    duration: 90min
+    env:
+      ocp_version: "4.18"
+      attributes: {user: user1, password: openshift}
+    writing_style: "conversational, short sentences"
+```
 
----
+Returns:
 
-## Troubleshooting
+```json
+{
+  "files_created": ["index.adoc", "01-overview.adoc", "02-details.adoc", "03-module-01-pipeline-setup.adoc"],
+  "nav_updated": true,
+  "quality": {"critical": 0, "high": 0, "warnings": 1}
+}
+```
 
-<details>
-<summary>Skill not found?</summary>
-
-- Restart Claude Code or VS Code
-- Verify installation: `ls ~/.claude/skills/create-lab` (Claude Code) or `ls ~/.cursor/skills/showroom-create-lab` (Cursor)
-- Check the [Troubleshooting Guide](../reference/troubleshooting.html)
-
-</details>
-
-<details>
-<summary>Generated content looks wrong?</summary>
-
-- Check your workshop template is up to date
-- Verify you're in the correct directory
-- Run `/showroom:verify-content` to check standards compliance
-
-</details>
+See [PH Integration Guide](../reference/ph-integration.html) for full sequence diagrams.
 
 ---
 
 ## Related Skills
 
-<div class="links-grid">
-  <a href="verify-content.html" class="link-card">
-    <h4>/showroom:verify-content</h4>
-    <p>Validate generated content</p>
-  </a>
-  <a href="create-demo.html" class="link-card">
-    <h4>/showroom:create-demo</h4>
-    <p>Create presenter-led demos instead</p>
-  </a>
-  <a href="blog-generate.html" class="link-card">
-    <h4>/showroom:blog-generate</h4>
-    <p>Convert to blog post format</p>
-  </a>
-</div>
-
-<div class="navigation-footer">
-  <a href="index.html" class="nav-button">← Back to Skills</a>
-  <a href="verify-content.html" class="nav-button">Next: /showroom:verify-content →</a>
-</div>
+- [`/showroom:verify-content`](verify-content.html) — quality review after content is created
+- [`/showroom:create-demo`](create-demo.html) — presenter-led demo content
+- [`/ftl:rhdp-lab-validator`](rhdp-lab-validator.html) — E2E automation
+- [Agent Architecture](../reference/agent-architecture.html)
