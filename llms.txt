@@ -110,3 +110,47 @@ Auto-humanizer runs on all generated prose — no AI writing patterns in output.
 - Agent architecture: /reference/agent-architecture
 - PH integration: /reference/ph-integration
 - Writing style: /reference/writing-style
+
+## Skill Evaluation Framework
+
+The score-aggregator agent enables per-dimension, per-lab-type regression detection:
+
+```json
+{
+  "dimensions": {
+    "pedagogy": {"current": 0.72, "baseline": 0.78, "delta": "-0.06 ⚠️"},
+    "intro_quality": {"current": 0.91, "baseline": 0.84, "delta": "+0.07"}
+  },
+  "verdict": "REGRESSION — pedagogy degraded on OCP labs",
+  "lab_type": "ocp"
+}
+```
+
+Questions this answers:
+- Did a change improve introduction quality but degrade the main body?
+- Is the skill now better at RHEL labs but worse at OpenShift labs?
+- Did adding a rule improve style compliance but hurt pacing?
+
+The agnosticv:validator is the easy eval case (formal rules, deterministic output). Generative skills (create-lab, create-demo) are harder but the structured JSON architecture makes it possible.
+
+Pioneer opportunity: skill evals for content generation at this level don't exist in the industry. Applies to Publishing House, Tailwind, and any Red Hat team generating structured technical content.
+
+## Security Checks (field-validated)
+
+Two new agnosticv:validator checks based on real production issues:
+
+1. Multiuser htpasswd — shared passwords: when multiuser=true and htpasswd auth is used, all users share the same password unless `ocp4_workload_authentication_htpasswd_user_password_randomized: true` is set. Severity: High.
+
+2. VS Code without authentication: labs with ocp4_workload_vscode and auth-type: none expose an unauthenticated IDE. Severity: High.
+
+## babylon.yaml Schema Authority
+
+agnosticv:validator reads $agv_path/.schemas/babylon.yaml as the authoritative source before running any checks. Valid categories: Demos, Labs, Open_Environments, Workshops, Brand_Events. "Sandboxes" is NOT a valid category.
+
+## E2E Automation (showroom_template_nookbag e2e-template branch)
+
+Canonical buttons.js and E2E templates are at:
+- Repo: showroom_template_nookbag (branch: e2e-template)
+- Contains: buttons.js (348 lines), runtime-automation/module-01/solve.yml, validate.yml
+- solve.yml/validate.yml stubs use Ansible play structure with validation_check (RHDP zt-runner module)
+- All showroom agents check this branch FIRST before marketplace bundled copies
