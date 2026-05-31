@@ -544,16 +544,17 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 ## Credits
 
 **RHDP Development Team:**
-- Wolfgang
+- Wolfgang Kulhanek
 - Tony Kay
 - Tyrell Reddy
 - Juliano Mohr
 - Mitesh Sharma
-- Judd Maltin
 - Ritesh Shah
 
 **Maintainers:**
 - Prakhar Srivastava (@prakhar1985)
+- Tony Kay
+- Wolfgang Kulhanek
 - Nate Stephany
 
 ---
