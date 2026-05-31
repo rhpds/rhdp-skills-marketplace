@@ -554,7 +554,6 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 **Maintainers:**
 - Prakhar Srivastava (@prakhar1985)
 - Tony Kay
-- Wolfgang Kulhanek
 - Nate Stephany
 
 ---
