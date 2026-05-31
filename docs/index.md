@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div class="hero">
-  <div class="hero-eyebrow">v2.13.4 · Red Hat Demo Platform</div>
+  <div class="hero-eyebrow">v2.14.0 · Red Hat Demo Platform</div>
   <h1>RHDP Skills Marketplace</h1>
   <p class="hero-subtitle">AI-powered skills for Claude Code. Create workshops, demos, and catalog items faster — with built-in Red Hat standards and quality checks.</p>
   <div class="hero-actions">
@@ -16,7 +16,7 @@ title: Home
 <div class="section" id="skills">
   <div class="section-header">
     <h2>Available Skills</h2>
-    <p>8 skills across 4 namespaces — install only what you need</p>
+    <p>8 skills · 10 agents · 4 namespaces — orchestrator pattern with parallel execution</p>
   </div>
 
   <div class="category-grid">
@@ -119,33 +119,45 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
 
 <div class="section">
   <div class="section-header">
-    <h2>What's New — v2.11.2</h2>
-    <p>Latest updates to the RHDP Skills Marketplace · <a href="{{ '/reference/changelog.html' | relative_url }}">Full changelog →</a></p>
+    <h2>What's New — v2.14.0</h2>
+    <p>Major release: agent orchestrator pattern, parallel execution, PH integration · <a href="{{ '/reference/changelog.html' | relative_url }}">Full changelog →</a></p>
   </div>
 
   <div class="category-grid">
     <div class="category-card">
-      <span class="category-icon">✅</span>
-      <h3>AgnosticV Validator — 2 New Checks</h3>
-      <p><strong>Check 25:</strong> Runtime automation consistency — flags missing image or FTL workload when <code>runtime_automation_enable: true</code>. <strong>Check 26:</strong> LiteLLM virtual keys placement — errors if found in a cluster provisioner CI instead of the tenant CI.</p>
+      <span class="category-icon">⚡</span>
+      <h3>Skill-as-Orchestrator Pattern</h3>
+      <p>All showroom skills now delegate to specialized agents running in parallel — same design as the FTL plugin. <strong>6× faster</strong> on a 6-module lab (8 min → ~90 sec). Each agent returns dimension-scored JSON, enabling future regression detection.</p>
     </div>
 
     <div class="category-card">
-      <span class="category-icon">🏗️</span>
-      <h3>AgnosticV Catalog Builder — E2E Testing + Terminal Type</h3>
-      <p>New questions for terminal type (wetty / showroom / none) and E2E testing (solve + validate buttons). Full dependency checklist — errors on partial config. Deployer chart vars now in the generated <code>common.yaml</code> template.</p>
+      <span class="category-icon">🤖</span>
+      <h3>5 New Showroom Agents</h3>
+      <p><code>scaffold-checker</code> (Haiku), <code>module-reviewer</code> (Sonnet), <code>file-generator</code> (Sonnet), <code>score-aggregator</code> (Haiku), <code>doc-writer</code> (Sonnet). Skills and agents use the right model for each task — Haiku for reading, Sonnet for generation.</p>
     </div>
 
     <div class="category-card">
-      <span class="category-icon">🔍</span>
-      <h3>Showroom Verify-Content — E.3a Fix + E2E Checks</h3>
-      <p>E.3a false positives fixed — <code>[source,text]</code>, <code>[source,yaml]</code> and other non-shell blocks no longer trigger. Executable: <code>bash</code>, <code>sh</code>, <code>shell</code>, <code>console</code>, <code>terminal</code>, <code>tty</code>, <code>wetty</code>. New checks S.5a and S.5b for <code>buttons.js</code> and <code>runtime-automation/</code>.</p>
+      <span class="category-icon">🔗</span>
+      <h3>Publishing House Integration</h3>
+      <p><code>verify-content</code> and <code>create-lab</code> support headless <code>ph_payload</code> mode. PH passes a JSON spec — the skill runs all agents silently and returns structured JSON. Zero changes to PH required.</p>
     </div>
 
     <div class="category-card">
-      <span class="category-icon">📝</span>
-      <h3>Showroom Create-Lab — Send-to &amp; E2E Docs</h3>
-      <p>Documented <code>role="send-to-wetty"</code> and <code>role="send-to-terminal"</code> combined roles, solve/validate button placeholder syntax, and fixed wrong nookbag template URL (<code>showroom_template_nookbag</code>).</p>
+      <span class="category-icon">🔒</span>
+      <h3>Security Checks — Field-Validated</h3>
+      <p>Two new validator checks based on real production issues: multiuser htpasswd labs with shared passwords, and VS Code workloads with no authentication. Both flag as High — blocking for lab readiness.</p>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">✍️</span>
+      <h3>Personal Writing Style</h3>
+      <p>Describe your writing style, paste example paragraphs, or save a profile to <code>~/.claude/context/my-writing-style.md</code>. All content creation skills apply your style and run an auto-humanizer pass — no AI writing patterns in the output.</p>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">📐</span>
+      <h3>babylon.yaml Schema Authority</h3>
+      <p>The agnosticv validator now reads <code>$agv_path/.schemas/babylon.yaml</code> as the authoritative source before running checks. Category enums, field types, and <code>additionalProperties: false</code> enforcement all derived from the real schema — no more invented rules.</p>
     </div>
   </div>
 </div>
@@ -183,6 +195,27 @@ curl -fsSL https://raw.githubusercontent.com/rhpds/rhdp-skills-marketplace/main/
       <p>Have a repetitive workflow? Turn it into a reusable Claude Code skill. Walkthrough guides for different roles.</p>
       <a href="{{ '/contributing/create-your-own-skill.html' | relative_url }}">Start building →</a><br>
       <a href="{{ '/reference/skills-vs-agents.html' | relative_url }}" style="font-size:0.8125rem; color: var(--color-text-3);">Skills vs Agents explainer →</a>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">🏗️</span>
+      <h3>Agent Architecture</h3>
+      <p>How skills and agents work together — orchestration diagrams, model assignments, agent communication patterns.</p>
+      <a href="{{ '/reference/agent-architecture.html' | relative_url }}">See the architecture →</a>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">🔗</span>
+      <h3>Publishing House Integration</h3>
+      <p>Sequence diagrams showing agent communication in interactive vs headless mode. ph_payload schema and JSON response format for all supported skills.</p>
+      <a href="{{ '/reference/ph-integration.html' | relative_url }}">Integration guide →</a>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">✍️</span>
+      <h3>Personal Writing Style</h3>
+      <p>Save your writing style profile once and all content creation skills use it automatically. Full guide with examples.</p>
+      <a href="{{ '/reference/writing-style.html' | relative_url }}">Set up your style →</a>
     </div>
   </div>
 </div>

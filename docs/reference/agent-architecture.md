@@ -148,3 +148,49 @@ graph TD
 | Generation/review agents | Sonnet 4.6 | module-reviewer, file-generator, doc-writer, workflow-reviewer |
 | Reading/computation agents | Haiku 4.5 | scaffold-checker, score-aggregator |
 | FTL agents | Sonnet 4.6 | content-reader, solve-writer, validate-writer, env-connector |
+
+---
+
+## Skill Evaluation Framework
+
+One of the most important aspects of this architecture is that **agent outputs are structured JSON with dimension scores** — making the skills measurable and comparable across versions.
+
+### The Challenge
+
+Evaluating content creation skills is hard:
+- Did a change improve introduction quality but degrade the main body?
+- Is the skill now better at RHEL labs but worse at OpenShift labs?
+- Did adding a rule improve style compliance but hurt pacing?
+
+The `agnosticv:validator` is the easy case — formal rules, deterministic output, pass/fail clear. Evaluating `create-lab` is genuinely hard.
+
+### What the Score-Aggregator Enables
+
+The `showroom:score-aggregator` (Haiku) receives module-reviewer JSON outputs and produces:
+
+```json
+{
+  "dimensions": {
+    "structure":      {"current": 0.88, "baseline": 0.85, "delta": "+0.03"},
+    "pedagogy":       {"current": 0.72, "baseline": 0.78, "delta": "-0.06 ⚠️"},
+    "style":          {"current": 0.94, "baseline": 0.93, "delta": "+0.01"},
+    "intro_quality":  {"current": 0.91, "baseline": 0.84, "delta": "+0.07"}
+  },
+  "verdict": "REGRESSION — pedagogy degraded by 0.06 on OCP labs",
+  "lab_type": "ocp"
+}
+```
+
+This catches the case where "intro_quality improved but pedagogy regressed on OCP labs" — per-dimension, per-lab-type regression detection that no single score could surface.
+
+### The Pioneer Opportunity
+
+Skill evals for content generation skills don't exist in the industry at this level. The patterns here — structured JSON agents, dimension scoring, golden datasets, lab_type tagging — could be applied beyond RHDP:
+
+- **Publishing House** — eval before publishing, not just after
+- **Tailwind** — same eval pipeline for any generated content
+- **Across Red Hat** — any team generating structured technical content
+
+The `agnosticv:validator` provides the immediate proof: formal output schema, automated scoring, no ambiguity. The generative skills (create-lab, create-demo) are harder but the architecture makes it possible for the first time.
+
+See [Writing Style Guide](writing-style.md) for how personal style profiles interact with the eval framework.

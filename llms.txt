@@ -1,0 +1,112 @@
+# RHDP Skills Marketplace
+
+> AI-powered skills for Red Hat Demo Platform content creation and provisioning.
+> Version: v2.14.0
+
+## What this is
+
+The RHDP Skills Marketplace provides Claude Code skills and agents for:
+- Creating hands-on workshop content (Showroom AsciiDoc labs)
+- Creating presenter-led demo content (Know/Show format)
+- Validating content quality against Red Hat standards
+- Building and validating AgnosticV catalog items
+- Writing E2E automation (solve.yml + validate.yml via FTL)
+- Generating documentation from skill definitions
+
+## Architecture
+
+Skills are orchestrators. Agents do the actual work in parallel.
+
+Pattern: `skill (Sonnet) → spawns agents via Task tool → agents return JSON → skill merges + presents`
+
+This is the same pattern as the FTL plugin (reference implementation).
+
+## Skills
+
+### showroom plugin
+
+- `/showroom:create-lab` — Creates hands-on workshop modules. Spawns file-generator agents in parallel for new labs. Supports ph_payload headless mode for Publishing House.
+- `/showroom:create-demo` — Creates presenter-led demo modules (Know/Show). Same agent pattern as create-lab.
+- `/showroom:verify-content` — Validates content quality. Spawns scaffold-checker + N module-reviewers in parallel. ~6× faster than sequential. Supports ph_payload headless mode.
+- `/showroom:blog-generate` — Transforms workshop/demo content to Markdown blog posts. Uses file-generator with FILE_TYPE=blog.
+
+### agnosticv plugin
+
+- `/agnosticv:catalog-builder` — Creates AgnosticV catalog items (common.yaml, dev.yaml, description.adoc). Calls workflow-reviewer agent after generation.
+- `/agnosticv:validator` — Validates catalog configurations. Reads babylon.yaml schema as authoritative source. Checks multiuser htpasswd security, VS Code auth.
+
+### ftl plugin
+
+- `/ftl:rhdp-lab-validator` — Orchestrates 4 agents to write E2E automation: content-reader → solve-writer → validate-writer → env-connector.
+
+### health plugin
+
+- `/health:deployment-validator` — Validates that workloads deployed correctly. Live cluster checks.
+
+## Agents
+
+### showroom/agents/
+
+- `showroom:scaffold-checker` (Haiku) — checks site.yml, ui-config.yml, antora.yml, gh-pages.yml
+- `showroom:module-reviewer` (Sonnet) — reviews one .adoc module, B/C/D/E/F checks, returns dimension-scored JSON
+- `showroom:file-generator` (Sonnet) — generates one AsciiDoc file (index|overview|details|module|blog|conclusion) from FULL_SPEC
+- `showroom:score-aggregator` (Haiku) — aggregates dimension scores, detects regressions vs baseline
+- `showroom:doc-writer` (Sonnet) — generates/updates GitHub Pages docs from SKILL.md files with Mermaid diagrams
+
+### ftl/agents/
+
+- `ftl:content-reader` (Sonnet) — reads .adoc, classifies steps
+- `ftl:solve-writer` (Sonnet) — writes solve.yml from content-reader output
+- `ftl:validate-writer` (Sonnet) — writes validate.yml playbooks
+- `ftl:env-connector` (Sonnet) — pushes to live showroom, runs test cycle
+
+### agnosticv/agents/
+
+- `agnosticv:workflow-reviewer` (Sonnet) — checks builder/validator skill consistency
+
+## Publishing House Integration
+
+`verify-content` and `create-lab` / `create-demo` support headless mode via ph_payload JSON.
+
+PH passes:
+```yaml
+ph_payload:
+  content_path: content/modules/ROOT/pages/
+  lab_type: workshop
+  spec:
+    lab_name: "..."
+    learning_objectives: [...]
+```
+
+Skill runs all agents, returns structured JSON. Interactive UX unchanged. No PH code changes needed.
+
+## External Source Priority
+
+Skills and agents check external sources FIRST:
+1. `$agv_path/.schemas/babylon.yaml` — authoritative schema for catalog validation
+2. `showroom_template_nookbag` (e2e-template branch) — canonical buttons.js and E2E templates
+3. Repo's own templates/prompts (`{REPO_PATH}/examples/`, `{REPO_PATH}/showroom/prompts/`)
+4. Marketplace bundled files (`@showroom/templates/`, `@showroom/prompts/`)
+
+## Personal Writing Style
+
+All content creation skills accept a writing style profile:
+- Describe in words: "conversational, short sentences, active voice"
+- Paste example paragraphs
+- Reference a file: `~/path/to/existing-module.adoc`
+- Persistent profile: `~/.claude/context/my-writing-style.md`
+
+Auto-humanizer runs on all generated prose — no AI writing patterns in output.
+
+## Model Assignments
+
+- Orchestrators (all skills): Sonnet 4.6
+- Generation/review agents: Sonnet 4.6
+- Reading/computation agents: Haiku 4.5
+
+## Documentation
+
+- GitHub Pages: https://rhpds.github.io/rhdp-skills-marketplace
+- Agent architecture: /reference/agent-architecture
+- PH integration: /reference/ph-integration
+- Writing style: /reference/writing-style
