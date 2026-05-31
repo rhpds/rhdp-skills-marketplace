@@ -68,16 +68,16 @@ title: Home
     </div>
 
     <div class="category-card">
-      <span class="category-icon">🔎</span>
-      <h3>AIOps — Incident Investigation</h3>
-      <p>AI-assisted root-cause analysis of infrastructure failures. Correlate Ansible/AAP logs with Splunk OCP pod logs and GitHub configuration to diagnose failed jobs.</p>
+      <span class="category-icon">📁</span>
+      <h3>Developer Guide <span class="badge-new">New</span></h3>
+      <p>Every file that skills and agents read — how to add checks, update rules, change templates, and contribute new agents. Covers AgV validator, showroom prompts, and E2E templates.</p>
       <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
-        <li><code>/aiops-skill:root-cause-analysis</code> — Investigate job failures</li>
-        <li><code>/aiops-skill:logs-fetcher</code> — Fetch logs via SSH</li>
-        <li><code>/aiops-skill:context-fetcher</code> — Fetch config and docs</li>
-        <li><code>/aiops-skill:feedback-capture</code> — Capture session feedback</li>
+        <li>How skills and agents read rules (priority chain)</li>
+        <li>Every prompt, template, and schema file explained</li>
+        <li>How to add checks, agents, and diagrams</li>
+        <li>PR checklist before contributing</li>
       </ul>
-      <a href="{{ '/skills/root-cause-analysis.html' | relative_url }}">Learn more →</a>
+      <a href="{{ '/contributing/developer-guide.html' | relative_url }}">Read the guide →</a>
     </div>
   </div>
 </div>
