@@ -223,6 +223,37 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 
 ---
 
+## What's New — v2.14.0
+
+### Agent Orchestrator Pattern
+All showroom skills now delegate work to specialized agents running in parallel — same design as the FTL plugin. Skills orchestrate; agents execute.
+
+| Agent | Model | Purpose |
+|---|---|---|
+| `showroom:scaffold-checker` | Haiku | Checks root config files |
+| `showroom:module-reviewer` | Sonnet | Reviews one .adoc module, dimension-scored JSON |
+| `showroom:file-generator` | Sonnet | Generates AsciiDoc/Markdown files from spec |
+| `showroom:score-aggregator` | Haiku | Aggregates scores, detects regressions |
+| `showroom:doc-writer` | Sonnet | Generates GitHub Pages docs with Mermaid diagrams |
+
+**~6× faster:** `verify-content` on a 6-module lab goes from 8 min → ~90 sec.
+
+### Publishing House Integration
+`verify-content`, `create-lab`, `create-demo` support headless `ph_payload` mode — PH passes a JSON spec, skill runs all agents silently, returns structured JSON. **No PH code changes needed.**
+
+### Personal Writing Style
+All content creation skills accept a writing style profile. Describe your style, paste example paragraphs, or save `~/.claude/context/my-writing-style.md` for persistent reuse. Auto-humanizer pass runs on all generated content automatically.
+
+### New Security Checks
+Based on real production findings: multiuser htpasswd shared passwords and VS Code without authentication — both now detected as High severity by `agnosticv:validator`.
+
+### babylon.yaml Schema Authority
+`agnosticv:validator` reads `$agv_path/.schemas/babylon.yaml` as authoritative source for all `__meta__` validation.
+
+📖 **[Full documentation →](https://rhpds.github.io/rhdp-skills-marketplace)**
+
+---
+
 ## Updates
 
 Check for and install updates:
