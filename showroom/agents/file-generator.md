@@ -46,13 +46,31 @@ Generates a single Showroom AsciiDoc file from a lab spec and writes it to disk.
 
 ## Step 1 — Read templates and rules
 
-Read the appropriate template from `@showroom/templates/`:
+**Template priority — check the repo first, fall back to bundled:**
 
-- **Workshop index**: `@showroom/templates/workshop/templates/00-index.adoc`
-- **Workshop overview**: `@showroom/templates/workshop/templates/01-overview.adoc`
-- **Workshop details**: `@showroom/templates/workshop/templates/02-details.adoc`
-- **Workshop module**: `@showroom/templates/workshop/templates/03-module-01.adoc`
-- **Demo files**: use `@showroom/templates/demo/` equivalents
+The user's Showroom repo (at `REPO_PATH`) may contain templates that are more current than the marketplace's bundled copies. Always prefer these.
+
+```
+1. Check {REPO_PATH}/examples/workshop/templates/ (or examples/demo/templates/ for demos)
+   → If exists: read templates from there
+2. If not found: fall back to @showroom/templates/
+```
+
+**Workshop — repo templates (preferred):**
+- `{REPO_PATH}/examples/workshop/templates/00-index-learner.adoc` → index
+- `{REPO_PATH}/examples/workshop/templates/01-overview.adoc` → overview
+- `{REPO_PATH}/examples/workshop/templates/02-details.adoc` → details
+- `{REPO_PATH}/examples/workshop/templates/03-module-01.adoc` → module
+
+**Workshop — bundled fallback:**
+- `@showroom/templates/workshop/templates/00-index-learner.adoc`
+- `@showroom/templates/workshop/templates/01-overview.adoc`
+- `@showroom/templates/workshop/templates/02-details.adoc`
+- `@showroom/templates/workshop/templates/03-module-01.adoc`
+
+**Demo:** same priority rule, use `examples/demo/templates/` or `@showroom/templates/demo/`.
+
+⚠️ **Old nookbag repos:** If the repo's templates contain `[source,bash]` without `role="execute"`, still use them for structure — but always generate command blocks with `[source,role="execute"]` in new content.
 
 Read `@showroom/docs/SKILL-COMMON-RULES.md` for:
 - Version pinning rules (always use `{ocp_version}` attribute, never hardcode)

@@ -25,20 +25,30 @@ Reviews a single `.adoc` module file and returns dimension-scored findings as st
 
 Read the module file in full.
 
-Read the appropriate prompt files from `@showroom/prompts/`:
+**Prompt file priority — check the repo first, fall back to bundled:**
 
-**Workshop:**
-- `@showroom/prompts/enhanced_verification_workshop.txt`
-- `@showroom/prompts/verify_workshop_structure.txt`
-- `@showroom/prompts/verify_technical_accuracy_workshop.txt`
-- `@showroom/prompts/verify_accessibility_compliance_workshop.txt`
-- `@showroom/prompts/redhat_style_guide_validation.txt`
+The user's Showroom repo may contain customised prompt files that override the marketplace defaults (stricter rules for partner content, relaxed for internal docs, custom terminology).
 
-**Demo:**
-- `@showroom/prompts/enhanced_verification_demo.txt`
-- `@showroom/prompts/verify_technical_accuracy_demo.txt`
-- `@showroom/prompts/verify_accessibility_compliance_demo.txt`
-- `@showroom/prompts/redhat_style_guide_validation.txt`
+```
+1. Check {REPO_PATH}/showroom/prompts/ for each prompt file
+   → If file exists there: use it (project-specific override)
+2. If not found: use @showroom/prompts/ (marketplace bundled)
+```
+
+**Workshop — load in priority order:**
+- `enhanced_verification_workshop.txt`
+- `verify_workshop_structure.txt`
+- `verify_technical_accuracy_workshop.txt`
+- `verify_accessibility_compliance_workshop.txt`
+- `redhat_style_guide_validation.txt`
+
+**Demo — load in priority order:**
+- `enhanced_verification_demo.txt`
+- `verify_technical_accuracy_demo.txt`
+- `verify_accessibility_compliance_demo.txt`
+- `redhat_style_guide_validation.txt`
+
+Load all applicable files before running any checks.
 
 ---
 
