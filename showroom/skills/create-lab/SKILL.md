@@ -118,6 +118,12 @@ UserInfo variables (paste from demo.redhat.com → My services → Details → A
   Leave blank to use placeholder attributes {user}, {password}, {openshift_console_url}
 
 Reference materials (paste URLs, file paths, or text — leave blank to use templates):
+
+Writing style (optional — skip for standard Red Hat style):
+  Describe: "conversational, short sentences, active voice, no jargon"
+  OR paste 1-3 paragraphs of your own writing as an example
+  OR give a file path: ~/my-showroom/content/modules/ROOT/pages/03-my-module.adoc
+  Saved profile? Point to: ~/.claude/context/my-writing-style.md
 ```
 
 User fills what they know, skips the rest. Orchestrator confirms the plan in one summary block:

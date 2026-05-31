@@ -50,6 +50,12 @@ Technical depth:
 Target word count: 500-800 / 1000-1500 / 2000+ (or leave blank for auto)
 
 Showroom link for "Try it yourself" CTA (optional):
+
+Writing style (optional — skip for standard Red Hat technical blog style):
+  Describe: "storytelling-first, relatable analogies, humor where appropriate"
+  OR paste 1-3 paragraphs from a blog post you wrote
+  OR give a URL to a published post you authored
+  Saved profile? Point to: ~/.claude/context/my-writing-style.md
 ```
 
 Confirm in one line:

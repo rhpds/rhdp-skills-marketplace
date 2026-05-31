@@ -29,6 +29,8 @@ Generates a single Showroom AsciiDoc file from a lab spec and writes it to disk.
   "lab_name": "OpenShift Pipelines for Enterprise CI/CD",
   "audience": "intermediate",
   "business_scenario": "ACME Corp needs to modernize their CI/CD pipeline...",
+  "writing_style": "conversational, short sentences, active voice, no jargon",
+  "writing_style_example": "optional — 1-3 paragraphs of the author's existing writing to extract style from",
   "duration_minutes": 90,
   "learning_objectives": ["Deploy a Tekton pipeline", "Configure triggers", "Monitor builds"],
   "module_outline": "Module 1: Pipeline setup (~30 min)\nModule 2: Triggers (~30 min)\nModule 3: Monitoring (~30 min)",
@@ -79,6 +81,32 @@ Read `@showroom/docs/SKILL-COMMON-RULES.md` for:
 - Navigation format
 
 If `PREVIOUS_MODULE` is set (continue mode): read that file to understand tone, style, character names, and what was covered.
+
+**Writing style application:**
+
+If `FULL_SPEC.writing_style_example` is provided: read it, extract the author's patterns (sentence length, vocabulary, tone, how they introduce concepts), then apply that style to all prose in the generated file.
+
+If `FULL_SPEC.writing_style` is a description: interpret and apply it to all prose.
+
+If neither is provided: use standard Red Hat technical writing style (clear, direct, developer-focused).
+
+**Always preserve regardless of style:**
+- Red Hat product names (never alter)
+- AsciiDoc formatting rules
+- Version attribute placeholders (`{ocp_version}` etc.)
+- Mandatory structure (learning objectives, verify sections, nav entries)
+
+**After generating content — humanizer pass:**
+
+Before writing to disk, review all prose sections for AI writing patterns and replace:
+- "Delve into" → "explore" or "look at"
+- "Leverage" → "use"  
+- "Furthermore", "Moreover" → natural transitions or remove
+- "It's worth noting that" → state the fact directly
+- "In conclusion" → remove or rephrase naturally
+- Passive constructions where active is clearer
+
+Skip this pass for: code blocks, AsciiDoc macros, command examples, expected output, quoted text.
 
 ---
 

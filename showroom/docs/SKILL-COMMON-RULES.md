@@ -464,6 +464,78 @@ Every generated blog must include attribution to prevent over-claiming and confu
 
 ---
 
+## Writing Style and Personalization
+
+### Developer Style Profile (Optional — applies to all showroom content creation skills)
+
+Every content creation skill (create-lab, create-demo, blog-generate) accepts an optional writing style profile. When provided, the file-generator uses it to shape all generated prose — sentence structure, vocabulary, tone — while still following Red Hat standards.
+
+**How to provide your style:**
+
+```
+Writing style (optional — leave blank for standard Red Hat technical style):
+
+Option A — Describe it:
+  "Conversational and direct. Short sentences. Active voice always.
+   No jargon. Analogies for complex concepts. Developer-to-developer tone."
+
+Option B — Paste an example (1-3 paragraphs you wrote):
+  Paste any existing content you're happy with. The skill will extract
+  your patterns and apply them to new content.
+
+Option C — Reference an existing module:
+  Provide a file path: ~/work/my-showroom/content/modules/ROOT/pages/03-module-01.adoc
+  The skill reads it and extracts your style.
+```
+
+**What style profile captures:**
+- Sentence length preference (short/punchy vs. elaborate)
+- Vocabulary level (plain English vs. technical depth)
+- Use of analogies and examples
+- How you introduce concepts (top-down vs. bottom-up)
+- Tone (formal, conversational, mentor-like)
+
+**What style profile does NOT override:**
+- Red Hat product names and trademarks (always correct)
+- AsciiDoc formatting rules (always applied)
+- Version attribute placeholders (always `{ocp_version}` not hardcoded)
+- Learning outcome structure (skills are non-negotiable)
+
+**Storing your style profile:**
+
+Skills remember your style for the session. To persist it across sessions, save to:
+```
+~/.claude/context/my-writing-style.md
+```
+Then reference it by saying: "Use my saved writing style from ~/.claude/context/my-writing-style.md"
+
+---
+
+### Humanizer — Auto-run on All Generated Content
+
+All showroom content creation skills automatically run the `humanizer` skill on generated prose content before delivery. This removes AI writing patterns and makes the output sound human.
+
+**What humanizer fixes:**
+- "Delve into" → "explore"
+- "Leverage" → "use"
+- Passive constructions → active voice
+- Hedging language ("it's worth noting that") → direct statements
+- Generic AI transitions ("Furthermore", "In conclusion") → natural flow
+
+**What humanizer skips:**
+- Code blocks (never modified)
+- AsciiDoc macros and attributes
+- Command examples and expected output
+- Quoted text from references
+
+**Auto-run pattern in all orchestrators:**
+
+After file-generator returns content, the orchestrator passes generated prose through humanizer before writing to disk. No user action needed — happens automatically every time.
+
+If humanizer significantly changes the meaning of a sentence, it flags it for review rather than silently replacing.
+
+---
+
 ## Quality Gate Integration
 
 All skills must pass these gates before delivering content:

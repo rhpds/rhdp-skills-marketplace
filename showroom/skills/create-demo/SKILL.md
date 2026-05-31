@@ -119,6 +119,12 @@ UserInfo variables (paste from demo.redhat.com → My services → Details → A
   Leave blank to use placeholders {user}, {password}, {openshift_console_url}
 
 Reference materials (URLs, docs, competitive briefs — leave blank to use templates):
+
+Writing style (optional — skip for standard Red Hat style):
+  Describe: "executive-friendly, outcome-focused, analogies over jargon"
+  OR paste 1-3 paragraphs of your own writing as an example
+  OR give a file path to an existing demo module you wrote
+  Saved profile? Point to: ~/.claude/context/my-writing-style.md
 ```
 
 Confirm plan in one summary:
