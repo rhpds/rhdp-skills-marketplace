@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.14.0] - 2026-05-31
+
+### Added — Agent Orchestrator Pattern
+
+- **5 new showroom agents**: `scaffold-checker` (Haiku), `module-reviewer` (Sonnet), `file-generator` (Sonnet), `score-aggregator` (Haiku), `doc-writer` (Sonnet)
+- **Parallel execution**: all showroom skills now spawn agents via Task tool — ~6× faster on 6-module labs (8 min → ~90 sec)
+- **Dimension-scored JSON output** from module-reviewer: structure, pedagogy, style, technical_accuracy, demo_structure, formatting, intro_quality — eval-ready for future regression detection
+- **ph_payload headless mode**: `verify-content`, `create-lab`, `create-demo` support headless invocation from Publishing House — no PH code changes required
+- **Personal writing style**: all content creation skills accept style description, example paragraphs, or `~/.claude/context/my-writing-style.md` profile
+- **Auto-humanizer pass**: built into file-generator — all generated prose stripped of AI writing patterns automatically
+- **`conclusion` FILE_TYPE** in file-generator — create-lab Phase 7 now fully agent-based
+- **Blog FILE_TYPE** in file-generator — blog-generate skill uses same agent
+- **`showroom:doc-writer` agent** — reads SKILL.md/agent files, generates Jekyll GitHub Pages docs with Mermaid diagrams
+- **llms.txt** — project context file for AI models
+- **3 new reference docs**: agent-architecture.md, ph-integration.md, writing-style.md (with sequence diagrams and ph_payload schemas)
+- **babylon.yaml schema authority**: agnosticv:validator Step 0 now reads `$agv_path/.schemas/babylon.yaml` first — field types, category enums, and `additionalProperties: false` all derived from real schema
+
+### Changed — Skill Refactors
+
+- **`showroom:verify-content`**: refactored from monolithic 373-line skill to 271-line orchestrator; all check logic moved to agents; parallel execution
+- **`showroom:create-lab`**: refactored from 935-line 13-step skill to 288-line orchestrator; grouped planning form (no sequential blocking); parallel file-generator agents
+- **`showroom:create-demo`**: refactored from 657-line skill to 200-line orchestrator; same pattern as create-lab
+- **`showroom:blog-generate`**: refactored from 645-line skill to ~100-line orchestrator; inline quality checklist replaces module-reviewer (wrong tool for Markdown)
+- **`agnosticv:catalog-builder`**: Step 11.5 added — spawns workflow-reviewer agent after writing files, fixes issues before commit
+- **Template/prompt priority**: all agents now check repo's own templates first, then marketplace bundled copies
+
+### Changed — Models
+
+- All orchestrators: Opus 4.6 → Sonnet 4.6 (hard reasoning is now in agents — orchestrators do coordination only)
+- `agnosticv:validator`, `agnosticv:catalog-builder`, `showroom:blog-generate`, `health:deployment-validator`, `ftl:rhdp-lab-validator`: Opus 4.6 → Sonnet 4.6
+
+### Fixed — False Positives and Security
+
+- **agnosticv:validator**: removed `Sandboxes` from valid categories — not in babylon.yaml schema
+- **agnosticv:validator**: multiuser htpasswd shared password check (High severity) — production security finding
+- **agnosticv:validator**: VS Code with `auth-type: none` check (High severity) — production security finding
+- **agnosticv:validator Check 1/10**: path verification rule added — `ls {catalog_path}` before flagging files as missing
+- **showroom:verify-content**: `view_switcher.default_mode: split` downgraded from Medium to Warning — lab authors may intentionally use full-screen mode
+- **showroom:verify-content**: `buttons.js` missing without button roles → Recommendation (not Warning) — E2E is optional
+- **showroom:verify-content**: showroom version < 1.6.8 now Warning (not error) — teams control upgrade pace
+- **module-reviewer**: 18 missing checks added — C.3-C.10, D.3/D.4/D.6-D.8, E.1/E.2/E.3a/E.4-E.6/E.9, Pass F demo checks
+- **All showroom agents**: `buttons.js` source changed from `ocp-zt-dedicated-showroom` to `showroom_template_nookbag` e2e-template branch (canonical RHDP source)
+- **Canonical solve.yml/validate.yml stubs**: replaced empty `touch` commands with proper Ansible play structure; `validation_check` dependency noted
+- **Agent frontmatter**: removed `name:` field — agent name comes from `plugin:filename`, not frontmatter (follows FTL pattern)
+
+### Removed — Obsolete Docs
+
+- `docs/skills/context-fetcher.md` — skill no longer exists
+- `docs/skills/deployment-health-checker.md` — skill no longer exists
+- `docs/skills/feedback-capture.md` — skill no longer exists
+- `docs/skills/logs-fetcher.md` — skill no longer exists
+- `docs/skills/root-cause-analysis.md` — skill no longer exists
+
 ## [v2.13.4] - 2026-04-20
 
 ### Fixed

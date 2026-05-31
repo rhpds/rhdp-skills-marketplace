@@ -5,7 +5,7 @@ description: "Infrastructure Health Checker — use this when you need to valida
 
 ---
 context: main
-model: claude-opus-4-6
+model: claude-sonnet-4-6
 ---
 
 # Deployment Health Checker Skill

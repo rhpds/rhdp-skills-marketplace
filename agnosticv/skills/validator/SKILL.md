@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "validate my catalo
 
 ---
 context: main
-model: claude-opus-4-6
+model: claude-sonnet-4-6
 ---
 
 # Skill: agnosticv-validator
@@ -94,14 +94,40 @@ Step 5: Offer Follow-up Actions
 
 ---
 
-## Step 0: Private Validator Detection (commitv)
+## Step 0: Schema and Private Validator Detection
 
-**Before running any checks**, detect the AgnosticV repo path and check for the `commitv` skill stored in the private AgV repo.
+### Step 0a — AgV Babylon Schema (AUTHORITATIVE — check FIRST)
+
+Detect AgV path from config files. Then:
 
 ```bash
-# Detect AgV path (from CLAUDE.md or ask user)
-agv_path=$(grep -r "AgnosticV:" ~/CLAUDE.md 2>/dev/null | head -1 | grep -oE '[~\/][^ ]+')
+schema_path="$agv_path/.schemas/babylon.yaml"
+if [ -f "$schema_path" ]; then
+  echo "📐 Babylon schema found: $schema_path — using as authoritative source"
+  # Load schema — this defines:
+  # - __meta__ additionalProperties: false (flag any unknown fields)
+  # - category enum: ["Demos", "Labs", "Open_Environments", "Workshops", "Brand_Events"]
+  #   NOTE: "Sandboxes" is NOT in the schema — flag it as ERROR
+  # - asset_uuid pattern: ^[0-9A-Fa-f]{8}-...-[0-9A-Fa-f]{12}$
+  # - All __meta__.catalog field types and enums
+  schema_loaded=true
+fi
+```
 
+When validating any catalog:
+- Use schema-defined category enum (NOT hardcoded list)
+- Enforce additionalProperties: false on __meta__ (flag any unknown __meta__ fields as ERROR)
+- Derive field-type constraints from schema, not memory
+
+**Known schema values (current as of babylon.yaml):**
+- Valid categories: Demos, Labs, Open_Environments, Workshops, Brand_Events
+- WARNING: Do NOT include "Sandboxes" — it is NOT in the schema
+
+### Step 0b — Private AgV Validator (if present)
+
+**After** checking for the babylon schema, check for the `commitv` skill stored in the private AgV repo.
+
+```bash
 # Check for commitv — the private AgV validation skill
 commitv_skill="$agv_path/.claude/skills/commitv/SKILL.md"
 
@@ -296,6 +322,8 @@ passed_checks = []  # Passed checks for summary
 
 ### Check 1: File Structure
 
+**IMPORTANT — path verification rule:** Before flagging any file as missing, run `ls {catalog_path}` via Bash and verify against the actual directory listing. Do NOT rely on path string construction alone — AgnosticV catalog paths can have unexpected prefixes (summit-2026/, agd_v2/, etc.). If the file appears in the `ls` output, it exists — do not flag it as missing regardless of what `os.path.exists()` would return on a constructed path.
+
 ```python
 def check_file_structure(catalog_path):
   """Required files validation"""
@@ -426,7 +454,7 @@ def search_uuid_in_repo(uuid, repo_path, current_catalog):
 def check_category(config):
   """Category correctness validation"""
 
-  valid_categories = ["Workshops", "Labs", "Demos", "Sandboxes", "Open_Environments", "Brand_Events"]
+  valid_categories = ["Workshops", "Labs", "Demos", "Open_Environments", "Brand_Events"]
 
   if '__meta__' not in config or 'catalog' not in config['__meta__']:
     errors.append({
@@ -764,9 +792,32 @@ def check_best_practices(config):
       'message': 'No maintainer/owner defined',
       'recommendation': 'Add __meta__.owners.maintainer for accountability'
     })
+
+  # VS Code without authentication — security risk
+  # (flagged by Ops repeatedly; Mitesh + tagged Prakhar in team-rhdp-troubleshooting)
+  workloads = config.get('workloads', [])
+  has_vscode = any('vscode' in str(w).lower() for w in workloads)
+  if has_vscode:
+    vscode_auth_type = config.get('ocp4_workload_vscode_auth_type',
+                       config.get('vscode_auth_type',
+                       config.get('vscode_auth-type', None)))
+    if vscode_auth_type is None or str(vscode_auth_type).lower() == 'none':
+      warnings.append({
+        'check': 'best_practices',
+        'severity': 'High',
+        'message': 'VS Code workload present with no authentication (auth-type: none) — security risk',
+        'location': 'common.yaml',
+        'current': f'ocp4_workload_vscode_auth_type: {vscode_auth_type}',
+        'fix': 'Remove VS Code workload or set authentication: ocp4_workload_vscode_auth_type: password',
+        'note': 'Ops recommends removing VS Code entirely if auth cannot be configured'
+      })
+    else:
+      passed_checks.append(f"✓ VS Code authentication configured: {vscode_auth_type}")
 ```
 
 ### Check 10: Stage Files Validation
+
+**IMPORTANT — same path verification rule as Check 1:** Run `ls {catalog_path}` before flagging any stage file as missing. If a file appears in the directory listing, it exists — report it as present regardless of path construction.
 
 ```python
 def check_stage_files(catalog_path):
@@ -947,21 +998,21 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
         })
         continue
 
-      # Showroom must be v1.6.0 or above
+      # Showroom should be v1.6.8 or above (warning only — teams control upgrade pace)
       version_nums = re.findall(r'\d+', coll_version)
       if version_nums:
         major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
                                for i in range(3))
-        if (major, minor, patch) < (1, 5, 1):
-          errors.append({
+        if (major, minor, patch) < (1, 6, 8):
+          warnings.append({
             'check': 'collections',
-            'severity': 'ERROR',
-            'message': f'Showroom collection version below minimum: {coll_version}',
+            'severity': 'WARNING',
+            'message': f'Showroom collection version below recommended: {coll_version} (recommend v1.6.8+)',
             'location': 'common.yaml:requirements_content.collections',
-            'fix': 'Set version: v1.6.0 or above'
+            'fix': 'Set version: v1.6.8 or above'
           })
         else:
-          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.6.0)")
+          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.6.8)")
 
     else:
       # Standard collections should use {{ tag }}
@@ -1360,18 +1411,22 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
       })
   else:
     version = showroom_coll.get('version', '')
-    if version < 'v1.6.0':
-      warnings.append({
-        'check': 'event_catalog',
-        'severity': 'WARNING',
-        'message': f'Showroom collection version is below v1.6.0',
-        'location': 'common.yaml:requirements_content.collections',
-        'current': version,
-        'expected': 'v1.6.0',
-        'fix': 'Set version: v1.6.0 for showroom collection',
-      })
-    else:
-      passed_checks.append("✓ Showroom collection version: v1.6.0 or above")
+    version_nums = re.findall(r'\d+', version)
+    if version_nums:
+      major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
+                             for i in range(3))
+      if (major, minor, patch) < (1, 6, 8):
+        warnings.append({
+          'check': 'event_catalog',
+          'severity': 'WARNING',
+          'message': f'Showroom collection version below recommended: {version} (recommend v1.6.8+)',
+          'location': 'common.yaml:requirements_content.collections',
+          'current': version,
+          'expected': 'v1.6.8',
+          'fix': 'Set version: v1.6.8 for showroom collection',
+        })
+      else:
+        passed_checks.append(f"✓ Showroom collection version: {version} (≥ v1.6.8)")
 
   # --- ocp4_workload_ocp_console_embed present (OCP only — skip for cloud-vms-base) ---
   workloads = config.get('workloads', [])

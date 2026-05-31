@@ -254,3 +254,99 @@ showroom_content_antora_playbook: site.yml
   type: git
   version: "v1.6.0"   # fixed — minimum v1.5.1, always pin to latest
 ```
+
+---
+
+## Q3 — E2E Automation Setup (FTL skill)
+
+**Only create these files if the user answered YES to Q3.**
+
+Solve/validate buttons are optional. They enable the FTL skill to generate automated E2E tests (`solve.yml`, `validate.yml`) that run inside the Showroom terminal.
+
+### Files to create
+
+**`content/supplemental-ui/js/buttons.js`**
+
+Copy from the canonical nookbag e2e-template branch:
+```bash
+# Copy from nookbag e2e-template branch (canonical RHDP source)
+# If showroom_template_nookbag is cloned locally:
+if [ -d "$HOME/work/code/showroom_template_nookbag" ]; then
+  cd "$HOME/work/code/showroom_template_nookbag" && git checkout e2e-template 2>/dev/null
+  cp "$HOME/work/code/showroom_template_nookbag/content/supplemental-ui/js/buttons.js" \
+     content/supplemental-ui/js/buttons.js
+else
+  curl -o content/supplemental-ui/js/buttons.js \
+    https://raw.githubusercontent.com/rhpds/showroom_template_nookbag/e2e-template/content/supplemental-ui/js/buttons.js
+fi
+```
+
+**`runtime-automation/` directory skeleton**
+
+Create one subdirectory per module that will have automation. Start with module-01:
+```
+runtime-automation/
+  module-01/
+    solve.yml        ← generated later by ftl:solve-writer
+    validate.yml     ← generated later by ftl:validate-writer
+  requirements.txt   ← empty for now, filled by FTL skill
+  packages.txt       ← empty for now, filled by FTL skill
+```
+
+Create the skeleton:
+```bash
+mkdir -p runtime-automation/module-01
+
+cat > runtime-automation/module-01/solve.yml << 'EOF'
+- name: Module 1 Solve
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Module 1 solve — replace with your automation tasks"
+EOF
+
+cat > runtime-automation/module-01/validate.yml << 'EOF'
+- name: Module 1 Validate
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Validate module completion
+      validation_check:
+        check: true
+        msg: "Module 1 validation — replace with your checks"
+EOF
+# NOTE: validation_check is an RHDP-specific Ansible module provided by the zt-runner container.
+# It requires the RHDP environment (zt-runner) to run — it will not work in a plain Ansible environment.
+
+touch runtime-automation/requirements.txt
+touch runtime-automation/packages.txt
+```
+
+### Using solve/validate button placeholders in content
+
+When writing module content, use these placeholders where you want the buttons to appear:
+
+```asciidoc
+[.solve-button-placeholder]#solve-button-placeholder#
+
+[.validate-button-placeholder]#validate-button-placeholder#
+```
+
+These render into interactive Solve/Validate buttons at runtime. The FTL skill (`/ftl:rhdp-lab-validator`) generates the automation logic for each module.
+
+### After setup
+
+Tell the user:
+```
+✅ E2E scaffold created:
+  - content/supplemental-ui/js/buttons.js
+  - runtime-automation/module-01/ (solve.yml + validate.yml stubs)
+
+When you're ready to write the automation, run:
+  /ftl:rhdp-lab-validator
+
+It will read your module content and generate the solve/validate playbooks automatically.
+```

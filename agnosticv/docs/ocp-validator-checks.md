@@ -188,6 +188,24 @@ Then set the provider:
       })
     else:
       passed_checks.append(f"✓ Authentication: unified role, provider={provider}")
+
+    # Multiuser htpasswd: randomized passwords required
+    # (flagged by Johnathan Kupferer during lb2188 review — all users shared same password)
+    multiuser = config.get('__meta__', {}).get('catalog', {}).get('multiuser', False)
+    if multiuser and (provider == 'htpasswd' or not provider):
+      randomized = config.get('ocp4_workload_authentication_htpasswd_user_password_randomized', False)
+      if not randomized:
+        warnings.append({
+          'check': 'authentication',
+          'severity': 'High',
+          'message': 'Multiuser htpasswd lab: all users share the same password — security risk',
+          'location': 'common.yaml',
+          'current': 'ocp4_workload_authentication_htpasswd_user_password_randomized not set (defaults to false)',
+          'fix': 'Add: ocp4_workload_authentication_htpasswd_user_password_randomized: true',
+          'reference': 'https://github.com/agnosticd/core_workloads/blob/main/roles/ocp4_workload_authentication_htpasswd/defaults/main.yml#L41-L43'
+        })
+      else:
+        passed_checks.append("✓ Multiuser htpasswd: per-user randomized passwords enabled")
 ```
 
 ---
