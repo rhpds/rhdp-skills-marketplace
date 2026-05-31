@@ -1,5 +1,4 @@
 ---
-name: showroom:scaffold-checker
 description: Checks Showroom scaffold files (site.yml, ui-config.yml, antora.yml, gh-pages.yml, supplemental-ui) for errors and returns structured JSON findings. Called by showroom:verify-content. Self-contained — no ECC, no external tools.
 model: claude-haiku-4-5
 tools:

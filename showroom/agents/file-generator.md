@@ -1,5 +1,4 @@
 ---
-name: showroom:file-generator
 description: Generates ONE Showroom AsciiDoc file (index, overview, details, or module) from a full lab spec. Writes to disk and returns structured JSON with the file path, nav entry, and any warnings. Called by showroom:create-lab. Self-contained — no ECC, no external tools.
 model: claude-sonnet-4-6
 tools:

@@ -1,5 +1,4 @@
 ---
-name: showroom:score-aggregator
 description: Aggregates dimension scores from module-reviewer outputs across an entire lab. Compares against a baseline version to detect regressions. Called by showroom:eval. Returns structured JSON verdict. Self-contained — pure computation on JSON input, no file reads needed.
 model: claude-haiku-4-5
 tools: []
