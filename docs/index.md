@@ -124,31 +124,31 @@ title: Home
 
     <div class="category-card">
       <span class="category-icon">🤖</span>
-      <h3>5 New Showroom Agents</h3>
+      <h3>5 New Showroom Agents <span class="badge-new">New</span></h3>
       <p><code>scaffold-checker</code> (Haiku), <code>module-reviewer</code> (Sonnet), <code>file-generator</code> (Sonnet), <code>score-aggregator</code> (Haiku), <code>doc-writer</code> (Sonnet). Skills and agents use the right model for each task — Haiku for reading, Sonnet for generation.</p>
     </div>
 
     <div class="category-card">
       <span class="category-icon">🔗</span>
-      <h3>Publishing House Integration</h3>
+      <h3>Publishing House Integration <span class="badge-new">New</span></h3>
       <p><code>verify-content</code> and <code>create-lab</code> support headless <code>ph_payload</code> mode. PH passes a JSON spec — the skill runs all agents silently and returns structured JSON. Zero changes to PH required.</p>
     </div>
 
     <div class="category-card">
       <span class="category-icon">🔒</span>
-      <h3>Security Checks — Field-Validated</h3>
+      <h3>Security Checks <span class="badge-new">New</span></h3>
       <p>Two new validator checks based on real production issues: multiuser htpasswd labs with shared passwords, and VS Code workloads with no authentication. Both flag as High — blocking for lab readiness.</p>
     </div>
 
     <div class="category-card">
       <span class="category-icon">✍️</span>
-      <h3>Personal Writing Style</h3>
+      <h3>Personal Writing Style <span class="badge-new">New</span></h3>
       <p>Describe your writing style, paste example paragraphs, or save a profile to <code>~/.claude/context/my-writing-style.md</code>. All content creation skills apply your style and run an auto-humanizer pass — no AI writing patterns in the output.</p>
     </div>
 
     <div class="category-card">
       <span class="category-icon">📐</span>
-      <h3>babylon.yaml Schema Authority</h3>
+      <h3>babylon.yaml Schema Authority <span class="badge-new">New</span></h3>
       <p>The agnosticv validator now reads <code>$agv_path/.schemas/babylon.yaml</code> as the authoritative source before running checks. Category enums, field types, and <code>additionalProperties: false</code> enforcement all derived from the real schema — no more invented rules.</p>
     </div>
   </div>
@@ -198,14 +198,14 @@ title: Home
 
     <div class="category-card">
       <span class="category-icon">🔗</span>
-      <h3>Publishing House Integration</h3>
+      <h3>Publishing House Integration <span class="badge-new">New</span></h3>
       <p>Sequence diagrams showing agent communication in interactive vs headless mode. ph_payload schema and JSON response format for all supported skills.</p>
       <a href="{{ '/reference/ph-integration.html' | relative_url }}">Integration guide →</a>
     </div>
 
     <div class="category-card">
       <span class="category-icon">✍️</span>
-      <h3>Personal Writing Style</h3>
+      <h3>Personal Writing Style <span class="badge-new">New</span></h3>
       <p>Save your writing style profile once and all content creation skills use it automatically. Full guide with examples.</p>
       <a href="{{ '/reference/writing-style.html' | relative_url }}">Set up your style →</a>
     </div>

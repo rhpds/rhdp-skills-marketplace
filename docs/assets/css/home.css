@@ -1298,3 +1298,221 @@ div[style*="overflow-x: auto"] table,
   pre { background: #f5f5f5; color: #333; border: 1px solid #ccc; }
   a { color: var(--color-text); text-decoration: underline; }
 }
+
+/* ================================================================
+   v2.14.0 Additions — Diagrams, New Badge, Hero, Skill Pages
+   ================================================================ */
+
+/* ── Architecture Diagram Images ──────────────────────────────── */
+.main-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
+  margin: 2rem auto;
+  border: 1px solid var(--color-border);
+}
+
+/* Full-bleed diagram display for architecture PNGs */
+.main-content img[src*="diagrams"] {
+  max-width: min(100%, 900px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.10);
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: transform var(--t-med), box-shadow var(--t-med);
+}
+
+.main-content img[src*="diagrams"]:hover {
+  transform: scale(1.01);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* Image caption (alt text shown below) */
+.main-content img + em {
+  display: block;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-3);
+  margin-top: -1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* ── New in v2.14.0 Badge ──────────────────────────────────────── */
+.badge-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: linear-gradient(135deg, var(--rh-red) 0%, #ff4444 100%);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(238,0,0,0.35);
+  animation: pulse-badge 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { box-shadow: 0 2px 8px rgba(238,0,0,0.35); }
+  50%       { box-shadow: 0 2px 16px rgba(238,0,0,0.55); }
+}
+
+/* ── Hero Section — atmospheric dark gradient ──────────────────── */
+.hero {
+  background: linear-gradient(
+    135deg,
+    #0f0f14 0%,
+    #1a1020 30%,
+    #1f0a0a 70%,
+    #0d0d0d 100%
+  ) !important;
+  border: 1px solid rgba(238,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(ellipse, rgba(238,0,0,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 5%;
+  width: 40%;
+  height: 100%;
+  background: radial-gradient(ellipse, rgba(100,0,200,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  background: rgba(238,0,0,0.15) !important;
+  border: 1px solid rgba(238,0,0,0.30) !important;
+  color: #ff8888 !important;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Skill Page Header Enhancement ────────────────────────────── */
+.main-content > h1:first-of-type {
+  background: linear-gradient(135deg, var(--color-text) 0%, #3d3d3d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ── Reference badge (✅ Content Quality Validation etc.) ──────── */
+.reference-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-3);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.35rem 0.875rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+/* ── What's New Section Cards ──────────────────────────────────── */
+.category-card {
+  position: relative;
+  transition: all var(--t-med);
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  transition: background var(--t-med);
+}
+
+.category-card:hover::before {
+  background: linear-gradient(90deg, var(--rh-red), #ff6b6b);
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(238,0,0,0.2);
+}
+
+/* ── Sidebar version badge ─────────────────────────────────────── */
+.sidebar-footer .version {
+  background: linear-gradient(135deg, var(--rh-red) 0%, var(--rh-red-dark) 100%);
+  color: white;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(238,0,0,0.3);
+}
+
+/* ── PH Integration highlight ──────────────────────────────────── */
+.ph-callout {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e8f2ff 100%);
+  border: 1.5px solid rgba(0,102,204,0.2);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem 1.75rem;
+  margin: 1.5rem 0;
+}
+
+.ph-callout h3 {
+  color: var(--color-blue);
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+/* ── Sidebar active link ───────────────────────────────────────── */
+.sidebar-nav a.active,
+.sidebar-nav a[aria-current="page"] {
+  color: var(--rh-red) !important;
+  font-weight: 600;
+  background: var(--rh-red-subtle);
+  border-radius: var(--radius);
+}
+
+/* ── Table — highlight header row red ──────────────────────────── */
+.main-content table thead th {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2020 100%);
+  border-bottom: 2px solid var(--rh-red);
+}
+
+/* ── Security check table row highlight ────────────────────────── */
+tr:has(td strong) td {
+  font-weight: 500;
+}
+
+/* ── Mobile improvements ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .main-content img[src*="diagrams"] {
+    border-radius: var(--radius-lg);
+    margin: 1.5rem 0;
+  }
+
+  .main-content > h1:first-of-type {
+    font-size: 1.875rem;
+  }
+}
