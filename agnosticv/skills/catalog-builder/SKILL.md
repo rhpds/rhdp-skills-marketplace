@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "create a catalog",
 
 ---
 context: main
-model: claude-opus-4-6
+model: claude-sonnet-4-6
 ---
 
 # Skill: agnosticv-catalog-builder
