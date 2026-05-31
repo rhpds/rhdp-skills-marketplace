@@ -13,22 +13,7 @@ The RHDP Skills Marketplace follows the **skill-as-orchestrator, agent-as-worker
 
 Skills handle user interaction and coordination. Agents do the actual work in parallel, each with a fresh context window.
 
-```mermaid
-graph TD
-    User([User]) --> Skill[Skill\nOrchestrator\nSonnet 4.6]
-    Skill -->|Task tool| A1[Agent 1\nHaiku]
-    Skill -->|Task tool| A2[Agent 2\nSonnet]
-    Skill -->|Task tool| A3[Agent N\nSonnet]
-    A1 -->|JSON| Merge[Merge +\nPresent]
-    A2 -->|JSON| Merge
-    A3 -->|JSON| Merge
-    Merge --> Output([Result])
-
-    style Skill fill:#cc0000,color:#fff
-    style A1 fill:#f5a623,color:#000
-    style A2 fill:#4a90d9,color:#fff
-    style A3 fill:#4a90d9,color:#fff
-```
+![RHDP Skills Marketplace agent architecture overview](../assets/images/diagrams/agent-architecture.png)
 
 **Why agents instead of inline checks?**
 
@@ -91,52 +76,11 @@ All agents return **structured JSON only** — no prose, no tables. The orchestr
 
 ## verify-content Orchestration
 
-```mermaid
-graph TD
-    User([User]) --> VC[verify-content\nSonnet 4.6]
-    VC -->|pre-flight| PF[Extract shared_context\nnav order, attributes,\nfirst-use map]
-    PF -->|parallel| SC[scaffold-checker\nHaiku]
-    PF -->|parallel| MR1[module-reviewer\nSonnet]
-    PF -->|parallel| MR2[module-reviewer\nSonnet]
-    PF -->|parallel| MRN[module-reviewer × N\nSonnet]
-    SC -->|findings JSON| Merge[Merge +\ncross-module logic]
-    MR1 -->|scored JSON| Merge
-    MR2 -->|scored JSON| Merge
-    MRN -->|scored JSON| Merge
-    Merge --> Table([Findings table])
-
-    style VC fill:#cc0000,color:#fff
-    style SC fill:#f5a623,color:#000
-    style MR1 fill:#4a90d9,color:#fff
-    style MR2 fill:#4a90d9,color:#fff
-    style MRN fill:#4a90d9,color:#fff
-```
+![verify-content orchestration diagram](../assets/images/diagrams/verify-content-agents.png)
 
 ## create-lab Orchestration
 
-```mermaid
-graph TD
-    User([User]) --> CL[create-lab\nSonnet 4.6]
-    CL -->|Phase A| Plan[Planning form\nall questions at once]
-    Plan --> Spec[FULL_SPEC JSON]
-    Spec -->|Phase B parallel| FG1[file-generator\nindex.adoc]
-    Spec -->|Phase B parallel| FG2[file-generator\noverview.adoc]
-    Spec -->|Phase B parallel| FG3[file-generator\ndetails.adoc]
-    Spec -->|Phase B parallel| FG4[file-generator\nmodule-01.adoc]
-    FG1 -->|nav_entry + JSON| Merge[Nav merge +\nQC review]
-    FG2 -->|nav_entry + JSON| Merge
-    FG3 -->|nav_entry + JSON| Merge
-    FG4 -->|nav_entry + JSON| Merge
-    Merge --> MR[module-reviewer × N\nSonnet]
-    MR --> Deliver([Files on disk\nnav updated])
-
-    style CL fill:#cc0000,color:#fff
-    style FG1 fill:#4a90d9,color:#fff
-    style FG2 fill:#4a90d9,color:#fff
-    style FG3 fill:#4a90d9,color:#fff
-    style FG4 fill:#4a90d9,color:#fff
-    style MR fill:#4a90d9,color:#fff
-```
+![create-lab orchestration diagram](../assets/images/diagrams/create-lab-agents.png)
 
 ---
 

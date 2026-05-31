@@ -25,27 +25,7 @@ Run from inside your Showroom repo. Auto-detects content type and lab type.
 
 This skill is an **orchestrator**. All checks are delegated to specialized agents running in parallel — one `scaffold-checker` for root config files and one `module-reviewer` per .adoc file simultaneously.
 
-```mermaid
-sequenceDiagram
-    participant U as User / PH
-    participant VC as verify-content (Sonnet)
-    participant SC as scaffold-checker (Haiku)
-    participant MR1 as module-reviewer (Sonnet)
-    participant MR2 as module-reviewer (Sonnet)
-
-    U->>VC: /verify-content or ph_payload JSON
-    Note over VC: Pre-flight: reads nav.adoc,<br/>antora.yml, builds shared_context
-    par Parallel agents
-        VC->>SC: REPO_PATH + SHARED_CONTEXT
-        VC->>MR1: MODULE_FILE=01-overview.adoc<br/>+ SHARED_CONTEXT + LAB_TYPE
-        VC->>MR2: MODULE_FILE=03-module-01.adoc<br/>+ SHARED_CONTEXT + LAB_TYPE
-    end
-    SC-->>VC: {"findings": [...], "passed": [...]}
-    MR1-->>VC: {"dimensions": {"pedagogy": 0.8}, "findings": [...]}
-    MR2-->>VC: {"dimensions": {"technical_accuracy": 0.9}, "findings": [...]}
-    Note over VC: Merge + cross-module logic<br/>(D.2 suppression, E.5 attribute check)
-    VC-->>U: Findings table (interactive)<br/>OR {"findings": [...]} (PH headless)
-```
+![verify-content agent orchestration diagram](../assets/images/diagrams/verify-content-agents.png)
 
 **Expected speedup:** ~6× faster than sequential checks (8 min → ~90 sec for a 6-module lab).
 

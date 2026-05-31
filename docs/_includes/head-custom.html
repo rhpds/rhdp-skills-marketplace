@@ -4,23 +4,11 @@
 <!-- Mermaid.js for architecture and sequence diagrams -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'dark',
-      securityLevel: 'loose',
-      sequence: {
-        diagramMarginX: 30,
-        diagramMarginY: 20,
-        boxMargin: 10,
-        noteMargin: 10,
-        messageMargin: 35,
-        fontSize: 13
-      },
-      flowchart: {
-        htmlLabels: true,
-        curve: 'basis'
-      }
-    });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    sequence: { fontSize: 13, messageMargin: 35 },
+    flowchart: { htmlLabels: true, curve: 'basis' }
   });
 </script>

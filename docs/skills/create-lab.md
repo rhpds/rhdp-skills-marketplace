@@ -23,34 +23,7 @@ Create hands-on Red Hat Showroom workshop content. Runs a grouped planning form 
 
 ## Architecture
 
-```mermaid
-sequenceDiagram
-    participant U as User / PH
-    participant CL as create-lab (Sonnet)
-    participant FG1 as file-generator (Sonnet)
-    participant FG2 as file-generator (Sonnet)
-    participant FG3 as file-generator (Sonnet)
-    participant FG4 as file-generator (Sonnet)
-    participant MR as module-reviewer (Sonnet)
-
-    U->>CL: Plan confirmed / ph_payload JSON
-    Note over CL: Builds FULL_SPEC JSON<br/>inc. writing_style, env, modules
-    par Phase B: Parallel generation
-        CL->>FG1: FILE_TYPE=index + FULL_SPEC
-        CL->>FG2: FILE_TYPE=overview + FULL_SPEC
-        CL->>FG3: FILE_TYPE=details + FULL_SPEC
-        CL->>FG4: FILE_TYPE=module + FULL_SPEC
-    end
-    Note over FG1,FG4: Each agent: reads templates,<br/>applies writing_style,<br/>runs humanizer pass,<br/>writes file to disk
-    FG1-->>CL: {"file_created": "index.adoc", "nav_entry": "...", "word_count": 247}
-    FG2-->>CL: {"file_created": "01-overview.adoc", "nav_entry": "...", "word_count": 312}
-    FG3-->>CL: {"file_created": "02-details.adoc", "nav_entry": "...", "word_count": 198}
-    FG4-->>CL: {"file_created": "03-module-01.adoc", "nav_entry": "...", "word_count": 1340}
-    Note over CL: Merges nav.adoc from nav_entry values
-    CL->>MR: MODULE_FILE=03-module-01.adoc + SHARED_CONTEXT
-    MR-->>CL: {"dimensions": {"pedagogy": 0.85}, "findings": []}
-    CL-->>U: Delivery summary (interactive)<br/>OR {"files_created": [...]} (PH headless)
-```
+![create-lab agent orchestration diagram](../assets/images/diagrams/create-lab-agents.png)
 
 **New lab:** 4 file-generator agents run simultaneously — index, overview, details, module-01 all generated in parallel.
 
