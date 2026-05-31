@@ -338,6 +338,29 @@ uuidgen
   </a>
 </div>
 
+---
+
+## v2.14.0 — New Reference Pages
+
+<div class="link-grid">
+  <a href="agent-architecture.html" class="link-card">
+    <h4>Agent Architecture</h4>
+    <p>Orchestration diagrams, model assignments, how skills and agents communicate</p>
+  </a>
+  <a href="ph-integration.html" class="link-card">
+    <h4>Publishing House Integration</h4>
+    <p>ph_payload headless mode — sequence diagrams, payload schemas, JSON responses</p>
+  </a>
+  <a href="writing-style.html" class="link-card">
+    <h4>Personal Writing Style</h4>
+    <p>Style profiles, auto-humanizer, model efficiency breakdown</p>
+  </a>
+  <a href="skills-vs-agents.html" class="link-card">
+    <h4>Skills vs Agents</h4>
+    <p>When to use each — updated for the orchestrator pattern</p>
+  </a>
+</div>
+
 <div class="navigation-footer">
   <a href="../index.html" class="nav-button">← Back to Home</a>
 </div>
