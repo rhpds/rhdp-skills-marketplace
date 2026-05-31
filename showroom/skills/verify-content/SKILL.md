@@ -110,7 +110,7 @@ Detect infra type silently from content:
 | File missing | — | Critical |
 | `type: showroom` | Missing | High |
 | `view_switcher.enabled` | Not `true` | High |
-| `view_switcher.default_mode` | Not `split` | Medium |
+| `view_switcher.default_mode` | Not `split` | Warning — lab author may intentionally use full-screen mode |
 | `persist_url_state` | Not `true` | Medium |
 | tabs section | No uncommented tabs | High |
 

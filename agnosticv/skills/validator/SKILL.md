@@ -296,6 +296,8 @@ passed_checks = []  # Passed checks for summary
 
 ### Check 1: File Structure
 
+**IMPORTANT — path verification rule:** Before flagging any file as missing, run `ls {catalog_path}` via Bash and verify against the actual directory listing. Do NOT rely on path string construction alone — AgnosticV catalog paths can have unexpected prefixes (summit-2026/, agd_v2/, etc.). If the file appears in the `ls` output, it exists — do not flag it as missing regardless of what `os.path.exists()` would return on a constructed path.
+
 ```python
 def check_file_structure(catalog_path):
   """Required files validation"""
@@ -768,6 +770,8 @@ def check_best_practices(config):
 
 ### Check 10: Stage Files Validation
 
+**IMPORTANT — same path verification rule as Check 1:** Run `ls {catalog_path}` before flagging any stage file as missing. If a file appears in the directory listing, it exists — report it as present regardless of path construction.
+
 ```python
 def check_stage_files(catalog_path):
   """Validate stage-specific override files"""
@@ -947,21 +951,21 @@ def check_collection_versions(config, agv_repo_path, catalog_path):
         })
         continue
 
-      # Showroom must be v1.6.0 or above
+      # Showroom should be v1.6.8 or above (warning only — teams control upgrade pace)
       version_nums = re.findall(r'\d+', coll_version)
       if version_nums:
         major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
                                for i in range(3))
-        if (major, minor, patch) < (1, 5, 1):
-          errors.append({
+        if (major, minor, patch) < (1, 6, 8):
+          warnings.append({
             'check': 'collections',
-            'severity': 'ERROR',
-            'message': f'Showroom collection version below minimum: {coll_version}',
+            'severity': 'WARNING',
+            'message': f'Showroom collection version below recommended: {coll_version} (recommend v1.6.8+)',
             'location': 'common.yaml:requirements_content.collections',
-            'fix': 'Set version: v1.6.0 or above'
+            'fix': 'Set version: v1.6.8 or above'
           })
         else:
-          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.6.0)")
+          passed_checks.append(f"✓ Showroom collection version: {coll_version} (≥ v1.6.8)")
 
     else:
       # Standard collections should use {{ tag }}
@@ -1360,18 +1364,22 @@ def check_event_catalog(config, event_context, lab_id, catalog_path):
       })
   else:
     version = showroom_coll.get('version', '')
-    if version < 'v1.6.0':
-      warnings.append({
-        'check': 'event_catalog',
-        'severity': 'WARNING',
-        'message': f'Showroom collection version is below v1.6.0',
-        'location': 'common.yaml:requirements_content.collections',
-        'current': version,
-        'expected': 'v1.6.0',
-        'fix': 'Set version: v1.6.0 for showroom collection',
-      })
-    else:
-      passed_checks.append("✓ Showroom collection version: v1.6.0 or above")
+    version_nums = re.findall(r'\d+', version)
+    if version_nums:
+      major, minor, patch = (int(version_nums[i]) if i < len(version_nums) else 0
+                             for i in range(3))
+      if (major, minor, patch) < (1, 6, 8):
+        warnings.append({
+          'check': 'event_catalog',
+          'severity': 'WARNING',
+          'message': f'Showroom collection version below recommended: {version} (recommend v1.6.8+)',
+          'location': 'common.yaml:requirements_content.collections',
+          'current': version,
+          'expected': 'v1.6.8',
+          'fix': 'Set version: v1.6.8 for showroom collection',
+        })
+      else:
+        passed_checks.append(f"✓ Showroom collection version: {version} (≥ v1.6.8)")
 
   # --- ocp4_workload_ocp_console_embed present (OCP only — skip for cloud-vms-base) ---
   workloads = config.get('workloads', [])
