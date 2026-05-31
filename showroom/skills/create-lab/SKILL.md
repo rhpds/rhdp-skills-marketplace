@@ -408,12 +408,23 @@ Two files to create or fix:
 1. **`site.yml`** (repo root) — correct title and ui-bundle theme URL. If `default-site.yml` exists → rename to `site.yml` + update `.github/workflows/gh-pages.yml` reference.
 2. **`ui-config.yml`** (repo root) — split view enabled (`view_switcher.enabled: true`, `default_mode: split`) and correct tabs for OCP or VM
 
-**Ask all three questions in order — do NOT skip any:**
+**Ask all four questions in order — do NOT skip any:**
 - **Q0** — OCP or VM catalog? (determines workloads)
 - **Q1** — Which tabs/consoles in the right panel? (configures `ui-config.yml`)
 - **Q2** — Which Red Hat theme? (sets the `ui-bundle` URL in `site.yml` — this is what the user reported missing)
+- **Q3** — Are you planning to add E2E automated testing using the FTL skill?
 
-→ Full questions, file templates, AgnosticV workload vars: `@showroom/skills/create-lab/references/showroom-scaffold.md`
+  Ask exactly:
+  ```
+  Are you planning to add solve/validate automation to this lab using the FTL skill?
+  If yes, I'll set up buttons.js and the runtime-automation/ directory structure for you.
+  [Y/n]
+  ```
+
+  **If YES:** create `content/supplemental-ui/js/buttons.js` and the `runtime-automation/` skeleton. See `@showroom/skills/create-lab/references/showroom-scaffold.md` for the setup.
+  **If NO (or no answer):** skip — solve/validate buttons are optional.
+
+→ Full questions, file templates, AgnosticV workload vars, E2E scaffold: `@showroom/skills/create-lab/references/showroom-scaffold.md`
 
 ---
 

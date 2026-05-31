@@ -254,3 +254,68 @@ showroom_content_antora_playbook: site.yml
   type: git
   version: "v1.6.0"   # fixed — minimum v1.5.1, always pin to latest
 ```
+
+---
+
+## Q3 — E2E Automation Setup (FTL skill)
+
+**Only create these files if the user answered YES to Q3.**
+
+Solve/validate buttons are optional. They enable the FTL skill to generate automated E2E tests (`solve.yml`, `validate.yml`) that run inside the Showroom terminal.
+
+### Files to create
+
+**`content/supplemental-ui/js/buttons.js`**
+
+Copy from the reference repo:
+```bash
+curl -o content/supplemental-ui/js/buttons.js \
+  https://raw.githubusercontent.com/rhpds/ocp-zt-dedicated-showroom/main/content/supplemental-ui/js/buttons.js
+```
+
+**`runtime-automation/` directory skeleton**
+
+Create one subdirectory per module that will have automation. Start with module-01:
+```
+runtime-automation/
+  module-01/
+    solve.yml        ← generated later by ftl:solve-writer
+    validate.yml     ← generated later by ftl:validate-writer
+  requirements.txt   ← empty for now, filled by FTL skill
+  packages.txt       ← empty for now, filled by FTL skill
+```
+
+Create the skeleton:
+```bash
+mkdir -p runtime-automation/module-01
+touch runtime-automation/module-01/solve.yml
+touch runtime-automation/module-01/validate.yml
+touch runtime-automation/requirements.txt
+touch runtime-automation/packages.txt
+```
+
+### Using solve/validate button placeholders in content
+
+When writing module content, use these placeholders where you want the buttons to appear:
+
+```asciidoc
+[.solve-button-placeholder]#solve-button-placeholder#
+
+[.validate-button-placeholder]#validate-button-placeholder#
+```
+
+These render into interactive Solve/Validate buttons at runtime. The FTL skill (`/ftl:rhdp-lab-validator`) generates the automation logic for each module.
+
+### After setup
+
+Tell the user:
+```
+✅ E2E scaffold created:
+  - content/supplemental-ui/js/buttons.js
+  - runtime-automation/module-01/ (solve.yml + validate.yml stubs)
+
+When you're ready to write the automation, run:
+  /ftl:rhdp-lab-validator
+
+It will read your module content and generate the solve/validate playbooks automatically.
+```
