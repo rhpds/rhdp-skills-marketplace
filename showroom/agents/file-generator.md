@@ -114,6 +114,27 @@ Follow the template structure exactly. Apply FULL_SPEC values.
   - `=== Verify` section after each exercise
 - Conclusion paragraph
 
+**`blog`** — Markdown blog post from source Showroom content
+
+Additional inputs for blog FILE_TYPE (passed via FULL_SPEC):
+- `source_files` — list of absolute paths to source .adoc modules to read
+- `blog_type` — tutorial | announcement | thought-leadership | case-study | quick-start
+- `platform` — redhat-developer | internal | medium | marketing
+- `technical_depth` — highly-technical | moderately-technical | marketing-focused
+- `word_count` — 500-800 | 1000-1500 | 2000+
+- `showroom_link` — URL for "Try it yourself" CTA (optional)
+
+**Blog output format:** Markdown (.md) for all platforms.
+
+Read all `source_files` first. Then transform:
+- Workshop exercises → narrative "how to" flow (keep code samples for technical depth)
+- Demo Know sections → business value paragraphs
+- Demo Show sections → capability descriptions
+- Learning objectives → "In this post, you'll learn..."
+- Verify steps → expected outcomes
+
+Structure: title, summary excerpt, introduction, body sections matching source modules, try-it-yourself CTA (if showroom_link provided), resources.
+
 **Critical rules for ALL types:**
 - Never hardcode version numbers — use `{ocp_version}` or other attributes
 - All code blocks that should auto-execute: `[source,bash,role="execute"]`
