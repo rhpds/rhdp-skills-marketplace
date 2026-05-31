@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "create a lab modul
 
 ---
 context: main
-model: claude-opus-4-6
+model: claude-sonnet-4-6
 ---
 
 # Lab Module Generator

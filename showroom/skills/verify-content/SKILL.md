@@ -5,7 +5,7 @@ description: This skill should be used when the user asks to "verify my workshop
 
 ---
 context: main
-model: claude-opus-4-8
+model: claude-sonnet-4-6
 ---
 
 # Content Verification Skill
