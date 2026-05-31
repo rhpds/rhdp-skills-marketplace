@@ -766,6 +766,27 @@ def check_best_practices(config):
       'message': 'No maintainer/owner defined',
       'recommendation': 'Add __meta__.owners.maintainer for accountability'
     })
+
+  # VS Code without authentication — security risk
+  # (flagged by Ops repeatedly; Mitesh + tagged Prakhar in team-rhdp-troubleshooting)
+  workloads = config.get('workloads', [])
+  has_vscode = any('vscode' in str(w).lower() for w in workloads)
+  if has_vscode:
+    vscode_auth_type = config.get('ocp4_workload_vscode_auth_type',
+                       config.get('vscode_auth_type',
+                       config.get('vscode_auth-type', None)))
+    if vscode_auth_type is None or str(vscode_auth_type).lower() == 'none':
+      warnings.append({
+        'check': 'best_practices',
+        'severity': 'High',
+        'message': 'VS Code workload present with no authentication (auth-type: none) — security risk',
+        'location': 'common.yaml',
+        'current': f'ocp4_workload_vscode_auth_type: {vscode_auth_type}',
+        'fix': 'Remove VS Code workload or set authentication: ocp4_workload_vscode_auth_type: password',
+        'note': 'Ops recommends removing VS Code entirely if auth cannot be configured'
+      })
+    else:
+      passed_checks.append(f"✓ VS Code authentication configured: {vscode_auth_type}")
 ```
 
 ### Check 10: Stage Files Validation
