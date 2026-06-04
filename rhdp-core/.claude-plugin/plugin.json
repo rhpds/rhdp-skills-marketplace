@@ -1,0 +1,5 @@
+{
+  "name": "rhdp-core",
+  "version": "0.1.0",
+  "description": "Core utility skills for all RHDP team members — status bar, project init, and commit helpers"
+}
