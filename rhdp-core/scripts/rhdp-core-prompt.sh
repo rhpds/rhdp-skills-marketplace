@@ -158,7 +158,7 @@ if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
           map(select(.type == "text") | .text) | join(" ")
         else "" end
     else "" end
-  ' <"$transcript_path" | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g; s/^ //; s/ $//')
+  ' <"$transcript_path" | tr '\n' ' ' | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//')
 
   session_cost_raw=$(jq -rs '
     map(select(.message.usage and .isSidechain != true and .isApiErrorMessage != true)) |
