@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — rhdp-core Plugin (v0.1.0)
+
+- **New plugin:** `rhdp-core` — general-purpose utility skills for all RHDP team members
+- **`rhdp-core:setup` skill:** installs `rhdp-core-prompt.sh` status bar and configures `statusLine` in `~/.claude/settings.json`
+- **Status bar (`rhdp-core-prompt.sh`):** extends `context-bar.sh` with a second metrics line showing cache hit rate (color-coded blue/amber/red), turn count, and session duration; all other lines unchanged
+
 ## [v2.14.0] - 2026-05-31
 
 ### Added — Agent Orchestrator Pattern
