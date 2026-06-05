@@ -1,0 +1,1 @@
+../../novascan/skills/plan/SKILL.md

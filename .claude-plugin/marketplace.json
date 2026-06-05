@@ -142,6 +142,29 @@
         "./skills/logs-fetcher",
         "./skills/feedback-capture"
       ]
+    },
+    {
+      "name": "novascan",
+      "source": "./novascan",
+      "description": "RHDP capacity scanner — scan demo repos, recommend provisioning tiers, generate right-sized AgnosticV catalog items",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jonathan Kershaw",
+        "email": "jkershaw@redhat.com"
+      },
+      "homepage": "https://github.com/rhpds/NovaScan",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "novascan",
+        "capacity-planning",
+        "provisioning",
+        "agnosticv",
+        "right-sizing",
+        "infrastructure",
+        "llm",
+        "rhdp"
+      ]
     }
   ]
 }

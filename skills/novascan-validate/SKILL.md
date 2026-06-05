@@ -1,0 +1,1 @@
+../../novascan/skills/validate/SKILL.md
