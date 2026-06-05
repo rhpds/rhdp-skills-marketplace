@@ -1,0 +1,9 @@
+{
+  "name": "darkscope",
+  "version": "1.0.0",
+  "description": "Deep security analysis — AST taint tracking, secret detection, container/K8s hardening, supply chain CVE scanning",
+  "author": {
+    "name": "Jonathan Kershaw",
+    "email": "jkershaw@redhat.com"
+  }
+}

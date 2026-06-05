@@ -142,6 +142,31 @@
         "./skills/logs-fetcher",
         "./skills/feedback-capture"
       ]
+    },
+    {
+      "name": "darkscope",
+      "source": "./darkscope",
+      "description": "Deep security analysis — AST taint tracking, secret detection, container/K8s hardening, supply chain CVE scanning",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jonathan Kershaw",
+        "email": "jkershaw@redhat.com"
+      },
+      "homepage": "https://github.com/rhpds/DarkScope",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "darkscope",
+        "security",
+        "vulnerability",
+        "scanning",
+        "ast",
+        "secrets",
+        "container",
+        "kubernetes",
+        "supply-chain",
+        "rhdp"
+      ]
     }
   ]
 }
