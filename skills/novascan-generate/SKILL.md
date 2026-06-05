@@ -1,0 +1,1 @@
+../../novascan/skills/generate/SKILL.md
