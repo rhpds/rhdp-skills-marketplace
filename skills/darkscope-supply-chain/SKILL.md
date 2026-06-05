@@ -1,0 +1,1 @@
+../../darkscope/skills/supply-chain/SKILL.md
