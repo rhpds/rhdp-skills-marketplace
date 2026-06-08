@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — rhdp-core Plugin (v0.1.0)
+
+- **New plugin:** `rhdp-core` — general-purpose utility skills for all RHDP team members
+- **`rhdp-core:setup` skill:** installs `rhdp-core-prompt.sh` status bar and configures `statusLine` in `~/.claude/settings.json`
+- **Status bar (`rhdp-core-prompt.sh`):** extends `context-bar.sh` with a second metrics line showing cache hit rate (color-coded blue/amber/red), turn count, and session duration; all other lines unchanged
+
+### Added — rhdp-publishing-house Plugin (v0.1.0)
+
+- **New plugin:** `rhdp-publishing-house` — AI-powered content lifecycle management from idea to ready-for-publishing
+- **`/rhdp-publishing-house` (orchestrator):** discovers project, syncs repo, reads state, routes to phase-specific agents
+- **`rhdp-publishing-house:intake`:** spec generation, RCARS vetting, and spec refinement (phases 1–3)
+- **`rhdp-publishing-house:writer`:** content writing wrapping showroom:create-lab/create-demo (module-by-module)
+- **`rhdp-publishing-house:editor`:** technical editing wrapping showroom:verify-content with spec alignment checks
+- **`rhdp-publishing-house:automation`:** automation requirements, AgnosticV catalog, Ansible/GitOps code, and testing gate
+- **`rhdp-publishing-house:worklog`:** session bridging — notes, decisions, handoffs, and summaries
+- Includes reference docs: spec guidelines, module outline template, writing standards, editing checklist, automation patterns, manifest format, Ansible guide, and GitOps guide
+
 ## [v2.14.0] - 2026-05-31
 
 ### Added — Agent Orchestrator Pattern
