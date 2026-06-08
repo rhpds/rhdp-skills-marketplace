@@ -1,0 +1,9 @@
+{
+  "name": "rhdp-publishing-house",
+  "version": "0.1.0",
+  "description": "AI-powered content lifecycle management for RHDP — from idea to ready-for-publishing",
+  "author": {
+    "name": "RHDP Team",
+    "email": "prakhar@redhat.com"
+  }
+}

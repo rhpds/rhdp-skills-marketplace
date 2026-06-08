@@ -162,6 +162,28 @@
         "utilities",
         "core"
       ]
+    },
+    {
+      "name": "rhdp-publishing-house",
+      "source": "./rhdp-publishing-house",
+      "description": "AI-powered content lifecycle management for RHDP — from idea to ready-for-publishing",
+      "version": "0.1.0",
+      "author": {
+        "name": "RHDP Team",
+        "email": "prakhar@redhat.com"
+      },
+      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "rhdp",
+        "publishing-house",
+        "content-lifecycle",
+        "intake",
+        "writing",
+        "editing",
+        "automation"
+      ]
     }
   ]
 }
