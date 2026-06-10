@@ -1,0 +1,44 @@
+name: Skill feedback
+description: Report a problem or suggest an improvement for a marketplace skill
+title: "[skill-feedback] "
+labels: ["skill-feedback"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Which skill?
+      options:
+        - showroom:create-lab
+        - showroom:create-demo
+        - showroom:verify-content
+        - showroom:blog-generate
+        - agnosticv:catalog-builder
+        - agnosticv:validator
+        - health:deployment-validator
+        - ftl:rhdp-lab-validator
+        - vertex-token-proxy:setup
+        - vertex-token-proxy:analyze-report
+        - vertex-token-proxy:compare
+        - Other / not listed
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did the skill do? Include the prompt you used if relevant. Do not paste credentials, tokens, or internal hostnames.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Claude Code 2.x / Cursor 2.4, macOS 15, plugin version"
+    validations:
+      required: false
