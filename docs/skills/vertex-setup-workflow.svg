@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
+  <defs>
+    <style>
+      .input { fill: #0066CC; }
+      .process { fill: #00AA00; }
+      .output { fill: #FF8800; }
+      text { fill: white; font-family: Arial, sans-serif; font-size: 14px; }
+      .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .title { font-size: 18px; font-weight: bold; fill: #333; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+  <text x="400" y="30" text-anchor="middle" class="title">/vertex-token-proxy:setup</text>
+  <rect x="250" y="50" width="300" height="50" rx="8" class="input"/>
+  <text x="400" y="80" text-anchor="middle">Verify Vertex AI environment</text>
+  <path class="arrow" d="M400,100 L400,130"/>
+  <rect x="250" y="130" width="300" height="50" rx="8" class="process"/>
+  <text x="400" y="160" text-anchor="middle">Check Python 3.12+ and uv</text>
+  <path class="arrow" d="M400,180 L400,210"/>
+  <rect x="250" y="210" width="300" height="50" rx="8" class="process"/>
+  <text x="400" y="240" text-anchor="middle">Clone and uv pip install</text>
+  <path class="arrow" d="M400,260 L400,290"/>
+  <rect x="250" y="290" width="300" height="50" rx="8" class="process"/>
+  <text x="400" y="320" text-anchor="middle">Ask: install status line?</text>
+  <path class="arrow" d="M400,340 L400,370"/>
+  <rect x="250" y="370" width="300" height="50" rx="8" class="process"/>
+  <text x="400" y="400" text-anchor="middle">vertex-token-proxy start</text>
+  <path class="arrow" d="M400,420 L400,450"/>
+  <rect x="250" y="450" width="300" height="50" rx="8" class="output"/>
+  <text x="400" y="480" text-anchor="middle">Verified: session measured on :8787</text>
+</svg>

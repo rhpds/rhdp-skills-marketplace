@@ -237,6 +237,61 @@ For investigating failed Ansible/AAP jobs by correlating logs, Splunk data, and 
 
 ---
 
+## Vertex Token Proxy Skills (Cost Optimization)
+
+<div class="category-intro">
+For measuring and reducing Claude Code token spend on Google Vertex AI.
+</div>
+
+<div class="category-grid">
+  <a href="vertex-setup.html" class="category-card">
+    <div class="category-icon">📡</div>
+    <h3>/vertex-token-proxy:setup</h3>
+    <p>Install the proxy and launch a measured Claude Code session.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> Claude Code on Vertex AI, Python 3.12+, uv
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Starting token measurement
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+
+  <a href="vertex-analyze-report.html" class="category-card">
+    <div class="category-icon">📊</div>
+    <h3>/vertex-token-proxy:analyze-report</h3>
+    <p>Turn session metrics into prioritized token-saving recommendations.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> At least one measured session
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Tokens or cost seem high
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+
+  <a href="vertex-compare.html" class="category-card">
+    <div class="category-icon">⚖️</div>
+    <h3>/vertex-token-proxy:compare</h3>
+    <p>A/B compare two sessions to verify a config change helped.</p>
+    <div class="skill-meta">
+      <div class="meta-item">
+        <strong>Before:</strong> Two measured sessions
+      </div>
+      <div class="meta-item">
+        <strong>Use when:</strong> Verifying an optimization
+      </div>
+    </div>
+    <div class="skill-status available">✅ Available</div>
+  </a>
+</div>
+
+---
+
 ## Quick Reference Table
 
 <div class="table-container">
@@ -314,6 +369,24 @@ For investigating failed Ansible/AAP jobs by correlating logs, Splunk data, and 
         <td><code>/aiops-skill:feedback-capture</code></td>
         <td>AIOps</td>
         <td>None</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/vertex-token-proxy:setup</code></td>
+        <td>Vertex Token Proxy</td>
+        <td>Vertex AI, Python 3.12+, uv</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/vertex-token-proxy:analyze-report</code></td>
+        <td>Vertex Token Proxy</td>
+        <td>One measured session</td>
+        <td><span class="status-badge available">✅ Available</span></td>
+      </tr>
+      <tr>
+        <td><code>/vertex-token-proxy:compare</code></td>
+        <td>Vertex Token Proxy</td>
+        <td>Two measured sessions</td>
         <td><span class="status-badge available">✅ Available</span></td>
       </tr>
     </tbody>
