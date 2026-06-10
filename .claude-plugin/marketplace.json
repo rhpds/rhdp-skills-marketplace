@@ -142,6 +142,27 @@
         "./skills/logs-fetcher",
         "./skills/feedback-capture"
       ]
+    },
+    {
+      "name": "vertex-token-proxy",
+      "source": "./vertex-token-proxy",
+      "description": "Token usage measurement for Claude Code on Vertex AI - setup, report analysis, and A/B session comparison",
+      "version": "1.0.0",
+      "author": {
+        "name": "Joshua Disraeli",
+        "email": "jcdisraeli@gmail.com"
+      },
+      "homepage": "https://rhpds.github.io/rhdp-skills-marketplace",
+      "repository": "https://github.com/rhpds/rhdp-skills-marketplace",
+      "license": "Apache-2.0",
+      "tags": [
+        "vertex",
+        "tokens",
+        "metrics",
+        "cost",
+        "proxy",
+        "optimization"
+      ]
     }
   ]
 }

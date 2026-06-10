@@ -16,7 +16,7 @@ title: Home
 <div class="section" id="skills">
   <div class="section-header">
     <h2>Available Skills</h2>
-    <p>8 skills · 10 agents · 4 namespaces — orchestrator pattern with parallel execution</p>
+    <p>11 skills · 10 agents · 5 namespaces — orchestrator pattern with parallel execution</p>
   </div>
 
   <div class="category-grid">
@@ -78,6 +78,18 @@ title: Home
         <li>PR checklist before contributing</li>
       </ul>
       <a href="{{ '/contributing/developer-guide.html' | relative_url }}">Read the guide →</a>
+    </div>
+
+    <div class="category-card">
+      <span class="category-icon">📡</span>
+      <h3>Vertex Token Proxy — Token Spend Measurement <span class="badge-new">New</span></h3>
+      <p><strong>Where are my tokens going?</strong> Measure Claude Code sessions on Google Vertex AI — token counts by category, repetition detection, projected savings — then get concrete recommendations and A/B verification.</p>
+      <ul style="margin: 0.875rem 0; color: var(--color-text-3); font-size: 0.875rem;">
+        <li><code>/vertex-token-proxy:setup</code> — Install and start measurement</li>
+        <li><code>/vertex-token-proxy:analyze-report</code> — Prioritized savings recommendations</li>
+        <li><code>/vertex-token-proxy:compare</code> — A/B test config changes</li>
+      </ul>
+      <a href="{{ '/skills/vertex-setup.html' | relative_url }}">Learn more →</a>
     </div>
   </div>
 </div>

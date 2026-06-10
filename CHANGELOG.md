@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — vertex-token-proxy Plugin
+
+- **New `vertex-token-proxy` plugin** (3 skills): measure Claude Code token spend on Google Vertex AI via [vertex-token-proxy](https://github.com/rhpds/vertex-token-proxy)
+  - `/vertex-token-proxy:setup` — install the proxy and launch a measured session
+  - `/vertex-token-proxy:analyze-report` — interpret session metrics into prioritized token-saving recommendations
+  - `/vertex-token-proxy:compare` — A/B compare two sessions to verify a config change helped
+- **First SessionStart hook in the marketplace**: silent unless a Vertex session is unmeasured while the proxy is installed — then prints a one-line reminder
+- **Skill feedback issue template** (`.github/ISSUE_TEMPLATE/skill-feedback.yml`): structured feedback for any marketplace skill; plugin docs pages link to it pre-labeled
+- **Docs**: three new skill pages with workflow diagrams, sidebar navigation section, updated home and skills index (11 skills, 5 namespaces)
+
 ## [v2.14.0] - 2026-05-31
 
 ### Added — Agent Orchestrator Pattern
