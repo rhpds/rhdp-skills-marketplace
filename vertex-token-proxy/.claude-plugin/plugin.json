@@ -1,0 +1,9 @@
+{
+  "name": "vertex-token-proxy",
+  "version": "1.0.0",
+  "description": "Token usage measurement for Claude Code on Vertex AI - install the proxy, analyze session reports, and A/B compare sessions to cut token spend",
+  "author": {
+    "name": "Joshua Disraeli",
+    "email": "jcdisraeli@gmail.com"
+  }
+}
