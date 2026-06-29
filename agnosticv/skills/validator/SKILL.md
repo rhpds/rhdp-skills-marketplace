@@ -12,8 +12,8 @@ model: claude-sonnet-4-6
 
 **Name:** AgnosticV Catalog Validator
 **Description:** Validate AgnosticV configurations against best practices and deployment requirements
-**Version:** 1.0.0
-**Last Updated:** 2026-01-22
+**Version:** 2.0.0
+**Last Updated:** 2026-06-29
 
 ---
 
@@ -73,6 +73,92 @@ At the very start — before Step 0 — check for `ph_payload` in the invocation
 `status` values: `passed` (0 errors), `passed_with_warnings` (0 errors, N warnings), `failed` (1+ errors)
 
 **Never ask questions in headless mode.** Never run Step 4 (report format) or Step 5 (follow-up menu). Exit immediately after JSON output.
+
+---
+
+## Orchestrator Mode (v2.0.0)
+
+Starting v2.0.0, this skill is an **orchestrator**. It builds a shared context, then dispatches parallel subagents for each check domain. The 27+ checks are no longer run inline — they are owned by specialist agents.
+
+### Pre-Flight (ALWAYS — before spawning any agent)
+
+Run these steps in order. Do not skip any.
+
+**1. Detect agv_path** — from config files or ph_payload (payload wins).
+
+**2. Parse common.yaml** using `yaml.safe_load`. If parse fails:
+```
+→ Return immediately: {"status": "failed", "errors": [{"check": "yaml_syntax", "message": "YAML parse error: <details>"}]}
+→ STOP. Do NOT spawn any subagent.
+```
+
+**3. Classify CI type** — resolve once, pass as `ci_type` in shared_context. Subagents never re-derive it:
+
+| Condition | ci_type |
+|-----------|---------|
+| `config: namespace` | `tenant_namespace` |
+| `config: openshift-cluster` + `cloud_provider: openshift_cnv` | `shared_pool_cluster` |
+| `config: openshift-cluster` + aws/azure/gcp cloud_provider + no `-tenant` pair | `per_user_dedicated` |
+| `config: openshift-workloads` + `cloud_provider: none` + `__meta__.components` present | `binder` |
+| `config: zero-touch-base-rhel` OR in zt-* repo | `zero_touch` |
+| All others | `per_user_dedicated` |
+
+**4. Check for commitv** at `$agv_path/.claude/skills/commitv/SKILL.md`. Set `commitv_available: true/false`.
+
+**5. Check for babylon schema** at `$agv_path/.schemas/babylon.yaml`. Set `schema_loaded: true/false`.
+
+**6. Detect event context** from catalog directory path. Set `event_context` and `lab_id`.
+
+**7. Build shared_context** per `@agnosticv/docs/shared-context-schema.md` (validator section).
+
+### Subagent Dispatch
+
+After pre-flight completes (no YAML error), spawn agents in parallel using the Task tool:
+
+**All scopes — always spawn:**
+- `agnosticv:schema-checker` — pass shared_context
+- `agnosticv:metadata-checker` — pass shared_context
+
+**Standard + Full scope only (not quick):**
+- `agnosticv:workload-checker` — pass shared_context
+- IF `ci_type == tenant_namespace` OR `ci_type == shared_pool_cluster` → `agnosticv:sandbox-checker`
+- ELSE → `agnosticv:ocp-infra-checker`
+
+**Wait for all spawned agents to complete.**
+
+### Result Merge
+
+Collect all agent JSON outputs. Merge into a single report:
+
+```python
+all_errors = []
+all_warnings = []
+all_suggestions = []
+all_passed = []
+
+for agent_result in agent_results:
+    all_errors.extend(agent_result.get("errors", []))
+    all_warnings.extend(agent_result.get("warnings", []))
+    all_suggestions.extend(agent_result.get("suggestions", []))
+    all_passed.extend(agent_result.get("passed_checks", []))
+
+# Deduplicate by (check_id, location)
+# Apply cross-agent suppression: if schema-checker has has_yaml_parse_error,
+# filter out all workload/infra/metadata findings (they are false positives)
+```
+
+**Cross-agent suppression rules:**
+- If schema-checker returns `has_yaml_parse_error: true` → keep only YAML parse error, discard all other agent findings
+- If `ci_type == zero_touch` → suppress Check 14 (deployer), Check 15a (anarchy namespace), Check 19 (password pattern for common_password)
+- Deduplicate findings with same `check_id` + `location` from different agents (keep highest severity)
+
+### Interactive Output (non-headless)
+
+After merging → run Step 4 (generate report) and Step 5 (follow-up actions) as normal, using the merged findings as input.
+
+### Headless Output (ph_payload mode)
+
+Return merged JSON per ph_payload output contract. Do not run Step 4 or Step 5.
 
 ---
 

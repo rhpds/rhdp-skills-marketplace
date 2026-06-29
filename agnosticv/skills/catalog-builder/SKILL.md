@@ -12,8 +12,8 @@ model: claude-sonnet-4-6
 
 **Name:** AgnosticV Catalog Builder
 **Description:** Create or update AgnosticV catalog files for RHDP deployments
-**Version:** 2.1.0
-**Last Updated:** 2026-02-03
+**Version:** 2.2.0
+**Last Updated:** 2026-06-29
 
 ---
 
@@ -112,6 +112,131 @@ On error (path collision, UUID collision, missing required fields):
 ```
 
 **Never ask questions in headless mode.** If required fields are missing from `catalog_spec`, return an error JSON listing the missing fields. Exit immediately after JSON output.
+
+---
+
+## Orchestrator Mode — MODE 1 Only (v2.2.0)
+
+Starting v2.2.0, **MODE 1 (Full Catalog)** uses an orchestrator pattern:
+
+```
+Batched planning form → shared_context JSON → parallel agents → workflow-reviewer → commit
+```
+
+**Modes 2/3/4 are unchanged** — they use the existing sequential flow below.
+
+### MODE 1 Orchestrator Flow
+
+**Step O-1: Scope Detection**
+
+If the user selects MODE 1 (Full Catalog) → enter orchestrator mode. Skip Steps 1-11 below.
+
+**Step O-2: Batched Planning Form**
+
+Present ALL questions at once in a single grouped form. Do not ask one question at a time. The form has three sections:
+
+```
+🏗️  AgnosticV Catalog Builder — Full Catalog
+
+═══ SECTION 1: Context ═══════════════════════════════
+Q1. Catalog type?
+    1. Lab — multi-user  2. Lab — single-user  3. Lab — admin only  4. Demo  5. Sandbox
+
+Q2. Event?
+    1. Red Hat Summit 2026  2. Red Hat One 2026  3. No event
+    (If event: Lab ID? e.g. lb2298)
+
+Q3. Technologies? (comma-separated)
+    e.g. ansible, openshift ai, pipelines
+
+═══ SECTION 2: Infrastructure ════════════════════════
+Q4. Infrastructure type?
+    1. OpenShift cluster (OCP)   2. RHEL/AAP VMs   3. Sandbox API CI
+    (If Sandbox API: Cluster CI or Tenant CI?)
+
+Q5. [OCP only] Cluster size?
+    1. SNO (1 node)  2. Compact (3 nodes)  3. Multi-node (N workers) → how many?
+
+Q6. [OCP only] Cloud provider?
+    1. CNV (openshift_cnv)  2. AWS
+
+Q7. [OCP only] OCP version? (e.g. 4.16)
+
+Q8. Multi-user? → How many users?
+
+Q9. Showroom URL? (optional — GitHub repo URL)
+
+Q10. Terminal type?
+     1. wetty  2. showroom  3. none
+
+Q11. E2E testing (solve/validate buttons)? [Y/n]
+
+Q12. LiteMaaS AI integration? [Y/n]
+
+═══ SECTION 3: Catalog Details ═══════════════════════
+Q13. Display name (appears in RHDP UI):
+Q14. Short name (lowercase, hyphens):
+Q15. Brief description (1-2 sentences):
+Q16. Maintainer name and email:
+Q17. Primary BU (Hybrid_Platforms / AI / Automation / etc.):
+Q18. Product (Red_Hat_OpenShift_AI / etc.):
+Q19. Specific keywords (3-4 max):
+```
+
+User fills what they know. Skip optional fields. Submit all at once.
+
+**Step O-3: Build shared_context**
+
+From form answers, resolve all fields per `@agnosticv/docs/shared-context-schema.md`:
+- Auto-detect AgV path
+- Generate and collision-check UUID
+- Determine category + multiuser + workshop_user_mode from Q1
+- Resolve infra type + ci_type from Q4
+- Build includes list (validate for duplicates)
+- Validate catalog_path (≤50 chars, directory does not exist)
+
+Ask for git branch (use current or create new) — only this one question after the form.
+
+**Step O-4: Spawn Parallel Agents**
+
+Using the Task tool, spawn both agents simultaneously:
+
+```
+Task: agnosticv:config-writer
+  → pass full shared_context JSON
+  → generates common.yaml + dev.yaml
+
+Task: agnosticv:description-writer
+  → pass full shared_context JSON
+  → generates description.adoc + (optional) info-message-template.adoc
+```
+
+Wait for both to complete.
+
+**Step O-5: Collect and Check Results**
+
+Collect JSON from both agents. If either returns `"errors": [...]` with non-empty errors → display them and STOP (do not commit). Present errors with fix instructions.
+
+If both return success → list files written:
+```
+✓ common.yaml
+✓ dev.yaml
+✓ description.adoc
+✓ info-message-template.adoc (if generated)
+```
+
+**Step O-6: Run workflow-reviewer**
+
+```
+Task: agnosticv:workflow-reviewer
+  → pass catalog_path and infra_type from shared_context
+```
+
+If reviewer finds issues → fix them before Step O-7.
+
+**Step O-7: Git Commit (Optional)**
+
+Same as Step 12 in the sequential flow below. Offer commit, show next steps.
 
 ---
 
