@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.15.0] - 2026-06-29
+
+### Added — AgnosticV Full Agent Decomposition (RHDPCD-119)
+
+**7 new AgnosticV specialist agents:**
+
+- **`agnosticv:schema-checker`** (Haiku) — Checks 1,2,3,4,14,14a,15a,24: UUID, YAML structure, category, deployer config, reporting labels, anarchy namespace, name length. All checks as condition-severity-ID tables.
+- **`agnosticv:workload-checker`** (Sonnet) — Checks 5,13,17-includes,18,22,25,26,27: workload format/deps, collection versions, LiteMaaS includes, duplicate includes, requirements_content position, runtime automation, placement rules.
+- **`agnosticv:ocp-infra-checker`** (Sonnet) — Checks 6A,6B,7,8,11,12,15,17-OCP: OCP + VM infra, auth, showroom co-presence, multi-user, bastion, component propagation.
+- **`agnosticv:sandbox-checker`** (Haiku) — Checks 6C-6J: Sandbox API tenant + cluster CI checks. Only spawned for `ci_type == tenant_namespace` or `shared_pool_cluster`.
+- **`agnosticv:metadata-checker`** (Haiku) — Checks 9,10,16,16a,17a,19,20,21,23: best practices, stage files, AsciiDoc templates, event catalog compliance, password patterns, untagged images.
+- **`agnosticv:config-writer`** (Sonnet) — Generates `common.yaml` + `dev.yaml` from resolved `shared_context`. Enforces all catalog generation rules (lookup passwords, requirements_content position, etc.).
+- **`agnosticv:description-writer`** (Sonnet) — Generates `description.adoc` + `info-message-template.adoc` from Showroom content or catalog metadata.
+
+**New schema doc:**
+- **`agnosticv/docs/shared-context-schema.md`** — Single source of truth for `shared_context` JSON. Defines orchestrator→subagent contract, CI type classification table, agent output contract.
+
+**ph_payload headless mode for AGV (RHDPCD-119 Phase 1):**
+- **`agnosticv:catalog-builder`**: accepts `ph_payload` with `catalog_spec` + `automation_manifest`, generates all 4 files silently, returns JSON. Unblocks PH automation skill phase 7b.
+- **`agnosticv:validator`**: accepts `ph_payload` with `catalog_path` + `validation_scope`, returns structured JSON `{status, errors, warnings, suggestions, passed_checks}`.
+
+### Changed — AgnosticV Orchestrator Refactors
+
+- **`agnosticv:catalog-builder` → v2.2.0**: MODE 1 uses orchestrator pattern — batched planning form → `shared_context` → parallel `config-writer` + `description-writer` → `workflow-reviewer` → commit. Modes 2/3/4 unchanged.
+- **`agnosticv:validator` → v2.0.0**: YAML parse gate (stops on broken YAML — no false-positive cascade from parallel agents), CI type classification (resolved once by orchestrator), scope-based parallel dispatch.
+
+### Architecture
+
+- YAML parse gate: validator stops immediately on broken YAML — subagents never spawn
+- CI type classification: 5-type enum resolved by orchestrator, passed as `ci_type` to all subagents
+- infra-checker split: `ocp-infra-checker` (Sonnet) + `sandbox-checker` (Haiku) — avoids 4D decision tree on Haiku
+- Backward compatible: ph_payload schema unchanged from v2.14.0, PH `MARKETPLACE_MIN_VERSION` stays at `2.14.0`
+
 ## [v2.14.0] - 2026-05-31
 
 ### Added — Agent Orchestrator Pattern

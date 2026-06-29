@@ -7,7 +7,7 @@ Supports: **Claude Code** | **VS Code with Claude Extension** | **Cursor 2.4+**
 > **✅ Note:** All platforms support the [Agent Skills open standard](https://agentskills.io). Skills work natively in **Claude Code**, **VS Code with Claude extension**, and **Cursor 2.4+**.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/version-v2.14.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
+[![Version](https://img.shields.io/badge/version-v2.15.0-green.svg)](https://github.com/rhpds/rhdp-skills-marketplace/releases)
 
 **📚 [Full Documentation](https://rhpds.github.io/rhdp-skills-marketplace)** | [Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
 
@@ -223,10 +223,42 @@ Deploy catalog → /deployment-validator → Health checks → Verify readiness
 
 ---
 
+## What's New — v2.15.0
+
+### AgnosticV Agent Decomposition
+Both `agnosticv:catalog-builder` and `agnosticv:validator` are now orchestrators — they spawn parallel specialist agents, same pattern as showroom v2.14.
+
+**validator subagents** (all run in parallel):
+
+| Agent | Model | Checks |
+|---|---|---|
+| `agnosticv:schema-checker` | Haiku | UUID, YAML structure, category, deployer, name length |
+| `agnosticv:workload-checker` | Sonnet | Workloads, collections, placement, runtime automation |
+| `agnosticv:ocp-infra-checker` | Sonnet | OCP + VM infra, auth, showroom, bastion, multi-user |
+| `agnosticv:sandbox-checker` | Haiku | Sandbox API tenant + cluster CI checks |
+| `agnosticv:metadata-checker` | Haiku | Passwords, images, event compliance, AsciiDoc |
+
+**catalog-builder subagents** (run in parallel for MODE 1):
+
+| Agent | Model | Output |
+|---|---|---|
+| `agnosticv:config-writer` | Sonnet | `common.yaml` + `dev.yaml` |
+| `agnosticv:description-writer` | Sonnet | `description.adoc` + info message template |
+
+### Publishing House Headless Mode for AGV
+`agnosticv:catalog-builder` and `agnosticv:validator` now accept `ph_payload` — PH automation (phase 7b) can generate catalog files and validate them silently. Returns structured JSON. **No PH code changes needed.**
+
+### YAML Parse Gate
+`agnosticv:validator` stops immediately on broken YAML — no false-positive errors from parallel agents on unreadable files. CI type classification resolved once by the orchestrator.
+
+📖 **[Full documentation →](https://rhpds.github.io/rhdp-skills-marketplace)**
+
+---
+
 ## What's New — v2.14.0
 
-### Agent Orchestrator Pattern
-All showroom skills now delegate work to specialized agents running in parallel — same design as the FTL plugin. Skills orchestrate; agents execute.
+### Agent Orchestrator Pattern (Showroom)
+All showroom skills now delegate work to specialized agents running in parallel — skills orchestrate, agents execute.
 
 | Agent | Model | Purpose |
 |---|---|---|
@@ -238,17 +270,11 @@ All showroom skills now delegate work to specialized agents running in parallel 
 
 **~6× faster:** `verify-content` on a 6-module lab goes from 8 min → ~90 sec.
 
-### Publishing House Integration
-`verify-content`, `create-lab`, `create-demo` support headless `ph_payload` mode — PH passes a JSON spec, skill runs all agents silently, returns structured JSON. **No PH code changes needed.**
+### Publishing House Integration (Showroom)
+`verify-content`, `create-lab`, `create-demo` support headless `ph_payload` mode. **No PH code changes needed.**
 
 ### Personal Writing Style
-All content creation skills accept a writing style profile. Describe your style, paste example paragraphs, or save `~/.claude/context/my-writing-style.md` for persistent reuse. Auto-humanizer pass runs on all generated content automatically.
-
-### New Security Checks
-Based on real production findings: multiuser htpasswd shared passwords and VS Code without authentication — both now detected as High severity by `agnosticv:validator`.
-
-### babylon.yaml Schema Authority
-`agnosticv:validator` reads `$agv_path/.schemas/babylon.yaml` as authoritative source for all `__meta__` validation.
+All content creation skills accept a writing style profile. Auto-humanizer pass runs on all generated content automatically.
 
 📖 **[Full documentation →](https://rhpds.github.io/rhdp-skills-marketplace)**
 
