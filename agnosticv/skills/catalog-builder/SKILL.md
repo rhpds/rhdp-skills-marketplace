@@ -17,6 +17,104 @@ model: claude-sonnet-4-6
 
 ---
 
+## PH Headless Mode (ph_payload)
+
+When invoked by the Publishing House automation skill (phase 7b), a `ph_payload` JSON block is present in the invocation arguments. In headless mode skip all interactive prompts, generate files from the payload, and return JSON only — no prose, no follow-up questions.
+
+### Detecting Headless Mode
+
+At the very start — before Step 0 — check for `ph_payload` in the invocation context:
+
+```
+ph_payload: { ... }
+```
+
+If found → set `HEADLESS_MODE = true`. Jump directly to **Headless Execution** below. Do not run Step 0 or any interactive steps.
+
+### ph_payload Schema
+
+```json
+{
+  "agv_path": "/path/to/agnosticv",
+  "catalog_spec": {
+    "display_name": "My Workshop",
+    "short_name": "my-workshop",
+    "description": "One or two sentence description.",
+    "maintainer_name": "Jane Doe",
+    "maintainer_email": "jdoe@redhat.com",
+    "catalog_type": "workshop_multiuser",
+    "event": "none",
+    "lab_id": "",
+    "technologies": ["openshift", "ai"],
+    "infra_type": "openshift_ocp",
+    "cloud_provider": "none",
+    "ocp_version": "4.16",
+    "num_users": 20,
+    "primaryBU": "Hybrid_Platforms",
+    "product": "Red_Hat_OpenShift_AI",
+    "product_family": "Red_Hat_Cloud",
+    "keywords": ["mcp", "trustyai"],
+    "showroom_url": "https://github.com/rhpds/my-workshop-showroom",
+    "terminal_type": "wetty",
+    "e2e_testing": false,
+    "litemaas": false,
+    "target_dir": "agd_v2"
+  },
+  "automation_manifest": {
+    "approach": "ansible",
+    "infrastructure": { "type": "ocp-cnv", "ocp_version": "4.16" },
+    "operators": [],
+    "applications": []
+  }
+}
+```
+
+`catalog_type` values: `workshop_multiuser`, `workshop_singleuser`, `workshop_admin`, `demo`, `sandbox`
+
+`infra_type` values: `openshift_ocp` (OCP cluster), `cloud_vms` (RHEL/AAP VMs), `sandbox_tenant` (Sandbox API tenant CI), `sandbox_cluster` (Sandbox API cluster CI)
+
+### Headless Execution
+
+1. **Parse ph_payload** — extract all fields above.
+2. **Map catalog_type → category + multiuser + workshop_user_mode** using the same table as Step 1.
+3. **Detect infra branch** from `infra_type` — no questions needed:
+   - `openshift_ocp` → BRANCH 1 (OCP workloads) with `cloud_provider` from payload
+   - `cloud_vms` → BRANCH 2 (cloud-vms-base)
+   - `sandbox_tenant` → BRANCH 3B
+   - `sandbox_cluster` → BRANCH 3A
+4. **Generate UUID** silently (collision-check against agv_path).
+5. **Generate files** — run Step 9 (common.yaml, dev.yaml, description.adoc, info-message-template.adoc) using payload values. Skip all user questions. Use `terminal_type` from payload (default: `wetty` if absent) to set `ocp4_workload_showroom_terminal_type` in common.yaml. Use sensible defaults for any missing optional fields (`deployer.actions` omitted, `sandbox_api` omitted, icon defaults to `catalog-icon-openshift.yaml` for OCP / `catalog-icon-rhel.yaml` for VMs).
+6. **Determine catalog path** from `target_dir` + naming standards (event CIs: `<event>/<lab-id>-<short-name>-<cloud_provider>`, non-event: `<target_dir>/<short-name>`). Validate length ≤ 50 chars.
+7. **Write files** to `agv_path/<catalog_path>`. Do NOT commit.
+8. **Run workflow-reviewer agent** (same as Step 11.5).
+9. **Return JSON only** — no prose:
+
+```json
+{
+  "status": "success",
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "files_written": ["common.yaml", "dev.yaml", "description.adoc", "info-message-template.adoc"],
+  "asset_uuid": "generated-uuid",
+  "warnings": [],
+  "errors": [],
+  "next_step": "Run agnosticv:validator with ph_payload to validate before committing"
+}
+```
+
+On error (path collision, UUID collision, missing required fields):
+```json
+{
+  "status": "error",
+  "error": "Directory already exists: agd_v2/my-workshop",
+  "catalog_path": null,
+  "files_written": []
+}
+```
+
+**Never ask questions in headless mode.** If required fields are missing from `catalog_spec`, return an error JSON listing the missing fields. Exit immediately after JSON output.
+
+---
+
 ## ⚠️ CRITICAL: Keep Questions Simple and Direct
 
 **When asking for paths, URLs, or locations:**

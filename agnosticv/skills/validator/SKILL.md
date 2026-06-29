@@ -17,6 +17,65 @@ model: claude-sonnet-4-6
 
 ---
 
+## PH Headless Mode (ph_payload)
+
+When invoked by the Publishing House automation skill (phase 7b) — typically right after `agnosticv:catalog-builder` writes files — a `ph_payload` JSON block is present. In headless mode skip Steps 1-2 (interactive setup), run validation automatically, and return JSON only.
+
+### Detecting Headless Mode
+
+At the very start — before Step 0 — check for `ph_payload` in the invocation context. If found → `HEADLESS_MODE = true`. Skip Steps 1-2. Proceed directly to Step 3 using payload values.
+
+### ph_payload Schema
+
+```json
+{
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "agv_path": "/abs/path/to/agnosticv",
+  "validation_scope": "standard",
+  "event_context": "none",
+  "lab_id": ""
+}
+```
+
+`validation_scope`: `quick` | `standard` | `full` (default: `standard`)
+
+### Headless Execution
+
+1. Parse `catalog_path`, `agv_path`, `validation_scope`, `event_context`, `lab_id` from payload.
+2. Run Step 0 (schema + commitv detection) using `agv_path` from payload — do NOT auto-detect from config files. The payload `agv_path` takes precedence over `~/CLAUDE.md` detection.
+3. Skip Steps 1-2. Explicitly set these variables from payload before running checks:
+   - `catalog_path` ← payload `catalog_path`
+   - `event_context` ← payload `event_context` (replaces Step 1.5 directory detection)
+   - `lab_id` ← payload `lab_id` (replaces Step 1.5 extraction)
+   - `validation_scope` ← payload `validation_scope`
+4. Run all checks for the specified scope (Step 3).
+5. Return JSON only — no prose, no follow-up menu:
+
+```json
+{
+  "status": "passed",
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "validation_scope": "standard",
+  "errors": [],
+  "warnings": [
+    {
+      "check": "best_practices",
+      "message": "No keywords defined",
+      "recommendation": "Add 3-4 specific technology keywords"
+    }
+  ],
+  "suggestions": [],
+  "passed_checks": ["✓ UUID format valid", "✓ Category valid: Labs"],
+  "summary": "0 errors, 1 warning, 0 suggestions, 12 checks passed"
+}
+```
+
+`status` values: `passed` (0 errors), `passed_with_warnings` (0 errors, N warnings), `failed` (1+ errors)
+
+**Never ask questions in headless mode.** Never run Step 4 (report format) or Step 5 (follow-up menu). Exit immediately after JSON output.
+
+---
+
 ## Purpose
 
 Comprehensive validation of AgnosticV catalog configurations before deployment. Checks UUID format, YAML syntax, workload dependencies, category correctness, and best practices to prevent deployment failures.
