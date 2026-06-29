@@ -7,7 +7,7 @@ title: /agnosticv:catalog-builder
 
 <div class="reference-badge">🔧 Catalog Builder</div>
 
-Create or update AgnosticV catalog files for RHDP deployments (unified skill).
+Create or update AgnosticV catalog files for RHDP deployments (unified skill). Version 2.2.0.
 
 ---
 
@@ -100,9 +100,57 @@ cd agnosticv</code></pre>
   <li><div class="step-content"><h4>Navigate to Repository</h4><p>Open your AgnosticV repository directory</p></div></li>
   <li><div class="step-content"><h4>Run Catalog Builder</h4><p><code>/agnosticv:catalog-builder</code></p></div></li>
   <li><div class="step-content"><h4>Choose Mode</h4><p>Select: Full Catalog / Description Only / Info Template</p></div></li>
-  <li><div class="step-content"><h4>Answer Questions</h4><p>Follow guided prompts</p></div></li>
+  <li><div class="step-content"><h4>Answer Questions</h4><p>Follow guided prompts (or submit one batched form for MODE 1)</p></div></li>
   <li><div class="step-content"><h4>Review & Commit</h4><p>Files auto-committed to new branch</p></div></li>
 </ol>
+
+---
+
+## Architecture (v2.2.0) — MODE 1 Orchestrator
+
+Starting v2.2.0, **MODE 1 (Full Catalog)** uses an orchestrator pattern. Modes 2, 3, and 4 are unchanged and use the existing sequential flow.
+
+```mermaid
+graph TD
+    User([User]) --> CB[catalog-builder\norchestrator, Sonnet]
+    CB --> Form[Batched planning form\nall questions at once]
+    Form --> SC[Build shared_context JSON\nUUID, includes, path validation]
+    SC --> P1[agnosticv:config-writer\ngenerates common.yaml + dev.yaml]
+    SC --> P2[agnosticv:description-writer\ngenerates description.adoc\n+ info-message-template.adoc]
+    P1 --> |files + JSON| Merge[Orchestrator collects results]
+    P2 --> |files + JSON| Merge
+    Merge --> WR[agnosticv:workflow-reviewer\nconsistency check]
+    WR --> Commit([Git commit\noptional])
+
+    style CB fill:#cc0000,color:#fff
+    style P1 fill:#4a90d9,color:#fff
+    style P2 fill:#4a90d9,color:#fff
+    style WR fill:#f5a623,color:#000
+    style Commit fill:#2d862d,color:#fff
+```
+
+**Pattern:** Batched planning form → `shared_context` JSON → parallel agents → workflow-reviewer → commit
+
+### MODE 1 Orchestrator Flow
+
+**Step O-1: Scope Detection** — user selects Mode 1 (Full Catalog).
+
+**Step O-2: Batched Planning Form** — all questions presented at once in a single grouped form with three sections: Context (catalog type, event, technologies), Infrastructure (infra type, cluster size, cloud provider, OCP version, multi-user, Showroom, terminal type, E2E testing, LiteMaaS), and Catalog Details (display name, short name, description, maintainer, BU, product, keywords). User fills what they know and submits all at once.
+
+**Step O-3: Build shared_context** — auto-detects AgV path, generates and collision-checks UUID, resolves category/multiuser/workshop_user_mode, builds includes list (duplicate-safe), validates catalog_path (≤50 chars, not already existing). Asks for git branch — only this one post-form question.
+
+**Step O-4: Spawn Parallel Agents** — using the Task tool, spawns both simultaneously:
+
+| Agent | Receives | Generates |
+|---|---|---|
+| `agnosticv:config-writer` | full `shared_context` JSON | `common.yaml` + `dev.yaml` |
+| `agnosticv:description-writer` | full `shared_context` JSON | `description.adoc` + (optional) `info-message-template.adoc` |
+
+**Step O-5: Collect and Check Results** — if either agent returns non-empty `errors`, display them and stop (do not commit).
+
+**Step O-6: Run workflow-reviewer** — passes `catalog_path` and `infra_type` for consistency checks against validator skill paths.
+
+**Step O-7: Git Commit** — offers commit and shows next steps.
 
 ---
 
@@ -136,25 +184,30 @@ cd agnosticv</code></pre>
 
 ---
 
+## Subagents (MODE 1)
+
+| Agent | Model | Purpose |
+|---|---|---|
+| `agnosticv:config-writer` | Sonnet | Generates `common.yaml` and `dev.yaml` from `shared_context`. Handles all YAML generation rules: collections near top, unique password lookup paths, pinned image tags. |
+| `agnosticv:description-writer` | Sonnet | Generates `description.adoc` (from Showroom clone or metadata) and optionally `info-message-template.adoc`. See [description-writer agent docs](agnosticv-description-writer.html). |
+| `agnosticv:workflow-reviewer` | Haiku | Post-generation consistency check: builder/validator skill alignment, infra-type routing, include paths, known anti-patterns. |
+
+---
+
 ## Common Workflows
 
 <ol class="steps">
   <li>
     <div class="step-content">
-      <h4>Workflow 1: Create Full Catalog from Scratch</h4>
+      <h4>Workflow 1: Create Full Catalog from Scratch (v2.2.0 orchestrator)</h4>
       <pre><code>/agnosticv:catalog-builder
 → Mode: 1 (Full Catalog)
-→ Step 0: AgV path auto-detected, branch created
-→ Step 1: Q1=type (Workshop/Demo/Sandbox), Q2=event?, Q3=tech
-→ Step 2: Discovery searches all agDv2 directories (agd_v2/, openshift_cnv/, ai-quickstarts/, etc.)
-→ Step 3: Infrastructure gate (OCP cluster / RHEL+AAP VMs / Sandbox API CI)
-→ Step 4: Auth (unified ocp4_workload_authentication)
-→ Step 5: Workloads + LiteMaaS
-→ Step 6: Showroom (recommended name shown)
-→ Step 7: Catalog details (name, description, maintainer)
-→ Step 9: __meta__, includes, event restrictions
-→ Step 10: Path auto-generated (event) or asked (no-event)
-→ Generate all 4 files, auto-commit to branch</code></pre>
+→ Step O-2: Batched planning form — fill all 19 questions, submit once
+→ Step O-3: AgV path auto-detected, UUID generated, shared_context built, branch created
+→ Step O-4: config-writer + description-writer spawn in parallel
+→ Step O-5: Collect results — errors stop the flow, warnings are reported
+→ Step O-6: workflow-reviewer consistency check
+→ Step O-7: Commit to branch</code></pre>
     </div>
   </li>
 
@@ -198,7 +251,7 @@ cd agnosticv</code></pre>
     <li><strong>info-message-template.adoc</strong> - User notification template</li>
   </ul>
 
-  <h4>Step-by-step process:</h4>
+  <h4>Step-by-step process (sequential flow — pre-v2.2.0 path for reference):</h4>
   <ol>
     <li><strong>Step 0 — Setup:</strong> AgV path auto-detected; branch created from main (no feature/ prefix)</li>
     <li><strong>Step 1 — Context:</strong> 3 questions: Q1=Workshop/Demo/Sandbox, Q2=Is this for an event? (Summit 2026 / RH One 2026 / Other), Q3=Technologies. Event selection overrides category to Brand_Events and asks for Lab ID.</li>
@@ -245,7 +298,6 @@ cd agnosticv</code></pre>
         <li>Sets <code>ocp4_workload_showroom_runtime_automation_enable: true</code></li>
         <li>Sets <code>ocp4_workload_showroom_runtime_automation_image: "quay.io/rhpds/zt-runner:v2.4.2"</code></li>
         <li>Ensures <code>rhpds-ftl</code> collection is present in <code>requirements_content</code></li>
-        <li>For summit/event catalogs: adds a comment in the generated YAML reminding developers to remove solve/validate button placeholders from Showroom adoc files before the prod tag is cut</li>
         <li>Pairs with the <code>/ftl:rhdp-lab-validator</code> skill for authoring the runtime-automation playbooks</li>
       </ul>
     </li>
@@ -473,31 +525,69 @@ cd agnosticv</code></pre>
 
 ---
 
+## Publishing House Integration
+
+`catalog-builder` supports headless mode for Publishing House (phase 7b). PH passes `ph_payload` JSON — the skill skips all interactive prompts, generates files from the payload, and returns JSON only.
+
+**PH sends:**
+
+```json
+{
+  "agv_path": "/path/to/agnosticv",
+  "catalog_spec": {
+    "display_name": "My Workshop",
+    "short_name": "my-workshop",
+    "catalog_type": "workshop_multiuser",
+    "infra_type": "openshift_ocp",
+    "ocp_version": "4.16",
+    "num_users": 20,
+    "primaryBU": "Hybrid_Platforms",
+    "showroom_url": "https://github.com/rhpds/my-workshop-showroom",
+    "terminal_type": "wetty"
+  }
+}
+```
+
+**PH receives:**
+
+```json
+{
+  "status": "success",
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "files_written": ["common.yaml", "dev.yaml", "description.adoc", "info-message-template.adoc"],
+  "asset_uuid": "generated-uuid",
+  "warnings": [],
+  "errors": []
+}
+```
+
+---
+
 ## Tips & Best Practices
 
 <div class="category-grid">
   <div class="category-card">
-    <h4>🏷️ Start with Product Name</h4>
+    <h4>Start with Product Name</h4>
     <p>Description overview must start with product, not "This workshop"</p>
   </div>
   <div class="category-card">
-    <h4>📚 Use Real Examples</h4>
+    <h4>Use Real Examples</h4>
     <p>Reference existing catalogs for patterns</p>
   </div>
   <div class="category-card">
-    <h4>✓ Validate Before PR</h4>
+    <h4>Validate Before PR</h4>
     <p>Always run <code>/agnosticv:validator</code></p>
   </div>
   <div class="category-card">
-    <h4>🧪 Test in Dev First</h4>
+    <h4>Test in Dev First</h4>
     <p>Use dev.yaml for testing</p>
   </div>
   <div class="category-card">
-    <h4>🌿 No feature/ Prefix</h4>
+    <h4>No feature/ Prefix</h4>
     <p>Branch names should be descriptive without feature/</p>
   </div>
   <div class="category-card">
-    <h4>📝 Convert Lists to Strings</h4>
+    <h4>Convert Lists to Strings</h4>
     <p>For info templates: <code>{{ my_list | join(', ') }}</code></p>
   </div>
 </div>
@@ -545,6 +635,18 @@ ls ~/path/to/showroom/content/modules/ROOT/pages/
 </details>
 
 <details>
+<summary><strong>description-writer agent failed?</strong></summary>
+
+<p>If the description-writer subagent returns an error in MODE 1:</p>
+<ul>
+  <li>Check that <code>catalog.display_name</code> is non-empty in the planning form</li>
+  <li>Check that the <code>catalog_path</code> directory was created by Step O-3 before the agent ran</li>
+  <li>If Showroom clone failed, the agent falls back to metadata-based generation and reports a warning (not an error) — review the warning and re-run if needed</li>
+</ul>
+
+</details>
+
+<details>
 <summary><strong>Description starts with "This workshop"?</strong></summary>
 
 <div class="priority-box">
@@ -572,12 +674,12 @@ git pull origin main</code></pre>
     <h4>2. Create descriptive branch (NO feature/ prefix)</h4>
     <div class="example-grid">
       <div class="example good">
-        <div class="example-header">✅ Good</div>
+        <div class="example-header">Good</div>
         <code>add-ansible-ai-workshop</code><br>
         <code>update-ocp-pipelines-description</code>
       </div>
       <div class="example bad">
-        <div class="example-header">❌ Bad</div>
+        <div class="example-header">Bad</div>
         <code>feature/add-workshop</code>
       </div>
     </div>
@@ -604,6 +706,11 @@ git commit -m "Add your-catalog catalog"</code></pre>
   <a href="agnosticv-validator.html" class="link-card">
     <h4>/agnosticv:validator</h4>
     <p>Validate catalog before PR</p>
+  </a>
+
+  <a href="agnosticv-description-writer.html" class="link-card">
+    <h4>agnosticv:description-writer</h4>
+    <p>Subagent — generates description.adoc</p>
   </a>
 
   <a href="create-lab.html" class="link-card">
