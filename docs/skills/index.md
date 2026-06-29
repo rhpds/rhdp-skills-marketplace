@@ -94,14 +94,14 @@ For creating Red Hat Showroom workshops and demos.
 ## AgnosticV Skills (RHDP Provisioning)
 
 <div class="category-intro">
-For creating and managing RHDP catalog items.
+For creating and managing RHDP catalog items. Skills are orchestrators — they spawn parallel specialist agents automatically.
 </div>
 
 <div class="category-grid">
   <a href="agnosticv-catalog-builder.html" class="category-card agnosticv">
     <div class="category-icon">🔧</div>
     <h3>/agnosticv:catalog-builder</h3>
-    <p>Create or update AgnosticV catalog files (unified skill).</p>
+    <p>Create AgnosticV catalog files. v2.2.0: batched planning form → parallel config-writer + description-writer.</p>
     <div class="skill-meta">
       <div class="meta-item">
         <strong>Before:</strong> Clone agnosticv repo, verify access
@@ -116,7 +116,7 @@ For creating and managing RHDP catalog items.
   <a href="agnosticv-validator.html" class="category-card agnosticv">
     <div class="category-icon">✓</div>
     <h3>/agnosticv:validator</h3>
-    <p>Validate catalog configurations and best practices.</p>
+    <p>Validate catalog configurations. v2.0.0: parallel specialist agents for all 27+ checks.</p>
     <div class="skill-meta">
       <div class="meta-item">
         <strong>Before:</strong> Have catalog files ready
@@ -126,6 +126,99 @@ For creating and managing RHDP catalog items.
       </div>
     </div>
     <div class="skill-status available">✅ Available</div>
+  </a>
+</div>
+
+### AgnosticV Validator Subagents
+
+<div class="category-intro">
+Specialist agents spawned automatically by <code>/agnosticv:validator</code>. Not invoked directly.
+</div>
+
+<div class="category-grid">
+  <a href="agnosticv-schema-checker.html" class="category-card agnosticv">
+    <div class="category-icon">🔍</div>
+    <h3>agnosticv:schema-checker</h3>
+    <p>Checks UUID, YAML structure, category, deployer config, reporting labels. Haiku model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Checks:</strong> 1, 2, 3, 4, 14, 14a, 15a, 24</div>
+      <div class="meta-item"><strong>Model:</strong> Haiku</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+
+  <a href="agnosticv-workload-checker.html" class="category-card agnosticv">
+    <div class="category-icon">⚙️</div>
+    <h3>agnosticv:workload-checker</h3>
+    <p>Validates workload names, collection versions, placement rules, duplicate includes. Sonnet model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Checks:</strong> 5, 13, 17, 18, 22, 25, 26, 27</div>
+      <div class="meta-item"><strong>Model:</strong> Sonnet</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+
+  <a href="agnosticv-ocp-infra-checker.html" class="category-card agnosticv">
+    <div class="category-icon">🌐</div>
+    <h3>agnosticv:ocp-infra-checker</h3>
+    <p>OCP + VM infra checks: auth, showroom, multi-user, bastion, component propagation. Sonnet model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Checks:</strong> 6A-6B, 7, 8, 11, 12, 15, 17-OCP</div>
+      <div class="meta-item"><strong>Model:</strong> Sonnet</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+
+  <a href="agnosticv-sandbox-checker.html" class="category-card agnosticv">
+    <div class="category-icon">🏖️</div>
+    <h3>agnosticv:sandbox-checker</h3>
+    <p>Sandbox API CI checks for tenant and cluster CI types. Haiku model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Checks:</strong> 6C–6J</div>
+      <div class="meta-item"><strong>Model:</strong> Haiku (tenant + cluster CI only)</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+
+  <a href="agnosticv-metadata-checker.html" class="category-card agnosticv">
+    <div class="category-icon">📋</div>
+    <h3>agnosticv:metadata-checker</h3>
+    <p>Catalog metadata, passwords, untagged images, event catalog compliance. Haiku model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Checks:</strong> 9, 10, 16, 16a, 17a, 19, 20, 21, 23</div>
+      <div class="meta-item"><strong>Model:</strong> Haiku</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+</div>
+
+### AgnosticV Catalog Builder Subagents
+
+<div class="category-intro">
+Specialist agents spawned automatically by <code>/agnosticv:catalog-builder</code> (MODE 1). Not invoked directly.
+</div>
+
+<div class="category-grid">
+  <a href="agnosticv-config-writer.html" class="category-card agnosticv">
+    <div class="category-icon">📝</div>
+    <h3>agnosticv:config-writer</h3>
+    <p>Generates common.yaml + dev.yaml from the fully-resolved shared_context. Sonnet model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Output:</strong> common.yaml, dev.yaml</div>
+      <div class="meta-item"><strong>Model:</strong> Sonnet</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
+  </a>
+
+  <a href="agnosticv-description-writer.html" class="category-card agnosticv">
+    <div class="category-icon">📄</div>
+    <h3>agnosticv:description-writer</h3>
+    <p>Generates description.adoc + info-message-template.adoc. Extracts from Showroom or generates from metadata. Sonnet model.</p>
+    <div class="skill-meta">
+      <div class="meta-item"><strong>Output:</strong> description.adoc, info-message-template.adoc</div>
+      <div class="meta-item"><strong>Model:</strong> Sonnet</div>
+    </div>
+    <div class="skill-status available">✅ Subagent</div>
   </a>
 </div>
 
@@ -278,13 +371,55 @@ For investigating failed Ansible/AAP jobs by correlating logs, Splunk data, and 
         <td><code>/agnosticv:catalog-builder</code></td>
         <td>AgnosticV</td>
         <td>AgnosticV repo + access</td>
-        <td><span class="status-badge available">✅ Available</span></td>
+        <td><span class="status-badge available">✅ v2.2.0 Orchestrator</span></td>
       </tr>
       <tr>
         <td><code>/agnosticv:validator</code></td>
         <td>AgnosticV</td>
         <td>Catalog files</td>
-        <td><span class="status-badge available">✅ Available</span></td>
+        <td><span class="status-badge available">✅ v2.0.0 Orchestrator</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:schema-checker</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by validator</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:workload-checker</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by validator</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:ocp-infra-checker</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by validator</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:sandbox-checker</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by validator (sandbox CI only)</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:metadata-checker</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by validator</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:config-writer</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by catalog-builder MODE 1</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
+      </tr>
+      <tr>
+        <td><code>agnosticv:description-writer</code></td>
+        <td>AgnosticV (subagent)</td>
+        <td>Called by catalog-builder MODE 1-3</td>
+        <td><span class="status-badge available">✅ Subagent</span></td>
       </tr>
       <tr>
         <td><code>/health:deployment-validator</code></td>

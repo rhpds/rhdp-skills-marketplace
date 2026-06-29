@@ -7,7 +7,7 @@ title: /agnosticv:validator
 
 <div class="reference-badge">✓ Catalog Validation</div>
 
-Validate AgnosticV catalog configurations and best practices before creating pull request.
+Validate AgnosticV catalog configurations and best practices before creating pull request. Version 2.0.0 — now an orchestrator that dispatches parallel specialist subagents per check domain.
 
 ---
 
@@ -63,6 +63,75 @@ git pull origin main</code></pre>
   <li><div class="step-content"><h4>Fix Issues</h4><p>Address errors and warnings</p></div></li>
   <li><div class="step-content"><h4>Create PR</h4><p>When validation is clean</p></div></li>
 </ol>
+
+---
+
+## Architecture (v2.0.0) — Orchestrator
+
+Starting v2.0.0, this skill is an **orchestrator**. The 27+ checks are no longer run inline — they are owned by specialist subagents that run in parallel after a pre-flight phase.
+
+```mermaid
+graph TD
+    User([User / PH]) --> Skill[validator\norchestrator, Sonnet]
+    Skill --> PF[Pre-Flight\nYAML gate + CI classification]
+    PF --> |shared_context JSON| S1[agnosticv:schema-checker\nUUID, category, __meta__ schema]
+    PF --> |shared_context JSON| S2[agnosticv:metadata-checker\nreportingLabels, keywords, best practices]
+    PF --> |shared_context JSON| S3[agnosticv:workload-checker\ncollections, auth, showroom, LiteMaaS]
+    PF --> |shared_context JSON| S4[agnosticv:ocp-infra-checker\nOCP version, pool, multi-user, E2E]
+    PF --> |shared_context JSON| S5[agnosticv:sandbox-checker\ntenant/cluster CI rules]
+    S1 --> |findings JSON| Merge[Orchestrator\nmerges + deduplicates]
+    S2 --> |findings JSON| Merge
+    S3 --> |findings JSON| Merge
+    S4 --> |findings JSON| Merge
+    S5 --> |findings JSON| Merge
+    Merge --> Output([Validation report /\nJSON for PH])
+
+    style Skill fill:#cc0000,color:#fff
+    style S1 fill:#4a90d9,color:#fff
+    style S2 fill:#4a90d9,color:#fff
+    style S3 fill:#4a90d9,color:#fff
+    style S4 fill:#f5a623,color:#000
+    style S5 fill:#f5a623,color:#000
+    style Output fill:#2d862d,color:#fff
+```
+
+### Pre-Flight (always runs before any subagent)
+
+1. **Detect agv_path** — from config files or `ph_payload` (payload wins)
+2. **Parse common.yaml** — if YAML parse fails, return immediately with error and do NOT spawn any subagent
+3. **Classify CI type** — resolved once, passed as `ci_type` in `shared_context`; subagents never re-derive it:
+
+| Condition | ci_type |
+|---|---|
+| `config: namespace` | `tenant_namespace` |
+| `config: openshift-cluster` + `cloud_provider: openshift_cnv` | `shared_pool_cluster` |
+| `config: openshift-cluster` + real cloud_provider + no `-tenant` pair | `per_user_dedicated` |
+| `config: openshift-workloads` + `cloud_provider: none` + `__meta__.components` present | `binder` |
+| `config: zero-touch-base-rhel` OR in zt-* repo | `zero_touch` |
+| All others | `per_user_dedicated` |
+
+4. Check for `commitv` (private AgV validator) and babylon schema
+5. Detect event context from catalog directory path
+6. Build `shared_context` and spawn subagents
+
+### Subagent Dispatch
+
+| Scope | Agents spawned |
+|---|---|
+| All scopes | `schema-checker`, `metadata-checker` |
+| Standard + Full | `workload-checker` + (`ocp-infra-checker` OR `sandbox-checker` based on ci_type) |
+
+### Subagents
+
+| Agent | Check Domain | Checks Owned |
+|---|---|---|
+| `agnosticv:schema-checker` | UUID, category, `__meta__` schema compliance | Checks 2, 3, 15a |
+| `agnosticv:metadata-checker` | Reporting labels, keywords, best practices, EE image date | Checks 9, 14a, 21 |
+| `agnosticv:workload-checker` | Collections, auth, Showroom, LiteMaaS, credential patterns | Checks 5, 7, 8, 13, 17, 17a, 18, 19 |
+| `agnosticv:ocp-infra-checker` | OCP version, pool suffix, multi-user scaling, E2E, CI placement | Checks 6B, 11, 12, 15, 22, 23, 24, 25, 26, 27 |
+| `agnosticv:sandbox-checker` | Sandbox API tenant/cluster CI rules | Checks 6C–6J |
+
+Results are merged, deduplicated by `(check_id, location)`, cross-agent suppressions applied, then presented as a single consolidated report.
 
 ---
 
@@ -538,6 +607,46 @@ gh pr create --fill</code></pre>
 
 ---
 
+## Publishing House Integration
+
+`validator` supports headless mode for Publishing House (phase 7b — typically run immediately after `catalog-builder`). PH passes `ph_payload` JSON — the skill skips Steps 1-2 (interactive setup), runs all checks, and returns structured JSON.
+
+**PH sends:**
+
+```json
+{
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "agv_path": "/abs/path/to/agnosticv",
+  "validation_scope": "standard",
+  "event_context": "none",
+  "lab_id": ""
+}
+```
+
+**PH receives:**
+
+```json
+{
+  "status": "passed_with_warnings",
+  "catalog_path": "/abs/path/to/agnosticv/agd_v2/my-workshop",
+  "validation_scope": "standard",
+  "errors": [],
+  "warnings": [
+    {
+      "check": "best_practices",
+      "message": "No keywords defined",
+      "recommendation": "Add 3-4 specific technology keywords"
+    }
+  ],
+  "passed_checks": ["✓ UUID format valid", "✓ Category valid: Labs"],
+  "summary": "0 errors, 1 warning, 12 checks passed"
+}
+```
+
+`status` values: `passed` (0 errors), `passed_with_warnings` (0 errors + warnings), `failed` (1+ errors)
+
+---
+
 ## Example Validation Report
 
 ### Sample Validation Output
@@ -596,7 +705,7 @@ gh pr create --fill</code></pre>
 
 <div class="category-grid">
   <div class="category-card">
-    <h4>✓ Always Validate</h4>
+    <h4>Always Validate</h4>
     <p>Before creating PR</p>
   </div>
   <div class="category-card">
@@ -604,11 +713,11 @@ gh pr create --fill</code></pre>
     <p>Errors before warnings</p>
   </div>
   <div class="category-card">
-    <h4>🔄 Run Multiple Times</h4>
+    <h4>Run Multiple Times</h4>
     <p>As you fix issues</p>
   </div>
   <div class="category-card">
-    <h4>📋 Check Examples</h4>
+    <h4>Check Examples</h4>
     <p>Similar catalogs for patterns</p>
   </div>
   <div class="category-card">
@@ -654,6 +763,17 @@ gh pr create --fill</code></pre>
 
 </details>
 
+<details>
+<summary><strong>Subagent returned unexpected results?</strong></summary>
+
+<ul>
+  <li>The orchestrator merges all subagent findings — if a finding looks wrong, check which agent produced it (the <code>check</code> field in the finding identifies the check domain)</li>
+  <li>If the YAML parse pre-flight fails, no subagents are spawned — fix the YAML error first</li>
+  <li>Cross-agent suppression rules may filter findings when the YAML has parse errors — this is intentional to avoid false positives</li>
+</ul>
+
+</details>
+
 ---
 
 ## Related Skills
@@ -662,6 +782,11 @@ gh pr create --fill</code></pre>
   <a href="agnosticv-catalog-builder.html" class="link-card">
     <h4>/agnosticv:catalog-builder</h4>
     <p>Create/update catalog (unified skill)</p>
+  </a>
+
+  <a href="agnosticv-description-writer.html" class="link-card">
+    <h4>agnosticv:description-writer</h4>
+    <p>Subagent — generates description.adoc</p>
   </a>
 
   <a href="create-lab.html" class="link-card">
