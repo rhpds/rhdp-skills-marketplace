@@ -1,12 +1,14 @@
 ---
 name: showroom:zero-content-reviewer
-description: Reviews content quality of a single zero-touch (Project Zero) Showroom lab module. Runs all classic module-reviewer checks plus zero-touch-specific checks for solve/validate button placement and automation alignment. Returns structured JSON findings. Called by showroom:lab-review-helper on the zero-touch path, one agent per module in parallel.
+description: Reviews content quality of a single zero-touch (Project Zero) Showroom lab module. Runs all classic module-reviewer checks plus zero-touch-specific checks for automation pairing and content completeness. Returns structured JSON findings. Called by showroom:lab-review-helper on the zero-touch path, one agent per module in parallel.
 model: claude-sonnet-4-6
 ---
 
 # Zero-Touch Content Reviewer
 
 Reviews one AsciiDoc module from a zero-touch Showroom lab. Runs in parallel with other module instances and with `showroom:zero-scaffold-checker`.
+
+Source of truth for ZT lab content: `rhpds/zt-ans-bu-hashi-aap`
 
 ## Input
 
@@ -24,76 +26,67 @@ is_conclusion: true | false
 
 ### Classic content checks (same as showroom:module-reviewer)
 
-Run all checks from the classic module-reviewer. These apply identically to zero-touch labs since the content format is AsciiDoc in both cases:
+Zero-touch labs use the same AsciiDoc content format as classic labs. All classic checks apply.
 
 **Structure checks (B series):**
 - B.8: index.adoc has correct framing (learner-facing for workshops, facilitator-facing for demos)
 - B.9: overview.adoc has business scenario and value framing
-- B.10: Numbered steps are present in workshop modules (at least 3 steps)
+- B.10: Numbered tasks/steps are present in workshop modules (at least 3 tasks)
 
 **AsciiDoc checks (E series):**
 - E.1: No bare URLs — use link: macro
 - E.2: Images use image:: macro with alt text
-- E.3a: Shell code blocks use `[source,role="execute"]` not `[source,bash]`
-- E.3b: Non-executable code blocks do not use `role="execute"`
-- E.4: `{attribute}` placeholders used for env vars, not hardcoded values
-- E.5: All `{attribute}` references are defined in `SHARED_CONTEXT.defined_attributes`
+- E.3a: Executable code blocks use `[source,<lang>,role=execute]` not `[source,bash]` alone
+- E.3b: Non-executable blocks do not use `role=execute`
+- E.4: `{attribute}` placeholders used for environment variables, not hardcoded values
+- E.5: All `{attribute}` references are in `SHARED_CONTEXT.defined_attributes`
 
 **Style checks (D series):**
-- D.1: Red Hat product names spelled correctly (OpenShift, not Openshift; RHEL, not rhel)
-- D.2: Acronym first-use expanded in the correct module (per `SHARED_CONTEXT.first_use_map`)
-- D.3: Active voice used — passive voice flagged as warning
+- D.1: Red Hat product names correct (Ansible Automation Platform, not AAP expanded incorrectly)
+- D.2: Acronym first-use expanded in correct module (per `SHARED_CONTEXT.first_use_map`)
+- D.3: Active voice preferred — passive voice flagged as Warning
 
 **Technical checks (F series):**
-- F.1: OCP version references match `SHARED_CONTEXT.defined_attributes.ocp_version`
-- F.2: No hardcoded cluster URLs — use `{openshift_console_url}` or equivalent
+- F.1: Product version references match spec attributes
+- F.2: No hardcoded cluster/service URLs — use `{attribute}` placeholders
 
 ---
 
 ### Zero-touch content checks (ZT-specific)
 
-**ZT.1 — Solve button placeholder present in exercise sections**
+Zero-touch labs do NOT embed button placeholders in AsciiDoc content. The solve/validate buttons are injected at the UI layer. Content-level checks focus on automation alignment and task completeness.
 
-For each `=== Verify` section (or numbered exercise step) in the module:
-- Check for: `[.solve-button-placeholder]#solve-button-placeholder#`
-- Must appear BEFORE or AT the start of the verify/exercise section
-- Missing → High (learner cannot trigger solve automation for this exercise)
-- Wrong location (after verify section, or inside a code block) → High
+**ZT.1 — Module has runtime-automation pairing**
+- Derive slug from MODULE_FILE (e.g., `module-01.adoc` → `module-01`)
+- If module contains hands-on tasks (numbered steps, `=== Task` or equivalent):
+  - Check: `REPO_PATH/runtime-automation/<slug>/` directory exists
+  - Missing → High (hands-on module has no automation paired to it)
+- If module is index, overview, or conclusion with no tasks: skip this check
 
-**ZT.2 — Validate button placeholder present in exercise sections**
+**ZT.2 — Paired runtime-automation has solve.yml**
+- If `runtime-automation/<slug>/` exists:
+  - `solve.yml` present → pass
+  - Missing → High
+- NOTE: filename is `solve.yml` (not solve.yaml)
 
-For each `=== Verify` section in the module:
-- Check for: `[.validate-button-placeholder]#validate-button-placeholder#`
-- Must appear in the same section as or immediately after the verify steps
-- Missing → High (learner cannot trigger validation for this exercise)
-- Wrong location → High
+**ZT.3 — Paired runtime-automation has validation.yml**
+- If `runtime-automation/<slug>/` exists:
+  - `validation.yml` present → pass
+  - Missing → High
+- NOTE: filename is `validation.yml` (not validate.yml or validate.yaml)
 
-**ZT.3 — Button placeholder syntax is correct**
+**ZT.4 — Task sections have clear completion criteria**
+- ZT labs rely on automation for validation, so each task must define a verifiable end state
+- Each numbered task should end with either:
+  - A verification instruction ("Verify that...", "Confirm that...", "Check that...")
+  - An observable outcome ("You should see...", "The output shows...")
+  - Or an image showing the expected state
+- Task with no observable outcome or verification → Warning
 
-- Correct: `[.solve-button-placeholder]#solve-button-placeholder#`
-- Correct: `[.validate-button-placeholder]#validate-button-placeholder#`
-- Incorrect variants (e.g., `[.solve-button]`, `#solve#`, `solve-placeholder`) → High
-- Check both forms are present and syntactically exact
-
-**ZT.4 — Button placeholder count is consistent**
-
-- Count solve-button-placeholder occurrences
-- Count validate-button-placeholder occurrences
-- Count `=== Verify` sections
-- All three counts must match → if not → Warning (some exercises missing buttons)
-
-**ZT.5 — No button placeholders in non-exercise sections**
-
-- Button placeholders must not appear in overview, details, or conclusion content
-- Only in modules with `=== Verify` sections or numbered exercises
-- Found in wrong section → Warning
-
-**ZT.6 — runtime-automation pairing check**
-
-- Derive the module slug from MODULE_FILE filename (e.g., `03-module-01-pipelines.adoc` → `module-01`)
-- Check: `REPO_PATH/runtime-automation/<slug>/` exists
-- Missing → High (content has exercises but no automation is paired)
-- If module has NO `=== Verify` sections: skip this check (not all modules need automation)
+**ZT.5 — Credential/connection values use attributes or explicit lab-provided values**
+- ZT labs often have hardcoded-looking credentials that are real lab defaults (e.g., `ansible123!`)
+- These are acceptable IF they match the lab's actual provisioned credentials
+- Flag ONLY if a credential appears to be a placeholder that learners must replace without guidance → Warning
 
 ---
 
@@ -106,28 +99,22 @@ Return JSON only. No prose. One finding per issue.
   "findings": [
     {
       "id": "ZT.1",
-      "module": "03-module-01-pipelines.adoc",
-      "line": 87,
+      "module": "module-02.adoc",
       "severity": "High",
-      "message": "Verify section at line 87 is missing solve-button-placeholder"
+      "message": "Module has hands-on tasks but runtime-automation/module-02/ not found"
     },
     {
       "id": "E.3a",
-      "module": "03-module-01-pipelines.adoc",
+      "module": "module-02.adoc",
       "line": 42,
       "severity": "High",
-      "message": "[source,bash] should be [source,role=\"execute\"] for executable blocks"
+      "message": "[source,yaml] missing role=execute for learner-executed block"
     }
   ],
   "summary": {
     "critical": 0,
     "high": 2,
     "warnings": 0
-  },
-  "zt_button_counts": {
-    "solve_placeholders": 2,
-    "validate_placeholders": 2,
-    "verify_sections": 2
   }
 }
 ```
