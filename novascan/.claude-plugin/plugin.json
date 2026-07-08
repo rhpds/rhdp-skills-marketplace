@@ -1,0 +1,9 @@
+{
+  "name": "novascan",
+  "version": "1.0.0",
+  "description": "RHDP capacity scanner — scan demo repos, recommend provisioning tiers, generate right-sized AgnosticV catalog items",
+  "author": {
+    "name": "Jonathan Kershaw",
+    "email": "jkershaw@redhat.com"
+  }
+}
