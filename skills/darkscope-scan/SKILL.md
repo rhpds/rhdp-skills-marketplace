@@ -1,0 +1,1 @@
+../../darkscope/skills/scan/SKILL.md

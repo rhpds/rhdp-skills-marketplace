@@ -1,0 +1,1 @@
+../../darkscope/skills/audit/SKILL.md

@@ -1,0 +1,1 @@
+../../darkscope/skills/compare/SKILL.md
