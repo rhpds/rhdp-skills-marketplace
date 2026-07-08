@@ -23,25 +23,43 @@ Inspect the repo at REPO_PATH and determine whether it is a classic or zero-touc
 
 Check in this order:
 
-**Step 1:** Does `runtime-automation/` directory exist at `REPO_PATH/runtime-automation/`?
-- Yes → `project_zero`
+**Step 1:** Does `setup-automation/` directory exist at `REPO_PATH/setup-automation/`?
+- Yes → `project_zero` (setup-automation is the strongest ZT indicator — not present in any classic lab)
 
-**Step 2:** Does `content/supplemental-ui/js/buttons.js` exist?
-- Yes → `project_zero`
+**Step 2:** Does `runtime-automation/main.yml` exist at `REPO_PATH/runtime-automation/main.yml`?
+- Yes → `project_zero` (root-level main.yml orchestrator is ZT-specific; classic labs don't have this)
 
-**Step 3:** Neither found → `classic`
+**Step 3:** Does `runtime-automation/` directory exist but without `main.yml`?
+- If the directory exists but no `main.yml` → still `project_zero` (partial ZT setup)
 
-A repo is zero-touch if EITHER indicator is present. Both may exist (fully set up ZT lab) or only one (partially set up). Either is sufficient to classify as `project_zero`.
+**Step 4:** None of the above found → `classic`
 
-## Classic Indicators (for reference)
+## Real ZT Lab Structure (reference: rhpds/zt-ans-bu-hashi-aap)
 
-A classic lab has these and does NOT have the ZT indicators above:
-- `content/modules/ROOT/pages/*.adoc`
-- `content/modules/ROOT/nav.adoc`
-- `content/antora.yml`
-- `site.yml` and `ui-config.yml` at root
+A zero-touch lab has these additional directories not present in classic labs:
+```
+setup-automation/          ← environment setup scripts (Terraform, vault, control plane)
+  main.yml
+  setup-control.sh
+  setup-terraform.sh
+  setup-vault.sh
+runtime-automation/        ← per-module solve/validation automation
+  main.yml                 ← root orchestrator (includes module tasks)
+  ansible.cfg
+  inventory
+  secrets.yaml
+  module-01/
+    solve.yml
+    validation.yml         ← NOTE: validation.yml, not validate.yml
+    solve-control.sh
+    validation-control.sh
+config/                    ← infrastructure config (instances, networks, firewall)
+  instances.yaml
+  networks.yaml
+  firewall.yaml
+```
 
-These files are also present in zero-touch labs — they are not discriminating signals.
+Classic labs (site.yml, ui-config.yml, antora.yml, content/) are present in BOTH formats — they are not discriminating.
 
 ## Return Value
 
