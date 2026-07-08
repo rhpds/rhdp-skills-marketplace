@@ -105,6 +105,14 @@ If the old cluster is unreachable (VALID = NO):
 sandbox-cli cluster offboard <OLD_CLUSTER_NAME> --force
 ```
 
+**If the cluster is locked** (HTTP 409 error), it must be unlocked first. The `enable` command requires `admin` role:
+
+```bash
+sandbox-cli cluster enable <OLD_CLUSTER_NAME>
+```
+
+If you have `shared-cluster-manager` role, ask an admin to unlock the cluster before proceeding.
+
 Wait for completion. Expected output:
 
 ```
@@ -181,10 +189,16 @@ Example for general shared cluster:
 #### 7c. Run the onboard
 
 ```bash
+# With config file
 sandbox-cli cluster onboard <NEW_CLUSTER_NAME> --config <CONFIG_FILE>
+
+# With inline flags (simple cases)
+sandbox-cli cluster onboard <NEW_CLUSTER_NAME> --purpose dev --annotations '{"cloud":"cnv-shared","lab":"my-lab"}'
 ```
 
 The cluster name is optional -- extracted from the API URL if omitted.
+
+**IMPORTANT:** When the API URL has a pattern like `api.ocp.XXXXX.sandboxNNN.opentlc.com`, the auto-extracted name will be `ocp` (not the unique identifier). Always provide an explicit cluster name in these cases (e.g., `cluster-XXXXX`).
 
 Expected output:
 
@@ -268,3 +282,5 @@ Report to the user:
 - For like-for-like rotation, reuse the same config file / annotations so the new cluster matches the same AgnosticV catalog selectors.
 - The `--force` flag for offboard should only be used when the old cluster is permanently unreachable.
 - `deployer_admin_sa_token_*` fields are required if workloads need cluster-admin access.
+- A locked cluster (HTTP 409) must be unlocked by an admin using `sandbox-cli cluster enable` before it can be offboarded.
+- For simple onboards, inline flags (`--purpose`, `--annotations`, `--max-placements`) can be used instead of a config file.

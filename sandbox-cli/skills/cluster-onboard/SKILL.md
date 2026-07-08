@@ -91,9 +91,34 @@ oc whoami
 oc cluster-info
 ```
 
-### Step 6: Prepare Config File
+### Step 6: Prepare Config (config file or inline flags)
 
-If the user doesn't have a config file, create one. Example for CNV dedicated:
+There are two ways to pass cluster configuration:
+
+#### Option A: Inline flags (simple cases)
+
+For simple onboards, use CLI flags directly -- no config file needed:
+
+```bash
+sandbox-cli cluster onboard my-cluster --purpose dev --annotations '{"cloud":"cnv-shared","lab":"my-lab"}'
+```
+
+Available inline flags:
+
+| Flag | Description | Example |
+|------|-------------|---------|
+| `--purpose` | Purpose annotation (default "dev") | `--purpose events` |
+| `--annotations` | Extra annotations as JSON | `--annotations '{"cloud":"cnv-shared","virt":"yes"}'` |
+| `--max-placements` | Maximum placements (0 = no limit) | `--max-placements 30` |
+| `--kubeconfig` | Path to kubeconfig file | `--kubeconfig /path/to/kubeconfig` |
+| `--context` | Kubeconfig context to use | `--context my-cluster-admin` |
+| `--force` | Bypass annotation validation | `--force` |
+
+#### Option B: JSON config file (advanced settings)
+
+For advanced settings (deployer tokens, rate limiting, quotas), create a JSON config file.
+
+Example for CNV dedicated:
 
 ```json
 {
@@ -134,10 +159,16 @@ Example for general shared cluster with rate limiting:
 Run the onboard command:
 
 ```bash
+# With config file
 sandbox-cli cluster onboard <CLUSTER_NAME> --config <CONFIG_FILE>
+
+# With inline flags (simple cases)
+sandbox-cli cluster onboard <CLUSTER_NAME> --purpose dev --annotations '{"cloud":"cnv-shared","lab":"my-lab"}'
 ```
 
 The cluster name is optional -- if omitted, it's extracted from the API URL (e.g., `cluster-tdsqt` from `https://api.cluster-tdsqt.dynamic.redhatworkshops.io:6443`).
+
+**IMPORTANT:** When the API URL has a pattern like `api.ocp.XXXXX.sandboxNNN.opentlc.com`, the auto-extracted name will be `ocp` (not the unique identifier). Always provide an explicit cluster name in these cases (e.g., `cluster-XXXXX`).
 
 **What this does automatically:**
 1. Connects to target OCP cluster via current kubeconfig context
